@@ -11,7 +11,7 @@
     "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/manual.md",
     "sourceUrl": "https://github.com/pellelil/InfNoiseRack",
     "donateUrl": "https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=57V5PMDKLAZZ2",
-    "changelogUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/release-notes.md",
+    "changelogUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/CHANGELOG.md",
     "minRackVersion": "2.5.0",
   "modules": [
     {
