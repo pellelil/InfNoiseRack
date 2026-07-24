@@ -1,0 +1,32 @@
+# Build outputs
+/build
+/dep
+/dist
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.res
+*.d
+*.dSYM
+plugin.dll
+
+# Machine-local IntelliSense (regenerate on each PC: .\gen-compile-commands.ps1)
+/compile_commands.json
+/.clangd
+/.cache/
+
+# Private / working content (in SVN, excluded from public Git)
+/.cursor/
+/obsolete
+/patches
+/pending
+/res-raw
+/scripts
+
+# OS / editor noise
+.DS_Store
+
+# SVN metadata (when Git and SVN share a working copy)
+/.svn/

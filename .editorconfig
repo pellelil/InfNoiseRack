@@ -1,0 +1,4 @@
+root = true
+
+[plugin.json]
+charset = utf-8

@@ -1,0 +1,20 @@
+# Fold(poq)
+It’s no surprise that the fold module can fold (or “wrap”) waveforms. The **Range** switch lets you choose between a **Bipolar** range (−5V to +5V) and a **Unipolar** range (0V to 10V). If the input signal (for example, a waveform) exceeds this range, it will “fold inward” to keep the output within the selected limits. As long as the input stays within the specified range, the signal remains unchanged (unless you apply Gain or Bias, explained below). 
+
+For the fold module to really take effect, the signal typically needs to be amplified so it exceeds the range—this is the purpose of the **Gain** knob/CV-input, located at the top of the module. It allows you to amplify the input from 1× (default) up to 10×.
+
+If the input signal is symmetric around the center of the range (0V for bipolar, 5V for unipolar), the output will also remain symmetric. To make the result "more interesting", you can apply a bias using the **Bias** knob/input. In its default mode, the Bias knob applies a ±5V **offset** to the input signal, effectively shifting it toward the lower or upper half of the range, where folding will occur (especially once gain is applied). Pressing the small button next to the bias-knob the bias mode will toggle to **Asymmetric Gain**. In this mode, the signal is not offset. Instead, different gain is applied to the lower and upper halves of the input range. For example, turning the Bias knob toward “Lw” reduces the gain applied to the upper half of the signal, and vice versa.
+
+Below the Bias knob/input, you’ll find a two-way mode switch:
+* **Fld = Fold**: In Fold mode (default), values that exceed the upper limit fold downward, and values that exceed the lower limit fold upward. For example, with the default bipolar range (−5V to +5V), an input of +6V (1V above the top) folds down to +4V (+5V − 1V). Likewise, an input of −7V (2V below the bottom) folds up to −3V (−5V + 2V).
+* **Wrp = Wrap**: In Wrap mode, values that exceed the top of the range wrap around and re-enter from the bottom, and vice versa. For example, in the bipolar range, an input of +6V (1V above the top) wraps to −4V (1V above the bottom at −5V). Similarly, an input of −7V (2V below the bottom) wraps around from the top and becomes +3V (2V below the top at +5V).
+
+![Screenshot of Fold](module/Fold.png)
+
+In either mode, if the input signal goes far beyond the selected Min/Max range (by more than the total range span), it will fold or wrap multiple times. For example, the sine output from a *Tiny LFO* in bipolar mode produces a waveform between −5V and +5V. Applying 10× gain amplifies this to −50V to +50V, causing the waveform to fold or wrap repeatedly and become much more complex.
+
+**TIP**: The random modules in the Infinite-Noise plugin — such as [Random-4](Random.md#random-4paq) - offer different distributions. For example, using the **Edge** distribution and turning the distribution knob clockwise increases the likelihood that values cluster near the extremes (top or bottom limits). You can approximate a similar effect even with random sources that don’t provide distribution controls. By routing a random signal through a **Fold** module and applying a little gain, you effectively "push" values away from the center toward the edges. Values that exceed the limits are folded back into range, resulting in more values accumulating near the extremes rather than the center (depending on the amount of gain). *This is not identical to the Edge distribution in Random-4, but it does increase the likelihood of values near the limits.*
+
+**TIP**: Similarly, when routing a random signal through a **Fold** module, you can use the **Bias** control to offset/shift the signal upward or downward. This makes the signal exceed primarily either the upper or lower limit, causing folding to occur mostly on one side. As a result, more values accumulate near either the top or bottom of the range. *Again, this is not the same as the built-in Min/Max distribution in Random-4, but it increases the probability of values near the top or bottom of the range.*
+
+[Go back to modules overview](manual.md#modules)
