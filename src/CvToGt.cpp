@@ -17,8 +17,8 @@ struct CvToGtModule : InfNoiseModule {
     };
     enum InputsId {
         CV_INPUT,
-        MIN_INPUT,
-        MAX_INPUT,
+        MIN_RNG_INPUT,
+        MAX_RNG_INPUT,
         INPUTS_LEN
     };
     enum OutputsId {
@@ -67,11 +67,11 @@ struct CvToGtModule : InfNoiseModule {
         configLight(MIN_MODE_LIGHT, "Min>Max (red=Error, Green=auto-swap)");
         configParam(MIN_PARAM, -10.0f, 10.0f, -5.0f, "Min", " V");
         configSwitch(MIN_INCL_PARAM, 0.0f, 1.0f, 1.0f, "Incl. min", { "Excluded", "Included" });
-        configInput(MIN_INPUT, "Min-CV");
+        configInput(MIN_RNG_INPUT, "Min-CV");
 
         configParam(MAX_PARAM, -10.0f, 10.0f, 5.0f, "Max", " V");
         configSwitch(MAX_INCL_PARAM, 0.0f, 1.0f, 1.0f, "Incl. max", { "Excluded", "Included" });
-        configInput(MAX_INPUT, "Max-CV");
+        configInput(MAX_RNG_INPUT, "Max-CV");
 
         configSwitch(GATE_DIFF_PARAM, 0.0f, 1.0f, 0.0f, "Gate/Diff-mode", { "Above/Below-gates", "Min/Max-diff (CV)" });
         configLight(ABOVE_LIGHT, "");
@@ -118,8 +118,8 @@ struct CvToGtModule : InfNoiseModule {
         preProcessParams(args);
         //--------------------
 
-        haveMinInput = inputs[MIN_INPUT].isConnected();
-        haveMaxInput = inputs[MAX_INPUT].isConnected();
+        haveMinInput = inputs[MIN_RNG_INPUT].isConnected();
+        haveMaxInput = inputs[MAX_RNG_INPUT].isConnected();
         haveCvInput = inputs[CV_INPUT].isConnected();
         channels = haveCvInput 
             ? inputs[CV_INPUT].getChannels() 
@@ -139,10 +139,10 @@ struct CvToGtModule : InfNoiseModule {
         minMode.updateActual();
         errorMode = false;
         float minVal = (haveMinInput) 
-            ? params[MIN_PARAM].getValue() + inputs[MIN_INPUT].getPolyVoltage(0) 
+            ? params[MIN_PARAM].getValue() + inputs[MIN_RNG_INPUT].getPolyVoltage(0) 
             : params[MIN_PARAM].getValue();
         float maxVal = (haveMaxInput) 
-            ? params[MAX_PARAM].getValue() + inputs[MAX_INPUT].getPolyVoltage(0) 
+            ? params[MAX_PARAM].getValue() + inputs[MAX_RNG_INPUT].getPolyVoltage(0) 
             : params[MAX_PARAM].getValue();
         if (minVal > maxVal) {
             lights[MIN_MODE_LIGHT].setBrightness(greenMinMaxLight[minMode.act]);
@@ -184,10 +184,10 @@ struct CvToGtModule : InfNoiseModule {
                     ? inputs[CV_INPUT].getVoltage(c) 
                     : 0.f;
                 float minVal = (haveMinInput) 
-                    ? params[MIN_PARAM].getValue() + inputs[MIN_INPUT].getPolyVoltage(c) 
+                    ? params[MIN_PARAM].getValue() + inputs[MIN_RNG_INPUT].getPolyVoltage(c) 
                     : params[MIN_PARAM].getValue();
                 float maxVal = (haveMaxInput) 
-                    ? params[MAX_PARAM].getValue() + inputs[MAX_INPUT].getPolyVoltage(c) 
+                    ? params[MAX_PARAM].getValue() + inputs[MAX_RNG_INPUT].getPolyVoltage(c) 
                     : params[MAX_PARAM].getValue();
 
                 // Swap min/max if min>max and min-mode is low/high
@@ -262,13 +262,13 @@ struct CvToGtModuleWidget : InfNoiseModuleWidget {
         inclBtn->setup(bc_green, false);
         addParam(inclBtn);
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 84.723f), module, CvToGtModule::MIN_PARAM));
-        addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 111.913f), module, CvToGtModule::MIN_INPUT));
+        addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 111.913f), module, CvToGtModule::MIN_RNG_INPUT));
 
         inclBtn = createParamCentered<infNoiseLtSmallButton>(Vec(inclClm, 131.851f), module, CvToGtModule::MAX_INCL_PARAM);
         inclBtn->setup(bc_green, false);
         addParam(inclBtn);
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 143.695f), module, CvToGtModule::MAX_PARAM));
-        addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 170.886f), module, CvToGtModule::MAX_INPUT));
+        addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 170.886f), module, CvToGtModule::MAX_RNG_INPUT));
 
         addParam(createParamCentered<CKSS>(Vec(8.482f, 194.950f), module, CvToGtModule::GATE_DIFF_PARAM));
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(7.345f, 277.191f), module, CvToGtModule::ABOVE_LIGHT));

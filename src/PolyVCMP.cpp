@@ -16,8 +16,8 @@ struct PolyVCMPModule : InfNoiseModule {
         INPUTS_LEN
     };
     enum OutputsId {
-        MIN_OUTPUT,
-        MAX_OUTPUT,
+        MIN_VAL_OUTPUT,
+        MAX_VAL_OUTPUT,
         NTZ_OUTPUT,
         FFZ_OUTPUT,
         AVG_OUTPUT,
@@ -49,8 +49,8 @@ struct PolyVCMPModule : InfNoiseModule {
     actReqValue<rsOutputModeType> rsOutputMode = actReqValue<rsOutputModeType>(rsOutputModeType::rs_Range);
 
     void writeOutputs(int c, int outIdx) {
-        outputs[MIN_OUTPUT].setVoltage(clipToVoltRange(minVal[outIdx], outClipRange.act), c);
-        outputs[MAX_OUTPUT].setVoltage(clipToVoltRange(maxVal[outIdx], outClipRange.act), c);
+        outputs[MIN_VAL_OUTPUT].setVoltage(clipToVoltRange(minVal[outIdx], outClipRange.act), c);
+        outputs[MAX_VAL_OUTPUT].setVoltage(clipToVoltRange(maxVal[outIdx], outClipRange.act), c);
         outputs[NTZ_OUTPUT].setVoltage(clipToVoltRange(ntzVal[outIdx], outClipRange.act), c);
         outputs[FFZ_OUTPUT].setVoltage(clipToVoltRange(ffzVal[outIdx], outClipRange.act), c);
         outputs[AVG_OUTPUT].setVoltage(clipToVoltRange((count[outIdx] > 0.f)
@@ -84,8 +84,8 @@ struct PolyVCMPModule : InfNoiseModule {
        
         configSwitch(OUTPUT_MODE_PARAM, 0.0f, 1.0f, 0.0f, "Output-mode", { "Monophonic (default)", "Polyphonic" });
 
-        configOutput(MIN_OUTPUT, "Minimum (lowest)");
-        configOutput(MAX_OUTPUT, "Maximum (highest)");
+        configOutput(MIN_VAL_OUTPUT, "Minimum (lowest)");
+        configOutput(MAX_VAL_OUTPUT, "Maximum (highest)");
         configOutput(NTZ_OUTPUT, "Nearest-to-Zero");
         configOutput(FFZ_OUTPUT, "Furthest-from-Zero");
         configOutput(AVG_OUTPUT, "Average/mix");
@@ -165,8 +165,8 @@ struct PolyVCMPModule : InfNoiseModule {
         int outputChannels = polyOutputMode && haveInput
             ? inputChannels
             : 1;
-        outputs[MIN_OUTPUT].setChannels(outputChannels);
-        outputs[MAX_OUTPUT].setChannels(outputChannels);
+        outputs[MIN_VAL_OUTPUT].setChannels(outputChannels);
+        outputs[MAX_VAL_OUTPUT].setChannels(outputChannels);
         outputs[NTZ_OUTPUT].setChannels(outputChannels);
         outputs[FFZ_OUTPUT].setChannels(outputChannels);
         outputs[AVG_OUTPUT].setChannels(outputChannels);
@@ -192,8 +192,8 @@ struct PolyVCMPModule : InfNoiseModule {
                 resetCounters(true);
 
                 for (int c = 0; c < outputChannels; c++) {
-                    outputs[MIN_OUTPUT].setVoltage(0, c);
-                    outputs[MAX_OUTPUT].setVoltage(0, c);
+                    outputs[MIN_VAL_OUTPUT].setVoltage(0, c);
+                    outputs[MAX_VAL_OUTPUT].setVoltage(0, c);
                     outputs[NTZ_OUTPUT].setVoltage(0, c);
                     outputs[FFZ_OUTPUT].setVoltage(0, c);
                     outputs[AVG_OUTPUT].setVoltage(0, c);
@@ -205,7 +205,7 @@ struct PolyVCMPModule : InfNoiseModule {
         }
 
         // Check for outputs
-        haveOutputs = outputs[MIN_OUTPUT].isConnected() || outputs[MAX_OUTPUT].isConnected() || 
+        haveOutputs = outputs[MIN_VAL_OUTPUT].isConnected() || outputs[MAX_VAL_OUTPUT].isConnected() || 
             outputs[NTZ_OUTPUT].isConnected() || outputs[FFZ_OUTPUT].isConnected() || 
             outputs[AVG_OUTPUT].isConnected() || outputs[RS_OUTPUT].isConnected();
 
@@ -314,7 +314,7 @@ struct PolyVCMPModuleWidget : InfNoiseModuleWidget {
         const float rowSpacing = 35.0736f;
         float row = 157.326f;
         for (int i = 0; i < 6; i++) {
-			addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, row), module, PolyVCMPModule::MIN_OUTPUT + i));
+			addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, row), module, PolyVCMPModule::MIN_VAL_OUTPUT + i));
 			row += rowSpacing;
 		}
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(5.638f, 317.247f), module, PolyVCMPModule::RANGE_MODE_LIGHT));

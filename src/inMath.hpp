@@ -6,7 +6,7 @@
 //using namespace ::rack; // if enabled, prefixed "rack::" is not necessary
 //#include <math.h>
 
-#define M_PI		3.14159265358979323846
+//#define INM_PI		3.14159265358979323846 // Apparently M_PI can be an issus building for MacOS
 
 //-----------------------------------------------------------------------------
 // Random related functions
@@ -35,7 +35,8 @@ struct RandMWC {
     }
 
     inline float nextFloat() {
-		return (float)next() / 0xFFFFFFFF;
+		// Divide by 2^32 (not 0xFFFFFFFF): float cannot represent 2^32-1 exactly
+		return (float)next() / 4294967296.f;
 	}
 };
 
