@@ -42,7 +42,7 @@ A red button next to the switch/cross-fade CV input enables trigger mode. When a
 
 ![Screenshot of Cross-fade Switch 1to4](module/CrossFadeSwitch1to4.png) 
 
-# Infinite-Noise: other switches
+# Other switches
 The following section provides descriptions of other switch modules available in the Infinite-Noise plugin. However, as mentioned earlier, the plugin includes additional devices that also offer switching functionality. While the modules listed here are dedicated switches, they are not the only options for performing switching operations.
 
 ## Bernoulli Switch(p)
