@@ -19,7 +19,7 @@ This 2 HP module have 2 sections, each with an input and 4 outputs, where the 4 
 
 ![Screenshot of Mult-2x4](module/Mult2x4.png) 
 
-**TIP**: Typical in VCV when a module sets its outputs, other modules (connected via cables) wont see this signal until they are processed at the next cycle, hence while not its designed purpose, a Mult can also be used as a 1 cycle dela (in few/edge cases this might be exactly what you need).
+**TIP**: Typical in VCV when a module sets its outputs, other modules (connected via cables) wont see this signal until they are processed at the next cycle, hence while not its designed purpose, a Mult can also be used as a 1 cycle delay (in few/edge cases this might be exactly what you need).
 
 ## Merge2x4(pq)
 This 2 HP module have 2 sections, each with 4 inputs and a single output (both of these sections are processed individually). The default behavior is to **sum** (add) all inputs together before outputting the combined signal. By default, the output is clipped to -12V/+12V, but this can be modified or disabled via the context menu. Additionally, you can switch the module to **Mix-mode**, in which case the sum of inputs is divided by the number of active signals, producing an averaging mix output instead of a sum.
