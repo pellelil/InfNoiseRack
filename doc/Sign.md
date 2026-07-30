@@ -1,5 +1,5 @@
 # Sign(pq)
-The Sign module is designed to manipulate the "sign" (polarity) of incoming signals, providing nine different output variations based on a single or multiple input signals. Each of the nine inputs has a corresponding output, with all inputs being normalized to the previous one, meaning a single input signal can be used across all outputs if no additional inputs are provided. The module fully supports polyphonic signals, ensuring that each output maintains the same number of channels as its respective input.
+The Sign module is designed to manipulate the "sign" (polarity) of incoming signals, providing nine different output variations based on a single or multiple input signals. Each of the nine inputs has a corresponding output, with all inputs being normalized to the previous one, meaning a single input signal can be used across all outputs if no additional inputs are provided. The module fully supports polyphonic signals, ensuring that each output maintains the same number of channels as its respective input. *As I recall Sign was the very first module I created for this plugin, as it was easy (didn't have to learn about triggers/gates nor knobs - only input/ouput). The first implementation was monophonic only, so support for polyphonic signals were added later along with a context menu.*
 
 ![Screenshot of Sign](module/Sign.png) 
 

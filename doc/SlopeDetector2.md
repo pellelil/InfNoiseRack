@@ -36,7 +36,7 @@ The **default is 6 ms**. At both 44.1 kHz and 48 kHz this is slightly longer tha
 ## Process quality and warning light
 Like other Infinite-Noise modules, Slope Detector 2 lets you lower **process quality** to reduce CPU usage (default is **Audio**, every cycle). The threshold is scaled automatically when process quality is lowered, because each evaluation then spans more samples.
 
-The **red warning light** aboce to the threshold knob lights when an enabled timing setting is shorter than one process interval and therefore cannot be represented accurately at the current process quality. This applies to both **Steady hold time** and **Input smoothing**; their Off settings do not warn. The light's tooltip lists every active cause as **Hold**, **Smoothing**, or **Hold, Smoothing**. 
+The **red warning light** above the threshold knob illuminates when an enabled timing setting is shorter than one process interval and therefore cannot be represented accurately at the current process quality. This applies to both **Steady hold time** and **Input smoothing**; their Off settings do not warn. The light's tooltip lists every active cause as **Hold**, **Smoothing**, or **Hold, Smoothing**. 
 
 For example, at 48 kHz a **5 ms** setting spans 240 cycles, so either a 5 ms hold or 5 ms smoothing lights the warning at **Very low** process quality (256 cycles). A **6 ms** setting spans 288 cycles and does not. The warning is refreshed when hold time, smoothing, hysteresis, process quality, or sample rate changes. Increase the affected timing setting or raise process quality to clear it.
 

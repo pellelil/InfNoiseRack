@@ -12,6 +12,8 @@ As mentioned, the module includes a three-way switch that allows you to choose b
 + **2 - Knee**: Piecewise-linear (hard) knee shaping. With positive mod: 15% of input expands to 85% of output, 85% compresses to 15%. With negative mod: 85% compresses to 15%, 15% expands to 85%.
 + 3 - **Clamp/Fold**: In the negative modulation range, the amplitude increases, but the signal is clamped, meaning that "the peaks" of the incoming waveform are hard-limited while an automatic gain adjustment ensures the overall amplitude remains stable. In the positive modulation range, the amplitude also increases, but instead of clamping, the signal is folded (perhaps multiple times). *This is however a different kind of folding, than the folding done by the [Fold](Fold.md#foldpoq) module, as values in the top-half keeps folding in the top-half while value in the bottom-half keeps folding in the bottom-half*.
 
+![Wave shaper 2 algorithms](img/WS2Algorithms.png)
+
 ### Value range
 For the modulation algorithms to function correctly, the range of the incoming signal must be defined. The 3-way "Value Range" switch allows you to select one of three operating modes:
 

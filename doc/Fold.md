@@ -5,11 +5,13 @@ For the fold module to really take effect, the signal typically needs to be ampl
 
 If the input signal is symmetric around the center of the range (0V for bipolar, 5V for unipolar), the output will also remain symmetric. To make the result "more interesting", you can apply a bias using the **Bias** knob/input. In its default mode, the Bias knob applies a ±5V **offset** to the input signal, effectively shifting it toward the lower or upper half of the range, where folding will occur (especially once gain is applied). Pressing the small button next to the bias-knob the bias mode will toggle to **Asymmetric Gain**. In this mode, the signal is not offset. Instead, different gain is applied to the lower and upper halves of the input range. For example, turning the Bias knob toward “Lw” reduces the gain applied to the upper half of the signal, and vice versa.
 
+![Screenshot of Fold](module/Fold.png)
+
 Below the Bias knob/input, you’ll find a two-way mode switch:
 * **Fld = Fold**: In Fold mode (default), values that exceed the upper limit fold downward, and values that exceed the lower limit fold upward. For example, with the default bipolar range (−5V to +5V), an input of +6V (1V above the top) folds down to +4V (+5V − 1V). Likewise, an input of −7V (2V below the bottom) folds up to −3V (−5V + 2V).
 * **Wrp = Wrap**: In Wrap mode, values that exceed the top of the range wrap around and re-enter from the bottom, and vice versa. For example, in the bipolar range, an input of +6V (1V above the top) wraps to −4V (1V above the bottom at −5V). Similarly, an input of −7V (2V below the bottom) wraps around from the top and becomes +3V (2V below the top at +5V).
 
-![Screenshot of Fold](module/Fold.png)
+![Fold and Wrap output](img/FoldWrapOutput.png)
 
 In either mode, if the input signal goes far beyond the selected Min/Max range (by more than the total range span), it will fold or wrap multiple times. For example, the sine output from a *Tiny LFO* in bipolar mode produces a waveform between −5V and +5V. Applying 10× gain amplifies this to −50V to +50V, causing the waveform to fold or wrap repeatedly and become much more complex.
 
