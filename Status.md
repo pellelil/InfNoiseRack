@@ -61,7 +61,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + SampleAndUpdate: -
 
 ### Polyphonic-tools
-+ PolyMerge: -
++ PolyMerge: Color-code channels light (green=available, red=not available) **Idea**
 + PolySplit: -
 + PolyStereo: -
 + PolyQuad: -
@@ -74,12 +74,12 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + PolyVCMP: -
 
 ### Switches
-+ CrossFadeSwitch1to4: -
++ CrossFadeSwitch1to4: Add menu with vold normalization for input (tool-tip should show value) **Idea**
 + CrossFadeSwitch4to1: -
 + CxFd1x2: -
 + CxFd4x1: -
 + BernoulliSwitch: -
-+ On/Off-switch: -
++ On/Off-switch: Perhaps let trigger/gate-input be polyphonic **Idea**
 + Combine: -
 
 ### Misc
