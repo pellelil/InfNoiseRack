@@ -146,8 +146,6 @@ Some modules feature default (normalized) inputs and may output signals that rep
 ### Trigger-outputs
 All trigger outputs are designed to maintain a 1 ms high phase (default 10V) followed by a 1 ms low phase (default 0V). This ensures that downstream modules reliably detect both the rising and falling edges of the trigger signal, even if they do not check for triggers on every sample cycle. For example, at a 48 kHz sample rate, a 1 ms trigger pulse remains high for only 48 samples. The forced low-gap between triggers prevents consecutive triggers from merging into a single/continuous pulse. However, this also means that only one trigger can fire within a 2 ms window (1 ms high + 1 ms low), effectively limiting the trigger output to a maximum of 500 triggers per second. While this "restriction" is unlikely to cause issues in most use cases, it is worth noting. 
 
-![Gate-, trigger level](img/gateTriggerLevelMenu.png)
-
 # Modules
 The sections above covered features that are common to all Infinite-Noise modules. Below, you'll find links to each module, where you can read about individual modules or families of similar modules. Many modules include a number in their name (e.g., "Manual Trigger 8" or "Auto-Scale 4"). This number typically indicates how many "sections" the module has, which determines how many different signals can be processed simultaneously. Typically a single module which can process multiple sections (thereby multiple signals) at the same time, is more efficient than using multiple modules which each only processs a single signal. A few of the modules comes in Mk I and Mk II versions, where these modules are similar, but still different (e.g. one might only have knobs, wheras the other both support knobs and CV-input).
 
