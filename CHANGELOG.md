@@ -5,7 +5,7 @@ All panel SVG-files were simplified and reduced in file-size, but appears the sa
 - [Poly-Merge](doc/PolyTools.md#poly-mergep): Ligths (next to each input port) indicating channel count are now color-coded, whether input is availble (green) or whether it will simply output 0V (red). Ports that are not included in the output still shows as dimmed light. *Might have fixed a bug from 2.0.0, otherwise it was a bug caused by the new code that was fixed. Anyway no known bugs.*
 - [Poly-Split](doc/PolyTools.md#poly-splitp): Output ports that have available input still shows with a green light (whether cable is connected or not). However lights for output ports without available input will either show as dimmed (when no cable is connected), or red (if a cable is connected). This works both in mono- and poly-mode. E.g. if you in Poly-mode input a 6-channel polyphonic cable, and only insert a cable into output port 8, it will still output a 8 channel signal. The lights for port 1-6 will be green (as input is available), however the lights for ports 7 and 8 will show as red (as no input is available, and ports 7 and 8 will simply output 0V).
 
-# 2.0.1 (First release - not invluded in VCV Library due to manifest issues)
+# 2.0.1 (First release - not included in VCV Library due to manifest issues)
 
 ## New Modules
 As everying in this very-first release is new, it only consists of "New Modules" (nothing changed/fixed in this version). Here below is a list of all the modules included in this (1st) version.
