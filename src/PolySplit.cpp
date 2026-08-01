@@ -35,22 +35,22 @@ struct PolySplitModule : InfNoiseModule {
     enum LightId {
         ENUMS(PROCQUAL_LIGHT,2),
         ENUMS(CLIP_RANGE_LIGHT,2),
-        MONO1_LIGHT,
-        MONO2_LIGHT,
-        MONO3_LIGHT,
-        MONO4_LIGHT,
-        MONO5_LIGHT,
-        MONO6_LIGHT,
-        MONO7_LIGHT,
-        MONO8_LIGHT,
-        MONO9_LIGHT,
-        MONO10_LIGHT,
-        MONO11_LIGHT,
-        MONO12_LIGHT,
-        MONO13_LIGHT,
-        MONO14_LIGHT,
-        MONO15_LIGHT,
-        MONO16_LIGHT,
+        ENUMS(MONO1_LIGHT,2),
+        ENUMS(MONO2_LIGHT,2),
+        ENUMS(MONO3_LIGHT,2),
+        ENUMS(MONO4_LIGHT,2),
+        ENUMS(MONO5_LIGHT,2),
+        ENUMS(MONO6_LIGHT,2),
+        ENUMS(MONO7_LIGHT,2),
+        ENUMS(MONO8_LIGHT,2),
+        ENUMS(MONO9_LIGHT,2),
+        ENUMS(MONO10_LIGHT,2),
+        ENUMS(MONO11_LIGHT,2),
+        ENUMS(MONO12_LIGHT,2),
+        ENUMS(MONO13_LIGHT,2),
+        ENUMS(MONO14_LIGHT,2),
+        ENUMS(MONO15_LIGHT,2),
+        ENUMS(MONO16_LIGHT,2),
         LIGHTS_LEN
     };
 
@@ -74,7 +74,8 @@ struct PolySplitModule : InfNoiseModule {
 
         for (int i = 0; i < 16; i++) {
 			configOutput(MONO1_OUTPUT + i, string::f("Mono/poly %d", i + 1));
-			configLight(MONO1_LIGHT + i, string::f("Mono/poly %d", i + 1));
+            int lightIdx = i * 2;
+			configLight(MONO1_LIGHT + lightIdx, string::f("Mono/poly %d (green=in range, red=cable beyond input)", i + 1));
 		}
 
         // Set InfNoise features (e.g. menu-items) 
@@ -117,21 +118,20 @@ struct PolySplitModule : InfNoiseModule {
             : 1;
         polyLastInputChannel = 0;
         int prevConnected = -1;  // -1 so first connected output at index i gets (i+1) channels
+        bool outputConnected[16] = {};
         for (int i = 0; i < 16; i++) {
-            bool outputConnected = outputs[MONO1_OUTPUT + i].isConnected();
-            if (outputConnected) {
+            outputConnected[i] = outputs[MONO1_OUTPUT + i].isConnected();
+            if (outputConnected[i]) {
                 haveOutputs = true;
                 if (firstIdx < 0)
                     firstIdx = i;
                 lastIdx = i;
             }
 
-            lights[MONO1_LIGHT + i].setBrightness(i < inputChannels ? 1.0f : 0.0f);
-
             if (monoMode) {
                 outputs[MONO1_OUTPUT + i].setChannels(1);
             } else { // Poly mode: connected outputs get contiguous slices; output at index i gets (i - prevConnected) channels (extra channels 0V if beyond input)
-                if (outputConnected) {
+                if (outputConnected[i]) {
                     int nCh = i - prevConnected;
                     if (nCh < 0)
                         nCh = 0;
@@ -146,6 +146,15 @@ struct PolySplitModule : InfNoiseModule {
                     outputs[MONO1_OUTPUT + i].setChannels(1);
                 }
             }
+        }
+
+        for (int i = 0; i < 16; i++) {
+            bool inRange = (i < inputChannels);
+            // Mono: red if cable on this port beyond input. Poly: red if this channel is included in a connected slice but beyond input (0V).
+            bool showRed = !inRange && (monoMode ? outputConnected[i] : (i < polyLastInputChannel));
+            int lightIdx = i * 2;
+            lights[MONO1_LIGHT + lightIdx].setBrightness(inRange ? 1.0f : 0.0f);     // green
+            lights[MONO1_LIGHT + lightIdx + 1].setBrightness(showRed ? 1.0f : 0.0f); // red
         }
 
         //--------------------
@@ -199,11 +208,13 @@ struct PolySplitModuleWidget : InfNoiseModuleWidget {
         const float rowSpacing = 35.0735f;
         row = 87.179f;
         for (int i = 0; i < 8; i++) {
+            int lightIdx = i * 2;
             addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(clm1, row), module, PolySplitModule::MONO1_OUTPUT + i));
-            addChild(createLightCentered<TinyLight<GreenLight>>(Vec(clm1 + lightOffset, row - lightOffset), module, PolySplitModule::MONO1_LIGHT + i));
+            addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(clm1 + lightOffset, row - lightOffset), module, PolySplitModule::MONO1_LIGHT + lightIdx));
             
+            lightIdx = (i + 8) * 2;
             addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(clm2, row), module, PolySplitModule::MONO1_OUTPUT + i + 8));
-            addChild(createLightCentered<TinyLight<GreenLight>>(Vec(clm2 + lightOffset, row - lightOffset), module, PolySplitModule::MONO1_LIGHT + i + 8));
+            addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(clm2 + lightOffset, row - lightOffset), module, PolySplitModule::MONO1_LIGHT + lightIdx));
 
 			row += rowSpacing;
 		}

@@ -61,7 +61,7 @@ By default, Tweak-2 II allows independent scaling and offset settings for each s
 ![Screenshot of Tweak-2II](module/Tweak2II.png)
 
 ## Tweak-4 Mk I(pq)
-The Tweak-4 Mk I module is a 2HP utility designed for applying uniform scaling and offset to up to four separate signals. Unlike the Tweak-4 Mk II, which allows individual control over each section, Tweak-4 uses a single pair of scale and offset knobs that affect all four input/output pairs equally. This makes it particularly useful when you need to apply the same scaling or offset across multiple signals simultaneously, such as converting multiple bipolar signals to unipolar or vice versa. *Some general info regarding the Tweak-modules are listed in the top.*
+The Tweak-4 Mk I module is a 2HP utility designed for applying uniform scaling and offset to up to four separate signals. Unlike the Tweak-4 Mk II, which allows individual control over each section, Tweak-4 uses a single pair of scale and offset knobs that affect all four input/output pairs equally. This makes it particularly useful when you need to apply the same scaling or offset across multiple signals simultaneously, such as converting multiple bipolar signals to unipolar or vice versa (offset +5V or -5V). *Some general info regarding the Tweak-modules are listed in the top.*
 
 Each section (A through D) is processed independently, meaning they will output as many polyphonic channels as they receive. However, unlike some other Tweak modules, Tweak-4 Mk I does not support mixing (for that, the Tweak-4 Mk II is a better choice, as it allows individual scaling for each channel and mixing of inputs). The Tweak-4 Mk I does **not support mixing** of input. 
 
@@ -126,7 +126,7 @@ The **C input** is normalized to the **A input**, and the **D input** is normali
 ![Screenshot of VCA-4II](module/VCA4II.png)
 
 # Other amplification/mixer modules
-The previous sections covered the Tweak modules first, followed by the VCA modules. This section introduces additional modules that, while not part of either the Tweak or VCA families, are still designed for amplification purpose. Amoung the Controlers/Converter-part of the manual you'll find a few dedicated [Manuel Mix modules](ManCV.md#manuel-mix-4-mk_ip).
+The previous sections covered the Tweak modules first, followed by the VCA modules. This section introduces additional modules that, while not part of either the Tweak or VCA families, are still designed for amplification purpose. Amoung the Controlers/Converter-part of the manual you'll find a few dedicated [Manuel Mix modules](ManCV.md#manuel-mix-4-mk-ip).
 
 ## Clamp 4(po)
 This 2HP clamp module features four inputs and four outputs, with Min and Max knobs at the top, allowing you to define a voltage range between -10V and +10V. If an input voltage exceeds the specified range, the signal is clamped to fit within it. Each input has an indicator light that illuminates whenever an input value exceeds the defined range, dimming gradually.

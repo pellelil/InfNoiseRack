@@ -181,8 +181,8 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Manuel Gate 8](ManCV.md#manuel-gate-8p)(p): 8 buttons (with latch) to manually fire 8 individual gates (mono/polyphonic).
 + [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-ipq)(pq): 8 knobs to dial in 8 fixed CV-values to output (mono/polyphonic).
 + [Manuel CV 8 Mk II](ManCV.md#manuel-cv-8-mk-iipq)(pq): 8x2 knobs to dial in fixed CV On/Off-values to output (mono/polyphonic).
-+ [Manuel Mix 4 Mk I](ManCV.md#manuel-mix-4-mk_ip)(p): Manually knob-operated mixer with 4 inputs and 1 output (averaging or unity mix).
-+ [Manuel Mix 4 Mk II](ManCV.md#manuel-mix-4-mk_iip)(p): Manually knob/CV-operated mixer with 4 inputs, individual outputs or mix output (averaging or unity mix).
++ [Manuel Mix 4 Mk I](ManCV.md#manuel-mix-4-mk-ip)(p): Manually knob-operated mixer with 4 inputs and 1 output (averaging or unity mix).
++ [Manuel Mix 4 Mk II](ManCV.md#manuel-mix-4-mk-iip)(p): Manually knob/CV-operated mixer with 4 inputs, individual outputs or mix output (averaging or unity mix).
 + [Manuel Mix 4 Stereo](ManCV.md#manuel-mix-4-stereop)(p): Manually knob/CV-operated mixer with 4 stereo-inputs and stereo mix output (averaging or unity mix).
 + [Manuel Mute 8](ManCV.md#manuel-mute-8pq)(pq): 8 buttons to manually mute 8 signals.
 + [Mute 2](ManCV.md#mute-2p)(p): 2 knob/cv-controlled mute-sections each with a single input/output-pair.
@@ -201,11 +201,11 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Logic Comparator-6x2](Compare.md#logic-comparator-6x2p)(p): 6 sections each with 2 input for Logic compare (AND, NAND, OR, NOR, XOR, XNOR).
 + [Value Comparator-1](Compare.md#value-comparator-1p)(p): Similar to "VCMP2 Mk I", 1 section with both CV/Knob for A/B, knob for threshold, and trigger output for A/B-crossing.
 + [Value Comparator-2 Mk I](Compare.md#value-comparator-2-mk-ip)(p): Value compare with true/false input, threshold and two sections of: A=B, A!=B, A>=B, A>B, A<=B, A<B.
-+ [Value Comparator-2 Mk II](Compare.md#value-comparator-2-mk-iip)(p): Value compare (Min, Max, NtZ, FfZ, Abs(df), ANG), and simple math-evaluations: (plus, minus, mul, div).
++ [Value Comparator-2 Mk II](Compare.md#value-comparator-2-mk-iip)(p): Value compare (Min, Max, NtZ, FfZ, Abs(df), AVG), and simple math-evaluations: (plus, minus, mul, div).
 
 ## S&H, T&H, H&T
 + [S&H/T&H-2](Shth.md#shth-2paq)(paq): Sample/Track-and-hold with 2 CV/LFO-controlled sections (each with 1 input/output-pair).
-+ [S&H/T&H-2x4](Shth.md#shth-2x4paq)(paq): Sample/Track-and-hold with 2 CV/LFO-controlled sections (each with 4 input/output-pair).
++ [S&H/T&H-2x4](Shth.md#shth-2x4paq)(paq): Sample/Track-and-hold with 2 CV/LFO-controlled sections (each with 4 input/output-pairs).
 + [Sample and Update](Shth.md#sample-and-updatepq)(paq): Sample-and-Update with button/CV for Sample, Reset and Update. Can also count number of triggers detected, and output a trigger when the desired count have been reached.
 
 ## Polyphonic-tools
@@ -246,5 +246,5 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Random Curve](Random.md#random-curveaq)(aq): Shaped random cruves/values with min/max and distribution.
 + [Arm 3 XY](Arm3XY.md#arm-3-xya)(a): Length and rotation of 3 "arms" (basically 3 polar vectors) generates a "semi-random" curve X/Y-output.
 + [Turing Machine](TuringMachine.md#turing-machineq)(q): Turing machine with value- and 16 pulses outputs.
-+ [Bits-to-Value](Bits.md#bits-to-value): Converts (up to) 8 bits (gate-inputs) into a CV-value based on dialed in weights and specified range.
-+ [Value-to-Bits](Bits.md#value-to-bits): Converts a CV-input (clamped in specified range) into 8 individual- and polyphonic gate-outputs.
++ [Bits-to-Value](Bits.md#bits-to-value): Converts 8 bits (gate-inputs) into a CV-value based on dialed in weights and specified range.
++ [Value-to-Bits](Bits.md#value-to-bits): Converts a CV-input (clamped in specified range) into 8 individual- and polyphonic gate-outputs (up to 16 channels).
