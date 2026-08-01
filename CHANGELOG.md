@@ -1,4 +1,4 @@
-# 2.0.1 (Currently in development)
+# 2.0.1
 All panel SVG-files were simplified and reduced in file-size, but appears the same as before (e.g. a hidden layer inside the files were removed).
 
 ## Updated Modules
