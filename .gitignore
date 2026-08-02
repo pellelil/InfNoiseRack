@@ -12,7 +12,7 @@
 *.dSYM
 plugin.dll
 
-# Machine-local IntelliSense (regenerate on each PC: .\gen-compile-commands.ps1)
+# Machine-local IntelliSense (regenerate on each PC: .\scripts\gen-compile-commands.ps1)
 /compile_commands.json
 /.clangd
 /.cache/
