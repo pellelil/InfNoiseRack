@@ -12,7 +12,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + SLFO4st: -
 + TLFO: -
 + LFO1: -
-+ PDLFO: -
++ PhaseDrivenLFO: -
 
 ### Tweak (attenuate/amplify, offset and mix)
 + Tweak2I: -
@@ -50,7 +50,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 ### Logic/Value-compare
 + TinyLCMP2: -
 + LCMP2: -
-+ LCOMP6x2: -
++ LCMP6x2: -
 + VCMP1: -
 + VCMP2I: -
 + VCMP2II: -
@@ -66,8 +66,8 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + PolyStereo: -
 + PolyQuad: -
 + PolyShuffle: -
-+ PolyTweak Mk I: -
-+ PolyTweak Mk II: -
++ PolyTweakI: -
++ PolyTweakII: -
 + PolyOffset: -
 + PolyScale: -
 + PolyLCMP: -
@@ -76,10 +76,10 @@ Below is a list of all modules, grouped by category. A line containing only a da
 ### Switches
 + CrossFadeSwitch1to4: Add menu with volt normalization for input (tool-tip should show value) **Idea**
 + CrossFadeSwitch4to1: -
-+ CxFd1x2: -
-+ CxFd4x1: -
++ CxFade1x2: -
++ CxFade4x1: -
 + BernoulliSwitch: -
-+ On/Off-switch: Perhaps let trigger/gate-input be polyphonic **Idea**
++ OnOffSwitch: Perhaps let trigger/gate-input be polyphonic **Idea**
 + Combine: -
 
 ### Misc
