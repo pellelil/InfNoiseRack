@@ -608,7 +608,7 @@ struct InfNoiseModuleWidget : ModuleWidget {
         return logo;
     }
 
-    inline std::string getFullSkinPath(std::string skinPath, std::string skinSuffix = "") {
+    inline std::string getFullSkinPath(const std::string& skinPath, const std::string& skinSuffix = "") {
         return skinPath + skinSuffix + ".svg";
     }
 
@@ -681,7 +681,7 @@ struct InfNoiseModuleWidget : ModuleWidget {
     /// Screws/mounting points (per global mount style) and proqQual-light are added to the panel.
     /// @param module Module to initialize
     /// @param skinPath Path of default/light skin (without ".svg")
-    void initializeWidget(Module* module, std::string skinPath) {
+    void initializeWidget(Module* module, const std::string& skinPath) {
         lightSkinPath = skinPath + ".svg";
         darkSkinPath = skinPath + "_dark.svg";
 

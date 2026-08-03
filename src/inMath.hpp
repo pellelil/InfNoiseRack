@@ -209,7 +209,7 @@ inline float bSinNorm(float p) {
 template<int N>
 struct Lut1D {
     static constexpr int Size = N;
-    float data[N];
+    float data[N] = {};
     float minX = 0.f;
     float maxX = 1.f;
 

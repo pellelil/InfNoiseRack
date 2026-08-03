@@ -1,7 +1,7 @@
 {
     "slug": "InfiniteNoise",
     "name": "Infinite-Noise",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "license": "GPL-3.0-or-later",
     "brand": "Infinite-Noise",
     "author": "Pelle Liljendal",
@@ -778,7 +778,7 @@
       "slug": "Arm3XY",
       "name": "Arm 3 XY",
       "description": "Three arms with rotation and length, generating (semi-random) curve X/Y output.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Random.md#arm-3-xya",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Arm3XY.md#arm-3-xya",
       "tags":  [
       "Utility"
       ]

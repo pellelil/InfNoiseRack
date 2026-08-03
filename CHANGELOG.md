@@ -1,4 +1,7 @@
-# 2.0.1
+# 2.0.2 
+Fixed various warnings based on cppcheck report from VCV. Going forward I now have a local release-check script I can run, which monitors the various issues reported from VCV. So future releases should be less painfull.
+
+# 2.0.1 (not included in VCV Library due various issues)
 All panel SVG-files were simplified and reduced in file-size, but appears the same as before (e.g. a hidden layer inside the files were removed).
 
 ## Updated Modules
@@ -82,7 +85,7 @@ As everying in this very-first release is new, it only consists of "New Modules"
 - [Patch](doc/Patch.md#patchp)
 - [Random-4](doc/Random.md#random-4paq)
 - [Random Curve](doc/Random.md#random-curveaq)
-- [Arm 3 XY](doc/Random.md#arm-3-xya)
+- [Arm 3 XY](doc/Arm3XY.md#arm-3-xya)
 - [Turing Machine](doc/TuringMachine.md#turing-machineq)
 - [Bits-to-Value](doc/Bits.md#bits-to-value)
 - [Value-to-Bits](doc/Bits.md#value-to-bits)

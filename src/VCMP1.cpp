@@ -116,7 +116,7 @@ struct VCMP1Module : InfNoiseModule {
         
         trueOutput.setBoth((voltValue)getJsonInt(rootJ, "trueOutput", (int)v_GateHigh));
         falseOutput.setBoth((voltValue)getJsonInt(rootJ, "falseOutput", (int)v_GateLow));
-        int crossStates[PORT_MAX_CHANNELS];
+        int crossStates[PORT_MAX_CHANNELS] = {};
         getJsonIntArray(rootJ, "lastCrossState", crossStates, PORT_MAX_CHANNELS, (int)cds_Equal);
         for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
             lastCrossState[c] = (CrossDetectState)crossStates[c];
@@ -127,7 +127,7 @@ struct VCMP1Module : InfNoiseModule {
     void dataToJson(json_t* rootJ) override {
         json_object_set_new(rootJ, "trueOutput", json_integer((int)trueOutput.req));
         json_object_set_new(rootJ, "falseOutput", json_integer((int)falseOutput.req));
-        int crossStates[PORT_MAX_CHANNELS];
+        int crossStates[PORT_MAX_CHANNELS] = {};
         for (int c = 0; c < PORT_MAX_CHANNELS; c++)
             crossStates[c] = (int)lastCrossState[c];
         setJsonIntArray(rootJ, "lastCrossState", crossStates, PORT_MAX_CHANNELS);

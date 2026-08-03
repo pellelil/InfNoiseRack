@@ -275,11 +275,7 @@ struct actReqValue {
 
 	/// @brief Sets "act" and "req" to sepecified value, and sets "mustUpdate" to true
 	/// @param value that "req" and "act" should be set to.
-	actReqValue(T value) {
-		act = value;
-		req = value;
-		mustUpdate = true;
-	}
+	actReqValue(T value) : act(value), req(value), mustUpdate(true) {}
 
 	/// @brief Sets "act" to the value of "req", and sets "mustUpdate" to false
 	/// called in processParams, to set act=req)
@@ -1532,7 +1528,7 @@ struct infNoiseAttRngQnt : ParamQuantity {
 	/// @param range attRange to set.
 	/// @param newName New name (defaults to "Scale").
 	/// @param appendScaleRange If true, scale added after new name (defaults to true).
-	void setRange(attRange range, std::string newName = "Scale", bool appendScaleRange = true) {
+	void setRange(attRange range, const std::string& newName = "Scale", bool appendScaleRange = true) {
 		this->range = range;
 		name = getRangeName(newName, appendScaleRange);
 
@@ -1544,7 +1540,7 @@ struct infNoiseAttRngQnt : ParamQuantity {
 	/// @param newName New name (defaults to "Scale").
 	/// @param appendScaleRange If true, scale added after new name (defaults to true).
 	/// @return Name of the range (e.g. "Scale (1x to 1x)").
-	std::string getRangeName(std::string newName = "Scale", bool appendScaleRange = true) {
+	std::string getRangeName(const std::string& newName = "Scale", bool appendScaleRange = true) {
 		std::string scaleRangeName = (appendScaleRange)
 			? " (" + std::to_string((int)-attRangeFactors[(int)range]) + "x" +
 			" to + " + std::to_string((int)attRangeFactors[(int)range]) + "x)"
@@ -1617,7 +1613,7 @@ struct infNoisePwmRngQnt : ParamQuantity {
 	/// @param range pwmRange to set.
 	/// @param newName New name (defaults to "PWM").
 	/// @param appendScaleRange If true, scale added after new name (defaults to true).
-	void setRange(pwmRange range, std::string newName = "PWM", 
+	void setRange(pwmRange range, const std::string& newName = "PWM", 
 		bool appendScaleRange = true) {
 		this->range = range;
 		name = getRangeName(newName, appendScaleRange);
@@ -1627,7 +1623,7 @@ struct infNoisePwmRngQnt : ParamQuantity {
 	/// @param newName New name (defaults to "Scale").
 	/// @param appendScaleRange If true, scale added after new name (defaults to true).
 	/// @return Name of the range (e.g. "Scale (1x to 1x)").
-	std::string getRangeName(std::string newName = "PWM", 
+	std::string getRangeName(const std::string& newName = "PWM", 
 		bool appendScaleRange = true) {
 		std::string scaleRangeName = (appendScaleRange)
 			? " (" + std::to_string((int)(100.f * (0.5f - pwmHalfRanges[(int)range]) + 0.5)) + "\%" +

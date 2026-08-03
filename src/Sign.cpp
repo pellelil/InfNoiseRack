@@ -44,8 +44,8 @@ struct SignModule : InfNoiseModule {
     int firstInUse = -1;
     int lastInUse = -1;
     int portsInUse = 0;
-    int portChannels[9];
-    bool portInUse[9];
+    int portChannels[9] = {};
+    bool portInUse[9] = {};
 
     SignModule() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);

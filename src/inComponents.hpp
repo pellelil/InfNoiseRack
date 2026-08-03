@@ -552,10 +552,8 @@ public:
     }
 
     InfNoiseDisableOverlayGroup* addGroup(const std::string& hint = "") {
-        std::unique_ptr<InfNoiseDisableOverlayGroup> group(new InfNoiseDisableOverlayGroup(this, hint));
-        InfNoiseDisableOverlayGroup* groupRaw = group.get();
-        groups.push_back(std::move(group));
-        return groupRaw;
+        groups.emplace_back(new InfNoiseDisableOverlayGroup(this, hint));
+        return groups.back().get();
     }
 
     InfNoiseDisableOverlayGroup* addGroup(std::initializer_list<InfNoiseOverlayTargetKey> keyedTargets, const std::string& hint = "") {
@@ -569,8 +567,7 @@ public:
         if (!overlay)
             return;
 
-        if (activeRequests.find(overlay) == activeRequests.end())
-            activeRequests[overlay] = 0;
+        activeRequests.emplace(overlay, 0);
         registerThemeOverlay(overlay);
     }
 
