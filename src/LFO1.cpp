@@ -668,9 +668,7 @@ struct LFO1ModuleWidget : InfNoiseModuleWidget {
         float syncRow =268.996f;
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(leftPortCol, syncRow), module, LFO1Module::SYNC_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(rightPortCol, syncRow), module, LFO1Module::SYNC_OUTPUT));
-        infNoiseLtSmallButton* oneShotBtn = createParamCentered<infNoiseLtSmallButton>(Vec(26.349f, 280.423f), module, LFO1Module::SYNC_ONESHOT_PARAM);
-        oneShotBtn->setup(bc_green, false);
-        addParam(oneShotBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(26.349f, 280.423f), module, LFO1Module::SYNC_ONESHOT_PARAM));
 
         // Inverted waveforms - lights
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(29.578f, 288.897f), module, LFO1Module::INVERTED_LIGHT));

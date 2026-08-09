@@ -64,7 +64,6 @@ struct AutoScale4Module : InfNoiseModule {
         infNoiseDecayValue(2.f, 30.f)
     };
 
-
     AutoScale4Module() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
         configLight(PROCQUAL_LIGHT, processQualityNames[procQuality.act]);
@@ -299,20 +298,18 @@ struct AutoScale4ModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerClmn, 49.999f), module, AutoScale4Module::MIN_PARAM));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(lightClm, 40.577f), module, AutoScale4Module::MIN_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerClmn, 86.884f), module, AutoScale4Module::MAX_PARAM));
-        infNoiseLtSmallButton* linkBtn = createParamCentered<infNoiseLtSmallButton>(Vec(4.287f, 69.287f),
-            module, AutoScale4Module::LINK_PARAM);
-        linkBtn->setup(bc_green, false);
-        addParam(linkBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(
+            Vec(4.287f, 69.287f),
+            module, AutoScale4Module::LINK_PARAM));
 
         InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
         linkMaxOverlayGroup = overlayManager.addGroup("Max linked to min (mirrored)");
         linkMaxOverlayGroup->addTarget(InfNoiseOverlayTargetType::param, AutoScale4Module::MAX_PARAM);
 
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerClmn, 124.914f), module, AutoScale4Module::RESET_INPUT));
-        infNoiseLtSmallButton* resetBtn = createParamCentered<infNoiseLtSmallButton>(Vec(4.015f, 113.244f), 
-            module, AutoScale4Module::RESET_PARAM);
-        resetBtn->setup(bc_green, true);
-        addParam(resetBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(
+            Vec(4.015f, 113.244f), 
+            module, AutoScale4Module::RESET_PARAM));
 
         const float rowSpacing = 24.6323f;
         const float lightPortOffset = -9.518;

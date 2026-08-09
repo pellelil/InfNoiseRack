@@ -444,21 +444,18 @@ struct SlopeDetector2ModuleWidget : InfNoiseModuleWidget {
 
             row = 122.753f + secOfs;
             addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrClm, row), module, SlopeDetector2Module::RISE1_OUTPUT + i));
-            infNoiseLtSmallButton* gateTrigBtn = createParamCentered<infNoiseLtSmallButton>(Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::RISE_MODE1_PARAM + i);
-            gateTrigBtn->setup(bc_redGreen, false);
-            addParam(gateTrigBtn);
+            addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+                Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::RISE_MODE1_PARAM + i));
 
             row += outOfs;
             addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrClm, row), module, SlopeDetector2Module::STEADY1_OUTPUT + i));
-            gateTrigBtn = createParamCentered<infNoiseLtSmallButton>(Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::STEADY_MODE1_PARAM + i);
-            gateTrigBtn->setup(bc_redGreen, false);
-            addParam(gateTrigBtn);
+            addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+                Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::STEADY_MODE1_PARAM + i));
 
             row += outOfs;
             addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrClm, row), module, SlopeDetector2Module::FALL1_OUTPUT + i));
-            gateTrigBtn = createParamCentered<infNoiseLtSmallButton>(Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::FALL_MODE1_PARAM + i);
-            gateTrigBtn->setup(bc_redGreen, false);
-            addParam(gateTrigBtn);
+            addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+                Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::FALL_MODE1_PARAM + i));
         }
     }
 

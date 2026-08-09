@@ -370,10 +370,9 @@ struct Clamp4ModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerClmn, 49.999f), module, Clamp4Module::MIN_PARAM));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(lightClm, 40.577f), module, Clamp4Module::MIN_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerClmn, 86.884f), module, Clamp4Module::MAX_PARAM));
-        infNoiseLtSmallButton* linkBtn = createParamCentered<infNoiseLtSmallButton>(Vec(4.287f, 69.287f),
-            module, Clamp4Module::LINK_PARAM);
-        linkBtn->setup(bc_green, false);
-        addParam(linkBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(
+            Vec(4.287f, 69.287f),
+            module, Clamp4Module::LINK_PARAM));
 
         InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
         linkMaxOverlayGroup = overlayManager.addGroup("Max linked to min (mirrored)");

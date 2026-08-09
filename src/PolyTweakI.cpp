@@ -335,21 +335,15 @@ struct PolyTweakIModuleWidget : InfNoiseModuleWidget {
         for (int i = 0; i < 8; i++)
         {
             // Left invert-button
-            infNoiseLtSmallButton* invBtn = createParamCentered<infNoiseLtSmallButton>(Vec(lftBtnClm, chnlRow), module, PolyTweakIModule::INV1_PARAM + i);
-            invBtn->setup(bc_red, false);
-            addParam(invBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(lftBtnClm, chnlRow), module, PolyTweakIModule::INV1_PARAM + i));
 
             // Right invert-button
-            invBtn = createParamCentered<infNoiseLtSmallButton>(Vec(rgtBtnClm, chnlRow), module, PolyTweakIModule::INV9_PARAM + i);
-            invBtn->setup(bc_red, false);
-            addParam(invBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(rgtBtnClm, chnlRow), module, PolyTweakIModule::INV9_PARAM + i));
 
             chnlRow+= chnlRowSpacing;
         }
 
-        infNoiseLtSmallButton* invAllBtn = createParamCentered<infNoiseLtSmallButton>(Vec(cntrClm, chnlRow), module, PolyTweakIModule::INV_ALL_PARAM);
-        invAllBtn->setup(bc_green, true);
-        addParam(invAllBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(cntrClm, chnlRow), module, PolyTweakIModule::INV_ALL_PARAM));
 
         // Invert-mode
         float switchCol = 9.522f;
@@ -360,21 +354,15 @@ struct PolyTweakIModuleWidget : InfNoiseModuleWidget {
         for (int i = 0; i < 8; i++)
         {
             // Left enable-button
-            infNoiseLtSmallButton* disBtn = createParamCentered<infNoiseLtSmallButton>(Vec(lftBtnClm, chnlRow), module, PolyTweakIModule::DISABLE1_PARAM + i);
-            disBtn->setup(bc_red, false);
-            addParam(disBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(lftBtnClm, chnlRow), module, PolyTweakIModule::DISABLE1_PARAM + i));
 
             // Right enable-button
-            disBtn = createParamCentered<infNoiseLtSmallButton>(Vec(rgtBtnClm, chnlRow), module, PolyTweakIModule::DISABLE9_PARAM + i);
-            disBtn->setup(bc_red, false);
-            addParam(disBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(rgtBtnClm, chnlRow), module, PolyTweakIModule::DISABLE9_PARAM + i));
 
             chnlRow += chnlRowSpacing;
         }
 
-        infNoiseLtSmallButton* disableAllBtn = createParamCentered<infNoiseLtSmallButton>(Vec(cntrClm, chnlRow), module, PolyTweakIModule::DISABLE_ALL_PARAM);
-        disableAllBtn->setup(bc_green, true);
-        addParam(disableAllBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(cntrClm, chnlRow), module, PolyTweakIModule::DISABLE_ALL_PARAM));
 
         // Enable-mode/value
         addParam(createParamCentered<CKSS>(Vec(switchCol, 263.563f), module, PolyTweakIModule::DISABLE_MODE_PARAM));

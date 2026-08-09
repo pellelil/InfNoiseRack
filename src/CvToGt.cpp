@@ -258,15 +258,11 @@ struct CvToGtModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 52.283f), module, CvToGtModule::CV_INPUT));
 
         addChild(createLightCentered<SmallLight<GreenRedLight>>(Vec(4.981f, 69.377f), module, CvToGtModule::MIN_MODE_LIGHT));
-        infNoiseLtSmallButton* inclBtn = createParamCentered<infNoiseLtSmallButton>(Vec(inclClm, 72.679f), module, CvToGtModule::MIN_INCL_PARAM);
-        inclBtn->setup(bc_green, false);
-        addParam(inclBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(inclClm, 72.679f), module, CvToGtModule::MIN_INCL_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 84.723f), module, CvToGtModule::MIN_PARAM));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 111.913f), module, CvToGtModule::MIN_RNG_INPUT));
 
-        inclBtn = createParamCentered<infNoiseLtSmallButton>(Vec(inclClm, 131.851f), module, CvToGtModule::MAX_INCL_PARAM);
-        inclBtn->setup(bc_green, false);
-        addParam(inclBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(inclClm, 131.851f), module, CvToGtModule::MAX_INCL_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 143.695f), module, CvToGtModule::MAX_PARAM));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 170.886f), module, CvToGtModule::MAX_RNG_INPUT));
 

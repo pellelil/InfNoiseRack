@@ -191,10 +191,8 @@ struct ManGate8Module : InfNoiseModule {
 };
 
 struct ManGate8ModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* allBtn;
-    infNoiseLtSmallButton* allLatchBtn;
-    infNoiseSmallButton* gateBtn[8];
-    infNoiseLtSmallButton* gateLatchBtn[8];
+    infNoiseSmallButton<bc_green, true>* allBtn;
+    infNoiseSmallButton<bc_green, true>* gateBtn[8];
 
     ManGate8ModuleWidget(ManGate8Module *module) {
         initializeWidget(module, "res/ManGate8");
@@ -205,24 +203,18 @@ struct ManGate8ModuleWidget : InfNoiseModuleWidget {
         const float lgtOfs = 10.021f;
         const float latchColOffset = 12.46f;
         const float latchRowOffset = 8.955f;
-        allBtn = createParamCentered<infNoiseSmallButton>(Vec(butClm, allRow), module, ManGate8Module::GATE_ALL_PARAM);
-        allBtn->setup(bc_green, true);
+        allBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(butClm, allRow), module, ManGate8Module::GATE_ALL_PARAM);
         addParam(allBtn);
-        allLatchBtn = createParamCentered<infNoiseLtSmallButton>(Vec(butClm + latchColOffset, allRow + latchRowOffset), module, ManGate8Module::GATE_ALL_LATCH_PARAM);
-        allLatchBtn->setup(bc_red, false);
-        addParam(allLatchBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(butClm + latchColOffset, allRow + latchRowOffset), module, ManGate8Module::GATE_ALL_LATCH_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(outClm, allRow), module, ManGate8Module::GATE_POLY_OUTPUT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(outClm - lgtOfs, allRow - lgtOfs), module, ManGate8Module::POLY_HINT_LIGHT));
 
         const float rowSpacing = 35.0734f;
         float row = 87.194f;
         for (int i = 0; i < 8; i++) {
-            gateBtn[i] = createParamCentered<infNoiseSmallButton>(Vec(butClm, row), module, ManGate8Module::GATE1_PARAM + i);
-            gateBtn[i]->setup(bc_green, true);
+            gateBtn[i] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(butClm, row), module, ManGate8Module::GATE1_PARAM + i);
             addParam(gateBtn[i]);
-            gateLatchBtn[i] = createParamCentered<infNoiseLtSmallButton>(Vec(butClm + latchColOffset, row + latchRowOffset), module, ManGate8Module::GATE1_LATCH_PARAM + i);
-            gateLatchBtn[i]->setup(bc_red, false);
-            addParam(gateLatchBtn[i]);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(butClm + latchColOffset, row + latchRowOffset), module, ManGate8Module::GATE1_LATCH_PARAM + i));
             addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outClm, row), module, ManGate8Module::GATE1_OUTPUT + i));
 
             row += rowSpacing;

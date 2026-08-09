@@ -157,8 +157,6 @@ struct ManTrigger8Module : InfNoiseModule {
 };
 
 struct ManTrigger8ModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* allBtn;
-    infNoiseSmallButton* trgBtn[8];
 
     ManTrigger8ModuleWidget(ManTrigger8Module *module) {
         initializeWidget(module, "res/ManTrigger8");
@@ -167,18 +165,14 @@ struct ManTrigger8ModuleWidget : InfNoiseModuleWidget {
         const float outClm = 43.545f;
         const float allRow = 52.120f;
         const float lgtOfs = 10.021f;
-        allBtn = createParamCentered<infNoiseSmallButton>(Vec(butClm, allRow), module, ManTrigger8Module::TRIGGER_ALL_PARAM);
-        allBtn->setup(bc_red, true);
-        addParam(allBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(butClm, allRow), module, ManTrigger8Module::TRIGGER_ALL_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(outClm, allRow), module, ManTrigger8Module::TRIGGER_POLY_OUTPUT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(outClm - lgtOfs, allRow - lgtOfs), module, ManTrigger8Module::POLY_HINT_LIGHT));
 
         const float rowSpacing = 35.0734f;
         float row = 87.194f;
         for (int i = 0; i < 8; i++) {
-            trgBtn[i] = createParamCentered<infNoiseSmallButton>(Vec(butClm, row), module, ManTrigger8Module::TRIGGER1_PARAM + i);
-            trgBtn[i]->setup(bc_red, true);
-            addParam(trgBtn[i]);
+            addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(butClm, row), module, ManTrigger8Module::TRIGGER1_PARAM + i));
             addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outClm, row), module, ManTrigger8Module::TRIGGER1_OUTPUT + i));
 
             row += rowSpacing;

@@ -265,9 +265,7 @@ struct Delta4Module : InfNoiseModule {
 };
 
 struct Delta4ModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* resetPushBtn = nullptr;
-    infNoiseLtSmallButton* resetTrigGateBtn = nullptr;
-    infNoiseLtSmallButton* toggleOutputModeBtn = nullptr;
+    infNoiseSmallButton<bc_green, true>* resetPushBtn = nullptr;
 
     Delta4ModuleWidget(Delta4Module *module) {
         initializeWidget(module, "res/Delta4");
@@ -278,25 +276,20 @@ struct Delta4ModuleWidget : InfNoiseModuleWidget {
         const float trigGateBtnCol  = 24.298f;  // Trigger/gate-btn column
 
         // Reset button (momentary / latched via RESET_LATCH_PARAM)
-        resetPushBtn = createParamCentered<infNoiseSmallButton>(Vec(centerCol, 49.689f), module, Delta4Module::RESET_PUSH_PARAM);
-        resetPushBtn->setup(bc_green, true);
+        resetPushBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(centerCol, 49.689f), module, Delta4Module::RESET_PUSH_PARAM);
         addParam(resetPushBtn);
 
         // Reset trigger/gate input and mode switch
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 78.600f), module, Delta4Module::RESET_INPUT));
 
         // Trigger/gate switch
-        resetTrigGateBtn = createParamCentered<infNoiseLtSmallButton>(Vec(trigGateBtnCol, 64.265f), module, Delta4Module::RESET_TRIGGATE_PARAM);
-        resetTrigGateBtn->setup(bc_red, false);
-        addParam(resetTrigGateBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(trigGateBtnCol, 64.265f), module, Delta4Module::RESET_TRIGGATE_PARAM));
 
         // Ref-mode switch (Individual / A-only)
         addParam(createParamCentered<CKSS>(Vec(switchCol, 111.057f), module, Delta4Module::REF_MODE_PARAM));
 
         // Reference mode (toggle and lights)
-        toggleOutputModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(centerCol, 228.777f), module, Delta4Module::TOGGLE_OUTPUT_MODE_PARAM);
-        toggleOutputModeBtn->setup(bc_green, true);
-        addParam(toggleOutputModeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(centerCol, 228.777f), module, Delta4Module::TOGGLE_OUTPUT_MODE_PARAM));
         const float lightRow = 241.171f;
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(7.390f, lightRow), module, Delta4Module::OM_SIGN_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(14.671f, lightRow), module, Delta4Module::OM_INV_LIGHT));

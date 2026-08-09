@@ -271,9 +271,7 @@ struct ValueToBitsModuleWidget : InfNoiseModuleWidget {
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(30.880f, 120.393f), module, ValueToBitsModule::MIN_LIGHT));
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(42.225f, 120.393f), module, ValueToBitsModule::CNTR_LIGHT));
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(54.538f, 120.393f), module, ValueToBitsModule::MAX_LIGHT));
-        infNoiseLtSmallButton* minCntrMaxBtn = createParamCentered<infNoiseLtSmallButton>(Vec(27.891f, 145.973f), module, ValueToBitsModule::MINCNTRMAX_BTN_PARAM);
-        minCntrMaxBtn->setup(bc_green, true);
-        addParam(minCntrMaxBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(27.891f, 145.973f), module, ValueToBitsModule::MINCNTRMAX_BTN_PARAM));
 
         // Individual bit-outputs and lights
         const float rowSpacing = 35.3386f;

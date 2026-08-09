@@ -288,17 +288,11 @@ struct CvToGtTr8ModuleWidget : InfNoiseModuleWidget {
         const float maxKnobColumn = 72.233f;
         const float outputColumn = 103.545f;
         const float tglRow = 52.812f;
-        infNoiseSmallButton* tglBtn = createParamCentered<infNoiseSmallButton>(Vec(inputColumn, tglRow), module, CvToGtTr8Module::TOGGLE_CROSS_PARAM);
-        tglBtn->setup(bc_green, true);
-        addParam(tglBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(inputColumn, tglRow), module, CvToGtTr8Module::TOGGLE_CROSS_PARAM));
 
-        tglBtn = createParamCentered<infNoiseSmallButton>(Vec(minKnobColumn, tglRow), module, CvToGtTr8Module::TOGGLE_MIN_INCL_PARAM);
-        tglBtn->setup(bc_green, true);
-        addParam(tglBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(minKnobColumn, tglRow), module, CvToGtTr8Module::TOGGLE_MIN_INCL_PARAM));
 
-        tglBtn = createParamCentered<infNoiseSmallButton>(Vec(maxKnobColumn, tglRow), module, CvToGtTr8Module::TOGGLE_MAX_INCL_PARAM);
-        tglBtn->setup(bc_green, true);
-        addParam(tglBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(maxKnobColumn, tglRow), module, CvToGtTr8Module::TOGGLE_MAX_INCL_PARAM));
 
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(outputColumn, tglRow), module, CvToGtTr8Module::POLY_OUTPUT));
 
@@ -312,24 +306,17 @@ struct CvToGtTr8ModuleWidget : InfNoiseModuleWidget {
         float row = 87.179f;
         for (int i = 0; i < 8; i++) {
             addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, row), module, CvToGtTr8Module::CV1_INPUT + i));
-            infNoiseLtSmallButton* crossBtn = createParamCentered<infNoiseLtSmallButton>(Vec(crossColumn, row + InclOffset), module, CvToGtTr8Module::CROSS1_PARAM + i);
-            crossBtn->setup(bc_green, false);
-            addParam(crossBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(crossColumn, row + InclOffset), module, CvToGtTr8Module::CROSS1_PARAM + i));
 
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(minKnobColumn, row), module, CvToGtTr8Module::MIN1_PARAM + i));
-            infNoiseLtSmallButton* minInclBtn = createParamCentered<infNoiseLtSmallButton>(Vec(minInclColumn, row + InclOffset), module, CvToGtTr8Module::MIN_INCL1_PARAM + i);
-            minInclBtn->setup(bc_green, false);
-            addParam(minInclBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(minInclColumn, row + InclOffset), module, CvToGtTr8Module::MIN_INCL1_PARAM + i));
 
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(maxKnobColumn, row), module, CvToGtTr8Module::MAX1_PARAM + i));
-            infNoiseLtSmallButton* maxInclBtn = createParamCentered<infNoiseLtSmallButton>(Vec(maxInclColumn, row + InclOffset), module, CvToGtTr8Module::MAX_INCL1_PARAM + i);
-            maxInclBtn->setup(bc_green, false);
-            addParam(maxInclBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(maxInclColumn, row + InclOffset), module, CvToGtTr8Module::MAX_INCL1_PARAM + i));
 
             addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outputColumn, row), module, CvToGtTr8Module::CV1_OUTPUT + i));
-            infNoiseLtSmallButton* gateTrigBtn = createParamCentered<infNoiseLtSmallButton>(Vec(gateTrigColumn, row + gateTrigOffset), module, CvToGtTr8Module::GATE_TRIGGER1_PARAM + i);
-            gateTrigBtn->setup(bc_redGreen, false);
-            addParam(gateTrigBtn);
+            addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+                Vec(gateTrigColumn, row + gateTrigOffset), module, CvToGtTr8Module::GATE_TRIGGER1_PARAM + i));
 
             row += rowSpacing;
         }

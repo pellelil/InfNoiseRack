@@ -258,9 +258,7 @@ struct LCMP6x2ModuleWidget : InfNoiseModuleWidget {
 
             // Logic-operation switch and inversion button
             addParam(createParamCentered<CKSSThree>(Vec(swtClm, 62.995f + sctOfs), module, LCMP6x2Module::CMP1_MODE_PARAM + i));
-            infNoiseLtSmallButton* invBtn = createParamCentered<infNoiseLtSmallButton>(Vec(invClm, 47.671f + sctOfs), module, LCMP6x2Module::CMP1_INV_PARAM + i);
-            invBtn->setup(bc_red, false);
-            addParam(invBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(invClm, 47.671f + sctOfs), module, LCMP6x2Module::CMP1_INV_PARAM + i));
 
             // Output
             addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(outClm, 62.995f + sctOfs), module, LCMP6x2Module::CMP1_OUTPUT + i));

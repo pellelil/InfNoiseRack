@@ -531,28 +531,20 @@ struct RandomCurveModuleWidget : InfNoiseModuleWidget {
         // Misc other (freq-light, delay-toggle, Convex/Concave-mode)
         addChild(createLightCentered<SmallLight<GreenRedLight>>(Vec(31.373f, 30.733f), module, RandomCurveModule::FREQ_LIGHT));
 
-        infNoiseLtSmallButton* mmDelayBtn = createParamCentered<infNoiseLtSmallButton>(Vec(42.933f, 131.307f), module, RandomCurveModule::MINMAX_DELAY_PARAM);
-        mmDelayBtn->setup(bc_green, false);
-        addParam(mmDelayBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(42.933f, 131.307f), module, RandomCurveModule::MINMAX_DELAY_PARAM));
 
         const float minCntrMaxLgtRow = 140.709f;
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(31.190f, minCntrMaxLgtRow), module, RandomCurveModule::MIN_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(41.847f, minCntrMaxLgtRow), module, RandomCurveModule::CNTR_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(53.790f, minCntrMaxLgtRow), module, RandomCurveModule::MAX_LIGHT));
 
-        infNoiseLtSmallButton* minCntrMaxBtn = createParamCentered<infNoiseLtSmallButton>(Vec(26.273f, 161.918f), module, RandomCurveModule::MIN_CNTR_MAX_BTN_PARAM);
-        minCntrMaxBtn->setup(bc_green, true);
-        addParam(minCntrMaxBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(26.273f, 161.918f), module, RandomCurveModule::MIN_CNTR_MAX_BTN_PARAM));
 
-        infNoiseLtSmallButton* forcePolBtn = createParamCentered<infNoiseLtSmallButton>(Vec(42.933f, 185.508f), module, RandomCurveModule::FORCED_POL_PARAM);
-        forcePolBtn->setup(bc_green, false);
-        addParam(forcePolBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(42.933f, 185.508f), module, RandomCurveModule::FORCED_POL_PARAM));
 
         addChild(createLightCentered<TinyLight<BlueLight>>(Vec(53.790f, 197.092f), module, RandomCurveModule::DIST_RANGE_LIGHT));
 
-        infNoiseLtSmallButton* distModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(31.822f, 228.511f), module, RandomCurveModule::DIST_MODE_PARAM);
-        distModeBtn->setup(bc_green, false);
-        addParam(distModeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(31.822f, 228.511f), module, RandomCurveModule::DIST_MODE_PARAM));
 
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(31.919f, 233.830f), module, RandomCurveModule::MIN_MAX_MODE_LIGHT));
         

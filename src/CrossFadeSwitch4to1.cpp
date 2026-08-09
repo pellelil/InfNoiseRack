@@ -312,15 +312,11 @@ struct CrossFadeSwitch4to1ModuleWidget : InfNoiseModuleWidget {
 
         const float cntClm = 15.f;
         const float btnClm = 4.734f;
-        infNoiseLtSmallButton* selModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(btnClm, 35.487f), module, CrossFadeSwitch4to1Module::SELECTMODE_PARAM);
-        selModeBtn->setup(bc_green, false);
-        addParam(selModeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(btnClm, 35.487f), module, CrossFadeSwitch4to1Module::SELECTMODE_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntClm, 47.843f), module, CrossFadeSwitch4to1Module::SELECT_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(cntClm, 70.656f), module, CrossFadeSwitch4to1Module::SELECT_TRIM_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntClm, 93.825f), module, CrossFadeSwitch4to1Module::SELECT_INPUT));
-        infNoiseLtSmallButton* cvModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(btnClm, 108.785f), module, CrossFadeSwitch4to1Module::CVMODE_PARAM);
-        cvModeBtn->setup(bc_red, false);
-        addParam(cvModeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(btnClm, 108.785f), module, CrossFadeSwitch4to1Module::CVMODE_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntClm, 128.124f), module, CrossFadeSwitch4to1Module::RESET_INPUT));
 
         addParam(createParamCentered<CKSSThree>(Vec(11.291f, 155.807f), module, CrossFadeSwitch4to1Module::COUNT_PARAM));

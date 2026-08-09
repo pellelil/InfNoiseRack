@@ -688,12 +688,7 @@ struct TuringMachineModule : InfNoiseModule {
 };
 
 struct TuringMachineModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* lockBtn;
-    infNoiseLtSmallButton* resetBtn;
-    infNoiseLtSmallButton* lockLatchBtn;
-    infNoiseLtSmallButton* minCntrMaxBtn;
-    infNoiseLtSmallButton* clockBtn;
-    infNoiseLtSmallButton* rotateBtn;
+    infNoiseSmallButton<bc_green, true>* lockBtn;
 
     TuringMachineModuleWidget(TuringMachineModule *module) {
         initializeWidget(module, "res/TuringMachine");
@@ -713,12 +708,9 @@ struct TuringMachineModuleWidget : InfNoiseModuleWidget {
         const float controlRowSpacing = 35.258f;
 
         float controlRow = 87.009f;
-        lockBtn = createParamCentered<infNoiseSmallButton>(Vec(knobColumn, controlRow), module, TuringMachineModule::LOCK_BTN_PARAM);
-        lockBtn->setup(bc_green, true);
+        lockBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(knobColumn, controlRow), module, TuringMachineModule::LOCK_BTN_PARAM);
         addParam(lockBtn);
-        lockLatchBtn = createParamCentered<infNoiseLtSmallButton>(Vec(27.484f, 75.420f), module, TuringMachineModule::LOCK_BTN_LATCH_PARAM);
-        lockLatchBtn->setup(bc_red, false);
-        addParam(lockLatchBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(27.484f, 75.420f), module, TuringMachineModule::LOCK_BTN_LATCH_PARAM));
         addParam(createParamCentered<CKSS>(Vec(39.361f, controlRow), module, TuringMachineModule::LOCK_SWITCH_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::LOCK_INPUT));
         addChild(createLightCentered<SmallLight<RedLight>>(Vec(57.536f, 71.924f), module, TuringMachineModule::LOCK_LIGHT));
@@ -750,27 +742,19 @@ struct TuringMachineModuleWidget : InfNoiseModuleWidget {
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(27.484f, 243.237), module, TuringMachineModule::MIN_LIGHT));
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(45.640f, 243.237), module, TuringMachineModule::CNTR_LIGHT));
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(63.615f, 243.237), module, TuringMachineModule::MAX_LIGHT));
-        minCntrMaxBtn = createParamCentered<infNoiseLtSmallButton>(Vec(74.499f, 247.295f), module, TuringMachineModule::MINCNTRMAX_BTN_PARAM);
-        minCntrMaxBtn->setup(bc_green, true);
-        addParam(minCntrMaxBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(74.499f, 247.295f), module, TuringMachineModule::MINCNTRMAX_BTN_PARAM));
 
         controlRow += controlRowSpacing;
-        resetBtn = createParamCentered<infNoiseLtSmallButton>(Vec(26.458f, 287.759f), module, TuringMachineModule::RESET_BTN_PARAM);
-        resetBtn->setup(bc_green, true);
-        addParam(resetBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(26.458f, 287.759f), module, TuringMachineModule::RESET_BTN_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(knobColumn, controlRow), module, TuringMachineModule::RESET_INPUT));
         addParam(createParamCentered<CKSSThree>(Vec(38.359f, controlRow), module, TuringMachineModule::RESET_SWITCH_PARAM));
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::FIXED_OUTPUT));
 
         controlRow += controlRowSpacing;
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(knobColumn, controlRow), module, TuringMachineModule::CLOCK_INPUT));
-        clockBtn = createParamCentered<infNoiseLtSmallButton>(Vec(26.458f, 323.214f), module, TuringMachineModule::CLOCK_BTN_PARAM);
-        clockBtn->setup(bc_green, true);
-        addParam(clockBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(26.458f, 323.214f), module, TuringMachineModule::CLOCK_BTN_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(trimColumn, controlRow), module, TuringMachineModule::ROTATE_INPUT));
-        rotateBtn = createParamCentered<infNoiseLtSmallButton>(Vec(56.245f, 323.214f), module, TuringMachineModule::ROTATE_BTN_PARAM);
-        rotateBtn->setup(bc_green, true);
-        addParam(rotateBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(56.245f, 323.214f), module, TuringMachineModule::ROTATE_BTN_PARAM));
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::BINARY_OUTPUT));
 
         controlRow = 87.009f;
@@ -779,14 +763,12 @@ struct TuringMachineModuleWidget : InfNoiseModuleWidget {
         controlRow = 87.009f;
         for (int i = 0; i < 8; i++) {
             addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(bit1Column, controlRow), module, TuringMachineModule::BIT1_OUTPUT + i));
-            infNoiseLtSmallButton* trigGate1Btn = createParamCentered<infNoiseLtSmallButton>(Vec(bit1Column + trigGateClmOfs, controlRow + trigGateRowOfs), module, TuringMachineModule::BIT1_TRIG_GATE_PARAM + i);
-            trigGate1Btn->setup(bc_redGreen, false);
-            addParam(trigGate1Btn);
+            addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+                Vec(bit1Column + trigGateClmOfs, controlRow + trigGateRowOfs), module, TuringMachineModule::BIT1_TRIG_GATE_PARAM + i));
 
             addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(bit2Column, controlRow), module, TuringMachineModule::BIT12_OUTPUT + i));
-            infNoiseLtSmallButton* trigGate2Btn = createParamCentered<infNoiseLtSmallButton>(Vec(bit2Column + trigGateClmOfs, controlRow + trigGateRowOfs), module, TuringMachineModule::BIT12_TRIG_GATE_PARAM + i);
-            trigGate2Btn->setup(bc_redGreen, false);
-            addParam(trigGate2Btn);
+            addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+                Vec(bit2Column + trigGateClmOfs, controlRow + trigGateRowOfs), module, TuringMachineModule::BIT12_TRIG_GATE_PARAM + i));
             
             controlRow += controlRowSpacing;
         }

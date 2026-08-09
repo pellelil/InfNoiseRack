@@ -314,9 +314,7 @@ struct VCMP2IIModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(leftColumn, cdRow), module, VCMP2IIModule::C_INPUT));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(rightColumn, cdRow), module, VCMP2IIModule::D_INPUT));
 
-        infNoiseLtSmallButton* absBtn = createParamCentered<infNoiseLtSmallButton>(Vec(cntrClm, 220.397f), module, VCMP2IIModule::ABS_PARAM);
-        absBtn->setup(bc_green, false);
-        addParam(absBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(cntrClm, 220.397f), module, VCMP2IIModule::ABS_PARAM));
 
         row = section2Row;
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(leftColumn, row), module, VCMP2IIModule::C_INT_OUTPUT));
@@ -343,7 +341,6 @@ struct VCMP2IIModuleWidget : InfNoiseModuleWidget {
              	{"Keep last value", "Output 0V"},
              	&module->divByZeroMode.req
         ));
-
 
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);

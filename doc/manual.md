@@ -132,9 +132,9 @@ Many Infinite-Noise modules feature a combination of a manual knob and a CV inpu
 
 ![Knob, CV-input and trim](img/knobCvTrim.png)
 
-While there is no strict standard for CV input scaling accross modules from different developers, my general approach is that **a 10V range should correspond to a full knob rotation** (e.g. from far left to far right). For example, in the Random-Curve module, a knob/CV/trim combination controls the distribution of generated values. If you turn the knob fully counterclockwise and then feed the CV input with a Unipolar 0V to 10V signal, it will produce the same result as manually turning the knob fully from left to right. Similarly, centering the knob and instead supplying a Bipolar -5V to +5V CV input will yield an equivalent effect, where -5V corresponds to a 50% leftward turn and +5V corresponds to a 50% rightward turn "added" to the knob-position.
+While there is no strict standard for CV input scaling accross modules from different developers, my general approach is that **a 10V range should correspond to a full knob rotation** (e.g. from far left to far right). For example, in the Tweak2I module, a knob/CV/trim combination controls the scaling of values (from -1 to +1). If you turn the knob fully counterclockwise (to -1x) and then feed the CV input with a Unipolar 0V to 10V signal, it will produce the same result as manually turning the knob fully from left to right (+1x). Similarly, centering the knob (0x) and instead supplying a Bipolar -5V to +5V CV input will yield an equivalent effect, where -5V corresponds to a 50% leftward turn (-1x) and +5V corresponds to a 50% rightward turn "added" to the knob-position (+1x).
 
-I believe this is the most logical way to handle CV inputs (10V range = full knob range), but there are exceptions. Some knobs cover a -10V to +10V range, such as the Offset knob in the [Tweak modules](Tweak.md) or the Min/Center/Max range knobs in the [Random-Curve](Random.md#random-curveaq) module. For example, in a Tweak module, the Offset knob’s CV input directly offsets the signal by the incoming CV amount (assuming the trim knob is set to 100%). This means that supplying a 5V CV input results in a 5V offset to the signal. However, since the full manual knob movement in this case covers a 20V range (-10V to +10V), achieving the same effect through CV alone would require a 20V input range. Turning the knob fully counterclockwise and feeding in 20V CV would be equivalent to turning the knob fully clockwise. Alternatively, you can center the knob at 0V, where a -10V input behaves like turning the knob fully counterclockwise from center, and a +10V input behaves like turning it fully clockwise from center. So for knobs that directly specify a volt-level, the CV-input is directly "added" to the knob-value.
+I believe this is the most logical way to handle CV inputs (10V range = full knob range), but there are exceptions. Some knobs cover a -10V to +10V range, such as the Offset knob in the [Tweak modules](Tweak.md) or the Min/Center/Max range knobs in the [Random-Curve](Random.md#random-curveaq) module. For example, in a Tweak module, the Offset knob’s CV input directly offsets the signal by the incoming CV amount (assuming the trim knob is set to 100%). This means that supplying a 5V CV input results in a 5V offset to the signal. However, since the full manual knob movement in this case covers a 20V range (-10V to +10V), achieving the same effect through CV alone would require a 20V input range. Turning the knob fully counterclockwise (-10) and feeding in 20V CV would be equivalent to turning the knob fully clockwise (+10). Alternatively, you can center the knob at 0V, where a -10V input behaves like turning the knob fully counterclockwise from center (-10), and a +10V input behaves like turning it fully clockwise from center (+10). So for knobs that directly specify a volt-level, the CV-input is directly "added" to the knob-value.
 
 ### Default Volt-levels (can be changed using context-menus)
 By default, all modules that output gates or triggers use a **10V high / 0V low** standard. For gate inputs, a signal is detected as high when it reaches **1V or more** and low when it drops below 1V. For trigger inputs, the signal switches high when it reaches **1V or more**, but unlike gates, it will only switch low once the input drops below **0.1V**. This means that after detecting a high trigger, the signal must fall below 0.1V before another trigger can be registered. These high/low thresholds are however not fixed and can be adjusted via the context menu. However, only modules that accept or generate gates/triggers include the relevant menu options for modifying these levels. These adjustments apply individually to each module, allowing fine-tuned control over detection thresholds if/when needed. While most users will likely stick to the default values, there may be cases where adjusting these settings is beneficial for a specific setup (e.g. you can "invert" a gate-output by setting the high-output to 0V, and the low-output to 10V).
@@ -147,65 +147,65 @@ Some modules feature default (normalized) inputs and may output signals that rep
 All trigger outputs are designed to maintain a 1 ms high phase (default 10V) followed by a 1 ms low phase (default 0V). This ensures that downstream modules reliably detect both the rising and falling edges of the trigger signal, even if they do not check for triggers on every sample cycle. For example, at a 48 kHz sample rate, a 1 ms trigger pulse remains high for only 48 samples. The forced low-gap between triggers prevents consecutive triggers from merging into a single/continuous pulse. However, this also means that only one trigger can fire within a 2 ms window (1 ms high + 1 ms low), effectively limiting the trigger output to a maximum of 500 triggers per second. While this "restriction" is unlikely to cause issues in most use cases, it is worth noting. 
 
 # Modules
-The sections above covered features that are common to all Infinite-Noise modules. Below, you'll find links to each module, where you can read about individual modules or families of similar modules. Many modules include a number in their name (e.g., "Manual Trigger 8" or "Auto-Scale 4"). This number typically indicates how many "sections" the module has, which determines how many different signals can be processed simultaneously. Typically a single module which can process multiple sections (thereby multiple signals) at the same time, is more efficient than using multiple modules which each only processs a single signal. A few of the modules comes in Mk I and Mk II versions, where these modules are similar, but still different (e.g. one might only have knobs, wheras the other both support knobs and CV-input).
+The sections above covered features that are common to all Infinite-Noise modules. Below, you'll find links to each module, where you can read about individual modules or families of similar modules. Many modules include a number in their name (e.g., "Manual Trigger 8" or "Auto-Scale 4"). This number typically indicates how many "sections" the module has, which determines how many different signals can be processed simultaneously. Typically a single module which can process multiple sections (thereby multiple signals) at the same time, is more efficient than using multiple modules which each only processs a single signal. A few of the modules comes in Mk I and Mk II versions, where these modules are similar, but still different (e.g. one might only have knobs, wheras the other both support knobs and CV-input and/or one might have a single set of knob/cv-controls affecting all sections, and the other might have individual knob/cv-controls for each section).
 
 A large number of Infinite-Noise modules can accept and generate polyphonic signals (ranging from 2 to 16 channels). In the list below, a "**p**" in the parenteses next to a module's name indicates that it supports and/or generates polyphonic signals. For example, the Tweak-2I, -2II, and -4I modules support polyphonic signals, whereas the larger Tweak modules (Tweak-4II and Tweak-8) with more sections only process monophonic signals. If a polyphonic signal is fed into one of these monophonic-only versions, only channel 1 will be processed, while the rest of the channels are ignored, and the module will output a monophonic signal.
 
 Beside the "p" in the parenteses next to the module name (as mentioned above), you might also see an "**a**" for modules wich can automatic change its process quality (e.g. based on an internal LFO frequency), or a "**q**" for the modules which can quantize its output (e.g. to quantize to nearest note). Regarding modules supporting "automatic" process-quality, it will be enabled by default, whereas those that supporting quantize ("rounding of output") it will be disabled by default. In both cases it can be enabled/disabled using the context-menu for those modules.
 
-Most Infinite-Noise modules are primarily designed for processing control signals. For this reason, you can often reduce CPU usage by lowering the process quality (for example, by executing the internal algorithm only every 4th or 16th cycle). However, when used for audio processing, modules should typically run at **Audio rate** (executing every cycle). Some modules are however more likely to be used with audio signals as well, and therefore provide optional 2x oversampling (disabled by default). In the list below, modules marked with an "**o**" (shown in parentheses next to the module name) support input oversampling, which you can enable in the context menu if using these modules to process audio-signals.
+Most Infinite-Noise modules are primarily designed for processing control signals. For this reason, you can often reduce CPU usage by lowering the process quality (for example, by executing the internal algorithm only every 4th or 16th cycle). However, when used for audio processing, modules should typically run at **Audio rate** (executing every cycle). Some modules are however more likely to be used with audio signals as well, and therefore provide an optional 2x oversampling (disabled by default). In the list below, modules marked with an "**o**" (shown in parentheses next to the module name) support input oversampling, which you can enable in the context menu if using these modules to process audio-signals.
 
 ## LFO's
-+ [Simple LFO4-ss](LFO.md#simple-lfo4-ssa)(a): Simple knob-controlled quad-LFO, with internal sync (Saw and Sine).
-+ [Simple LFO4-st](LFO.md#simple-lfo4-sta)(a): Simple knob-controlled quad-LFO, with internal sync (Square and Triangle).
++ [Simple LFO4-ss](LFO.md#simple-lfo4-ssa)(a): Simple knob-controlled Quad-LFO, with internal sync (Saw and Sine).
++ [Simple LFO4-st](LFO.md#simple-lfo4-sta)(a): Simple knob-controlled Quad-LFO, with internal sync (Square and Triangle).
 + [Tiny LFO](LFO.md#tiny-lfopa)(pa): Tiny (2HP) knob/CV-controlled single LFO with PWM (Saw, Square, Triangle, and Sine).
 + [LFO1](LFO.md#lfo1pa)(pa): Knob/CV-controlled single LFO with PWM, MOD, external sync and n-shot mode (Saw, Square, Triangle and Sine). Using the Square-output with modulation, it also acts as a wavetable (Triangle<->Square<->Saw).
-+ [Phase-Driven LFO](LFO.md#phase-driven-lfop)(p): Uses an input-phase to generate waveforms (Saw, Square, Triangle, and Sine).
++ [Phase-Driven LFO](LFO.md#phase-driven-lfop)(p): Phase-driven LFO (input-phase) with PWM/modulation, outputting Saw, Square, Triangle and Sine, and inverted.
 
 ## Tweak (attenuate/amplify, offset and mix)
 + [Tweak-2 Mk I](Tweak.md#tweak-2-mk-ipq)(pq): 2 section: (same) knob/CV-controlled (1x,2x,5x,10x) attenuverter/amplifier, offset.
 + [Tweak-2 Mk II](Tweak.md#tweak-2-mk-iipq)(pq): 2 section: (individual) knob controlled (1x,2x,5x,10x) attenuverter/amplifier, offset, mixer.
 + [Tweak-4 Mk I](Tweak.md#tweak-4-mk-ipq)(pq): 4 section: (same) knob controlled (1x,2x,5x,10x) attenuverter/amplifier, offset.
-+ [Tweak-4 Mk II](Tweak.md#tweak-4-mk-iiq)(q): 4 section: (individual) knob/CV-controlled (1x,2x,5x,10x) attenuverter/amplifier, offset mixer.
++ [Tweak-4 Mk II](Tweak.md#tweak-4-mk-iiq)(q): 4 section: (individual) knob/CV-controlled (1x,2x,5x,10x) attenuverter/amplifier, offset, mixer.
 + [Tweak-8](Tweak.md#tweak-8q)(q): 8 section: (individual) knob/CV-controlled (1x,2x,5x,10x) attenuverter/amplifier, offset, mixer.
 + [VCA-2](Tweak.md#vca-2p)(p): 2 section VCA each with knob/CV for each.
 + [VCA-4 Mk I](Tweak.md#vca-4-mk-ip)(p): 4 section VCA with shared knob/CV (same for all 4 sections).
 + [VCA-4 Mk II](Tweak.md#vca-4-mk-iip)(p): 4 section VCA with knob/CV for each.
-+ [Clamp 4](Tweak.md#clamp-4po)(po): Clamp (invert) 4 inputs in selected range.
-+ [Auto-Scale 4](Tweak.md#auto-scale-4p)(p): Auto-scale/offset (invert) 4 inputs to selected range.
++ [Clamp 4](Tweak.md#clamp-4po)(po): Clamp/clip (invert) up to 4 inputs, in selected range.
++ [Auto-Scale 4](Tweak.md#auto-scale-4p)(p): Automatic scale/offset (invert) to selected range of up to 4 inputs.
 
 ## Controllers/converters
-+ [Manuel Trigger, Gate and CV](ManCV.md#manuel-trigger-gate-and-cvpq)(pq): 1 trigger button/output, 2 gate button/outputs, and 2 CV knob/outputs.
-+ [Manuel Push 2](ManCV.md#manuel-push-2p)(p): Controller with 2 buttons, that each fires a gate and high/low-triggers. Can also convert gate to triggers (or vice versa).
-+ [Manuel Trigger 8](ManCV.md#manuel-trigger-8p)(p): 8 buttons to manually fire 8 individual triggers (mono/polyphonic).
-+ [Manuel Gate 8](ManCV.md#manuel-gate-8p)(p): 8 buttons (with latch) to manually fire 8 individual gates (mono/polyphonic).
-+ [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-ipq)(pq): 8 knobs to dial in 8 fixed CV-values to output (mono/polyphonic).
-+ [Manuel CV 8 Mk II](ManCV.md#manuel-cv-8-mk-iipq)(pq): 8x2 knobs to dial in fixed CV On/Off-values to output (mono/polyphonic).
++ [Manuel Trigger, Gate and CV](ManCV.md#manuel-trigger-gate-and-cvpq)(pq): Controller to manually output 1 trigger-, 2-gate and 2 CV-signals.
++ [Manuel Push 2](ManCV.md#manuel-push-2p)(p): Controller with 2 buttons, that each fires a gate and high/low-triggers. Can also convert gates to triggers (or vice versa).
++ [Manuel Trigger 8](ManCV.md#manuel-trigger-8p)(p): Controller to manually output 8 trigger-signals (mono/polyphonic).
++ [Manuel Gate 8](ManCV.md#manuel-gate-8p)(p): Controller to manually output 8 gate-signals (mono/polyphonic).
++ [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-ipq)(pq): Controller to manually set 8 fixed CV outputs (mono/polyphonic).
++ [Manuel CV 8 Mk II](ManCV.md#manuel-cv-8-mk-iipq)(pq): Controller to manually set 8 fixed ON/OFF CV outputs, and switch between them (mono/polyphonic).
 + [Manuel Mix 4 Mk I](ManCV.md#manuel-mix-4-mk-ip)(p): Manually knob-operated mixer with 4 inputs and 1 output (averaging or unity mix).
-+ [Manuel Mix 4 Mk II](ManCV.md#manuel-mix-4-mk-iip)(p): Manually knob/CV-operated mixer with 4 inputs, individual outputs or mix output (averaging or unity mix).
++ [Manuel Mix 4 Mk II](ManCV.md#manuel-mix-4-mk-iip)(p): Manually knob/CV-operated mixer with 4 inputs, individual outputs and 1 mix output (averaging or unity mix).
 + [Manuel Mix 4 Stereo](ManCV.md#manuel-mix-4-stereop)(p): Manually knob/CV-operated mixer with 4 stereo-inputs and stereo mix output (averaging or unity mix).
-+ [Manuel Mute 8](ManCV.md#manuel-mute-8pq)(pq): 8 buttons to manually mute 8 signals.
++ [Manuel Mute 8](ManCV.md#manuel-mute-8pq)(pq): Controller to manually mute 8 signals.
 + [Mute 2](ManCV.md#mute-2p)(p): 2 knob/cv-controlled mute-sections each with a single input/output-pair.
-+ [CV-Toggle 8](ManCV.md#cv-toggle-8pq)(pq): Similar to Manual CV Mk II, however driven by CV input.
++ [CV-Toggle 8](ManCV.md#cv-toggle-8pq)(pq): Switch with 8 sections, each with 2 stages (via CV).
 + [CV to Gate](CvToGt.md#cv-to-gate): Fire gate/trigger if CV is within specified range (1 section).
-+ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8): 8 sections to fire gate/trigger if CV is within specified range.
++ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8): Fire gate/trigger if CV is within specified range (8 sections).
 
 ## Merge/Mult
 + [Merge2x4](MergeMult.md#merge2x4pq)(pq): Merge with 2 section each with 4 inputs (merge can either sum or mix, and can have special handling of negative values).
-+ [Mult2x4](MergeMult.md#mult2x4p)(p): Mult with 2 sections each with 4 inputs  (also works as 1x8).
++ [Mult2x4](MergeMult.md#mult2x4p)(p): Mult with 2 section each with 4 outputs (also works as 1-to-8 mult).
 + [Merge/Mult-4](MergeMult.md#mergemult-4pq)(pq): Merge/Mult with 4 inputs/outputs (merge can either sum or mix, and can have special handling of negative values).
 
 ## Logic/Value-compare
 + [Tiny Logic Comparator-2](Compare.md#tiny-logic-comparator-2p)(p): 2 sections with 4 inputs for logical compare: AND, OR, XOR (and negated via context-menu).
-+ [Logic Comparator-2](Compare.md#logic-comparator-2p)(p): Logic compare, with true/false input, and two sections of: AND, NAND, OR, NOR, XOR, XNOR.
++ [Logic Comparator-2](Compare.md#logic-comparator-2p)(p): 2 sections of logic compare, with true/false input, and two sections of: AND, NAND, OR, NOR, XOR, XNOR.
 + [Logic Comparator-6x2](Compare.md#logic-comparator-6x2p)(p): 6 sections each with 2 input for Logic compare (AND, NAND, OR, NOR, XOR, XNOR).
-+ [Value Comparator-1](Compare.md#value-comparator-1p)(p): Similar to "VCMP2 Mk I", 1 section with both CV/Knob for A/B, knob for threshold, and trigger output for A/B-crossing.
++ [Value Comparator-1](Compare.md#value-comparator-1p)(p): One section of value-compare: A=B, A!=B, A>=B, A>B, A<=B, A<B, with threshold knob, A/B-cross trigger and tolerance-clamp.
 + [Value Comparator-2 Mk I](Compare.md#value-comparator-2-mk-ip)(p): Value compare with true/false input, threshold and two sections of: A=B, A!=B, A>=B, A>B, A<=B, A<B.
-+ [Value Comparator-2 Mk II](Compare.md#value-comparator-2-mk-iip)(p): Value compare (Min, Max, NtZ, FfZ, Abs(df), AVG), and simple math-evaluations: (plus, minus, mul, div).
++ [Value Comparator-2 Mk II](Compare.md#value-comparator-2-mk-iip)(p): One section of value-compare: Min, Max, NtZ, FtZ, Abs-diff, Avg, and one section of Int/Frac and simple math: Plus, Minus, Mul, Div.
 
 ## S&H, T&H, H&T
-+ [S&H/T&H-2](Shth.md#shth-2paq)(paq): Sample/Track-and-hold with 2 CV/LFO-controlled sections (each with 1 input/output-pair).
-+ [S&H/T&H-2x4](Shth.md#shth-2x4paq)(paq): Sample/Track-and-hold with 2 CV/LFO-controlled sections (each with 4 input/output-pairs).
++ [S&H/T&H-2](Shth.md#shth-2paq)(paq): Sample/track-and-hold with 2 sections (1 input/output), each triggered by input or internal LFO.
++ [S&H/T&H-2x4](Shth.md#shth-2x4paq)(paq): Sample/track-and-hold with 2 sections (4 input/output), each triggered by input or internal LFO.
 + [Sample and Update](Shth.md#sample-and-updatepq)(paq): Sample-and-Update with button/CV for Sample, Reset and Update. Can also count number of triggers detected, and output a trigger when the desired count have been reached.
 
 ## Polyphonic-tools
@@ -213,38 +213,38 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Poly-Split](PolyTools.md#poly-splitp)(p): Split a polyphonic signal into (up to) 16 monophonic signals (or multiple polyphonic signals).
 + [Poly-Stereo](PolyTools.md#poly-stereop)(p): Encode/Decode 2 monophonic left/right signals to/from 2 channel polyphonic signals.
 + [Poly-Quad](PolyTools.md#poly-quadp)(p): Encode/Decode 4 monophonic signals to/from 4 channel polyphonic signals (basically an up to 4 channel merger/splitter).
-+ [Poly-Shuffle](PolyTools.md#poly-shufflep)(p): Add/Remove/Shuffle channels.
++ [Poly-Shuffle](PolyTools.md#poly-shufflep)(p): Add/Remove/Shuffle channels of a polyphonic signal.
 + [Poly-Tweak Mk I](PolyTools.md#poly-tweak-mk-ip)(p): Invert/Disable (mute/remove) channels of a polyphonic signal based on buttons.
-+ [Poly-Tweak Mk II](PolyTools.md#poly-tweak-mk-iip)(p): Invert/Disable (mute/remove) channels of a polyphonic signal based on CV-input.
-+ [Poly-Logical Compare](PolyTools.md#poly-logical-comparep)(p): Perform logical-compare (AND,OR,XOR,NAND,NOR,XNOR) on all channels of same polyphonic signal.
++ [Poly-Tweak Mk II](PolyTools.md#poly-tweak-mk-iip)(p): Invert/Disable (mute/remove) channels of a polyphonic signal based on CV-inputs.
++ [Poly-Logical Compare](PolyTools.md#poly-logical-comparep)(p): Perform logical-compare (AND,OR,XOR,NAND,NOR,XNOR) on all channels of same polyphonic-signal.
 + [Poly-Value Compare](PolyTools.md#poly-value-comparep)(p): Perform value-compare (MIN,MAX,NtZ,FfZ,AVG,R/S) on all channels of same polyphonic-signal. Can also monitor (MIN,MAX,NtZ,FfZ,AVG,R/S) over time (since last reset).
-+ [Poly-Offset](PolyTools.md#poly-offsetp)(p): Offset individual channels or group of channels.
-+ [Poly-Scale](PolyTools.md#poly-scalep)(p): Scale individual channels or group of channels.
++ [Poly-Offset](PolyTools.md#poly-offsetp)(p): Offset individuel- or group of channels of a polyphonic-signal.
++ [Poly-Scale](PolyTools.md#poly-scalep)(p): Scale (attenuvert/amplify) individuel- or group of channels of a polyphonic-signal.
 
 ## Switch and cross-fade modules
-+ [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4p)(p): Cross-fade/switch with 1 input and 4 outputs.
-+ [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1p)(p): Cross-fade/switch with 4 inputs and 1 output.
++ [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4p)(p): Cross-fade/switch 1 input into up to 4 outputs.
++ [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1p)(p): Cross-fade/switch up to 4 inputs into 1 output.
 + [Cross-fade 1x2](CrossFade.md#cross-fade-1x2p)(p): Cross-fade a stereo-signal, or two separate mono signals by knob/CV.
 + [Cross-fade 4x1](CrossFade.md#cross-fade-4x1p)(p): Cross-fade 4 separate (mono) signals, by separate- and master cross-fade knob/CV.
-+ [Bernoulli Switch](Switch.md#bernoulli-switchp)(p): Bernoulli switch with both "A/B->" (2 input, 1 output) and "->A/B" (1 input, 2 output) sections.
++ [Bernoulli Switch](Switch.md#bernoulli-switchp)(p): Bernoulli switch with both 'A/B->' (2 input, 1 output) and '->A/B' (1 input, 2 output) sections.
 + [ON/OFF Switch](Switch.md#onoff-switchp)(p): Toggles between outputting the ON- or the OFF-signal, using button-, gate- or trigger to switch.
 + [Combine](Switch.md#combinep)(p): Combines (switches between) 2 inputs based on 3 different algorithms.
 
 ## Misc
-+ [Sign](Sign.md#signpq)(pq): Outputs 9 different "signed-versions" of the input signal(s).
++ [Sign](Sign.md#signpq)(pq): Outputs 9 different 'signed-versions' of the input signal(s).
 + [Sign4 Mk I](Sign.md#sign4-mk-ip)(p): 4 sections that either invert gate-, bipolar- or unipolar-signals.
 + [Sign4 Mk II](Sign.md#sign4-mk-iip)(p): 4 sections that either output absolute value, cut-negative or cut-positive values.
 + [Fold](Fold.md#foldpoq)(poq): Applying gain and bias to input, in order to affect fold or wrap.
 + [Wave Shaper 2](WaveShaper2.md#wave-shaper-2poq)(poq): Have 3 different wave-shaping algorithms which can be modify 2 separate signals.
 + [Ring Modulator 3](RingMod3.md#ring-modulator-3pq)(pq): 3 Sections to perform ring-modulation of 3 signals.
-+ [Increment/Decrement Offset](IncDecOffset.md#incrementdecrement-offset): Button/Input to increment/decrement offset applied to input signal.
++ [Increment/Decrement Offset](IncDecOffset.md#incrementdecrement-offset): Button/CV to increment/decrement offset applied to input signal.
 + [Delta-4](Delta4.md#delta-4-p)(p): Four sections measuring difference between current input and a captured reference level.
 + [Flip-Flop](FlipFlop.md#flip-flop): Flip-flop module able to both do D-, T- or SR- flip-flops.
-+ [Slope Detector 2](SlopeDetector2.md#slope-detector-2): 2 sections: threshold slope detection (rise/steady/fall) with latched phases and configurable Steady hold time.
++ [Slope Detector 2](SlopeDetector2.md#slope-detector-2): 2 sections with threshold slope detection (rise/steady/fall) with latched phases and configurable Steady hold time.
 + [Patch](Patch.md#patchp)(p): Mutable patch with 8 pairs of input/output for routing signals (typically you would use two modules at the same time to patch signals between them).
-+ [Random-4](Random.md#random-4paq)(paq): Generate 4 random values with min/max and distribution at each trigger.
-+ [Random Curve](Random.md#random-curveaq)(aq): Shaped random cruves/values with min/max and distribution.
-+ [Arm 3 XY](Arm3XY.md#arm-3-xya)(a): Length and rotation of 3 "arms" (basically 3 polar vectors) generates a "semi-random" curve X/Y-output.
-+ [Turing Machine](TuringMachine.md#turing-machineq)(q): Turing machine with value- and 16 pulses outputs.
++ [Random-4](Random.md#random-4paq)(paq): Generates 4 (mono-/polyphonic) random values with min/max and distribution at each trigger or internal frequency.
++ [Random Curve](Random.md#random-curveaq)(aq): Generates 6 shaped random cruves with min/max and distribution.
++ [Arm 3 XY](Arm3XY.md#arm-3-xya)(a): Length and rotation of 3 'arms' (basically 3 polar vectors) generates a 'semi-random' curve X/Y-output.
++ [Turing Machine](TuringMachine.md#turing-machineq)(q): Turing machine for generating random sequences (16 bit- and 2-value outputs).
 + [Bits-to-Value](Bits.md#bits-to-value): Converts 8 bits (gate-inputs) into a CV-value based on dialed in weights and specified range.
-+ [Value-to-Bits](Bits.md#value-to-bits): Converts a CV-input (clamped in specified range) into 8 individual- and polyphonic gate-outputs (up to 16 channels).
++ [Value-to-Bits](Bits.md#value-to-bits): Converts a CV-input (clamped in specified range) into 8 monophonic- and 1 polyphonic gate-output (up to 16 channels).

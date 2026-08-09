@@ -226,11 +226,8 @@ struct Mute2Module : InfNoiseModule {
 };
 
 struct Mute2ModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* bothBtn;
-    infNoiseSmallButton* sectBtn[2];
-    infNoiseLtSmallButton* bothLatchBtn;
-    infNoiseLtSmallButton* sectLatchBtn[2];
-    infNoiseLtSmallButton* trigGateBtn;
+    infNoiseSmallButton<bc_green, true>* bothBtn;
+    infNoiseSmallButton<bc_green, true>* sectBtn[2];
 
     Mute2ModuleWidget(Mute2Module *module) {
         initializeWidget(module, "res/Mute2");
@@ -240,44 +237,32 @@ struct Mute2ModuleWidget : InfNoiseModuleWidget {
         const float lightClm = 4.981f;
 
         // Mute both
-        bothBtn = createParamCentered<infNoiseSmallButton>(Vec(cntrCol, 50.741f), module, Mute2Module::BOTH_MUTE_PARAM);
-        bothBtn->setup(bc_green, true);
+        bothBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 50.741f), module, Mute2Module::BOTH_MUTE_PARAM);
         addParam(bothBtn);
-        bothLatchBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchCol, 61.912f), module, Mute2Module::BOTH_LATCH_PARAM);
-        bothLatchBtn->setup(bc_red, false);
-        addParam(bothLatchBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchCol, 61.912f), module, Mute2Module::BOTH_LATCH_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 73.695f), module, Mute2Module::BOTH_MUTE_INPUT));
-        trigGateBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchCol, 85.230f), module, Mute2Module::BOTH_GATE_TRIG_PARAM);
-        trigGateBtn->setup(bc_redGreen, false);
-        addParam(trigGateBtn);
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+            Vec(latchCol, 85.230f), module, Mute2Module::BOTH_GATE_TRIG_PARAM));
 
         // A-Mute
-        sectBtn[0] = createParamCentered<infNoiseSmallButton>(Vec(cntrCol, 110.926f), module, Mute2Module::A_MUTE_PARAM);
-        sectBtn[0]->setup(bc_green, true);
+        sectBtn[0] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 110.926f), module, Mute2Module::A_MUTE_PARAM);
         addParam(sectBtn[0]);
-        sectLatchBtn[0] = createParamCentered<infNoiseLtSmallButton>(Vec(latchCol, 122.096f), module, Mute2Module::A_LATCH_PARAM);
-        sectLatchBtn[0]->setup(bc_red, false);
-        addParam(sectLatchBtn[0]);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchCol, 122.096f), module, Mute2Module::A_LATCH_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 133.880f), module, Mute2Module::A_MUTE_INPUT));
-        trigGateBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchCol, 145.414f), module, Mute2Module::A_GATE_TRIG_PARAM);
-        trigGateBtn->setup(bc_redGreen, false);
-        addParam(trigGateBtn);
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+            Vec(latchCol, 145.414f), module, Mute2Module::A_GATE_TRIG_PARAM));
 
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 168.953f), module, Mute2Module::A_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 204.027f), module, Mute2Module::A_OUTPUT));
         addChild(createLightCentered<SmallLight<RedLight>>(Vec(lightClm, 188.762f), module, Mute2Module::A_MUTED_LIGHT));
 
         // B-Mute
-        sectBtn[1] = createParamCentered<infNoiseSmallButton>(Vec(cntrCol, 239.593f), module, Mute2Module::B_MUTE_PARAM);
-        sectBtn[1]->setup(bc_green, true);
+        sectBtn[1] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 239.593f), module, Mute2Module::B_MUTE_PARAM);
         addParam(sectBtn[1]);
-        sectLatchBtn[1] = createParamCentered<infNoiseLtSmallButton>(Vec(latchCol, 250.763f), module, Mute2Module::B_LATCH_PARAM);
-        sectLatchBtn[1]->setup(bc_red, false);
-        addParam(sectLatchBtn[1]);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchCol, 250.763f), module, Mute2Module::B_LATCH_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 262.547f), module, Mute2Module::B_MUTE_INPUT));
-        trigGateBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchCol, 274.081f), module, Mute2Module::B_GATE_TRIG_PARAM);
-        trigGateBtn->setup(bc_redGreen, false);
-        addParam(trigGateBtn);
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+            Vec(latchCol, 274.081f), module, Mute2Module::B_GATE_TRIG_PARAM));
 
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 297.620f), module, Mute2Module::B_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 332.694f), module, Mute2Module::B_OUTPUT));

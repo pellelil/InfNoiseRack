@@ -274,9 +274,7 @@ struct BitsToValueModuleWidget : InfNoiseModuleWidget {
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(38.435f, 264.538f), module, BitsToValueModule::MIN_LIGHT));
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(60.319f, 264.538f), module, BitsToValueModule::CNTR_LIGHT));
         addChild(createLightCentered<SmallLight<GreenLight>>(Vec(82.713f, 264.538f), module, BitsToValueModule::MAX_LIGHT));
-        infNoiseLtSmallButton* minCntrMaxBtn = createParamCentered<infNoiseLtSmallButton>(Vec(94.450f, 269.019f), module, BitsToValueModule::MINCNTRMAX_BTN_PARAM);
-        minCntrMaxBtn->setup(bc_green, true);
-        addParam(minCntrMaxBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(94.450f, 269.019f), module, BitsToValueModule::MINCNTRMAX_BTN_PARAM));
 
         // Outputs
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(lftKnobClm, 334.447f), module, BitsToValueModule::VALUE_OUTPUT));

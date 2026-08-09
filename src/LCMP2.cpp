@@ -280,12 +280,8 @@ struct LCMP2ModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(leftColumn, abRow), module, LCMP2Module::A_INPUT));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(rightColumn, abRow), module, LCMP2Module::B_INPUT));
 
-        infNoiseLtSmallButton* invBtn = createParamCentered<infNoiseLtSmallButton>(Vec(5.599f, 73.546f), module, LCMP2Module::A_INV_PARAM);
-        invBtn->setup(bc_red, false);
-        addParam(invBtn);
-        invBtn = createParamCentered<infNoiseLtSmallButton>(Vec(54.288f, 73.546f), module, LCMP2Module::B_INV_PARAM);
-        invBtn->setup(bc_red, false);
-        addParam(invBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(5.599f, 73.546f), module, LCMP2Module::A_INV_PARAM));
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(54.288f, 73.546f), module, LCMP2Module::B_INV_PARAM));
 
         // A/B logic outputs
         float row = Log1stRow;
@@ -302,12 +298,8 @@ struct LCMP2ModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(leftColumn, cdRow), module, LCMP2Module::C_INPUT));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(rightColumn, cdRow), module, LCMP2Module::D_INPUT));
 
-        invBtn = createParamCentered<infNoiseLtSmallButton>(Vec(5.599f, 215.321f), module, LCMP2Module::C_INV_PARAM);
-        invBtn->setup(bc_red, false);
-        addParam(invBtn);
-        invBtn = createParamCentered<infNoiseLtSmallButton>(Vec(54.288f, 215.321f), module, LCMP2Module::D_INV_PARAM);
-        invBtn->setup(bc_red, false);
-        addParam(invBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(5.599f, 215.321f), module, LCMP2Module::C_INV_PARAM));
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(54.288f, 215.321f), module, LCMP2Module::D_INV_PARAM));
 
         // C/D logic outputs
         row = Log2ndRow;

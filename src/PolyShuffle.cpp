@@ -387,31 +387,23 @@ struct PolyShuffleModuleWidget : InfNoiseModuleWidget {
 
         // Channel-count
         const float smallBtnCol = 4.852f;
-        infNoiseLtSmallButton* autoCountBtn = createParamCentered<infNoiseLtSmallButton>(Vec(smallBtnCol, 126.389f), module, PolyShuffleModule::AUTO_CHANNEL_COUNT_PARAM);
-        autoCountBtn->setup(bc_green, false);
-        addParam(autoCountBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(smallBtnCol, 126.389f), module, PolyShuffleModule::AUTO_CHANNEL_COUNT_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrCol, 142.023f), module, PolyShuffleModule::MAN_CHANNEL_COUNT_PARAM));
 
         // Mode and value
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(11.958f, 157.521f), module, PolyShuffleModule::VALUE_MODE_VALUE_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(20.271f, 157.521f), module, PolyShuffleModule::VALUE_MODE_REPEAT_LIGHT));
-        infNoiseLtSmallButton* modeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(smallBtnCol, 161.772f), module, PolyShuffleModule::VALUE_MODE_PARAM);
-        modeBtn->setup(bc_green, true);
-        addParam(modeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(smallBtnCol, 161.772f), module, PolyShuffleModule::VALUE_MODE_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrCol, 176.485f), module, PolyShuffleModule::VALUE_PARAM));
 
         // Reset-input
-        infNoiseLtSmallButton* resetBtn = createParamCentered<infNoiseLtSmallButton>(Vec(smallBtnCol, 203.796f), module, PolyShuffleModule::RESET_BTN_PARAM);
-        resetBtn->setup(bc_red, true);
-        addParam(resetBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red, true>>(Vec(smallBtnCol, 203.796f), module, PolyShuffleModule::RESET_BTN_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 220.046f), module, PolyShuffleModule::RESET_INPUT));
 
 
         // Order-mode/trigger
         addParam(createParamCentered<CKSSThree>(Vec(8.976f, 260.843f), module, PolyShuffleModule::ORDER_MODE_PARAM));
-        infNoiseLtSmallButton* triggerBtn = createParamCentered<infNoiseLtSmallButton>(Vec(smallBtnCol, 281.935f), module, PolyShuffleModule::TRIGGER_BTN_PARAM);
-        triggerBtn->setup(bc_red, true);
-        addParam(triggerBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red, true>>(Vec(smallBtnCol, 281.935f), module, PolyShuffleModule::TRIGGER_BTN_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 297.632f), module, PolyShuffleModule::TRIGGER_INPUT));
         
 

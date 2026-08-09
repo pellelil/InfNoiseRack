@@ -185,9 +185,7 @@ struct PatchModuleWidget : InfNoiseModuleWidget {
             addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(14.810f, portRow), module, PatchModule::PORT1_INPUT + i));
             addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(44.389f, portRow), module, PatchModule::PORT1_OUTPUT + i));
 
-            infNoiseLtSmallButton* muteSwitch = createParamCentered<infNoiseLtSmallButton>(Vec(23.419f, butRow), module, PatchModule::MUTE1_PARAM + i);
-            muteSwitch->setup(bc_red, false);
-            addParam(muteSwitch);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(23.419f, butRow), module, PatchModule::MUTE1_PARAM + i));
 
             portRow += rowSpacing;
             butRow += rowSpacing;

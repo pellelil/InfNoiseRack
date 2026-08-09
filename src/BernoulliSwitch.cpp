@@ -355,10 +355,9 @@ struct BernoulliSwitchModuleWidget : InfNoiseModuleWidget {
         const float cntrCol = 15.f;
         const float lightCol = 25.284f;
         // Probabillity
-        infNoiseLtSmallButton* probModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(25.198f, 34.027f),
-            module, BernoulliSwitchModule::PROB_MODE_PARAM);
-            probModeBtn->setup(bc_red, false);
-        addParam(probModeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(
+            Vec(25.198f, 34.027f),
+            module, BernoulliSwitchModule::PROB_MODE_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrCol, 47.843f), module, BernoulliSwitchModule::PROB_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(cntrCol, 70.656f), module, BernoulliSwitchModule::PROB_TRIM_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 93.825f), module, BernoulliSwitchModule::PROB_INPUT));

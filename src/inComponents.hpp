@@ -17,151 +17,109 @@ using namespace ::rack;
 //-----------------------------------------------------------------------------
 
 enum buttonColor {
-    bc_black, bc_red, bc_green, bc_blue,
-    bc_redGreen
+    bc_black, bc_red, bc_green, bc_blue
 };
 
-struct infNoiseTwoStageButton : SvgSwitch {
-    buttonColor getOnColor(buttonColor color) {
-        switch (color) {
-        case bc_redGreen:
-            return bc_green;
-        default:
-            return color;
-        }
+/// Face color -> button SVG.
+inline const char* infNoiseLtSmallButtonSvgPath(buttonColor color) {
+    switch (color) {
+    case bc_red:
+        return "res/components/InfNoiseLtSmallRedButton.svg";
+    case bc_green:
+        return "res/components/InfNoiseLtSmallGreenButton.svg";
+    case bc_blue:
+        return "res/components/InfNoiseLtSmallBlueButton.svg";
+    case bc_black:
+    default:
+        return "res/components/InfNoiseLtSmallBlackButton.svg";
     }
+}
 
-    buttonColor getOffColor(buttonColor color) {
-        switch (color) {
-        case bc_redGreen:
-            return bc_red;
-        default:
-            return bc_black;
-        }
+inline const char* infNoiseSmallButtonSvgPath(buttonColor color) {
+    switch (color) {
+    case bc_red:
+        return "res/components/InfNoiseSmallRedButton.svg";
+    case bc_green:
+        return "res/components/InfNoiseSmallGreenButton.svg";
+    case bc_blue:
+        return "res/components/InfNoiseSmallBlueButton.svg";
+    case bc_black:
+    default:
+        return "res/components/InfNoiseSmallBlackButton.svg";
     }
-};
+}
 
-/// @brief About same size as: TinyLight
-struct infNoiseLtTinyButton : infNoiseTwoStageButton {
-    infNoiseLtTinyButton() {
-        momentary = false;
-        box.size = Vec(3.537f, 3.537f); // Important for createParamCentered
-    }
-
-    void setup(buttonColor color, bool isMomentary = false) {
-        momentary = isMomentary;
-
-        switch (getOffColor(color)) {
-        case bc_red:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtTinyRedButton.svg")));
-            break;
-        case bc_green:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtTinyGreenButton.svg")));
-            break;
-        case bc_blue:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtTinyBlueButton.svg")));
-            break;
-        default:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtTinyBlackButton.svg")));
-            break;
-        }
-
-        switch (getOnColor(color)) {
-        case bc_red:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtTinyRedButton.svg")));
-            break;
-        case bc_green:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtTinyGreenButton.svg")));
-            break;
-        case bc_blue:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtTinyBlueButton.svg")));
-            break;
-        default:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtTinyBlackButton.svg")));
-            break;
-        }
-    }
-};
+/// Two-stage button (black off + OnColor on). IsMomentary is the ctor default only;
+/// SvgSwitch::momentary may still be changed at runtime (e.g. latch companions).
+///
+///   addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(pos, module, PARAM));
+///   addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(pos, module, PARAM));
 
 /// @brief About same size as: SmallLight
-struct infNoiseLtSmallButton : infNoiseTwoStageButton {
+template<buttonColor OnColor, bool IsMomentary = false>
+struct infNoiseLtSmallButton : SvgSwitch {
     infNoiseLtSmallButton() {
-        momentary = false;
+        momentary = IsMomentary;
         box.size = Vec(6.968f, 6.968f); // Important for createParamCentered
-    }
-
-    void setup(buttonColor color, bool isMomentary = false) {
-        momentary = isMomentary;
-        switch (getOffColor(color)) {
-        case bc_red:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtSmallRedButton.svg")));
-            break;
-        case bc_green:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtSmallGreenButton.svg")));
-            break;
-        case bc_blue:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtSmallBlueButton.svg")));
-            break;
-        default:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtSmallBlackButton.svg")));
-            break;
-        }
-
-        switch (getOnColor(color)) {
-        case bc_red:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtSmallRedButton.svg")));
-            break;
-        case bc_green:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtSmallGreenButton.svg")));
-            break;
-        case bc_blue:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtSmallBlueButton.svg")));
-            break;
-        default:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseLtSmallBlackButton.svg")));
-            break;
-        }
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, infNoiseLtSmallButtonSvgPath(bc_black))));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, infNoiseLtSmallButtonSvgPath(OnColor))));
     }
 };
 
 /// @brief About same size as: SmallBlackButton (22.676 px)
-struct infNoiseSmallButton : infNoiseTwoStageButton {
+template<buttonColor OnColor, bool IsMomentary = false>
+struct infNoiseSmallButton : SvgSwitch {
     infNoiseSmallButton() {
-        momentary = false;
+        momentary = IsMomentary;
         box.size = Vec(21.321f, 21.321f); // Important for createParamCentered
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, infNoiseSmallButtonSvgPath(bc_black))));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, infNoiseSmallButtonSvgPath(OnColor))));
+    }
+};
+
+//-----------------------------------------------------------------------------
+// Multi-stage button-look switches (always latching; never momentary)
+//-----------------------------------------------------------------------------
+
+/// Always-latching SvgSwitch base for multi-stage button-look switches.
+struct infNoiseButtonSwitch : SvgSwitch {
+    infNoiseButtonSwitch() {
+        momentary = false;
     }
 
-    void setup(buttonColor color, bool isMomentary = false) {
-        momentary = isMomentary;
-        switch (getOffColor(color)) {
-        case bc_red:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseSmallRedButton.svg")));
-            break;
-        case bc_green:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseSmallGreenButton.svg")));
-            break;
-        case bc_blue:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseSmallBlueButton.svg")));
-            break;
-        default:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseSmallBlackButton.svg")));
-            break;
+    void addColorFrames(const char* (*svgPath)(buttonColor), const buttonColor* cols, size_t n) {
+        for (size_t i = 0; i < n; ++i) {
+            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, svgPath(cols[i]))));
         }
+    }
+};
 
-        switch (getOnColor(color)) {
-        case bc_red:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseSmallRedButton.svg")));
-            break;
-        case bc_green:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseSmallGreenButton.svg")));
-            break;
-        case bc_blue:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseSmallBlueButton.svg")));
-            break;
-        default:
-            addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/components/InfNoiseSmallBlackButton.svg")));
-            break;
-        }
+/// Multi-stage latching switches using button graphics.
+///
+/// Template pack order = stage order = param values 0 .. N-1.
+/// configSwitch max must be N-1, e.g. for three colors:
+///   configSwitch(PARAM, 0.f, 2.f, 0.f, "Mode", { "Black", "Green", "Red" });
+///   createParamCentered<infNoiseLtSmallButtonSwitch<bc_black, bc_green, bc_red>>(pos, module, PARAM);
+/// Red/green 2-stage:
+///   createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(pos, module, PARAM);
+
+/// @brief About same size as: SmallLight / infNoiseLtSmallButton
+template<buttonColor... Colors>
+struct infNoiseLtSmallButtonSwitch : infNoiseButtonSwitch {
+    infNoiseLtSmallButtonSwitch() {
+        box.size = Vec(6.968f, 6.968f); // Important for createParamCentered
+        buttonColor cols[] = { Colors... };
+        addColorFrames(infNoiseLtSmallButtonSvgPath, cols, sizeof...(Colors));
+    }
+};
+
+/// @brief About same size as: SmallBlackButton / infNoiseSmallButton
+template<buttonColor... Colors>
+struct infNoiseSmallButtonSwitch : infNoiseButtonSwitch {
+    infNoiseSmallButtonSwitch() {
+        box.size = Vec(21.321f, 21.321f); // Important for createParamCentered
+        buttonColor cols[] = { Colors... };
+        addColorFrames(infNoiseSmallButtonSvgPath, cols, sizeof...(Colors));
     }
 };
 

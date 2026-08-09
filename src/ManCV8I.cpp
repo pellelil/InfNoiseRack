@@ -164,8 +164,7 @@ struct ManCV8IModule : InfNoiseModule {
 };
 
 struct ManCV8IModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* muteBtn;
-    infNoiseLtSmallButton* muteLatchBtn;
+    infNoiseSmallButton<bc_red, true>* muteBtn;
 
     ManCV8IModuleWidget(ManCV8IModule *module) {
         initializeWidget(module, "res/ManCV8I");
@@ -176,12 +175,9 @@ struct ManCV8IModuleWidget : InfNoiseModuleWidget {
         const float outCol = 43.545f;
         const float attRow = 52.220f;
         const float lgtOfs = 10.021f;
-        muteBtn = createParamCentered<infNoiseSmallButton>(Vec(knobCol, attRow), module, ManCV8IModule::MUTE_PARAM);
-        muteBtn->setup(bc_red, true);
+        muteBtn = createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(knobCol, attRow), module, ManCV8IModule::MUTE_PARAM);
         addParam(muteBtn);
-        muteLatchBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchClm, attRow + latchOffset), module, ManCV8IModule::MUTE_LATCH_PARAM);
-        muteLatchBtn->setup(bc_red, false);
-        addParam(muteLatchBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchClm, attRow + latchOffset), module, ManCV8IModule::MUTE_LATCH_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(outCol, attRow), module, ManCV8IModule::MAN_POLY_OUTPUT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(outCol - lgtOfs, attRow - lgtOfs), module, ManCV8IModule::POLY_HINT_LIGHT));
 

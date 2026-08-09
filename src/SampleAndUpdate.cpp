@@ -329,12 +329,9 @@ struct SampleAndUpdateModule : InfNoiseModule {
 };
 
 struct SampleAndUpdateModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* sampleBtn;
-    infNoiseSmallButton* updateBtn;
-    infNoiseSmallButton* resetBtn;
-    infNoiseLtSmallButton* sampleModeBtn;
-    infNoiseLtSmallButton* updateModeBtn;
-    infNoiseLtSmallButton* resetModeBtn;
+    infNoiseSmallButton<bc_green, true>* sampleBtn;
+    infNoiseSmallButton<bc_green, true>* updateBtn;
+    infNoiseSmallButton<bc_green, true>* resetBtn;
 
     SampleAndUpdateModuleWidget(SampleAndUpdateModule *module) {
         initializeWidget(module, "res/SampleAndUpdate");
@@ -343,30 +340,24 @@ struct SampleAndUpdateModuleWidget : InfNoiseModuleWidget {
         const float modeBtnCol = 23.336f;
 
         // Sample
-        sampleBtn = createParamCentered<infNoiseSmallButton>(Vec(cntrCol, 50.868f), module, SampleAndUpdateModule::SAMPLE_PARAM);
-        sampleBtn->setup(bc_green, true);
+        sampleBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 50.868f), module, SampleAndUpdateModule::SAMPLE_PARAM);
         addParam(sampleBtn);
-        sampleModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(modeBtnCol, 65.542f), module, SampleAndUpdateModule::SAMPLE_MODE_PARAM);
-        sampleModeBtn->setup(bc_redGreen, false);
-        addParam(sampleModeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+            Vec(modeBtnCol, 65.542f), module, SampleAndUpdateModule::SAMPLE_MODE_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 79.779f), module, SampleAndUpdateModule::SAMPLE_INPUT));
 
         // Update
-        updateBtn = createParamCentered<infNoiseSmallButton>(Vec(cntrCol, 119.482f), module, SampleAndUpdateModule::UPDATE_PARAM);
-        updateBtn->setup(bc_green, true);
+        updateBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 119.482f), module, SampleAndUpdateModule::UPDATE_PARAM);
         addParam(updateBtn);
-        updateModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(modeBtnCol, 134.455f), module, SampleAndUpdateModule::UPDATE_MODE_PARAM);
-        updateModeBtn->setup(bc_redGreen, false);
-        addParam(updateModeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+            Vec(modeBtnCol, 134.455f), module, SampleAndUpdateModule::UPDATE_MODE_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 149.092f), module, SampleAndUpdateModule::UPDATE_INPUT));
-                
+
         // Reset
-        resetBtn = createParamCentered<infNoiseSmallButton>(Vec(cntrCol, 187.048f), module, SampleAndUpdateModule::RESET_PARAM);
-        resetBtn->setup(bc_green, true);
+        resetBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 187.048f), module, SampleAndUpdateModule::RESET_PARAM);
         addParam(resetBtn);
-        resetModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(modeBtnCol, 201.321f), module, SampleAndUpdateModule::RESET_MODE_PARAM);
-        resetModeBtn->setup(bc_redGreen, false);
-        addParam(resetModeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+            Vec(modeBtnCol, 201.321f), module, SampleAndUpdateModule::RESET_MODE_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 215.958f), module, SampleAndUpdateModule::RESET_INPUT));
 
         // Mode (Value, Gate, Trigger count)

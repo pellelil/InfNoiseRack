@@ -270,9 +270,7 @@ struct VCA4IIModuleWidget : InfNoiseModuleWidget {
 
         // B-Section
         const float rightCol = 45.f;
-        infNoiseLtSmallButton* linkBtn = createParamCentered<infNoiseLtSmallButton>(Vec(34.358f, 36.726f), module, VCA4IIModule::B_LINK_PARAM);
-        linkBtn->setup(bc_green, false);
-        addParam(linkBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(34.358f, 36.726f), module, VCA4IIModule::B_LINK_PARAM));
         addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(56.030f, 36.726f), module, VCA4IIModule::SCALE_MODE_B_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rightCol, 52.106f), module, VCA4IIModule::VCA_B_KNOB_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(rightCol, 79.845f), module, VCA4IIModule::VCA_B_TRIM_PARAM));
@@ -281,9 +279,7 @@ struct VCA4IIModuleWidget : InfNoiseModuleWidget {
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(rightCol, 169.694f), module, VCA4IIModule::B_OUTPUT));
 
         // C-Section
-        linkBtn = createParamCentered<infNoiseLtSmallButton>(Vec(4.358f, 199.284f), module, VCA4IIModule::C_LINK_PARAM);
-        linkBtn->setup(bc_green, false);
-        addParam(linkBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(4.358f, 199.284f), module, VCA4IIModule::C_LINK_PARAM));
         addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(26.030f, 199.284f), module, VCA4IIModule::SCALE_MODE_C_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(leftCol, 215.106f), module, VCA4IIModule::VCA_C_KNOB_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(leftCol, 242.845f), module, VCA4IIModule::VCA_C_TRIM_PARAM));
@@ -292,9 +288,7 @@ struct VCA4IIModuleWidget : InfNoiseModuleWidget {
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(leftCol, 332.694f), module, VCA4IIModule::C_OUTPUT));
 
         // D-Section
-        linkBtn = createParamCentered<infNoiseLtSmallButton>(Vec(34.358f, 199.284f), module, VCA4IIModule::D_LINK_PARAM);
-        linkBtn->setup(bc_green, false);
-        addParam(linkBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(34.358f, 199.284f), module, VCA4IIModule::D_LINK_PARAM));
         addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(56.030f, 199.284f), module, VCA4IIModule::SCALE_MODE_D_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rightCol, 215.106f), module, VCA4IIModule::VCA_D_KNOB_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(rightCol, 242.845f), module, VCA4IIModule::VCA_D_TRIM_PARAM));

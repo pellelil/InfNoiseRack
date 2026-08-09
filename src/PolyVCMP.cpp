@@ -304,9 +304,7 @@ struct PolyVCMPModuleWidget : InfNoiseModuleWidget {
         const float cntrCol = 15.f;
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 51.326f), module, PolyVCMPModule::POLY_INPUT));
 
-        infNoiseLtSmallButton* resetBth = createParamCentered<infNoiseLtSmallButton>(Vec(4.765f, 74.884f), module, PolyVCMPModule::RESET_MODE_PARAM);
-        resetBth->setup(bc_red, false);
-        addParam(resetBth);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(4.765f, 74.884f), module, PolyVCMPModule::RESET_MODE_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 86.897f), module, PolyVCMPModule::RESET_INPUT));
 
         addParam(createParamCentered<CKSS>(Vec(8.558f, 122.079f), module, PolyVCMPModule::OUTPUT_MODE_PARAM));

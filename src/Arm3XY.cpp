@@ -457,9 +457,7 @@ struct Arm3XYModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputClm, row), module, Arm3XYModule::MIN_CNTR_MAX_INPUT));
 
         // Min/Center/Max toggle-button
-        infNoiseLtSmallButton* mnCnMxBtn = createParamCentered<infNoiseLtSmallButton>(Vec(89.472f, 285.633f), module, Arm3XYModule::MIN_CNTR_MAX_BTN_PARAM);
-        mnCnMxBtn->setup(bc_green, true);
-        addParam(mnCnMxBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(89.472f, 285.633f), module, Arm3XYModule::MIN_CNTR_MAX_BTN_PARAM));
 
         // Min/Center/Max lights
         const float lightRow = 279.757f;

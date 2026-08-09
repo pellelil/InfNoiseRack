@@ -295,15 +295,13 @@ struct CxFade4x1ModuleWidget : InfNoiseModuleWidget {
             addParam(createParamCentered<Trimpot>(Vec(trimKnobCol, fadeKnobRow), module, CxFade4x1Module::CROSSFADE_M_TRIM_PARAM + i));
             addInput(createInputCentered<ThemedPJ301MPort>(Vec(fadeCvCol, fadeKnobRow), module, CxFade4x1Module::CROSSFADE_M_INPUT + i));
 
-            infNoiseLtSmallButton* toggleBtn = createParamCentered<infNoiseLtSmallButton>(Vec(manToggleBtnCol, fadeKnobRow + toggleBtnOfs),
-                module, CxFade4x1Module::CROSSFADE_M_TOGGLE_PARAM + i);
-            toggleBtn->setup(bc_green, true);
-            addParam(toggleBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(
+                Vec(manToggleBtnCol, fadeKnobRow + toggleBtnOfs),
+                module, CxFade4x1Module::CROSSFADE_M_TOGGLE_PARAM + i));
 
-            infNoiseLtSmallButton* cvTrigBtn = createParamCentered<infNoiseLtSmallButton>(Vec(cvTrigToggleBtnCol, fadeKnobRow + toggleBtnOfs),
-                module, CxFade4x1Module::CROSSFADE_M_TRIG_PARAM + i);
-            cvTrigBtn->setup(bc_red, false);
-            addParam(cvTrigBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(
+                Vec(cvTrigToggleBtnCol, fadeKnobRow + toggleBtnOfs),
+                module, CxFade4x1Module::CROSSFADE_M_TRIG_PARAM + i));
 
             fadeKnobRow += fadeKnobSpacing;
 

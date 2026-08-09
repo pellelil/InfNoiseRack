@@ -341,10 +341,8 @@ struct ManMix4stModuleWidget : InfNoiseModuleWidget {
         }
 
         for (int i = 0; i < 3; i++) {
-            infNoiseLtSmallButton* normBtn = createParamCentered<infNoiseLtSmallButton>(
-                Vec(22.553f, normBtnRows[i]), module, ManMix4stModule::MIX2_NORM_PARAM + i);
-            normBtn->setup(bc_redGreen, false);
-            addParam(normBtn);
+            addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+                Vec(22.553f, normBtnRows[i]), module, ManMix4stModule::MIX2_NORM_PARAM + i));
         }
 
         for (int i = 0; i < 4; i++) {

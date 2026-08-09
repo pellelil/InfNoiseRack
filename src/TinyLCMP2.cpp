@@ -258,9 +258,7 @@ struct TinyLCMP2ModuleWidget : InfNoiseModuleWidget {
 
         // Top-section
         addParam(createParamCentered<CKSSThree>(Vec(tglCol, 41.927f), module, TinyLCMP2Module::CMP1_MODE_PARAM));
-        infNoiseLtSmallButton* inv1Btn = createParamCentered<infNoiseLtSmallButton>(Vec(25.010f, 57.050f), module, TinyLCMP2Module::CMP1_INV_PARAM);
-        inv1Btn->setup(bc_red, false);
-        addParam(inv1Btn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(25.010f, 57.050f), module, TinyLCMP2Module::CMP1_INV_PARAM));
 
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(22.515f, 28.942f), module, TinyLCMP2Module::XOR1_COUNT_LIGHT));
 
@@ -277,9 +275,7 @@ struct TinyLCMP2ModuleWidget : InfNoiseModuleWidget {
 
         // Bottom-section
         addParam(createParamCentered<CKSSThree>(Vec(tglCol, 204.927f), module, TinyLCMP2Module::CMP2_MODE_PARAM));
-        infNoiseLtSmallButton* inv2Btn = createParamCentered<infNoiseLtSmallButton>(Vec(25.010f, 220.050f), module, TinyLCMP2Module::CMP2_INV_PARAM);
-        inv2Btn->setup(bc_red, false);
-        addParam(inv2Btn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(25.010f, 220.050f), module, TinyLCMP2Module::CMP2_INV_PARAM));
 
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(22.515f, 191.942f), module, TinyLCMP2Module::XOR2_COUNT_LIGHT));
 

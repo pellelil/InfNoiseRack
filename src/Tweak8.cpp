@@ -355,12 +355,8 @@ struct Tweak8ModuleWidget : InfNoiseModuleWidget {
         initializeWidget(module, "res/Tweak8");
 
 
-        infNoiseLtSmallButton* linkScaleBtn = createParamCentered<infNoiseLtSmallButton>(Vec(202.346f, 38.941f), module, Tweak8Module::LINK_SCALE_PARAM);
-        linkScaleBtn->setup(bc_green, false);
-        addParam(linkScaleBtn);
-        infNoiseLtSmallButton* linkOffsetBtn = createParamCentered<infNoiseLtSmallButton>(Vec(202.346f, 161.541f), module, Tweak8Module::LINK_OFFSET_PARAM);
-        linkOffsetBtn->setup(bc_green, false);
-        addParam(linkOffsetBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(202.346f, 38.941f), module, Tweak8Module::LINK_SCALE_PARAM));
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(202.346f, 161.541f), module, Tweak8Module::LINK_OFFSET_PARAM));
 
         float col = 14.848f;
         const float colSpacing = 25.645f;

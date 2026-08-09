@@ -221,14 +221,10 @@ struct CxFade1x2ModuleWidget : InfNoiseModuleWidget {
         float centerCol = 15.f;
         // Cross-fade knob, trim-pot and CV-input
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerCol, 47.843f), module, CxFade1x2Module::CROSSFADE_PARAM));
-        infNoiseLtSmallButton* toggleBtn = createParamCentered<infNoiseLtSmallButton>(Vec(25.287f, 36.287f), module, CxFade1x2Module::CROSSFADE_TOGGLE_PARAM);
-        toggleBtn->setup(bc_green, true);
-        addParam(toggleBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(25.287f, 36.287f), module, CxFade1x2Module::CROSSFADE_TOGGLE_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(centerCol, 75.792f), module, CxFade1x2Module::CROSSFADE_TRIM_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 104.365f), module, CxFade1x2Module::CROSSFADE_INPUT));
-        infNoiseLtSmallButton* trigBtn = createParamCentered<infNoiseLtSmallButton>(Vec(25.287f, 92.307f), module, CxFade1x2Module::CROSSFADE_TRIG_PARAM);
-        trigBtn->setup(bc_red, false);
-        addParam(trigBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(25.287f, 92.307f), module, CxFade1x2Module::CROSSFADE_TRIG_PARAM));
 
         // 1(Left) Inputs/output  
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 151.000f), module, CxFade1x2Module::A1_INPUT));

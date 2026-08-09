@@ -247,10 +247,8 @@ struct ManMute8Module : InfNoiseModule {
 };
 
 struct ManMute8ModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* allBtn;
-    infNoiseLtSmallButton* allLatchBtn;
-    infNoiseSmallButton* muteBtn[8];
-    infNoiseLtSmallButton* latchBtn[8];
+    infNoiseSmallButton<bc_red, true>* allBtn;
+    infNoiseSmallButton<bc_red>* muteBtn[8];
 
     ManMute8ModuleWidget(ManMute8Module *module) {
         initializeWidget(module, "res/ManMute8");
@@ -261,12 +259,9 @@ struct ManMute8ModuleWidget : InfNoiseModuleWidget {
         float allRow = 51.443f;
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(col1, allRow), module, ManMute8Module::MUTED_LEVEL_INPUT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(col2, allRow), module, ManMute8Module::MUTED_LEVEL_PARAM));
-        allBtn = createParamCentered<infNoiseSmallButton>(Vec(col3, allRow), module, ManMute8Module::MUTE_ALL_PARAM);
-        allBtn->setup(bc_red, true);
+        allBtn = createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(col3, allRow), module, ManMute8Module::MUTE_ALL_PARAM);
         addParam(allBtn);
-        allLatchBtn = createParamCentered<infNoiseLtSmallButton>(Vec(82.312f, 61.497f), module, ManMute8Module::MUTE_ALL_LATCH_PARAM);
-        allLatchBtn->setup(bc_red, false);
-        addParam(allLatchBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(82.312f, 61.497f), module, ManMute8Module::MUTE_ALL_LATCH_PARAM));
 
         float latchCol = 55.442f;
         float latchOffset = 9.5f;  //float latchOffset = 10.054f;
@@ -274,12 +269,9 @@ struct ManMute8ModuleWidget : InfNoiseModuleWidget {
         float rowSpacing = 35.0734f;
         for (int i = 0; i < 8; i++) {
             addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(col1, row), module, ManMute8Module::CV1_INPUT + i));
-            muteBtn[i] = createParamCentered<infNoiseSmallButton>(Vec(col2, row), module, ManMute8Module::MUTE_1_PARAM + i);
-            muteBtn[i]->setup(bc_red, false);
+            muteBtn[i] = createParamCentered<infNoiseSmallButton<bc_red>>(Vec(col2, row), module, ManMute8Module::MUTE_1_PARAM + i);
             addParam(muteBtn[i]);
-            latchBtn[i] = createParamCentered<infNoiseLtSmallButton>(Vec(latchCol, row + latchOffset), module, ManMute8Module::LATCH1_PARAM + i);
-            latchBtn[i]->setup(bc_red, false);
-            addParam(latchBtn[i]);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchCol, row + latchOffset), module, ManMute8Module::LATCH1_PARAM + i));
             addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(col3, row), module, ManMute8Module::CV1_OUTPUT + i));
 
             row += rowSpacing;

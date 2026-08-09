@@ -226,9 +226,7 @@ struct PolyTweakIIModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 51.428f), module, PolyTweakIIModule::POLY_INPUT));
 
         // Channel-count & add-value
-        infNoiseLtSmallButton* autoCountBtn = createParamCentered<infNoiseLtSmallButton>(Vec(4.780f, 72.370f), module, PolyTweakIIModule::AUTO_CHANNEL_COUNT_PARAM);
-        autoCountBtn->setup(bc_green, false);
-        addParam(autoCountBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(4.780f, 72.370f), module, PolyTweakIIModule::AUTO_CHANNEL_COUNT_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 86.444f), module, PolyTweakIIModule::MAN_CHANNEL_COUNT_PARAM));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 116.380f), module, PolyTweakIIModule::ADD_VALUE_INPUT));
 

@@ -4,7 +4,6 @@
 #include "plugin.hpp"
 #include "inComponents.hpp"
 
-
 struct PolyScaleModule : InfNoiseModule {
     enum ParamId {
         MODE_PARAM,
@@ -322,9 +321,7 @@ struct PolyScaleModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<Trimpot>(Vec(clm1, 112.858f), module, PolyScaleModule::ALL_SCALE_TRIM_PARAM));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(clm1, 136.735f), module, PolyScaleModule::ALL_SCALE_INPUT));
 
-        auto* scaleModeBtn = createParamCentered<infNoiseSmallButton>(Vec(clm2, 89.330f), module, PolyScaleModule::SCALE_MODE_PARAM);
-        scaleModeBtn->setup(bc_green, true);
-        addParam(scaleModeBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(clm2, 89.330f), module, PolyScaleModule::SCALE_MODE_PARAM));
         const float scaleModeLightCol = 38.984f;
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(scaleModeLightCol, 105.424f), module, PolyScaleModule::SCALE_1X_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(scaleModeLightCol, 110.660f), module, PolyScaleModule::SCALE_2X_LIGHT));

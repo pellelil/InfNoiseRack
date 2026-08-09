@@ -123,7 +123,6 @@ struct FoldModule : InfNoiseModule {
 
         configBypass(CV_INPUT, CV_OUTPUT);
 
-
         // Set InfNoise features (e.g. menu-items) 
         haveProcQuality = true;
 		haveAutoProcQuality = false;
@@ -283,12 +282,11 @@ struct FoldModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<Trimpot>(Vec(cntrCol, 77.755f), module, FoldModule::GAIN_TRIM_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 105.844f), module, FoldModule::GAIN_INPUT));
 
-        infNoiseLtSmallButton* biasModeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(4.955f, 127.443f),
-            module, FoldModule::BIAS_MODE_PARAM);
-            biasModeBtn->setup(bc_green, false);
-        addParam(biasModeBtn);
-        addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrCol, 140.519f), module, FoldModule::BIAS_PARAM));
-        addParam(createParamCentered<Trimpot>(Vec(cntrCol, 168.258f), module, FoldModule::BIAS_TRIM_PARAM));
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(
+            Vec(4.955f, 127.443f),
+            module, FoldModule::BIAS_MODE_PARAM));
+            addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrCol, 140.519f), module, FoldModule::BIAS_PARAM));
+            addParam(createParamCentered<Trimpot>(Vec(cntrCol, 168.258f), module, FoldModule::BIAS_TRIM_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 196.347f), module, FoldModule::BIAS_INPUT));
         
         const float switchCol = 8.858f;

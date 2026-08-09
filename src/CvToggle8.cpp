@@ -284,8 +284,7 @@ struct CvToggle8Module : InfNoiseModule {
 };
 
 struct CvToggle8ModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* manBtn;
-    infNoiseLtSmallButton* latchBtn;
+    infNoiseSmallButton<bc_green, true>* manBtn;
 
     CvToggle8ModuleWidget(CvToggle8Module *module) {
         initializeWidget(module, "res/CvToggle8");
@@ -297,13 +296,11 @@ struct CvToggle8ModuleWidget : InfNoiseModuleWidget {
         const float offClm = 73.967f;
         const float outClm = 103.545f;
         float row = 52.120f;
-        manBtn = createParamCentered<infNoiseSmallButton>(Vec(onOffClm, row), module, CvToggle8Module::MANUAL_PARAM);
-        manBtn->setup(bc_green, true);
+        manBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(onOffClm, row), module, CvToggle8Module::MANUAL_PARAM);
         addParam(manBtn);
-        latchBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchClm, row + latchOffset), 
-            module, CvToggle8Module::MANUAL_LATCH_PARAM);
-        latchBtn->setup(bc_red, false);
-        addParam(latchBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(
+            Vec(latchClm, row + latchOffset), 
+            module, CvToggle8Module::MANUAL_LATCH_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(onClm, row), module, CvToggle8Module::ON_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(offClm, row), module, CvToggle8Module::OFF_PARAM));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(outClm, row), module, CvToggle8Module::ATTENUVERT_INPUT));
@@ -313,10 +310,8 @@ struct CvToggle8ModuleWidget : InfNoiseModuleWidget {
         float lightRow = 97.601f;
         for (int i = 0; i < 8; i++) {
             addInput(createInputCentered<ThemedPJ301MPort>(Vec(onOffClm, row), module, CvToggle8Module::GATE_TRIG1_INPUT + i));
-            infNoiseLtSmallButton* gtTrigBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchClm, row + latchOffset), 
-                module, CvToggle8Module::GATE_TRIG1_PARAM + i);
-            gtTrigBtn->setup(bc_redGreen, false);
-            addParam(gtTrigBtn);
+            addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+                Vec(latchClm, row + latchOffset), module, CvToggle8Module::GATE_TRIG1_PARAM + i));
             addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(onClm, row), module, CvToggle8Module::ON1_INPUT + i));
             addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(offClm, row), module, CvToggle8Module::OFF1_INPUT + i));
             addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(outClm, row), module, CvToggle8Module::CV1_OUTPUT + i));

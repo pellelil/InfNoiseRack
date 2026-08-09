@@ -335,13 +335,9 @@ struct FlipFlopModuleWidget : InfNoiseModuleWidget {
 
         // Set/Reset input
         const float btnClm = 4.390f;
-        infNoiseLtSmallButton* setBtn = createParamCentered<infNoiseLtSmallButton>(Vec(btnClm, 138.720f), module, FlipFlopModule::SET_PARAM);
-        setBtn->setup(bc_green, true);
-        addParam(setBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(btnClm, 138.720f), module, FlipFlopModule::SET_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 150.512f), module, FlipFlopModule::SET_INPUT));
-        infNoiseLtSmallButton* resetBtn = createParamCentered<infNoiseLtSmallButton>(Vec(btnClm, 172.195f), module, FlipFlopModule::RESET_PARAM);
-        resetBtn->setup(bc_green, true);
-        addParam(resetBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(btnClm, 172.195f), module, FlipFlopModule::RESET_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 183.987f), module, FlipFlopModule::RESET_INPUT));
 
         // Enable/Disable input
@@ -349,9 +345,8 @@ struct FlipFlopModuleWidget : InfNoiseModuleWidget {
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(7.160f, enDisLgtRow), module, FlipFlopModule::ENABLED_LIGHT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(22.582f, enDisLgtRow), module, FlipFlopModule::DISABLED_LIGHT));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 222.253f), module, FlipFlopModule::ENDIS_INPUT));
-        infNoiseLtSmallButton* enDisBtn = createParamCentered<infNoiseLtSmallButton>(Vec(btnClm, 234.304f), module, FlipFlopModule::ENDIS_TRIG_GATE_PARAM);
-        enDisBtn->setup(bc_redGreen, false);
-        addParam(enDisBtn);
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+            Vec(btnClm, 234.304f), module, FlipFlopModule::ENDIS_TRIG_GATE_PARAM));
 
         // Q/!Q outputs
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(7.160f, 247.034f), module, FlipFlopModule::UNDEF_OPR_LIGHT));

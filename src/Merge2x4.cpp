@@ -197,9 +197,7 @@ struct Merge2x4ModuleWidget : InfNoiseModuleWidget {
         // Mult-A/B inputs/outputs
         float row = 52.106f;
         for (int i = 0; i < 2; i++) {
-            infNoiseLtSmallButton* modeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(centerCol + modeColOfs, row + modeRowOfs), module, Merge2x4Module::MERGEMODEA_PARAM + i);
-            modeBtn->setup(bc_green, false);
-            addParam(modeBtn);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(centerCol + modeColOfs, row + modeRowOfs), module, Merge2x4Module::MERGEMODEA_PARAM + i));
                     
             for (int j = 0; j < 4; j++) {
                 int inIdx = i * 4 + j;

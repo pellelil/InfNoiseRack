@@ -120,7 +120,6 @@ struct VCA2Module : InfNoiseModule {
 
         haveOutputs = outputs[A_OUTPUT].isConnected() || outputs[B_OUTPUT].isConnected();
 
-
         //--------------------
         postProcessParams(args);
     }
@@ -189,9 +188,7 @@ struct VCA2ModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 142.186f), module, VCA2Module::A_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 169.694f), module, VCA2Module::A_OUTPUT));
 
-        infNoiseLtSmallButton* linkBtn = createParamCentered<infNoiseLtSmallButton>(Vec(4.427f, 199.363f), module, VCA2Module::LINK_MODE_PARAM);
-        linkBtn->setup(bc_green, false);
-        addParam(linkBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(4.427f, 199.363f), module, VCA2Module::LINK_MODE_PARAM));
         addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(26.284f, 199.363f), module, VCA2Module::SCALE_MODE_B_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrCol, 215.106f), module, VCA2Module::VCA_B_KNOB_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(cntrCol, 242.845f), module, VCA2Module::VCA_B_TRIM_PARAM));

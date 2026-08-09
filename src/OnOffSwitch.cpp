@@ -176,9 +176,7 @@ struct OnOffSwitchModule : InfNoiseModule {
 };
 
 struct OnOffSwitchModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* onOffBtn;
-    infNoiseLtSmallButton* onOffLatchBtn;
-    infNoiseLtSmallButton* trigGateBtn;
+    infNoiseSmallButton<bc_green, true>* onOffBtn;
 
     OnOffSwitchModuleWidget(OnOffSwitchModule *module) {
         initializeWidget(module, "res/OnOffSwitch");
@@ -186,18 +184,14 @@ struct OnOffSwitchModuleWidget : InfNoiseModuleWidget {
         // ON/OFF-button and latch
         const float cntrCol = 15.f;
         const float latchClm = 25.152f;
-        onOffBtn = createParamCentered<infNoiseSmallButton>(Vec(cntrCol, 51.397f), module, OnOffSwitchModule::ON_OFF_PARAM);
-        onOffBtn->setup(bc_green, true);
+        onOffBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 51.397f), module, OnOffSwitchModule::ON_OFF_PARAM);
         addParam(onOffBtn);
-        onOffLatchBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchClm, 63.689f), module, OnOffSwitchModule::ON_OFF_LATCH_PARAM);
-        onOffLatchBtn->setup(bc_red, false);
-        addParam(onOffLatchBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchClm, 63.689f), module, OnOffSwitchModule::ON_OFF_LATCH_PARAM));
 
         // ON/OFF-input and trigger/gate-switch
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 81.103f), module, OnOffSwitchModule::ON_OFF_INPUT));
-        trigGateBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchClm, 93.595f), module, OnOffSwitchModule::ON_OFF_TRIGGATE_PARAM);
-        trigGateBtn->setup(bc_redGreen, false);
-        addParam(trigGateBtn);
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
+            Vec(latchClm, 93.595f), module, OnOffSwitchModule::ON_OFF_TRIGGATE_PARAM));
 
         // ON-value
         const float lgtClm = 3.744f;

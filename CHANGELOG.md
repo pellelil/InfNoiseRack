@@ -1,5 +1,16 @@
+# 2.0.3 (In development)
+Ensured all module descriptions in manifest are identical to module descriptions in the manual. Various minor updates to the manual. Added support for multi-stage (color) push-buttons (needed one for a new module)
+
+## New modules
+- TBA
+
+## Updated/fixed modules
+- [Manuel Push 2](doc/ManCV.md#manuel-push-2p) In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).
+
+
 # 2.0.2 
 Fixed various warnings based on cppcheck report from VCV. Going forward I now have a local release-check script I can run, which monitors the various issues reported from VCV. So future releases should be less painfull.
+
 
 # 2.0.1 (not included in VCV Library due various issues)
 All panel SVG-files were simplified and reduced in file-size, but appears the same as before (e.g. a hidden layer inside the files were removed).
@@ -7,6 +18,7 @@ All panel SVG-files were simplified and reduced in file-size, but appears the sa
 ## Updated Modules
 - [Poly-Merge](doc/PolyTools.md#poly-mergep): Ligths (next to each input port) indicating channel count are now color-coded, whether input is availble (green) or whether it will simply output 0V (red). Ports that are not included in the output still shows as dimmed light. *Might have fixed a bug from 2.0.0, otherwise it was a bug caused by the new code that was fixed. Anyway no known bugs.*
 - [Poly-Split](doc/PolyTools.md#poly-splitp): Output ports that have available input still shows with a green light (whether cable is connected or not). However lights for output ports without available input will either show as dimmed (when no cable is connected), or red (if a cable is connected). This works both in mono- and poly-mode. E.g. if you in Poly-mode input a 6-channel polyphonic cable, and only insert a cable into output port 8, it will still output a 8 channel signal. The lights for port 1-6 will be green (as input is available), however the lights for ports 7 and 8 will show as red (as no input is available, and ports 7 and 8 will simply output 0V).
+
 
 # 2.0.0 (First release - not included in VCV Library due to manifest issues)
 

@@ -180,36 +180,26 @@ struct ManTrGtCvModule : InfNoiseModule {
 };
 
 struct ManTrGtCvModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* trigBtn;
-    infNoiseSmallButton* gateBtn[2];
-    infNoiseLtSmallButton* gateLatchBtn[2];
+    infNoiseSmallButton<bc_green, true>* gateBtn[2];
 
     ManTrGtCvModuleWidget(ManTrGtCvModule *module) {
         initializeWidget(module, "res/ManTrGtCv");
 
         // Trigger
         const float cntClm = 15.0f;
-        trigBtn = createParamCentered<infNoiseSmallButton>(Vec(cntClm, 50.868f), module, ManTrGtCvModule::TRIG_PARAM);
-        trigBtn->setup(bc_red, true);
-        addParam(trigBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(cntClm, 50.868f), module, ManTrGtCvModule::TRIG_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntClm, 77.302f), module, ManTrGtCvModule::TRIG_OUTPUT));
 
         //  Gates
         const float latchClm = 25.586f;
-        gateBtn[0] = createParamCentered<infNoiseSmallButton>(Vec(cntClm, 114.842f), module, ManTrGtCvModule::GATE1_PARAM);
-        gateBtn[0]->setup(bc_green, true);
+        gateBtn[0] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntClm, 114.842f), module, ManTrGtCvModule::GATE1_PARAM);
         addParam(gateBtn[0]);
-        gateLatchBtn[0] = createParamCentered<infNoiseLtSmallButton>(Vec(latchClm, 125.920f), module, ManTrGtCvModule::GATE1_LATCH_PARAM);
-        gateLatchBtn[0]->setup(bc_red, false);
-        addParam(gateLatchBtn[0]);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchClm, 125.920f), module, ManTrGtCvModule::GATE1_LATCH_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntClm, 142.301f), module, ManTrGtCvModule::GATE1_OUTPUT));
 
-        gateBtn[1] = createParamCentered<infNoiseSmallButton>(Vec(cntClm, 170.350f), module, ManTrGtCvModule::GATE2_PARAM);
-        gateBtn[1]->setup(bc_green, true);
+        gateBtn[1] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntClm, 170.350f), module, ManTrGtCvModule::GATE2_PARAM);
         addParam(gateBtn[1]);
-        gateLatchBtn[1] = createParamCentered<infNoiseLtSmallButton>(Vec(latchClm, 181.427f), module, ManTrGtCvModule::GATE2_LATCH_PARAM);
-        gateLatchBtn[1]->setup(bc_red, false);
-        addParam(gateLatchBtn[1]);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchClm, 181.427f), module, ManTrGtCvModule::GATE2_LATCH_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntClm, 197.909f), module, ManTrGtCvModule::GATE2_OUTPUT));
 
         // CV

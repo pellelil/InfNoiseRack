@@ -216,22 +216,16 @@ struct IncDecOffsetModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 96.005f), module, IncDecOffsetModule::VALUE_INPUT));
 
         // Increment
-        infNoiseSmallButton* incBtn = createParamCentered<infNoiseSmallButton>(Vec(centerCol, 129.576f), module, IncDecOffsetModule::INC_PARAM);
-        incBtn->setup(bc_red, true);
-        addParam(incBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(centerCol, 129.576f), module, IncDecOffsetModule::INC_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 152.918f), module, IncDecOffsetModule::INC_INPUT));
     
 
         // Decrement
-        infNoiseSmallButton* decBtn = createParamCentered<infNoiseSmallButton>(Vec(centerCol, 186.389f), module, IncDecOffsetModule::DEC_PARAM);
-        decBtn->setup(bc_red, true);
-        addParam(decBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(centerCol, 186.389f), module, IncDecOffsetModule::DEC_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 209.831f), module, IncDecOffsetModule::DEC_INPUT));
 
         // Reset
-        infNoiseSmallButton* resetBtn = createParamCentered<infNoiseSmallButton>(Vec(centerCol, 242.525f), module, IncDecOffsetModule::RESET_PARAM);
-        resetBtn->setup(bc_red, true);
-        addParam(resetBtn);
+        addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(centerCol, 242.525f), module, IncDecOffsetModule::RESET_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 266.501f), module, IncDecOffsetModule::RESET_INPUT));
 
         // CV input/output

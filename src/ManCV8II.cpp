@@ -284,10 +284,8 @@ struct ManCV8IIModule : InfNoiseModule {
 };
 
 struct ManCV8IIModuleWidget : InfNoiseModuleWidget {
-    infNoiseSmallButton* allBtn;
-    infNoiseLtSmallButton* allLatchBtn;
-    infNoiseSmallButton* onOffBtn[8];
-    infNoiseLtSmallButton* latchBtn[8];
+    infNoiseSmallButton<bc_blue, true>* allBtn;
+    infNoiseSmallButton<bc_blue>* onOffBtn[8];
 
     ManCV8IIModuleWidget(ManCV8IIModule *module) {
         initializeWidget(module, "res/ManCV8II");
@@ -300,12 +298,9 @@ struct ManCV8IIModuleWidget : InfNoiseModuleWidget {
         const float latchOffset = 8.362f;
         const float allAttRow = 52.120f;
         const float lgtOfs = 10.021f;
-        allBtn = createParamCentered<infNoiseSmallButton>(Vec(onOffButnCol, allAttRow), module, ManCV8IIModule::ALL_BUTTON_PARAM);
-        allBtn->setup(bc_blue, true);
+        allBtn = createParamCentered<infNoiseSmallButton<bc_blue, true>>(Vec(onOffButnCol, allAttRow), module, ManCV8IIModule::ALL_BUTTON_PARAM);
         addParam(allBtn);
-        allLatchBtn = createParamCentered<infNoiseLtSmallButton>(Vec(latchButnCol, 62.175f), module, ManCV8IIModule::ALL_BUTTON_LATCH_PARAM);
-        allLatchBtn->setup(bc_red, false);
-        addParam(allLatchBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchButnCol, 62.175f), module, ManCV8IIModule::ALL_BUTTON_LATCH_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(onKnobCol, allAttRow), module, ManCV8IIModule::ALL_INPUT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(offKnobCol, allAttRow), module, ManCV8IIModule::ATTENUVERT_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(outputCol, allAttRow), module, ManCV8IIModule::MAN_POLY_OUTPUT));
@@ -314,13 +309,10 @@ struct ManCV8IIModuleWidget : InfNoiseModuleWidget {
         float row = 87.194f;
         float rowSpacing = 35.0734f;
         for (int i = 0; i < 8; i++) {
-            onOffBtn[i] = createParamCentered<infNoiseSmallButton>(Vec(onOffButnCol, row), module, ManCV8IIModule::BUTTON1_PARAM + i);
-            onOffBtn[i]->setup(bc_blue, false);
+            onOffBtn[i] = createParamCentered<infNoiseSmallButton<bc_blue>>(Vec(onOffButnCol, row), module, ManCV8IIModule::BUTTON1_PARAM + i);
             addParam(onOffBtn[i]);
 
-            latchBtn[i] = createParamCentered<infNoiseLtSmallButton>(Vec(latchButnCol, row + latchOffset), module, ManCV8IIModule::BUTTON1_LATCH_PARAM + i);
-            latchBtn[i]->setup(bc_red, false);
-            addParam(latchBtn[i]);
+            addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchButnCol, row + latchOffset), module, ManCV8IIModule::BUTTON1_LATCH_PARAM + i));
 
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(onKnobCol, row), module, ManCV8IIModule::ON_KNOB1_PARAM + i));
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(offKnobCol, row), module, ManCV8IIModule::OFF_KNOB1_PARAM + i));

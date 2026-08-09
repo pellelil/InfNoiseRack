@@ -227,9 +227,7 @@ struct MergeMult4ModuleWidget : InfNoiseModuleWidget {
 
         // Merge inputs/output
         float row = 52.106f;
-        infNoiseLtSmallButton* modeBtn = createParamCentered<infNoiseLtSmallButton>(Vec(centerCol + modeColOfs, row + modeRowOfs), module, MergeMult4Module::MERGEMODE_PARAM);
-        modeBtn->setup(bc_green, false);
-        addParam(modeBtn);
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(centerCol + modeColOfs, row + modeRowOfs), module, MergeMult4Module::MERGEMODE_PARAM));
         for (int i = 0; i < 4; i++) {
 			addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, row), module, MergeMult4Module::MERGE1_INPUT + i));
             row += rowSpacing;
