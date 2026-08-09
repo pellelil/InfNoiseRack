@@ -16,7 +16,7 @@ on:
   pull_request:
 
 env:
-  rack-sdk-version: 2.6.3
+  rack-sdk-version: 2.6.6
   rack-plugin-toolchain-dir: /home/build/rack-plugin-toolchain
 
 defaults:
@@ -183,6 +183,14 @@ jobs:
     needs: [build, build-mac]
 
     steps:
+      - uses: actions/checkout@v4
+
+      # Keep the Nightly tag pointing at the commit used for this build
+      - name: Move Nightly tag to current commit
+        run: |
+          git tag -f Nightly $GITHUB_SHA
+          git push origin Nightly --force
+
       - uses: actions/download-artifact@v4
         with:
           path: _artifacts
