@@ -16,11 +16,6 @@ DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets
 # DISTRIBUTABLES += selections
 
-# Strip UTF-8 BOM from plugin.json if an editor/agent added one (VCV Rack cannot load manifest with BOM).
-ifeq ($(OS),Windows_NT)
-$(shell powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ensure-plugin-json-no-bom.ps1 >/dev/null 2>&1)
-endif
-
 # Include the VCV Rack plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
 
