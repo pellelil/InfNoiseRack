@@ -5,7 +5,7 @@ Ensured all module descriptions in manifest are identical to module descriptions
 - TBA
 
 ## Updated/fixed modules
-- [Manuel Push 2](doc/ManCV.md#manuel-push-2p) In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).
+- [Manuel Push 2](doc/ManCV.md#manuel-push-2p): In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).
 
 
 # 2.0.2 
