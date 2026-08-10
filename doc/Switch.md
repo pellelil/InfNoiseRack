@@ -40,6 +40,8 @@ This module allows you to switch or cross-fade a single input signal across up t
 
 A red button next to the switch/cross-fade CV input enables trigger mode. When activated, the CV input is treated as a trigger, cycling through outputs based on the "Trigger Order" setting, which can be adjusted via the context menu. As noted earlier, the reset input is only functional when the module is configured for switch mode with trigger input.
 
+An input cable is not required if you want to route a fixed voltage. By default the CV input is normalized to 0V when no cable is connected. Via the context menu you can assign a custom normalization voltage, then use the switch/cross-fade to send that fixed level to the selected output(s).
+
 ![Screenshot of Cross-fade Switch 1to4](module/CrossFadeSwitch1to4.png) 
 
 # Other switches

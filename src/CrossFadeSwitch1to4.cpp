@@ -43,6 +43,7 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
     bool haveOutputs = false;
     enum triggerOrderMode { tom_Next, tom_Prev, tom_PingPong, tom_Rnd, tom_RndDiff };
     actReqValue<triggerOrderMode> trigOrder = actReqValue<triggerOrderMode>(tom_Next);
+    actReqValue<voltValue> normCvInVolt = actReqValue<voltValue>(v_zero);
     enum triggerDirection { td_Up, td_Down };
     triggerDirection pingPongDir = td_Down;
     dsp::SchmittTrigger selectTrig;
@@ -62,7 +63,7 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
 
         configSwitch(COUNT_PARAM, 0.0, 2.0, 0.0, "Port count", { "2", "3", "4" });
 
-        configInput(CV_INPUT, "CV");
+        configInput(CV_INPUT, "CV (normalized via context-menu)");
         configOutput(CV1_OUTPUT, "CV-1");
         configOutput(CV2_OUTPUT, "CV-2");
         configOutput(CV3_OUTPUT, "CV-3");
@@ -93,6 +94,7 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
         pingPongDir = td_Down;
         selectTrig.reset();
         resetTrig.reset();
+        normCvInVolt.setBoth(v_zero);
     }
 
     void dataFromJson(json_t* rootJ) override {
@@ -100,11 +102,13 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
         
         trigOrder.setBoth((triggerOrderMode)getJsonInt(rootJ, "trigOrder", (int)tom_Next));
         pingPongDir = (triggerDirection)getJsonInt(rootJ, "pingPongDir", (int)td_Down);
+        normCvInVolt.setBoth((voltValue)getJsonInt(rootJ, "normCvInVolt", (int)v_zero));
     }
 
     void dataToJson(json_t* rootJ) override {
         json_object_set_new(rootJ, "trigOrder", json_integer((int)trigOrder.req));
         json_object_set_new(rootJ, "pingPongDir", json_integer((int)pingPongDir));
+        json_object_set_new(rootJ, "normCvInVolt", json_integer((int)normCvInVolt.req));
     }
 
     void processParams(const ProcessArgs& args) {
@@ -116,6 +120,15 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
             trigOrder.updateActual();
             if (trigOrder.act != tom_PingPong)  // Reset direction for non-ping-pong
                 pingPongDir = td_Down;
+        }
+        if (normCvInVolt.needsUpdate()) {
+            normCvInVolt.updateActual();
+            if (inputInfos.size() > (unsigned)CV_INPUT && inputInfos[CV_INPUT]) {
+                inputInfos[CV_INPUT]->name = polyPortPrefix() + string::f(
+                    "CV (normalized via menu to: %s)",
+                    getVoltName(normCvInVolt.act).c_str()
+                );
+            }
         }
 
         // Cross-fade not available when in trigger-mode and input connected
@@ -242,12 +255,13 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
                 }
             }
 
-            // Cross-fade or switch inputs
-            float inVoltage = inputs[CV_INPUT].isConnected() 
-                ? inputs[CV_INPUT].getVoltage() 
-                : 0.f;
+            // Cross-fade or switch input to outputs
             for (int c = 0; c < channels; c++)
             {
+                float inVoltage = inputs[CV_INPUT].isConnected()
+                    ? inputs[CV_INPUT].getPolyVoltage(c)
+                    : voltValues[normCvInVolt.act];
+
                 outputs[CV1_OUTPUT].setVoltage(0.f, c);
                 outputs[CV2_OUTPUT].setVoltage(0.f, c);
                 outputs[CV3_OUTPUT].setVoltage(0.f, c);
@@ -320,6 +334,10 @@ struct CrossFadeSwitch1to4ModuleWidget : InfNoiseModuleWidget {
         std::vector<std::string> trigOrderNames = { "Next", "Prev", "Ping-pong", "Random", "Random Diff" };
         menu->addChild(createIndexPtrSubmenuItem("Trigger-order", trigOrderNames,
             &module->trigOrder.req));
+
+        std::vector<std::string> voltNames = getVoltValuesNames();
+        menu->addChild(createIndexPtrSubmenuItem("CV normalized input", voltNames,
+            &module->normCvInVolt.req));
         
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);

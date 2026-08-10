@@ -74,12 +74,12 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + PolyVCMP: -
 
 ### Switches
-+ CrossFadeSwitch1to4: Add menu with volt normalization for input (tool-tip should show value) **Idea**
++ CrossFadeSwitch1to4: -
 + CrossFadeSwitch4to1: -
 + CxFade1x2: -
 + CxFade4x1: -
 + BernoulliSwitch: -
-+ OnOffSwitch: Perhaps let trigger/gate-input be polyphonic **Idea**
++ OnOffSwitch: -
 + Combine: -
 
 ### Misc
