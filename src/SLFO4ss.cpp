@@ -37,6 +37,7 @@ struct SLFO4ssModule : InfNoiseModule {
         FREQ1_LIGHT,
         FREQ2_LIGHT,
         FREQ3_LIGHT,
+        FREQ4_LIGHT,
         ENUMS(SYNC2_LIGHT, 2),  // Indicate LFO-2 is synced
         ENUMS(SYNC3_LIGHT, 2),  // Indicate LFO-3 is synced
         ENUMS(SYNC4_LIGHT, 2),  // Indicate LFO-4 is synced

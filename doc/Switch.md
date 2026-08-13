@@ -91,6 +91,8 @@ The module’s output contains as many channels as the ON/OFF-input with the hig
 
 **TIP**: By setting the CV input to **Trigger mode**, the **ON** knob to 10V, and the **OFF** knob to 0V, the module can be used to "convert triggers into gates". Each odd-numbered trigger will activate the ON stage and set the output to 10V, while each even-numbered trigger will activate the OFF stage and set the output back to 0V. *In this configuration the module will function as a Toggle Flip-Flop.*
 
+*The ON/OFF Gate/Tigger input in the top of the module (to toggle between the ON- and OFF-stages) is monophonic-only, so the ON/OFF Switch will switch all channels of a polyphonic signal at the same time. Hence the ON/OFF Switch is not able to switch individual channels between their ON/OFF stages. However [Poly-Tweak Mk II](PolyTools.md#poly-tweak-mk-iip) is able to do this using its "disable" section (described as a tip for the Poly-Tweak Mk II).*
+
 ## Combine(p)
 This module “combines” two inputs by switching between them based on three different algorithms (for example, using the upper half of one input and switching to the other when the first is no longer in that range). Each algorithm has a single parameter, controlled by the knob and CV input at the top of the module. The parameter CV input supports both monophonic and polyphonic signals, allowing you to use the same parameter value across all channels or different values per channel. When changing mode, the tooltips for the param-knob, -trim and -CV input will update to remind you how the param is used for that mode.
 
@@ -98,7 +100,7 @@ Below the parameter controls, you’ll find a 3-way mode switch to select the mo
 
 At the bottom of the module are the A and B inputs, followed by two outputs: A/B and Gt. If both inputs are polyphonic, they should ideally have the same number of channels, although it is possible to mix a polyphonic signal with a monophonic one. The **A/B** output uses the A input as the primary source, applying the selected algorithm to determine when to switch to the B input. However each channel is processed separatly (e.g. channel-1 of the A/B-output might output channel-1 of the A-input, and channel-2 of the A/B output might output channel-2 of the B-input).
 
-By default, the **Gt.** output produces a high gate whenever the A input is selected by the A/B output. This behavior can be changed in the context menu so that the gate instead goes high when the B input is selected. A small indicator light next to the "Gt." label shows the current mode: it's dim when “gate high = A selected” (default), and red when “gate high = B selected.”.
+By default, the **Gt.** output produces a high gate whenever the A input is selected by the A/B output. This behavior can be changed in the context menu so that the gate instead goes high when the B input is selected. A small indicator light next to the "Gt." label shows the current mode: it's dim when “gate high = A selected” (default), and red when “gate high = B selected”. *By feeding two signals into this module, you can use the **Gt.** output as an erratic/chaotic gate signal without using the **A/B** output at all. This gate signal can then be used for many different purposes. For example, you could feed it into an [ON/OFF Switch](Switch.md#onoff-switchp) to switch between two completely different signals than those connected to the A/B inputs.*
 
 ![Screenshot of Combine](module/Combine.png)
 
