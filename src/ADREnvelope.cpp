@@ -110,6 +110,12 @@ struct ADREnvelopeModule : InfNoiseModule {
         infNoiseOutTrigger(), // BOR
         infNoiseOutTrigger()  // EOR
     };
+    float attackChaosFactor = 1.f;
+    float delayChaosFactor = 1.f;
+    float releaseChaosFactor = 1.f;
+    float attackChaosAmount = 0.f;
+    float delayChaosAmount = 0.f;
+    float releaseChaosAmount = 0.f;
 
 	ADREnvelopeModule() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -172,6 +178,9 @@ struct ADREnvelopeModule : InfNoiseModule {
         delayRateChaos.setBoth(rc_default);
         attackRateChaos.setBoth(rc_default);
         releaseRateChaos.setBoth(rc_default);
+        delayChaosFactor = 1.f;
+        attackChaosFactor = 1.f;
+        releaseChaosFactor = 1.f;
         phaseTrig.reset();
         attTrig.reset();
         relTrig.reset();
@@ -180,6 +189,8 @@ struct ADREnvelopeModule : InfNoiseModule {
             outTrig[i].reset();
         phaseTrigMode = false;
         envelope = releaseLevel;
+        oldAttackShape = 2.f;
+        oldReleaseShape = 2.f;
     }
 
     void dataFromJson(json_t* rootJ) override {
@@ -270,6 +281,7 @@ struct ADREnvelopeModule : InfNoiseModule {
             phasePos = 1.f;
             outTrig[EOA].trigger();
         }
+        attackChaosFactor = rateChaosFactor(attackChaosAmount);
     }
 
     void beginRelease() {
@@ -280,6 +292,7 @@ struct ADREnvelopeModule : InfNoiseModule {
             phase = ap_holdR;
             outTrig[EOR].trigger();
         }
+        releaseChaosFactor = rateChaosFactor(releaseChaosAmount);
     }
 
     void processParams(const ProcessArgs& args) {
@@ -287,8 +300,11 @@ struct ADREnvelopeModule : InfNoiseModule {
         //--------------------
 
         delayRateChaos.updateActual();
+        delayChaosAmount = rateChaosValues[delayRateChaos.act];
         attackRateChaos.updateActual();
+        attackChaosAmount = rateChaosValues[attackRateChaos.act];
         releaseRateChaos.updateActual();
+        releaseChaosAmount = rateChaosValues[releaseRateChaos.act];
 
         // Attack, Delay and Release times
         attackTime = readTimeParam(A_TIME_PARAM, args.sampleTime);
@@ -445,6 +461,7 @@ struct ADREnvelopeModule : InfNoiseModule {
                 if (delayTime > 0.f) {
                     phase = ap_delay;
                     phasePos = 0.f;
+                    delayChaosFactor = rateChaosFactor(delayChaosAmount);
                 }
                 else {
                     beginRelease();
@@ -452,7 +469,7 @@ struct ADREnvelopeModule : InfNoiseModule {
             }
             else { // Handle transition/delay/hold
                 if (phase == ap_attack) {
-                    phasePos += attackStep;
+                    phasePos += attackStep * attackChaosFactor;
                     if (phasePos >= 1.f) {
                         phase = ap_holdA;
                         phasePos = 0.f;
@@ -460,13 +477,13 @@ struct ADREnvelopeModule : InfNoiseModule {
                     }
                 }
                 else if (phase == ap_delay) {
-                    phasePos += delayStep;
+                    phasePos += delayStep * delayChaosFactor;
                     if (phasePos >= 1.f) {
                         beginRelease();
                     }
                 }
                 else if (phase == ap_release) {
-                    phasePos += releaseStep;
+                    phasePos += releaseStep * releaseChaosFactor;
                     if (phasePos >= 1.f) {
                         phase = ap_holdR;
                         phasePos = 0.f;
@@ -592,10 +609,10 @@ struct ADREnvelopeModuleWidget : InfNoiseModuleWidget {
         menu->addChild(new MenuSeparator);
 
         std::vector<std::string> rateChaosNames = getRateChaosNames();
-        menu->addChild(createIndexPtrSubmenuItem("Delay rate chaos", rateChaosNames,
-            &module->delayRateChaos.req));
         menu->addChild(createIndexPtrSubmenuItem("Attack rate chaos", rateChaosNames,
             &module->attackRateChaos.req));
+        menu->addChild(createIndexPtrSubmenuItem("Delay rate chaos", rateChaosNames,
+            &module->delayRateChaos.req));
         menu->addChild(createIndexPtrSubmenuItem("Release rate chaos", rateChaosNames,
             &module->releaseRateChaos.req));
 
