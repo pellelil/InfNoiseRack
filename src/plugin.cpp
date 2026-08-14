@@ -238,6 +238,7 @@ void init(Plugin *p) {
 	pluginInstance = p;
 
 	// Add modules here
+	p->addModel(modelADREnvelope);
 	p->addModel(modelArm3XY);
 	p->addModel(modelAutoScale4);
 	p->addModel(modelBernoulliSwitch);

@@ -837,6 +837,16 @@
         "Polyphonic",
         "Utility"
       ]
+    },
+    {
+      "slug": "ADREnvelope",
+      "name": "ADR Envelope",
+      "description": "Attack-Delay-Release Envelope with attack/rease time and shape.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/ADREnvelope.md#adr-envelope",
+      "tags":  [
+        "Envelope generator",
+        "Utility"
+      ]
     }
   ]
 }

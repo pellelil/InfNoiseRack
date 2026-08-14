@@ -248,3 +248,4 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Turing Machine](TuringMachine.md#turing-machineq)(q): Turing machine for generating random sequences (16 bit- and 2-value outputs).
 + [Bits-to-Value](Bits.md#bits-to-value): Converts 8 bits (gate-inputs) into a CV-value based on dialed in weights and specified range.
 + [Value-to-Bits](Bits.md#value-to-bits): Converts a CV-input (clamped in specified range) into 8 monophonic- and 1 polyphonic gate-output (up to 16 channels).
++ [ADR Envelope](ADREnvelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/rease time and shape.

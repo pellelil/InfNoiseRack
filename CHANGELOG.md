@@ -2,7 +2,7 @@
 Ensured all module descriptions in manifest are identical to module descriptions in the manual. Also updated the manifest tags for several modules, e.g. LMCP2, VCMP1 and VCMP2 Mk I, are all able to work as 2-to-1 switches thanks to their "True"/"False" inputs in the top of the modules, but were not tagged as "Switch" in the maninfest. Various minor updates to the manual. Added support for multi-stage (color) push-buttons (needed one for a new module)
 
 ## New modules
-- TBA
+- [ADR Envelope](ADREnvelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/rease time and shape.
 
 ## Updated modules
 - [Manuel Push 2](doc/ManCV.md#manuel-push-2p): In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).

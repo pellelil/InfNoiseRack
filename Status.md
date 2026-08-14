@@ -100,3 +100,4 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + TuringMachine: -
 + BitsToValue: -
 + ValueToBits: -
++ ADREnvelope: New module **Needs testing**
