@@ -500,11 +500,11 @@ struct ADREnvelopeModule : InfNoiseModule {
                 }
             }
 
-            // Envelope: holds pin to level knobs; ramps lerp along phasePos; delay keeps last voltage
+            // Generate envelope output
             if (phase == ap_holdA)
-                envelope = attackLevel;  // Must be set whether or not connected
+                envelope = attackLevel;  // Must be set whether or not envelope output is connected
             else if (phase == ap_holdR)
-                envelope = releaseLevel;  // Must be set whether or not connected
+                envelope = releaseLevel;  // Must be set whether or not envelope output is connected
             if (haveEnvelopeOutput) {
                 if (phase == ap_attack)
                     envelope = releaseLevel + (attackLevel - releaseLevel) * attackShapeLut(phasePos);
