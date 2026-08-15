@@ -213,11 +213,11 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Poly-Split](PolyTools.md#poly-splitp)(p): Split a polyphonic signal into (up to) 16 monophonic signals (or multiple polyphonic signals).
 + [Poly-Stereo](PolyTools.md#poly-stereop)(p): Encode/Decode 2 monophonic left/right signals to/from 2 channel polyphonic signals.
 + [Poly-Quad](PolyTools.md#poly-quadp)(p): Encode/Decode 4 monophonic signals to/from 4 channel polyphonic signals (basically an up to 4 channel merger/splitter).
-+ [Poly-Shuffle](PolyTools.md#poly-shufflep)(p): Add/Remove/Shuffle channels of a polyphonic signal.
-+ [Poly-Tweak Mk I](PolyTools.md#poly-tweak-mk-ip)(p): Invert/Disable (mute/remove) channels of a polyphonic signal based on buttons.
-+ [Poly-Tweak Mk II](PolyTools.md#poly-tweak-mk-iip)(p): Invert/Disable (mute/remove) channels of a polyphonic signal based on CV-inputs.
++ [Poly-Shuffle](PolyTools.md#poly-shufflep)(p): Add/Remove/Shuffle channels of a polyphonic signal. Can also be used to construct a polyphonic signal with up to 16 gates.
++ [Poly-Tweak Mk I](PolyTools.md#poly-tweak-mk-ip)(p): Invert/Disable (mute/remove) channels of a polyphonic signal based on buttons. Can also be used to construct a polyphonic signal with up to 16 gates.
++ [Poly-Tweak Mk II](PolyTools.md#poly-tweak-mk-iip)(p): Invert/Disable (mute/remove) channels of a polyphonic signal based on CV-inputs. Can also be used to mix individual channels of two polyphonic signals.
 + [Poly-Logical Compare](PolyTools.md#poly-logical-comparep)(p): Perform logical-compare (AND,OR,XOR,NAND,NOR,XNOR) on all channels of same polyphonic-signal.
-+ [Poly-Value Compare](PolyTools.md#poly-value-comparep)(p): Perform value-compare (MIN,MAX,NtZ,FfZ,AVG,R/S) on all channels of same polyphonic-signal. Can also monitor (MIN,MAX,NtZ,FfZ,AVG,R/S) over time (since last reset).
++ [Poly-Value Compare](PolyTools.md#poly-value-comparep)(p): Perform value-compare (MIN,MAX,NtZ,FfZ,AVG,R/S) on all channels of same polyphonic-signal. Can also monitor (MIN,MAX,NtZ,FfZ,AVG,R/S) over time (since last reset), accross all channels or individually for each channel.
 + [Poly-Offset](PolyTools.md#poly-offsetp)(p): Offset individuel- or group of channels of a polyphonic-signal.
 + [Poly-Scale](PolyTools.md#poly-scalep)(p): Scale (attenuvert/amplify) individuel- or group of channels of a polyphonic-signal.
 
@@ -245,7 +245,7 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Random-4](Random.md#random-4paq)(paq): Generates 4 (mono-/polyphonic) random values with min/max and distribution at each trigger or internal frequency.
 + [Random Curve](Random.md#random-curveaq)(aq): Generates 6 shaped random cruves with min/max and distribution.
 + [Arm 3 XY](Arm3XY.md#arm-3-xya)(a): Length and rotation of 3 'arms' (basically 3 polar vectors) generates a 'semi-random' curve X/Y-output.
-+ [Turing Machine](TuringMachine.md#turing-machineq)(q): Turing machine for generating random sequences (16 bit- and 2-value outputs).
++ [Turing Machine](TuringMachine.md#turing-machineq)(q): Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).
 + [Bits-to-Value](Bits.md#bits-to-value): Converts 8 bits (gate-inputs) into a CV-value based on dialed in weights and specified range.
-+ [Value-to-Bits](Bits.md#value-to-bits): Converts a CV-input (clamped in specified range) into 8 monophonic- and 1 polyphonic gate-output (up to 16 channels).
-+ [ADR Envelope](ADREnvelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/rease time and shape.
++ [Value-to-Bits](Bits.md#value-to-bits)(p): Converts a CV-input (clamped in specified range) into 8 monophonic- and 1 polyphonic gate-output (up to 16 channels).
++ [ADR Envelope](ADREnvelope.md#adr-envelope)(p): Attack-Delay-Release Envelope with attack/rease time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).

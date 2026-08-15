@@ -198,7 +198,7 @@ struct TuringMachineModule : InfNoiseModule {
         configParam(MINCNTRMAX_PARAM, -10.f, 10.f, 0.0f, "Min/Center/Max", " V", 0, 1);
         configParam(MINCNTRMAX_TRIM_PARAM, -1.f, 1.f, 0.f, "Min/Center/Max CV-trim", "%", 0, 100);
         configInput(MINCNTRMAX_INPUT, "Min/Center/Max (-10V to +10V)");
-        configSwitch(MINCNTRMAX_BTN_PARAM, 0.0f, 2.0f, 1.0f, "Min/Center/Max-mode", { "Min", "Center", "Max" });
+        configSwitch(MINCNTRMAX_BTN_PARAM, 0.0f, 1.0f, 0.0f, "Toggle Min/Center/Max-mode");
         configLight(MIN_LIGHT, "Minimum when lit");
         configLight(CNTR_LIGHT, "Center when lit");
         configLight(MAX_LIGHT, "Maximum when lit");
@@ -375,7 +375,6 @@ struct TuringMachineModule : InfNoiseModule {
         lockPreventsReset.setBoth(false);
 
         minCntrMax.setBoth(minCntrMaxType::mcm_Center);
-        params[MINCNTRMAX_BTN_PARAM].setValue(1.f);
         lockTrigger.reset();
         minCntrMaxTrigger.reset();
         resetTrigger.reset();
@@ -612,7 +611,7 @@ struct TuringMachineModule : InfNoiseModule {
 
             // Handle Min/Center/Max-button (switch between Min, Center and Max)
             // Button idles at 1 (center), so map to 0-based before edge detection.
-            if (minCntrMaxTrigger.process(params[MINCNTRMAX_BTN_PARAM].getValue() - 1.f, 0.1f, 0.9f)) {
+            if (minCntrMaxTrigger.process(params[MINCNTRMAX_BTN_PARAM].getValue(), 0.1f, 0.9f)) {
                 minCntrMax.setBoth(minCntrMax.act == mcm_Max ? mcm_Min : static_cast<minCntrMaxType>(minCntrMax.act + 1));
             }
 
@@ -739,10 +738,11 @@ struct TuringMachineModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobColumn, controlRow), module, TuringMachineModule::MINCNTRMAX_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(trimColumn, controlRow), module, TuringMachineModule::MINCNTRMAX_TRIM_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::MINCNTRMAX_INPUT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(27.484f, 243.237), module, TuringMachineModule::MIN_LIGHT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(45.640f, 243.237), module, TuringMachineModule::CNTR_LIGHT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(63.615f, 243.237), module, TuringMachineModule::MAX_LIGHT));
-        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(74.499f, 247.295f), module, TuringMachineModule::MINCNTRMAX_BTN_PARAM));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(27.484f, 243.237), module, TuringMachineModule::MIN_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(45.640f, 243.237), module, TuringMachineModule::CNTR_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(63.615f, 243.237), module, TuringMachineModule::MAX_LIGHT));
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(74.499f, 244.295f), module, TuringMachineModule::MINCNTRMAX_BTN_PARAM));
+        //addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(74.499f, 247.295f), module, TuringMachineModule::MINCNTRMAX_BTN_PARAM));
 
         controlRow += controlRowSpacing;
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(26.458f, 287.759f), module, TuringMachineModule::RESET_BTN_PARAM));

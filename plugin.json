@@ -522,7 +522,7 @@
     {
       "slug": "PolyShuffle",
       "name": "Poly-Shuffle",
-      "description": "Add/Remove/Shuffle channels of a polyphonic signal.",
+      "description": "Add/Remove/Shuffle channels of a polyphonic signal. Can also be used to construct a polyphonic signal with up to 16 gates.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/PolyTools.md#poly-shufflep",
       "tags":  [
         "Polyphonic",
@@ -532,7 +532,7 @@
     {
       "slug": "PolyTweakI",
       "name": "Poly-Tweak Mk I",
-      "description": "Invert/Disable (mute/remove) channels of a polyphonic signal based on buttons.",
+      "description": "Invert/Disable (mute/remove) channels of a polyphonic signal based on buttons. Can also be used to construct a polyphonic signal with up to 16 gates.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/PolyTools.md#poly-tweak-mk-ip",
       "tags":  [
         "Polyphonic",
@@ -542,7 +542,7 @@
     {
       "slug": "PolyTweakII",
       "name": "Poly-Tweak Mk II",
-      "description": "Invert/Disable (mute/remove) channels of a polyphonic signal based on CV-inputs.",
+      "description": "Invert/Disable (mute/remove) channels of a polyphonic signal based on CV-inputs. Can also be used to mix individual channels of two polyphonic signals.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/PolyTools.md#poly-tweak-mk-iip",
       "tags":  [
         "Polyphonic",
@@ -563,7 +563,7 @@
     {
       "slug": "PolyVCMP",
       "name": "Poly-Value Compare",
-      "description": "Perform value-compare (MIN,MAX,NtZ,FfZ,AVG,R/S) on all channels of same polyphonic-signal. Can also monitor (MIN,MAX,NtZ,FfZ,AVG,R/S) over time (since last reset).",
+      "description": "Perform value-compare (MIN,MAX,NtZ,FfZ,AVG,R/S) on all channels of same polyphonic-signal. Can also monitor (MIN,MAX,NtZ,FfZ,AVG,R/S) over time (since last reset), accross all channels or individually for each channel.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/PolyTools.md#poly-value-comparep",
       "tags":  [
         "Polyphonic",
@@ -810,7 +810,7 @@
     {
       "slug": "TuringMachine",
       "name": "Turing Machine",
-      "description": "Turing machine for generating random sequences (16 bit- and 2-value outputs).",
+      "description": "Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/TuringMachine.md#turing-machineq",
       "tags":  [
         "Random",
@@ -841,7 +841,7 @@
     {
       "slug": "ADREnvelope",
       "name": "ADR Envelope",
-      "description": "Attack-Delay-Release Envelope with attack/rease time and shape.",
+      "description": "Attack-Delay-Release Envelope with attack/rease time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/ADREnvelope.md#adr-envelope",
       "tags":  [
         "Envelope generator",
