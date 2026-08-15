@@ -11,6 +11,7 @@ Ensured all module descriptions in manifest are identical to module descriptions
 ## Fixed modules
 - [Simple LFO4-ss](doc/LFO.md#simple-lfo4-ssa): Phase light for LFO-4 and sync lights were not set correctly.
 - [Turing Machine](doc/TuringMachine.md#turing-machineq): Min/Center/Max toggle-button appeared pressed (green) when adding module to rack. Min/Center/Max mode-lights changed to tiny-lights.
+- [LFO1](doc/LFO.md#lfo1pa): Sync-output remained being monophonic even when the frequency-input was polyphonic.
 
 # 2.0.2 
 Fixed various warnings based on cppcheck report from VCV. Going forward I now have a local release-check script I can run, which monitors the various issues reported from VCV. So future releases should be less painfull.

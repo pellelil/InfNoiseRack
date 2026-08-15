@@ -841,7 +841,7 @@
     {
       "slug": "ADREnvelope",
       "name": "ADR Envelope",
-      "description": "Attack-Delay-Release Envelope with attack/rease time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).",
+      "description": "Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/ADREnvelope.md#adr-envelope",
       "tags":  [
         "Envelope generator",

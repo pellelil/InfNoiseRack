@@ -404,6 +404,7 @@ struct LFO1Module : InfNoiseModule {
             int channels = inputs[FREQ_INPUT].isConnected()
                 ? std::max(inputs[FREQ_INPUT].getChannels(), 1)
                 : 1;
+            outputs[SYNC_OUTPUT].setChannels(channels);
             outputs[LFO_SQR_OUTPUT].setChannels(channels);
             outputs[LFO_TRI_OUTPUT].setChannels(channels);
             outputs[LFO_SAW_OUTPUT].setChannels(channels);
@@ -615,7 +616,7 @@ struct LFO1Module : InfNoiseModule {
                     }
                     outputs[SYNC_OUTPUT].setVoltage(syncOutTrigger[c].isHigh()
                         ? voltValues[trigOutHigh.act]
-                        : voltValues[trigOutLow.act]);
+                        : voltValues[trigOutLow.act], c);
                 }
             }
         }
