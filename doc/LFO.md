@@ -19,7 +19,8 @@ Most Infinite-Noise modules process signals at audio rate (e.g., 48,000 times pe
 
 **Warning**: Lowering processing quality (whether auto or manual) reduces CPU usage, which is mostly a good thing, but in a few/edge cases it may have unintended side effects. If a slow-moving LFO is set to update every 16 cycles, it means that for 15 cycles, the module holds the exact same value, outputting an unchanged signal. While this is not an issue for most modules, it can interfere with detection-based modules, such as the [Slope Detector 2](SlopeDetector2.md#slope-detector-2), which may cause false state detections. If the LFO output is intended for use with a Slope Detector or similar modules, it is recommended to disable Auto mode and manually set the process quality to "Audio", ensuring small updates occur every cycle. 
 
-## Simple LFO4-ss(a)
+<a name="simple-lfo4-ssa"></a>
+## Simple LFO4-ss
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
@@ -27,7 +28,8 @@ This 4HP quad-LFO generates both Saw and Sine waveforms for each of its four ind
 
 ![Screenshot of SLFO4ss](module/SLFO4ss.png) 
 
-## Simple LFO4-st(a)
+<a name="simple-lfo4-sta"></a>
+## Simple LFO4-st
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
@@ -54,7 +56,8 @@ As indicated by the arrow-heads, the frequency CV-input is normalized to the Sin
 
 *Among the Infinite-Noise LFOs, TLFO is a personal favorite. Despite its compact 2HP size, it offers great versatility. It supports CV frequency input, enabling polyphonic outputs, and allows manual PWM adjustments. The ability to manually set the output range ensures it can be directly connected to other modules, even if they lack a trim knob. If offset adjustments are needed, the output can be processed through one of the Tweak modules for further refinement.*
 
-## LFO1(pa)
+<a name="lfo1pa"></a>
+## LFO1
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
@@ -80,7 +83,8 @@ The n-shot mode can be used to generate a **burst of multiple clocks/triggers**.
 
 **TIP**: To generate **polyphonic waveform outputs**, you need to provide a **polyphonic frequency CV**. This allows each waveform channel to run at a different frequency, since the frequency CV (after being attenuverted by the trim knob) is added to the frequency set by the main frequency knob. In this aspect you can use the **Poly** output of a [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-ipq) to generate such a polyphonic signal. By default, the Poly output provides 8 channels, but you can reduce the polyphony (for example, to 4 channels) via the context menu. Using the top four knobs of the Manual CV 8 Mk I, you can dial in four different voltage levels, which are then added to the base frequency set on the **LFO-1**, allowing each polyphonic channel of the waveform outputs to run at a different frequency.
 
-## Phase-Driven LFO(p)
+<a name="phase-driven-lfop"></a>
+## Phase-Driven LFO
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 Technically, this module is not a traditional LFO since it does not contain an oscillator or use a frequency parameter. Instead, it directly takes a phase input within a 10V range (either bipolar or unipolar) to determine the waveform-phase, and thereby its output. However, due to its similarities with the LFO1 module, it is still categorized as an LFO, and its functionality is described in this section of the documentation. Due to the fact that the Phase-input accepts polyphonic input, **it's easy to generate multiple phase-shifted waveforms** (described as a TIP further down).
 

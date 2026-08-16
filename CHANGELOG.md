@@ -9,9 +9,9 @@ Ensured all module descriptions in manifest are identical to module descriptions
 - [Cross-fade switch 4to1](doc/Switch.md#cross-fade-switch-4to1p): Using the context menu you can now specify which volt-level the input should normalize to when not connected (e.g. if you need to switch/fade a fixed volt level to up to 4 different outputs). It defaults to 0V as previous version.
 
 ## Fixed modules
-- [Simple LFO4-ss](doc/LFO.md#simple-lfo4-ssa): Phase light for LFO-4 and sync lights were not set correctly.
+- [Simple LFO4-ss](doc/LFO.md#simple-lfo4-ss): Phase light for LFO-4 and sync lights were not set correctly.
 - [Turing Machine](doc/TuringMachine.md#turing-machineq): Min/Center/Max toggle-button appeared pressed (green) when adding module to rack. Min/Center/Max mode-lights changed to tiny-lights.
-- [LFO1](doc/LFO.md#lfo1pa): Sync-output remained being monophonic even when the frequency-input was polyphonic.
+- [LFO1](doc/LFO.md#lfo1): Sync-output remained being monophonic even when the frequency-input was polyphonic.
 - [Fold](doc/Fold.md#foldpoq): Output port appeared to be monophonic ("red circle" was missing), but would output polyphonic signals.
 
 # 2.0.2 
@@ -31,11 +31,11 @@ All panel SVG-files were simplified and reduced in file-size, but appears the sa
 ## New Modules
 As everying in this very-first release is new, it only consists of "New Modules" (nothing changed/fixed in this version). Here below is a list of all the modules included in this (1st) version.
 
-- [Simple LFO4-ss](doc/LFO.md#simple-lfo4-ssa)
-- [Simple LFO4-st](doc/LFO.md#simple-lfo4-sta)
-- [Tiny LFO](doc/LFO.md#tiny-lfopa)
-- [LFO1](doc/LFO.md#lfo1pa)
-- [Phase-Driven LFO](doc/LFO.md#phase-driven-lfop)
+- [Simple LFO4-ss](doc/LFO.md#simple-lfo4-ss)
+- [Simple LFO4-st](doc/LFO.md#simple-lfo4-st)
+- [Tiny LFO](doc/LFO.md#tiny-lfo)
+- [LFO1](doc/LFO.md#lfo1)
+- [Phase-Driven LFO](doc/LFO.md#phase-driven-lfo)
 - [Tweak-2 Mk I](doc/Tweak.md#tweak-2-mk-ipq)
 - [Tweak-2 Mk II](doc/Tweak.md#tweak-2-mk-iipq)
 - [Tweak-4 Mk I](doc/Tweak.md#tweak-4-mk-ipq)

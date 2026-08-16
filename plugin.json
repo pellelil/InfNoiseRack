@@ -18,7 +18,7 @@
       "slug": "SLFO4ss",
       "name": "Simple LFO4-ss",
       "description": "Simple knob-controlled Quad-LFO, with internal sync (Saw and Sine).",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#simple-lfo4-ssa",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#simple-lfo4-ss",
       "tags":  [
         "LFO",
         "Quad"
@@ -28,7 +28,7 @@
       "slug": "SLFO4st",
       "name": "Simple LFO4-st",
       "description": "Simple knob-controlled Quad-LFO, with internal sync (Square and Triangle).",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#simple-lfo4-sta",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#simple-lfo4-st",
       "tags":  [
         "LFO",
         "Quad"
@@ -38,7 +38,7 @@
       "slug": "TLFO",
       "name": "Tiny LFO",
       "description": "Tiny (2HP) knob/CV-controlled single LFO with PWM (Saw, Square, Triangle, and Sine).",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#tiny-lfopa",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#tiny-lfo",
       "tags":  [
         "LFO",
         "Polyphonic"
@@ -48,7 +48,7 @@
       "slug": "LFO1",
       "name": "LFO1",
       "description": "Knob/CV-controlled single LFO with PWM, MOD, external sync and n-shot mode (Saw, Square, Triangle and Sine). Using the Square-output with modulation, it also acts as a wavetable (Triangle<->Square<->Saw).",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#lfo1pa",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#lfo1",
       "tags":  [
         "LFO",
         "Polyphonic"
@@ -58,7 +58,7 @@
       "slug": "PhaseDrivenLFO",
       "name": "Phase-Driven LFO",
       "description": "Phase-driven LFO (input-phase) with PWM/modulation, outputting Saw, Square, Triangle and Sine, and inverted.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#phase-driven-lfop",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#phase-driven-lfo",
       "tags":  [
         "LFO",
         "Polyphonic"
