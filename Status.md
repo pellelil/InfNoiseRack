@@ -1,5 +1,5 @@
 # Status
-This status list is primarily for my own benefit, but if you notice anything not behaving as expected (or described in the manual), feel free to check if there are any "known issues" mentioned below. A "known issue" is not necessarily a "bug" or something that "needs fixing" or things that "will" change. It might simply be a "note-to-self" regarding something I plan to look into or features I am considering adding or changing at a later time. 
+This status list is primarily for my own benefit, but if you notice anything not behaving as expected (or described in the manual), feel free to check if there are any "known issues" mentioned below. A "known issue" is not necessarily a "bug" or something that "needs fixing" or things that "will" change. It might simply be a "note-to-self" regarding something I plan to look into or features I am considering adding or changing at a later time. If you do run into any issues be sure to also check **[The changelog](CHANGELOG.md)** as the issue might already be fixed in a development version that is currently not available from the VCV Library.
 
 ## General
 + Random: As of now, the Random feature have only been specifically defined a single module. In all other modules the default VCV randomization is performed (i.e. all knobs/switch-settings are randomized, however context-menu settings are not randomized).
@@ -100,4 +100,4 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + TuringMachine: -
 + BitsToValue: -
 + ValueToBits: -
-+ ADREnvelope: New module **Needs testing**
++ ADREnvelope: -

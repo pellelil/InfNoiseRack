@@ -37,7 +37,8 @@ This 4HP quad-LFO generates both Square and Triangle waveforms for each of its f
 
 *When I need multiple LFOs with fixed frequencies (not affected by CV), the SLFO4st is my go-to quad-LFO. Each of its four LFOs operates at an independently set rate, and internal sync can be enabled via the context menu if/when needed. The combination of Square and Triangle waveforms makes it a highly versatile modulation source as Square waves can function as clocks, gates, or triggers, while Triangle waves provide smooth modulation curves for various parameters. If you need a little "chaos", the context-menu enables you to dial in chaos-rate individually for all 4 LFOs.*
 
-## Tiny LFO(pa)
+<a name="tiny-lfopa"></a>
+## Tiny LFO
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
@@ -80,8 +81,7 @@ The n-shot mode can be used to generate a **burst of multiple clocks/triggers**.
 **TIP**: To generate **polyphonic waveform outputs**, you need to provide a **polyphonic frequency CV**. This allows each waveform channel to run at a different frequency, since the frequency CV (after being attenuverted by the trim knob) is added to the frequency set by the main frequency knob. In this aspect you can use the **Poly** output of a [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-ipq) to generate such a polyphonic signal. By default, the Poly output provides 8 channels, but you can reduce the polyphony (for example, to 4 channels) via the context menu. Using the top four knobs of the Manual CV 8 Mk I, you can dial in four different voltage levels, which are then added to the base frequency set on the **LFO-1**, allowing each polyphonic channel of the waveform outputs to run at a different frequency.
 
 ## Phase-Driven LFO(p)
-![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
-![Features](https://img.shields.io/badge/ProcessQuality-Auto-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 Technically, this module is not a traditional LFO since it does not contain an oscillator or use a frequency parameter. Instead, it directly takes a phase input within a 10V range (either bipolar or unipolar) to determine the waveform-phase, and thereby its output. However, due to its similarities with the LFO1 module, it is still categorized as an LFO, and its functionality is described in this section of the documentation. Due to the fact that the Phase-input accepts polyphonic input, **it's easy to generate multiple phase-shifted waveforms** (described as a TIP further down).
 
 At the top of the module, there is a phase input, which supports polyphonic signals (the four waveform outputs will match the number of channels in the phase input). A two-way switch next to the input determines whether the phase range is bipolar (-5V to +5V) or unipolar (0V to 10V). To cover the full waveform cycle, the input signal must span the entire selected range. This input signal will by default be clamped to the selected phase-range, but setting the "Exceed Rng" switch to the "Wrap" position, the incomming signal will be "wrapped" if exceeding the phase-range.

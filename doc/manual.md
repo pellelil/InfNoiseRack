@@ -160,7 +160,7 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 ## LFO's
 + [Simple LFO4-ss](LFO.md#simple-lfo4-ssa)(a): Simple knob-controlled Quad-LFO, with internal sync (Saw and Sine).
 + [Simple LFO4-st](LFO.md#simple-lfo4-sta)(a): Simple knob-controlled Quad-LFO, with internal sync (Square and Triangle).
-+ [Tiny LFO](LFO.md#tiny-lfopa)(pa): Tiny (2HP) knob/CV-controlled single LFO with PWM (Saw, Square, Triangle, and Sine).
++ [Tiny LFO](LFO.md#tiny-lfo)(pa): Tiny (2HP) knob/CV-controlled single LFO with PWM (Saw, Square, Triangle, and Sine).
 + [LFO1](LFO.md#lfo1pa)(pa): Knob/CV-controlled single LFO with PWM, MOD, external sync and n-shot mode (Saw, Square, Triangle and Sine). Using the Square-output with modulation, it also acts as a wavetable (Triangle<->Square<->Saw).
 + [Phase-Driven LFO](LFO.md#phase-driven-lfop)(p): Phase-driven LFO (input-phase) with PWM/modulation, outputting Saw, Square, Triangle and Sine, and inverted.
 
