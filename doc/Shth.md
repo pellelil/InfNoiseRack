@@ -23,7 +23,8 @@ By default, the built-in noise source generates bipolar random values (**white n
 ## S&H/T&H-2(paq)
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
-![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
 The SHTH2 module operates in Sample-and-Hold (S&H), Track-and-Hold (T&H), or Hold-and-Track (H&T) mode, as selected via the three-way switch. If a Clock input is provided, the module will use it to determine when to sample or hold/track the input signal. Otherwise, the built-in LFO takes over, with its frequency adjustable via the knob near the Hold input. *Some general info regarding the S&H/T&H/H&T are listed in the top.*
 
 The Clock inputs in both sections support polyphonic signals, allowing you to sample/track/hold individual channels independently. If you provide a monophonic Clock signal, all channels will follow that same Clock input. When using a polyphonic Clock signal, make sure it has at least as many channels as the signal input. Likewise, when using a polyphonic Clock together with the internal noise generator (i.e., no external input connected), the module will automatically match the number of output channels to the number of channels present in the Clock input.
@@ -37,7 +38,8 @@ If no external input signal is supplied, the module generates random values usin
 ## S&H/T&H-2x4(paq)
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
-![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
 The SHTH2X4 module features 2 independent sections, each containing 4 input/output pairs for processing multiple signals simultaneously. Like the SHTH2, each section operates in S&H, T&H, or H&T mode and can be controlled via an external Clock input or the built-in LFO, which is adjustable using the associated knob. *Some general info regarding the S&H/T&H/H&T are listed in the top.*
 
 If a Clock input is supplied to the A-section, but not to the B-section, the A-section’s Clock signal will also control the B-section, ensuring synchronization. However, if no Clock input is provided for either section, each will default to its own independent LFO. If a Clock input is connected to the B-section, it will override the shared signal, allowing A and B to operate separately—one using the internal LFO and the other responding to an external Clock signal. *If you only supply the B-section with a Clock-signal, the B-section will use this Clock-signal, whereas the A-section will use its internal LFO*.
