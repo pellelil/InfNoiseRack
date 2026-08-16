@@ -1,4 +1,5 @@
-# Patch(p)
+<a name="patchp"></a>
+# Patch
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Patch module is a specialized utility that I don’t use very often, but it’s extremely useful when experimenting or testing specific modules. When I do use it, I typically place two of them side-by-side as a **patchbay**—but first, let’s look at a single module on its own.
 

@@ -1,4 +1,5 @@
-# Delta-4 (p)
+<a name="delta-4-p"></a>
+# Delta-4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The **Delta-4** module is a compact utility for "measuring" how much a signal has changed relative to a stored reference level. It contains four identical sections (**A–D**), each with a polyphonic input and a polyphonic output that reports the **difference between the current input voltage and a captured reference value**. At the top of the module, you’ll find the **reset section**, which is used to update the internal reference values. This section includes both a manual push button and a CV input. By default, the reset operates in **trigger mode**, indicated by the small button between the large push button and the input being **red**. In **trigger mode**, the input is treated as a trigger, meaning that regardless of how long the input remains high—or how long the large push button is held, the module will reset only once (single cycle/sample).
 
@@ -16,7 +17,7 @@ The 2-way switch above the inputs lets you switch reference-mode between "Indivi
 
 ![Screenshot of Delta-4](module/Delta4.png)
 
-**TIP**: Reference-mode **A-only**, can be used when you want to remove a dynamic DC offset from the **B**, **C**, and **D** inputs. In this setup, the dynamic DC offset should be connected to the **A** input. The reset mode should then be switched to **gate**, where you can either latch the reset button or feed a constant high gate (for example from [Manual Push2](ManCV.md#manuel-push-2p)). This keeps the **A reference** continuously updated. Since **A-only** mode is selected, the reference value will be subtracted from the **B**, **C**, and **D** inputs, effectively removing the offset. *The reference is also subtracted from the A signal itself, so the A output will simply produce 0V (A-A)*. 
+**TIP**: Reference-mode **A-only**, can be used when you want to remove a dynamic DC offset from the **B**, **C**, and **D** inputs. In this setup, the dynamic DC offset should be connected to the **A** input. The reset mode should then be switched to **gate**, where you can either latch the reset button or feed a constant high gate (for example from [Manual Push2](ManCV.md#manuel-push-2)). This keeps the **A reference** continuously updated. Since **A-only** mode is selected, the reference value will be subtracted from the **B**, **C**, and **D** inputs, effectively removing the offset. *The reference is also subtracted from the A signal itself, so the A output will simply produce 0V (A-A)*. 
 
 *If needed (based on the polarity of your DC-offset) you can switch the output-mode to **"In" (inverted)**, in which case the inverted difference is output in stead*.
 

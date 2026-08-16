@@ -1,4 +1,5 @@
-# Fold(poq)
+<a name="foldpoq"></a>
+# Fold
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Oversample-2x-green.svg?style=flat-square)<br>
@@ -18,7 +19,7 @@ Below the Bias knob/input, you’ll find a two-way mode switch:
 
 In either mode, if the input signal goes far beyond the selected Min/Max range (by more than the total range span), it will fold or wrap multiple times. For example, the sine output from a *Tiny LFO* in bipolar mode produces a waveform between −5V and +5V. Applying 10× gain amplifies this to −50V to +50V, causing the waveform to fold or wrap repeatedly and become much more complex.
 
-**TIP**: The random modules in the Infinite-Noise plugin — such as [Random-4](Random.md#random-4paq) - offer different distributions. For example, using the **Edge** distribution and turning the distribution knob clockwise increases the likelihood that values cluster near the extremes (top or bottom limits). You can approximate a similar effect even with random sources that don’t provide distribution controls. By routing a random signal through a **Fold** module and applying a little gain, you effectively "push" values away from the center toward the edges. Values that exceed the limits are folded back into range, resulting in more values accumulating near the extremes rather than the center (depending on the amount of gain). *This is not identical to the Edge distribution in Random-4, but it does increase the likelihood of values near the limits.*
+**TIP**: The random modules in the Infinite-Noise plugin — such as [Random-4](Random.md#random-4) - offer different distributions. For example, using the **Edge** distribution and turning the distribution knob clockwise increases the likelihood that values cluster near the extremes (top or bottom limits). You can approximate a similar effect even with random sources that don’t provide distribution controls. By routing a random signal through a **Fold** module and applying a little gain, you effectively "push" values away from the center toward the edges. Values that exceed the limits are folded back into range, resulting in more values accumulating near the extremes rather than the center (depending on the amount of gain). *This is not identical to the Edge distribution in Random-4, but it does increase the likelihood of values near the limits.*
 
 **TIP**: Similarly, when routing a random signal through a **Fold** module, you can use the **Bias** control to offset/shift the signal upward or downward. This makes the signal exceed primarily either the upper or lower limit, causing folding to occur mostly on one side. As a result, more values accumulate near either the top or bottom of the range. *Again, this is not the same as the built-in Min/Max distribution in Random-4, but it increases the probability of values near the top or bottom of the range.*
 

@@ -3,13 +3,14 @@ Simply looking at a Port in an Infinite-Noise module you can quickly distinguish
 
 ![Polyphonic ports](img/PolyPort.png)
 
-Most Infinite-Noise modules support polyphonic signals, however, some modules neither support nor generate polyphonic signals, which may require converting signals between polyphonic (multi-channel) and monophonic (single-channel) formats. To address this, the [Poly-Shuffle](PolyTools.md#poly-shufflep) module allows you to change the number of channels in a mono- or polyphonic signal. In addition, the [Poly-Split](PolyTools.md#poly-splitp) and [Poly-Merge](PolyTools.md#poly-mergep) modules can be used to split and merge polyphonic/monophonic signals, or together function as a polyphonic patchbay—for example, by first splitting a polyphonic signal into individual monophonic/polyphonic signals and then reconstructing a new/differently arranged polyphonic signal. These tools provide seamless control over polyphonic signals, making it easy to split, merge, and manage multi-channel audio and CV data in your modular environment. Each module’s functionality is explained in detail below. 
+Most Infinite-Noise modules support polyphonic signals, however, some modules neither support nor generate polyphonic signals, which may require converting signals between polyphonic (multi-channel) and monophonic (single-channel) formats. To address this, the [Poly-Shuffle](PolyTools.md#poly-shuffle) module allows you to change the number of channels in a mono- or polyphonic signal. In addition, the [Poly-Split](PolyTools.md#poly-split) and [Poly-Merge](PolyTools.md#poly-merge) modules can be used to split and merge polyphonic/monophonic signals, or together function as a polyphonic patchbay—for example, by first splitting a polyphonic signal into individual monophonic/polyphonic signals and then reconstructing a new/differently arranged polyphonic signal. These tools provide seamless control over polyphonic signals, making it easy to split, merge, and manage multi-channel audio and CV data in your modular environment. Each module’s functionality is explained in detail below. 
 
-**TIP**: Many modules are not specifically designed to handle stereo signals (separate left/right audio signals). For example, most of the [Switch-modules](Switch.md) do not provide separate left/right inputs and outputs. However, since most Infinite-Noise modules support polyphonic signals, you can instead "encode" (merge) separate left/right audio signals into a 2 channel polyponic signal, and then pass on this signal to the intended module. Once processed you most likely will need to "decode" (split) this 2 channel polyphonic signal stereo signal into two separate (monophonic) left/right signals. [Poly-Stereo](PolyTools.md#poly-stereop) (described below) is build for this exact purpose, and can at the same time encode (top section) and decode (bottom section) 2 separate stereo signals *(what would otherwise require two Poly-Merge- and two Poly-Split modules to do the same)*.
+**TIP**: Many modules are not specifically designed to handle stereo signals (separate left/right audio signals). For example, most of the [Switch-modules](Switch.md) do not provide separate left/right inputs and outputs. However, since most Infinite-Noise modules support polyphonic signals, you can instead "encode" (merge) separate left/right audio signals into a 2 channel polyponic signal, and then pass on this signal to the intended module. Once processed you most likely will need to "decode" (split) this 2 channel polyphonic signal stereo signal into two separate (monophonic) left/right signals. [Poly-Stereo](PolyTools.md#poly-stereo) (described below) is build for this exact purpose, and can at the same time encode (top section) and decode (bottom section) 2 separate stereo signals *(what would otherwise require two Poly-Merge- and two Poly-Split modules to do the same)*.
 
 Typically, a polyphonic splitter divides a polyphonic signal into multiple monophonic signals. Likewise, a polyphonic merger usually combines multiple monophonic signals into a single polyphonic signal. Out of the box, this is how Poly-Split and Poly-Merge operate in **Mono mode**. However, when switched to **Poly mode**, Poly-Split can split a polyphonic signal into multiple polyphonic signals—for example, splitting a 16-channel signal into two distinct 8-channel polyphonic signals. Similarly, in “Poly” mode, Poly-Merge can merge multiple polyphonic (and monophonic) signals into a single polyphonic signal—for example, combining two 8-channel polyphonic signals into one 16-channel polyphonic signal, where the first 8 channels come from the first signal and the remaining 8 channels come from the second signal.
 
-## Poly-Merge(p)
+<a name="poly-mergep"></a>
+## Poly-Merge
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Poly-Merge module is designed to be flexible enough to merge both monophonic and polyphonic signals into a single polyphonic output. It can merge up to 16 monophonic signals. The lights next to the ports will illumuniate to indicate the number of channels that have been selected using the channels-knob (1-16). This light will be **green** when an input-signal for that port is available, and **red** when its not (meaning the output will be set as 0V). *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -19,7 +20,8 @@ Switching to **Poly** input-mode, will allow multiple polyphonic signals to be m
 
 ![Screenshot of Poly-Merge](module/PolyMerge.png) 
 
-## Poly-Split(p)
+<a name="poly-splitp"></a>
+## Poly-Split
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 Like the Poly-Merge module, the Poly-Split module will default to **Mono** output mode, where you can split a polyphonic signal into (up to) 16 monophonic outputs. In Mono output mode, each output port always produces a monophonic signal, regardless of which ports have cables connected. For example, output port 5 will output a monophonic signal containing the value of channel 5 of the input signal (or 0V if no input cable is connected, or if the input signal has fewer than 5 channels). The lights next to the ports show channel status: **green** if that channel exists in the poly input, **red** if it is beyond the input but still in use (a cable on that port in Mono mode, or included in a connected poly slice in Poly mode—those channels output 0V), and **dim** otherwise. *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -27,7 +29,8 @@ If you instead switch the module to **Poly** output mode, the module will output
 
 ![Screenshot of Poly-Split](module/PolySplit.png) 
 
-## Poly-Stereo(p)
+<a name="poly-stereop"></a>
+## Poly-Stereo
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 PolyStereo is a highly specialized module designed for a single purpose: **encoding** (merging) separate monophonic left/right signals into 2-channel polyphonic stereo signals, and **decoding** (splitting) 2-channel polyphonic stereo signals back into separate monophonic left/right signals. When encoding or decoding, **channel-1** is used for the **left** signal and **channel-2** for the **right** signal. *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -37,13 +40,14 @@ At the bottom of the module, two polyphonic stereo inputs can be decoded into se
 
 ![Screenshot of Poly-Stereo](module/PolyStereo.png) 
 
-**TIP**: Suppose you have two separate stereo signals and want to switch between them using a [Bernoulli Switch](Switch.md#bernoulli-switchp). While the Bernoulli Switch does not directly support stereo signals, it does support polyphonic signals. In this case, connect the first stereo signal to 1L and 1R, then route the resulting 1P output to the A input of the Bernoulli Switch. Likewise, connect the second stereo signal to 2L and 2R, and route the 2P output to the B input. Next, connect the output of the Bernoulli Switch to the 4P (or 3P) input of the PolyStereo module. This will decode the selected stereo signal back into separate 4L and 4R outputs. *Using a single PolyStereo module, this setup accomplishes what would otherwise require two Poly-Merge modules and one Poly-Split module.*
+**TIP**: Suppose you have two separate stereo signals and want to switch between them using a [Bernoulli Switch](Switch.md#bernoulli-switch). While the Bernoulli Switch does not directly support stereo signals, it does support polyphonic signals. In this case, connect the first stereo signal to 1L and 1R, then route the resulting 1P output to the A input of the Bernoulli Switch. Likewise, connect the second stereo signal to 2L and 2R, and route the 2P output to the B input. Next, connect the output of the Bernoulli Switch to the 4P (or 3P) input of the PolyStereo module. This will decode the selected stereo signal back into separate 4L and 4R outputs. *Using a single PolyStereo module, this setup accomplishes what would otherwise require two Poly-Merge modules and one Poly-Split module.*
 
 ![Poly-Stereo and Bernoulli switch](img/PolyStereoBernoulliSwitch.png)
 
 Linkewise a Bernoulli Switch can also be used to route a single signal to one of two destinations. In this configuration, use one of the upper sections of the PolyStereo module (for example, **1L/1R**) to encode the stereo signal into a 2-channel polyphonic signal, and feed the resulting **1P** output into the lower section of the Bernoulli Switch. Then connect the **A** output of the Bernoulli Switch to the **3P** input of the PolyStereo module, which will decode it back into separate **3L** and **3R** outputs. Similarly, connect the **B** output of the Bernoulli Switch to the **4P** input, which will decode it into **4L** and **4R** outputs. This effectively allows the Bernoulli Switch to route a stereo signal to either of two stereo destinations while preserving the left/right channel information.
 
-## Poly-Quad(p)
+<a name="poly-quadp"></a>
+## Poly-Quad
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 Similar to the Poly-Stereo (see above) the purpose of the Poly-Quad (in the top) is to "encode" (merge) up to 4 separate/monophonic signal into a single/compound polyphonic signal, and to (in the bottom) "decode" (split) a single/compound polyphonic signal into (up to) 4 separate/monophonic signals. So basically it is an (up to) **4 channel merger/splitter**. 
 
@@ -59,7 +63,7 @@ Using the context menu **4>Poly output channels**, you can instead select a fixe
 
 The 4 outputs in the bottom section (E, F, G and H) will output the first 4 channels of the polyphonoic input you provide in the "Poly>4" input. Hence if the input have more than 4 channels, only channel 1-4 are used, and if the input have fewer than 4 channels the corresponding output will simply output 0V (e.g. inputting a 3-channel signal, channel E-G will output these 3 channels as monophonic signals, while H will simply output 0V).
 
-**TIP**: If you need to encode/decore more than 4 monophonic signals you should consider using [Poly-Merge](PolyTools.md#poly-mergep) and [Poly-Split](PolyTools.md#poly-splitp) wich both can handle up to 16 channels, and thanks to their Mono/Poly-mode switchs they can merge/split both monophonic and polyphonic signals.
+**TIP**: If you need to encode/decore more than 4 monophonic signals you should consider using [Poly-Merge](PolyTools.md#poly-merge) and [Poly-Split](PolyTools.md#poly-split) wich both can handle up to 16 channels, and thanks to their Mono/Poly-mode switchs they can merge/split both monophonic and polyphonic signals.
 
 ## MAN-TR, MAN-GT, & MAN-CV8I/II
 ![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)<br>
@@ -69,7 +73,8 @@ All 3 of these modules are described elsewhere ([Manual Controllers](ManCV.md)) 
 
 **TIP**: If you need to construct a signal with more than 8 channels, you can use 2 of the modules (e.g. 2 Man-CV8I modules), which each can output a 8-channel polyphonic signal. You then feed the first 8-channel signal into port-1 of a Poly-Merge in **Poly-mode**, and the other 8-channel signal into port-9 of the same Poly-merge, and set the Poly-merge to output 16 channels.
 
-## Poly-Shuffle(p)
+<a name="poly-shufflep"></a>
+## Poly-Shuffle
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 This module has two sections, each serving a different purpose. The top section allows you to set the number of output channels (either **removing** channels from the signal or **adding** additional ones), while the lower section lets you change the order of the channels (for example, **shuffle** them). *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -100,7 +105,8 @@ At the bottom of the module, you’ll find a 3-way **order switch** (for selecti
 
 **TIP**: Similar to the previous tip, you can use two Poly-Shuffle modules in series to both reorder channels and introduce a probability that individual channels will pass through. For example, start with a 4-channel signal and feed it into the first Poly-Shuffle. Set its output channel count to a fixed 16 channels and enable channel shuffling. Then route this 16-channel output into a second Poly-Shuffle, but set its output channel count to 4 channels. In this configuration, each of the original four channels has a 25% chance of being included in the final output, while the "surviving channels" are also randomly reordered. The result is a signal where channels are both randomly selected and randomly shuffled.
 
-## Poly-Tweak Mk I(p)
+<a name="poly-tweak-mk-ip"></a>
+## Poly-Tweak Mk I
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Poly-Tweak Mk I module allows you to invert individual channel values, and enables you to mute/remove channels from an output. By default, before making any adjustments, the module simply outputs a copy of the input signal since none of the channels are inverted, and all channels are enabled. *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -123,13 +129,14 @@ Below the inversion section, you find the the Disable section, which allows you 
 
 ![Screenshot of PolyTweak Mk I](module/PolyTweakI.png) 
 
-**TIP**: PolyTweak can be used before the [Poly-Logical Compare](PolyTools.md#poly-logical-comparep) or [Poly-Value Compare](PolyTools.md#poly-value-comparep) modules (described below) to exclude or invert channel values before sending the signal for logical- or value comparisons.
+**TIP**: PolyTweak can be used before the [Poly-Logical Compare](PolyTools.md#poly-logical-compare) or [Poly-Value Compare](PolyTools.md#poly-value-compare) modules (described below) to exclude or invert channel values before sending the signal for logical- or value comparisons.
 
 **TIP**: Even without an input signal, the module can be used to generate a polyphonic gate signal. Using the context menu, you can define a fixed number of channels (e.g. 16). All channels default to 0V (low gate). In **Gate mode**, pressing the buttons to invert specific channels will turn those channels into high gates (10V by default). *If needed, you can also use the **Disable** section to introduce a third possible value. In **Value mode**, the value knob determines the voltage assigned to disabled channels, allowing more flexible signal states beyond simple high/low gates.*
 
 **TIP**: Similar to the previous tip, this module can also ge used to geneate a polyphonic signal where all channels have the same *(custom defined)* fixed value. Via the context menu you select a fixed polyphony (e.g. 8 channels), next you press the "All" button in the Disable section (in value mode)  to "disable" all channels. Finally you use the Dis.value knob to dial-in the desired fixed value (e.g. 5V). *Using this example the "Poly" output will output an 8-channel polyphonic signal, where all channels have the value 5V.*
 
-## Poly-Tweak Mk II(p)
+<a name="poly-tweak-mk-iip"></a>
+## Poly-Tweak Mk II
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Poly-Tweak Mk II is very similar to the Mk I (see description above), but with a few key differences. Instead of using buttons to select which channels to invert or disable, the Mk II uses **polyphonic gate inputs** for this purpose. Also, while the Mk I sets the number of output channels via the context menu, the Mk II provides a dedicated **channel knob**. *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -145,13 +152,14 @@ Next is the **Disable section**, which works similarly. A polyphonic gate input 
 
 **TIP**: When the **Disable mode** is set to **Value** and the **Disable value** knob is set to 0V, the module effectively acts as a gate-controlled mute module. High gates will "mute" individual channels—or all channels at once if a monophonic disable signal is used.
 
-**TIP**:  While the [ON/OFF Switch](Switch.md#onoff-switchp) can accept- and output polyphonic signals, its switch operatation is monophonic (all channels switch in unison between the ON- and OFF-stages). The Poly-Tweak Mk II can however function as a polyphonic version of the ON/OFF Switch where individual channels can be "switched". To do this, first input the signal you consider the **ON stage** into the **Poly** input in the top, and then input the signal you consider the **OFF stage** into the **Dis. Value** input near the bottom. You can now input a polyphoinc gate signal into the **Disable**, and you are able to switch individual channels between the "Poly" (ON) and "Dis.Value" (OFF) signals.
+**TIP**:  While the [ON/OFF Switch](Switch.md#onoff-switch) can accept- and output polyphonic signals, its switch operatation is monophonic (all channels switch in unison between the ON- and OFF-stages). The Poly-Tweak Mk II can however function as a polyphonic version of the ON/OFF Switch where individual channels can be "switched". To do this, first input the signal you consider the **ON stage** into the **Poly** input in the top, and then input the signal you consider the **OFF stage** into the **Dis. Value** input near the bottom. You can now input a polyphoinc gate signal into the **Disable**, and you are able to switch individual channels between the "Poly" (ON) and "Dis.Value" (OFF) signals.
 
 **TIP**: Similar to the tip above the Poly-Tweak Mk II can be used to combine two polyphonic signals (taking some channels from one polyphonic signal and the other channels from the other polyphonic signal). For example, if you input an 8-channel polyphonic signal into the "Poly" input and another 8-channel input into the "Dis. value" input, then each channel-output will either be taken from the "Poly" input (when the channel is not disabled) or the "Dis. value" input (when the channel is disabled). E.g. with 8 channels, if you disable channels 1, 5 and 8, then channel 1, 5 and 8 of the output will take their values (channel 1, 5 and 8) from the disable value-input, whereas channel 2, 3, 4, 6 and 7 of the output will take their values from (channel 2, 3, 4, 6 and 7) from the Poly-input. If the disable value-input is monophonic the same value would be used for channel 1, 5 and 8.
 
 *To generate the polyphoinc Disable input you can use a **Poly-Tweak Mk I**. Use its context menu to dial in a fixed polyphony (e.g. 8 chanenls), and set its **invert-mode to Gate**. In this configuration all it's inverted channels will output as a high-gates, and non-inverted channels will output as low-gates.*
 
-## Poly-Logical Compare(p)
+<a name="poly-logical-comparep"></a>
+## Poly-Logical Compare
 ![Features](https://img.shields.io/badge/Polyphonic-Input-orange.svg?style=flat-square)<br>
 Unlike the "standard" [Logical compare modules](Compare.md), which compare channels between multiple inputs, the Poly-Logical Compare module compares all channels within the same/single polyphonic signal. If you input a polyphonic signal with up to 16 channels, this module evaluates logical conditions across all active channels. For example, if a 4-channel polyphonic signal is provided, the outputs behave as follows:
 
@@ -175,7 +183,8 @@ If these defaults are modified, a small red indicator light next to the OR or XO
 
 **TIP**: If you pass the signal through one of the PolyTweak modules before feeding it into this module, you can invert selected channels (when in "Gate" mode) and use the Excl/Val switch to either remove channels from the logical comparison or overwrite specific channel values. For instance, setting channels values to 0V ensures they are detected as low-gates, while setting them to 10V guarantees they are read as high-gates. 
 
-## Poly-Value Compare(p)
+<a name="poly-value-comparep"></a>
+## Poly-Value Compare
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 Similar to the Poly-Logical Compare module, Poly-Value Compare by default compares the values of all channels within a single polyphonic input-signal. It features 6 outputs, which by default are clamped within -12V to +12V, but this setting can be adjusted or disabled via the context menu. *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -195,9 +204,10 @@ By default, the module operates in **Monophonic Output mode**, where each output
 
 **TIP**: If you want to exclude some of the channels from the compare operation, simply pass the signal through one of the Poly-Tweak modules before this module, and use it to exclude any unwanted channels. If you want to exclude the last n channels (e.g. only use the first 4 channels of a signal), many of the other poly-tool modules can be used (e.g. a Poly-Shuffle module with it's channel knob set to 4, will exclude all channels after 4, hence only output channel 1-4).
 
-**TIP**: If you need to find the lowest/highest value from multiple monophonic signals, instead of chaining multiple [VMCP2 Mk. II](Compare.md#value-comparator-2-mk-iip) modules, merge those signals into a polyphonic signal using Poly-Merge, then send its Poly output into PolyVCmp to extract the MIN/MAX outputs.
+**TIP**: If you need to find the lowest/highest value from multiple monophonic signals, instead of chaining multiple [VMCP2 Mk. II](Compare.md#value-comparator-2-mk-ii) modules, merge those signals into a polyphonic signal using Poly-Merge, then send its Poly output into PolyVCmp to extract the MIN/MAX outputs.
 
-## Poly-Offset(p)
+<a name="poly-offsetp"></a>
+## Poly-Offset
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 This module lets you offset individual channels (in **PRImary mode**) or groups of channels (in **SECondary mode**). It is primarily aimed at polyphonic signals with up to 8 channels, as it provides individual knobs for offsetting those first 8 channels. However, it supports polyphonic signals with up to 16 channels and will, by default, output the same number of channels as it receives at the input. *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -223,11 +233,11 @@ By default, the module outputs the same number of channels as it receives at the
 
 However, you can also input a monophonic (single-channel) signal and use the context menu to generate a polyphonic signal. For example, you can input a monophonic base note (1V/Oct), set the output channel count to 3, and then use offset knobs 2 and 3 to dial in intervals. In this way, the module effectively outputs a 3-channel chord (such as a minor or major chord) based on the single input base note. *As described previously you can use the "All offset" to transpose this chord up/down*.
 
-**TIP**: If you only plan to use the "All offset" you could as well be using a [Tweak-2I](Tweak.md#tweak-2-mk-ipq) module. It both have knob and CV-input for both scale and offset, and both inputs accepts polyphonic input, so individual scale and offset can be abllied to each channels if needed.
+**TIP**: If you only plan to use the "All offset" you could as well be using a [Tweak-2I](Tweak.md#tweak-2-mk-i) module. It both have knob and CV-input for both scale and offset, and both inputs accepts polyphonic input, so individual scale and offset can be abllied to each channels if needed.
 
-**TIP**: If you need to, you can generate a polyphonic signal from nothing (no input). E.g. to generate a 3 note chord from nothing (no input), using the context-menu you set a fixed polyphony of 3 channels. Using the offset-knobs 2 and -3, you can set the interval of the 2nd, and 3rd note of the chord in relation to the 1st note. Finally you can use the All offset to offset the entire chord (basically dialing in the base-note of the chord). If you at the same time supply a (monophonic) CV-input to the All offset, the chord can be dynamically transposed up/down (e.g. from a single/monophonic CV-signal from a sequencer). In this context you could have multiple PolyOffset modules (each generating different chords), and then use a [Cross-fade/Switch 4to1](Switch.md#cross-fade-switch-4to1p) to switch between these chords.
+**TIP**: If you need to, you can generate a polyphonic signal from nothing (no input). E.g. to generate a 3 note chord from nothing (no input), using the context-menu you set a fixed polyphony of 3 channels. Using the offset-knobs 2 and -3, you can set the interval of the 2nd, and 3rd note of the chord in relation to the 1st note. Finally you can use the All offset to offset the entire chord (basically dialing in the base-note of the chord). If you at the same time supply a (monophonic) CV-input to the All offset, the chord can be dynamically transposed up/down (e.g. from a single/monophonic CV-signal from a sequencer). In this context you could have multiple PolyOffset modules (each generating different chords), and then use a [Cross-fade/Switch 4to1](Switch.md#cross-fade-switch-4to1) to switch between these chords.
 
-**TIP**: The default VCV scope module lets you monitor two separate signals at any one time (where each graph take its color of the input cable). The Scope module can also "graph" a polyphonic signal, but as all channels are graphed on top of each other its more or less impossible to see what goes on. However Poly-offset can **separate the channel graphs** by offsetting them individually or incrementally. In this screen-shot a saw-waveform is fed into a [Value-to-Bits](Bits.md#value-to-bits) which generates a polyphonic 8-channels signal (1 channel for each bit). This signal is then passed through a [Tweak-2I](Tweak.md#tweak-2-mk-ipq) which attenuate the signal. Finally the signals are passed through a Poly-offset, using both its all- and incremental (channel) offset, before finally being passed into the VCV scope, where we can clearly see all 8 channels at once:
+**TIP**: The default VCV scope module lets you monitor two separate signals at any one time (where each graph take its color of the input cable). The Scope module can also "graph" a polyphonic signal, but as all channels are graphed on top of each other its more or less impossible to see what goes on. However Poly-offset can **separate the channel graphs** by offsetting them individually or incrementally. In this screen-shot a saw-waveform is fed into a [Value-to-Bits](Bits.md#value-to-bits) which generates a polyphonic 8-channels signal (1 channel for each bit). This signal is then passed through a [Tweak-2I](Tweak.md#tweak-2-mk-i) which attenuate the signal. Finally the signals are passed through a Poly-offset, using both its all- and incremental (channel) offset, before finally being passed into the VCV scope, where we can clearly see all 8 channels at once:
 
 ![PolyOffset used with VCV scope to visualize individual channels](img/PolyOffsetScopeBitChannels.png) 
 
@@ -243,7 +253,8 @@ Above you see all 8 channels (all 8 bits). However in stead you might want to se
 
 Especially in **SECondary** mode, multiple offsets can be applied to the same channel(s), which may result in relatively high output values. Like most other Infinite-Noise modules, the outputs are clipped by default to the range −12 V to +12 V. Depending on how much offset you apply, and on what the downstream modules are capable of handling, you may want to change/disable this clipping. This can be done via the module’s context menu.
 
-## Poly-Scale(p)
+<a name="poly-scalep"></a>
+## Poly-Scale
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 PolyScale is very similar to PolyOffset (**see above**), but instead of offsetting signals, it scales (attenuverts) individual channels or groups of channels. The most noticeable visual difference is that PolyScale does not include an incremental section. Instead, it features a scale-mode button that cycles through different scaling ranges. By default, all knobs scale (attenuvert) within the range −1x to +1x. Each press of the scale-mode button cycles through the available ranges: 1×, 2×, 5×, and 10×, with an indicator light showing the active mode. The All-scale CV-input supports a polyphonic signal, hence it can be used to apply individual/different scaling to each channel. If supplied a monophonic input, all channels will be scaled according to this input. *Some general info regarding the Poly-tools are listed in the top.*
 
@@ -253,7 +264,7 @@ For more details about the Primary and Secondary modes, as well as the individua
 
 ![Screenshot of PolyScale](module/PolyScale.png) 
 
-**TIP**: If you only plan to use the "All scale" you could as well be using a [Tweak-2I](Tweak.md#tweak-2-mk-ipq) module. It both have knob and CV-input for both scale and offset, and both inputs accepts polyphonic input, so individual scale and offset can be abllied to the channels if needed.
+**TIP**: If you only plan to use the "All scale" you could as well be using a [Tweak-2I](Tweak.md#tweak-2-mk-i) module. It both have knob and CV-input for both scale and offset, and both inputs accepts polyphonic input, so individual scale and offset can be abllied to the channels if needed.
 
 **TIP**: As explained earlier, you can pass a polyphonic signal through a Tweak-2I and a PolyOffset module before feeding it into a VCV Scope to view multiple channels simultaneously. As an alternative, you can route a polyphonic signal (up to 8 channels) through a *PolyScale* module before sending it to the scope. In this setup, you would turn all individual scale knobs (channels 1–8) down to 0 (can be done in one go via the context menu). While this approach does not let you view multiple channels at the same time, it allows you to isolate a single channel by turning up its scale (for example, setting channel 8 to 1× while keeping all others at 0×).
 

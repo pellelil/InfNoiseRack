@@ -1,4 +1,5 @@
-# Ring Modulator 3(pq)
+<a name="ring-modulator-3pq"></a>
+# Ring Modulator 3
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
 This 2HP module contains three sections, each with an **A** and **B** input. The two signals are multiplied together, and the product (the result of the multiplication) is sent to the section’s output. If you only input an **A** signal (A1) in the first section and no **B** signal (B1), then B1 will be normalized to A1, meaning the first section will do a ring modulation of the same signal. In sections 2 and 3, the **A** input is normalized to the output of the previous section, and the **B** input is normalized to the **B** signal connected to the previous section. This means that if you connect a **B** input only to the first section (B1), all three sections will use the same **B** signal. 
@@ -21,6 +22,6 @@ The context menu includes options for configuring scaling and the handling of ne
 
 **TIP**: As explained in the previous tip, the module can be used to attenuate signals. However, since the inputs are not clamped, it can also be used to amplify them. For example, the **B** inputs are divided by 10 by default, so if you input **20 V** into a B input, the signal on the **A** input will be multiplied by **2** (effectively amplifying it by 2x). *Remember that outputs are by default clamped in the range -12V to +12V, so if you need to output values exceeding this range, you must change/disable clipping via the context menu*.
 
-Likewise, if you input a negative signal (e.g., **−10 V**) into the **B** input, the signal on the **A** input will be inverted. *Using the On/Off knobs on a [On/Off Switch](Switch.md#onoff-switchp) you can toggle it between either outputting -10V or +10V if you want to toggle between invert/not-invert. Likewise not supplying A- or B-inputs to a [Bernoulli Switch](Switch.md#bernoulli-switchp) you can use it's context menu to normalize A to -10V and B to +10, so that its probablility-setting can be use to toggle between invert/not-invert*.
+Likewise, if you input a negative signal (e.g., **−10 V**) into the **B** input, the signal on the **A** input will be inverted. *Using the On/Off knobs on a [On/Off Switch](Switch.md#onoff-switch) you can toggle it between either outputting -10V or +10V if you want to toggle between invert/not-invert. Likewise not supplying A- or B-inputs to a [Bernoulli Switch](Switch.md#bernoulli-switch) you can use it's context menu to normalize A to -10V and B to +10, so that its probablility-setting can be use to toggle between invert/not-invert*.
 
 [Go back to modules overview](manual.md#modules)

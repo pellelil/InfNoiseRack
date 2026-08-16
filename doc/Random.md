@@ -1,5 +1,5 @@
 # Random modules
-The Infinite-Noise plugin includes several modules capable of generating random outputs or using internal randomization. If you need a simple bipolar/unipolar random value, the [S&H, T&H and H&T modules](Shth.md) are ideal choices, especially the SHTH2 module, which has a built-in LFO that generates a random value from an internal noise source each time its phase restarts. Similarly, the [Bernoulli Switch](Switch.md#bernoulli-switchp) allows you to set a probability for routing signals between two inputs and one output ("A/B->") or one input and two outputs ("->A/B"). If no input is used, the "A/B->" section can even be used to generate random gates (high=10V, low=0V) based on the probability setting.
+The Infinite-Noise plugin includes several modules capable of generating random outputs or using internal randomization. If you need a simple bipolar/unipolar random value, the [S&H, T&H and H&T modules](Shth.md) are ideal choices, especially the SHTH2 module, which has a built-in LFO that generates a random value from an internal noise source each time its phase restarts. Similarly, the [Bernoulli Switch](Switch.md#bernoulli-switch) allows you to set a probability for routing signals between two inputs and one output ("A/B->") or one input and two outputs ("->A/B"). If no input is used, the "A/B->" section can even be used to generate random gates (high=10V, low=0V) based on the probability setting.
 
 However, there are cases where more advanced randomization is needed. The Random-4 and Random-Curve modules allow for customizable random values with defined ranges and distributions. Random-4 outputs four random values at once when triggered, while Random-Curve continuously generates smooth curves that transition between random values.
 
@@ -44,7 +44,8 @@ When the distribution mode is set to **Center/Edge**, you have the option to ena
 
 **Note**: Forced Polarity is ignored when the distribution mode is set to "Min/Max".
 
-## Random-4(paq)
+<a name="random-4paq"></a>
+## Random-4
 ![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
@@ -59,7 +60,8 @@ By default, each of the four outputs generates a single monophonic value per tri
 
 **TIP**: If you want to create smooth transitions rather than abrupt jumps, you can process the module’s output through a slew module, generating curves instead of fixed values. Since the range and distribution can only be adjusted manually via knobs, the Random-Curve module is a better choice if you need CV control over these parameters. 
 
-## Random Curve(aq)
+<a name="random-curveaq"></a>
+## Random Curve
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
@@ -89,8 +91,8 @@ The screenshot belows shows the exact same progression of random values, display
 
 **TIP**: While adjusting the range of generated values via knobs or CV is straightforward, don’t overlook the ability to manipulate the time domain just as easily. The rate at which new random values are generated can be dynamically controlled using the Rate knob, Chaos rate (context menu) or its CV input, allowing modulation from an LFO, another Random-Curve module, or any other external source. Essentially, the Rate input functions as frequency modulation for the module’s internal LFO. *Keep in mind that the **Delay feature** only affect changes made to the range, so to keep the outputs smooth without abrupt changes, it best to use a slow changing/smooth frequency CV-input*.
 
-**TIP**: To create more evolving and complex curves, consider cross-fading between different outputs. A [Cross-fade module](CrossFade.md) allows smooth transitions between two signals, while a [Switch module](Switch.md) enables switching between multiple outputs—either from the same module or from different sources. For example, the [Cross-fade 4x1](CrossFade.md#cross-fade-4x1p) can seamlessly transition between up to four different random curves, blending them in real-time. You could choose to feed the Trigger output from the Random Curve into the Cross-fade 4x1 (in random mode), so it will pick a random curve-output each time a new curve-segment begins. To keep it even **more simple**, route the curve-outputs you want to "mix" into a [Manuel Mix 4 Mk I](ManCV.md#manuel-mix-4-mk-ip) and dial-in your desired mix-settings, and if you want a "stair-stepped" output route the signal through a [S&H/T&H-2](Shth.md#shth-2paq).
+**TIP**: To create more evolving and complex curves, consider cross-fading between different outputs. A [Cross-fade module](CrossFade.md) allows smooth transitions between two signals, while a [Switch module](Switch.md) enables switching between multiple outputs—either from the same module or from different sources. For example, the [Cross-fade 4x1](CrossFade.md#cross-fade-4x1) can seamlessly transition between up to four different random curves, blending them in real-time. You could choose to feed the Trigger output from the Random Curve into the Cross-fade 4x1 (in random mode), so it will pick a random curve-output each time a new curve-segment begins. To keep it even **more simple**, route the curve-outputs you want to "mix" into a [Manuel Mix 4 Mk I](ManCV.md#manuel-mix-4-mk-i) and dial-in your desired mix-settings, and if you want a "stair-stepped" output route the signal through a [S&H/T&H-2](Shth.md#shth-2).
 
-**TIP**: Another technique involves layering smooth random curves with subtle noise or jitter for added movement and variation. A [Merge module](MergeMult.md) can combine multiple signals by summing them together, allowing you to overlay a gentle evolving curve with a lower-amplitude noise/jitter source. Various modules can generate this noise or jitter, including LFOs, S&H circuits, and other random generators. You can further refine the noise by passing it through a [Tweak module](Tweak.md) to dynamically adjust its scale/offset over time using CV input. For an additional layer of unpredictability, routing the noise signal through a [Bernoulli Switch](Switch.md#bernoulli-switchp) allows probabilistic control, randomly determining when the noise/jitter is present or absent in the final output or switch between two different noise/jitter sources.
+**TIP**: Another technique involves layering smooth random curves with subtle noise or jitter for added movement and variation. A [Merge module](MergeMult.md) can combine multiple signals by summing them together, allowing you to overlay a gentle evolving curve with a lower-amplitude noise/jitter source. Various modules can generate this noise or jitter, including LFOs, S&H circuits, and other random generators. You can further refine the noise by passing it through a [Tweak module](Tweak.md) to dynamically adjust its scale/offset over time using CV input. For an additional layer of unpredictability, routing the noise signal through a [Bernoulli Switch](Switch.md#bernoulli-switch) allows probabilistic control, randomly determining when the noise/jitter is present or absent in the final output or switch between two different noise/jitter sources.
 
 [Go back to modules overview](manual.md#modules)

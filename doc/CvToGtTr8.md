@@ -34,7 +34,7 @@ For example, if an LFO is generating a bipolar square wave that only outputs -5V
 
 Make sure to configure the include/exclude settings correctly so boundary values (e.g., exactly 0V or 2V) belong to only one range. If you only need to detect when a value is **outside** the range (rather than distinguishing above vs. below), you can route both the “below” and “above” triggers into the same input of another module.
 
-Alternatively, you can configure a section (e.g., 0V to 2V) to output a **high gate** while the input is within range. You can then invert this gate using other modules to detect when the signal is **outside** the range. For example: * Use the **!Gate** output of a [Sign or Sign4I](Sign.md) module, or route the gate into a [Manual Push2](ManCV.md#manuel-push-2p) module and invert it via the context menu (output 0V on high gate and 10V on low gate). There are, of course, many other ways to achieve the same result.
+Alternatively, you can configure a section (e.g., 0V to 2V) to output a **high gate** while the input is within range. You can then invert this gate using other modules to detect when the signal is **outside** the range. For example: * Use the **!Gate** output of a [Sign or Sign4I](Sign.md) module, or route the gate into a [Manual Push2](ManCV.md#manuel-push-2) module and invert it via the context menu (output 0V on high gate and 10V on low gate). There are, of course, many other ways to achieve the same result.
 
 **TIP**: Combining this module with a CV Toggle module allows you to generate multiple gates from a single CV input and use them to control distinct ON/OFF inputs of the CV Toggle module. To achieve this:
 
@@ -48,7 +48,7 @@ Now, the CV Toggle module acts as a multi-channel switch where only one of its o
 ![Screenshot of CV to Gate/Trigger connected with CV Toggle and ](img/cvToGtTrAsSwitchSelector.png)
 
 ## Polyphonic signals not supported
-The CV to Gate/Trigger module only processes monophonic signals—if a polyphonic signal is provided, only the first channel is used, and all output signals remain monophonic. This design choice was made to keep the internal algorithm simple and reduce CPU load. If polyphonic input was supported, with 8 sections processing up to 16 channels each, the module would need to potentially track up to 128 (8*16) triggers simultaneously. Additionally, in most cases, a module like this is unlikely to be needed for polyphonic processing. If needed you can however use a [Poly-Split](PolyTools.md#poly-splitp) to split a polyphonic signal into (up to) 8 monophonic signals, which you can then pass into the 8 sections of this module.
+The CV to Gate/Trigger module only processes monophonic signals—if a polyphonic signal is provided, only the first channel is used, and all output signals remain monophonic. This design choice was made to keep the internal algorithm simple and reduce CPU load. If polyphonic input was supported, with 8 sections processing up to 16 channels each, the module would need to potentially track up to 128 (8*16) triggers simultaneously. Additionally, in most cases, a module like this is unlikely to be needed for polyphonic processing. If needed you can however use a [Poly-Split](PolyTools.md#poly-split) to split a polyphonic signal into (up to) 8 monophonic signals, which you can then pass into the 8 sections of this module.
 
 
 [Go back to Manual](manual.md)
