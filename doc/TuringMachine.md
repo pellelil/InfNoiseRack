@@ -1,4 +1,6 @@
 # Turing Machine(q)
+![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
 This module is my interpretation of a Turing machine, built around an internal 32-bit shifting register. By default, each incoming Clock signal shifts the pattern one bit to the right. The probability settings determine whether the pattern remains fixed (whether bits will change). Although the internal pattern consists of 32 bits, the module allows you to define a sequence length using a dedicated knob or CV input. The sequence length defaults to 8 bits/steps but can be freely adjusted within a range of 3 to 32 bits/steps. 
 
 Since the outputs are always derived from an 8-bit segment, if the sequence length is greater than 8, only the lowest 8 bits will be used to generate the outputs. If the sequence length is less than 8, the pattern will repeat to fill the 8-bit output. For example, with a sequence length of 4, the lowest 4 bits are repeated twice to form a full 8-bit output for value and gate/trigger generation. *When referring to the “lowest 8 bits,” this includes either the actual lowest 8 bits of the pattern (when the sequence length is 8 or more), or a repeated segment when the sequence length is less than 8*.

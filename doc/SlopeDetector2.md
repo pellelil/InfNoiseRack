@@ -1,4 +1,5 @@
 # Slope Detector 2
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)<br>
 The Slope Detector 2 is a 2 HP module designed for slope detection across two independent sections (A and B), identifying whether an input signal is **rising**, **steady**, or **falling**. Section B’s CV input is normalized to section A when no cable is connected, so a single input can drive both sections if needed (e.g. you might opt to output gates in the A section, and triggers in the B section). 
 
 At the top of the module, a **threshold** knob sets detection sensitivity. This knob operates exponentially, covering a range from about **0.00001 V to 0.01 V**, with a default around **0.0001 V**. On each processing step, the module compares the current input value to the previous one for that section. If the absolute difference (delta) meets or exceeds the threshold, the signal is treated as rising (positive delta) or falling (negative delta).

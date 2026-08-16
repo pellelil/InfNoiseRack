@@ -1,4 +1,5 @@
 # CV to Gate/Trigger 8
+![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)<br>
 This module features eight identical sections, each designed to convert a CV input into either a gate or a trigger based on a defined range. Each section consists of:
 
 + A CV input (leftmost column, normalized to the previous section).

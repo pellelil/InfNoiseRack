@@ -45,6 +45,10 @@ Below are 3 examples to better illustrate how the mix of signals are functioning
 **TIP**: Similarly, a tweak module can be used to refine the output of a random signal generator, limiting its range to a specific voltage window before passing it on. Additionally, the module’s quantization feature can be used to convert a smooth random signal into quantized note values, making it suitable for melodic sequencing before being sent to an oscillator—potentially via a Sample-and-Hold module. The quantization function is not limited to pitch control; any continuously varying signal can be transformed into a "stepped waveform" with fixed interval steps. By enabling quantization, the output signal will adopt a stair-stepped pattern with 12 steps per volt (or other selected increments), which can be adjusted via the context menu.
 
 ## Tweak-2 Mk I(pq)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Mix-No-red.svg?style=flat-square)<br>
 The Tweak-2 Mk I module is a compact 2HP utility with two inputs and two outputs which uses the same knob/CV-input to scale/offset both inputs. Since the same knobs/CV-inputs are used for scaling and offset both the A- and the B-signal, this module is ideal if/when you need to tweak a **stereo audio signal** (e.g. needs to anneuvert it). The scale knob allows adjustment from -1x (inverting and amplifying to -100%) to +1x (amplifying to 100%). The offset knob ranges from -10V to +10V, and when no input signal is connected, it can be used to generate a fixed output voltage using the offset-knob. In addition to manual control via the knobs, both scale and offset can be modified dynamically using CV inputs. The context menu provides further customization, allowing you to reverse the order of the scale and offset operations, disable the default -12V to +12V clipping, or modify the clipping range. Tweak-2I supports polyphonic signals, making it a flexible tool for both monophonic and multi-channel CV processing. *Some general info regarding the Tweak-modules are listed in the top.*
 
 ![Screenshot of Tweak-2I](module/Tweak2I.png)
@@ -52,6 +56,10 @@ The Tweak-2 Mk I module is a compact 2HP utility with two inputs and two outputs
 *As mentioned previously the Tweak2I can accept- and generated polyphonic (multi-channel) input/output. Also it's CV-input for both Scale and Offset also accept polyphonic-signals, allowing you to scale/offset each channel individual. If/when you only apply a monophonic CV-input for Scale and/or Offset, all channels will be scaled/offset by the same amount*.
 
 ## Tweak-2 Mk II(pq)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Mix-Yes-green.svg?style=flat-square)<br>
 The Tweak-2 Mk II module is a 2HP utility featuring two independent sections, labeled "A" and "B", each with its own input and output. However, if no cable is connected to the "A" output, the "B" output will carry a **averaging mix** of both sections, effectively summing the A and B signals and dividing the result by two (mixing can be disabled in the context-menu). When processing polyphonic signals, the mix feature will adjust the B-output to match the higest number of channels found in the A/B inputs. *Some general info regarding the Tweak-modules are listed in the top.*
 
 Unlike Tweak-2I, Tweak-2II does not support CV modulation for scaling or offset. Instead, both sections have dedicated manual scale and offset knobs, allowing fine-tuned control over each signal. When no input is connected, the offset knobs can be used to generate fixed voltage outputs in the range of -10V to +10V. If no cable is inserted into the "B" input, it is normalized to the "A" input, meaning a single signal can be processed in two different ways simultaneously. For example, inserting a signal into "A", setting its scale knob to +100% (default), and setting the "B" scale knob to -1x, will result in the "A" output providing an unchanged copy of the input, while the "B" output produces an inverted version of the same signal.
@@ -61,6 +69,10 @@ By default, Tweak-2 II allows independent scaling and offset settings for each s
 ![Screenshot of Tweak-2II](module/Tweak2II.png)
 
 ## Tweak-4 Mk I(pq)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Mix-No-red.svg?style=flat-square)<br>
 The Tweak-4 Mk I module is a 2HP utility designed for applying uniform scaling and offset to up to four separate signals. Unlike the Tweak-4 Mk II, which allows individual control over each section, Tweak-4 uses a single pair of scale and offset knobs that affect all four input/output pairs equally. This makes it particularly useful when you need to apply the same scaling or offset across multiple signals simultaneously, such as converting multiple bipolar signals to unipolar or vice versa (offset +5V or -5V). *Some general info regarding the Tweak-modules are listed in the top.*
 
 Each section (A through D) is processed independently, meaning they will output as many polyphonic channels as they receive. However, unlike some other Tweak modules, Tweak-4 Mk I does not support mixing (for that, the Tweak-4 Mk II is a better choice, as it allows individual scaling for each channel and mixing of inputs). The Tweak-4 Mk I does **not support mixing** of input. 
@@ -72,6 +84,10 @@ Each section (A through D) is processed independently, meaning they will output 
 **TIP**: Since Tweak-4 Mk I only provides knob-based scaling, you can pair it with a VCA-4 for CV-controlled scaling (amplification) while using Tweak-4 primarily for offset control. Depending on your setup, you might want to process the signal through the VCA-4 first, then offset it with the Tweak-4, or apply scaling first using Tweak-4 before routing it to VCA-4 for further modulation via CV. 
 
 ## Tweak-4 Mk II(q)
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Mix-Yes-green.svg?style=flat-square)<br>
 Compared to Mk I, Tweak-4 Mk II offers individual scaling/offset for each section, and it can be regarded as "half a Tweak-8". If works exactly like the Tweak-8, where the only difference is it only have 4 sections (A through D), whereas the the Tweak-8 have 8 sections (A through H). So see the description below for the Tweak-8. Unlike the Tweak Mk I, the Mk II **do support mixing**, hence it will work perfectly for mixing up to 4 signals (or mix 2x2 signales - e.g. 2 stereo signals). *Some general info regarding the Tweak-modules are listed in the top.*
 
 In both the Scale- and Offset parts of the panel you find a latchable "Link to A" button. When enabled the knobs for section B-D will be "grayed out" and they will automatically adjust to the changes made to the A-section. This way you can easily dial in the same Scale- and/or Offset- settings for all 4 sections.
@@ -83,6 +99,10 @@ In both the Scale- and Offset parts of the panel you find a latchable "Link to A
 **TIP**: Similar to the tip above, you can also use a Tweak-4II to transpose notes by octaves, simply by offsetting by whole volts (e.g. offset by +1V to transpose notes by 1 octave). This way you can feed 1V/Oct notes from a sequencer into input-A, and then dial in up to 4 differents transpose (offsets) to your melodi/note-sequence. You will however need another module to pick "which transposed version" (outputs A-D) to use. E.g. a [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1p) do exactly this.
 
 ## Tweak-8(q)
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Mix-Yes-green.svg?style=flat-square)<br>
 The Tweak-8 module is the largest of the Tweak-series, featuring eight fully independent sections, each with their own scale and offset knobs as well as CV inputs. Like the other Tweak modules, you can use each of the eight individual outputs, or simply take the final "H" output to get a fully mixed signal from all eight sections. *Some general info regarding the Tweak-modules are listed in the top.*
 
 If you frequently find yourself using multiple Tweak-2I modules or need submixing of multiple signals, the Tweak-8 is an ideal solution. For cases where you need to adjust the amplitude of the full mix at the "H" output, you can simply route it through a Tweak-2I module and use its scale knob to control the overall mix level. If you only need to mix six signals instead of eight, you can manually route the "F" output into the "G" input (cable from F-out to G-in), and then use the scale knob of section "G" to attenuate the mix. The "G" output will then carry the adjusted mix of six signals.
@@ -101,6 +121,8 @@ By default, the amplification scaling (0% to 100%) is set to linear mode. Howeve
 When **polyphonic** signals are fed into the VCA module, the output will contain the same number of channels. Additionally, you can input a polyphonic amplify signal, allowing each output channel to be amplified by a different amount. If the amplify input is monophonic however, all channels will be amplified by the same amount.
 
 ## VCA-2(p)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Attenuate-1x-green.svg?style=flat-square)<br>
 As the name suggests, this 2 HP module contains two independent Voltage-Controlled Amplification (VCA) sections labeled A and B. Each section features a knob and CV input to control amplification. The knob allows manual adjustment of amplification from 0% to 100%, while the CV input provides dynamic control. The incoming CV signal is added to the knob's setting but is always clamped within the 0% to 100% range. If additional amplification is needed, consider using a Tweak module, which supports scaling up to 10x. *Some general info regarding the VCA-modules are listed above.*
 
 The default scaling mode is linear, but this can be modified via the context menu. Both sections share the same scaling mode. As indicated by the arrow markings, the CV input for amplification in section B is normalized to the CV input of section A. This allows the same amplification signal to be applied to both sections, which is particularly useful for stereo signals (left/right channels).
@@ -110,6 +132,8 @@ At the top of the **B section**, you’ll find a small toggle button that contro
 ![Screenshot of VCA-2](module/VCA2.png)
 
 ## VCA-4 Mk I(p)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Attenuate-1x-green.svg?style=flat-square)<br>
 Similarly housed in a 2 HP module, the VCA-4I features four independent input/output pairs, allowing it to amplify four separate signals simultaneously. However, unlike the VCA-2, all four sections share the same knob and CV input for controlling amplification. This means that the same amplification level is applied to all four signals. *Some general info regarding the VCA-modules are listed above.*
 
 The amplification knob allows for manual adjustment within a 0% to 100% range, while the CV input provides external control. For instance, applying a 5V CV signal with a 100% trim setting will scale the input signal to 50%. The incoming CV scaling is combined with the knob’s setting but is always clamped within the 0% to 100% range. If higher amplification is required, the Tweak modules offer scaling up to 10x. By default, the scaling mode is linear, but this can be adjusted via the context menu to use exponential or logarithmic scaling.
@@ -117,6 +141,8 @@ The amplification knob allows for manual adjustment within a 0% to 100% range, w
 ![Screenshot of VCA-4I](module/VCA4I.png)
 
 ## VCA-4 Mk II(p)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Attenuate-1x-green.svg?style=flat-square)<br>
 Like the Mk I version, this module can amplify four independent input/output pairs. However, it adds knobs and CV inputs that allow you to apply different amplification levels to each of the four sections. Thanks to the link controls and input normalization, it’s easy to apply consistent—but different—amplification across multiple sections (for example, when processing the left and right channels of a stereo signal). All four sections support polyphonic signals, and each output will produce the same number of channels as its corresponding input. *Some general info regarding the VCA-modules are listed above.*
 
 In the top half of the module, you’ll find sections **A** and **B** side by side. In the lower half, sections **C** and **D** are arranged in the same way. As indicated by the arrowheads, the CV input for amplification is normalized from one section to the next. This means that if you connect a CV signal only to **CV-A**, the same signal can be used by all four sections. If you do not want to use this normalization, simply leave the trim knob at its default **0** position, in which case the CV input is effectively ignored.
@@ -129,6 +155,8 @@ The **C input** is normalized to the **A input**, and the **D input** is normali
 The previous sections covered the Tweak modules first, followed by the VCA modules. This section introduces additional modules that, while not part of either the Tweak or VCA families, are still designed for amplification purpose. Amoung the Controlers/Converter-part of the manual you'll also find a few dedicated [Manuel Mix modules](ManCV.md#manuel-mix-4-mk-ip).
 
 ## Clamp 4(po)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Oversample-2x-green.svg?style=flat-square)<br>
 This 2HP clamp module features four inputs and four outputs, with Min and Max knobs at the top, allowing you to define a voltage range between -10V and +10V. If an input voltage exceeds the specified range, the signal is clamped to fit within it. Each input has an indicator light that illuminates whenever an input value exceeds the defined range, dimming gradually.
 
 If the Min knob is set to a value greater than the Max knob, the signal is not only clamped but also **inverted** within the defined range. When this occurs, a small red light next to the Min knob is illuminated to indicate inversion mode. By default, the module clamps signals within a -5V to +5V range, but preset voltage ranges can be selected via the context menu, or you can manually adjust them as needed.
@@ -145,6 +173,7 @@ The module has three operational modes:
 ![Screenshot of Clamp 4](module/Clamp4.png)
 
 ## Auto-Scale 4(p)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Auto-Scale 4 module closely resembles the Clamp 4 module, featuring Min and Max knobs, four inputs, and four outputs. However, instead of a three-way mode switch, it includes a Reset (both a CV input and a small push-button). Unlike the Clamp 4, which restricts signals within a defined range, the Auto-Scale 4 automatically scales and offsets input signals to fit within the range specified by the Min/Max knobs.
 
 Between the **Min** and **Max** knobs, you’ll find a small **Link** button that lets you link the Max knob to the Min knob. When enabled, the Max knob mirrors the Min knob. For example, if you set the Min knob to **-3 V**, the Max knob will automatically be set to **+3 V**. This makes it very easy to dial in a symmetrical bipolar range.

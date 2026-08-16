@@ -1,4 +1,5 @@
 # Flip-Flop
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)<br>
 The Infinite-Noise Flip-Flop module integrates **three different types of flip-flops** into a single unit. In the top you find the 2-way switch wich lets you pick either **T-mode (Toggle Flip-Flop)** or **D-Mode (Data Flip-Flop)**. However thanks to the dedicate Set- and Reset-inputs **SR-mode (Set/Reset Flip-flop)** is available at all time (whether the 2-way switch is in the T- or D-position).
 
 A flip-flop stores and toggles between two states, outputting either High- (10V by default) or Low-gate (0V by default). The key difference between the three modes lies in how the module determines when the output should change. When switching between T- and D-modes, one of the two indicator lights above the "T/D" label illuminates, signifying the active mode.

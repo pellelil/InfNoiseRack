@@ -1,4 +1,7 @@
 # Fold(poq)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Oversample-2x-green.svg?style=flat-square)<br>
 It’s no surprise that the fold module can fold (or “wrap”) waveforms. The **Range** switch lets you choose between a **Bipolar** range (−5V to +5V) and a **Unipolar** range (0V to 10V). If the input signal (for example, a waveform) exceeds this range, it will “fold inward” to keep the output within the selected limits. As long as the input stays within the specified range, the signal remains unchanged (unless you apply Gain or Bias, explained below). 
 
 For the fold module to really take effect, the signal typically needs to be amplified so it exceeds the range—this is the purpose of the **Gain** knob/CV-input, located at the top of the module. It allows you to amplify the input from 1× (default) up to 10×.

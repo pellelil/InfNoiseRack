@@ -1,4 +1,7 @@
 # Arm 3 XY(a)
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
 The Arm3XY module generates 3 output values, labeled X, Y and XY which - based on settings and CV-input - tends to be smooth evovling curves (where XY is an averaging mix of X and Y). While these values are not strictly random, their behavior can appear unpredictable or dynamic, making them suitable for use in generative or evolving modulation. The module is based on the **motion of three interconnected rotating arms**, each defined by its length and rotational velocity (speed and direction of rotation). The first arm (red) is fixed at the center of an imaginary square, with the second arm (blue) attached to the end of the first, and the third arm (green) extending from the second. As each arm rotates and changes length, the movement cascades through the system, influencing the final position of the third arm’s endpoint, which determines the X/Y outputs. These outputs are then scaled according to the Range and Min/Cntr/Max settings, ensuring that the values fall within a specified range.
 
 ![Illustrtion of 3 arms](img/Arm3XY_illustration.png)

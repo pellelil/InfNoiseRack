@@ -1,4 +1,5 @@
 # Increment/Decrement Offset
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 Internally, the module maintains an offset value for each channel (defaulting to 0V). At the top of the module, you'll find a value knob and corresponding CV input for setting the increment/decrement amount. This input supports both monophonic signals (applying the same value to all channels) and polyphonic signals (applying individual values per channel).
 
 Whenever the module receives an increment trigger or you press the manual increment button, the specified value is added to the internal offset for each channel. Likewise, when it receives a decrement trigger or you press the decrement button, the value is subtracted from the internal offset for each channel. Pressing the reset button, or sending a reset trigger, sets all internal offsets back to 0V. If you in the same cycle sends both a Reset-signal and a Inc- or Dec-signal the Inc/Dec-signal is ignored (hence the internal offset will reset to 0V). Likewise sending both an Inc- and Dec-signal in the same cycle, both will be ignored *("X+Y-Y = X")*.

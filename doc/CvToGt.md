@@ -1,4 +1,5 @@
 # CV to Gate
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 This 2HP module checks whether the CV input signal falls within a specified range. The range is defined using the **Min** and **Max** knobs and their corresponding CV inputs. Each of these sections includes a button to determine whether the Min/Max values are **inclusive** (i.e., part of the range). At the bottom of the module, you’ll find four outputs, which by default all produce gates:
 + **Rng**: Outputs a high gate while the input is within the specified range
 + **!Rng**: Outputs a high gate while the input is outside the specified range

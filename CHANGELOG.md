@@ -1,8 +1,8 @@
 # 2.0.3 (In development)
-Ensured all module descriptions in manifest are identical to module descriptions in the manual. Also updated the manifest tags for several modules, e.g. LMCP2, VCMP1 and VCMP2 Mk I, are all able to work as 2-to-1 switches thanks to their "True"/"False" inputs in the top of the modules, but were not tagged as "Switch" in the maninfest. Various minor updates to the manual. Added support for multi-stage (color) push-buttons (needed one for the ADR Envelope).
+Ensured all module descriptions in manifest are identical to module descriptions in the manual. Also updated the manifest tags for several modules, e.g. LMCP2, VCMP1 and VCMP2 Mk I, are all able to work as 2-to-1 switches thanks to their "True"/"False" inputs in the top of the modules, but were not tagged as "Switch" in the maninfest. Various minor updates to the manual (e.g. added badges to highlight module features). Added support for multi-stage (color) push-buttons (needed one for the ADR Envelope).
 
 ## New modules
-- [ADR Envelope](doc/ADREnvelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/rease time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).
+- [ADR Envelope](doc/ADREnvelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).
 
 ## Updated modules
 - [Manuel Push 2](doc/ManCV.md#manuel-push-2p): In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).
@@ -12,6 +12,7 @@ Ensured all module descriptions in manifest are identical to module descriptions
 - [Simple LFO4-ss](doc/LFO.md#simple-lfo4-ssa): Phase light for LFO-4 and sync lights were not set correctly.
 - [Turing Machine](doc/TuringMachine.md#turing-machineq): Min/Center/Max toggle-button appeared pressed (green) when adding module to rack. Min/Center/Max mode-lights changed to tiny-lights.
 - [LFO1](doc/LFO.md#lfo1pa): Sync-output remained being monophonic even when the frequency-input was polyphonic.
+- [Fold](doc/Fold.md#foldpoq): Output port appeared to be monophonic ("red circle" was missing), but would output polyphonic signals.
 
 # 2.0.2 
 Fixed various warnings based on cppcheck report from VCV. Going forward I now have a local release-check script I can run, which monitors the various issues reported from VCV. So future releases should be less painfull.

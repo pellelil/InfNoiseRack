@@ -1,4 +1,6 @@
 # Sign(pq)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
 The Sign module is designed to manipulate the "sign" (polarity) of incoming signals, providing nine different output variations based on a single or multiple input signals. Each of the nine inputs has a corresponding output, with all inputs being normalized to the previous one, meaning a single input signal can be used across all outputs if no additional inputs are provided. The module fully supports polyphonic signals, ensuring that each output maintains the same number of channels as its respective input. *As I recall Sign was the very first module I created for this plugin, as it was easy (didn't have to learn about triggers nor buttons/knobs - only input/ouput). The first implementation was monophonic only, so support for polyphonic signals were added later along with a context menu.*
 
 ![Screenshot of Sign](module/Sign.png) 
@@ -32,6 +34,7 @@ The Sign module described earlier features nine distinct processing sections, ea
 **TIP**: The Mk I and Mk II versions together provide most of the functionality of the original Sign module, except for the +5V and -5V operations. The +5V operation converts a bipolar signal (-5V to +5V) into a unipolar signal (0V to 10V), while -5V shifts a unipolar signal (0V to 10V) into a bipolar range (-5V to +5V). If you need to add or subtract 5V, you can achieve the same result using the [Tweak-4](Tweak.md#tweak-4-mk-ipq) module by simply applying a +5V or -5V offset to the input signal.
 
 ## Sign4 Mk I(p)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Sign4 Mk I module provides three types of signal inversion, selectable via a three-way toggle switch at the top. By default, the module operates in **!Gt** (Gate Inversion) mode, where a high-gate is converted into a low-gate, and vice versa. Any input at or above 1V is considered a high-gate, and the module outputs 10V for high-gates and 0V for low-gates. Both the detection threshold and output levels can be customized via the context menu. In this mode, the module functions identically to the "!Gate" output of the original Sign module. Each of the four sections (A, B, C, and D) operates independently and supports both monophonic and polyphonic signals. For example, if a monophonic signal is connected to Input A, the A output will remain monophonic. If an 8-channel polyphonic signal is fed into Input B, the corresponding B output will also be 8-channel polyphonic.
 
 Switching the module to **×-1** mode will multiply the input by -1, effectively inverting a bipolar signal (e.g., -3V becomes +3V). Selecting the **!R** mode (inversion within a defined Range) will invert values within a specified range, which can be adjusted via the context menu. By default, the inversion applies to a unipolar 0V to 10V range, meaning an input of 3V would be transformed into 7V (e.g. useful for flipping an uniplolar envelope-signal).
@@ -43,6 +46,7 @@ Switching the module to **×-1** mode will multiply the input by -1, effectively
 **TIP**: If you need to convert incoming signals into gates without inverting them, simply set the three-way switch to "!Gt" mode and adjust the context menu settings so that high-gates output 0V and low-gates output 10V. This configuration makes the module behave like the "Gate" output of the original Sign module.
 
 ## Sign4 Mk II(p)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 Similar to the Sign4 Mk I, the Sign4 Mk II features four independent sections (A, B, C, and D), each with its own input and output. The three-way switch at the top determines how the input signal is processed for each section. By default, when the switch is set to **Abs** (Absolute Value Mode), the module outputs the absolute value of the input, converting negative values into positive values. In **Ct-** mode (Cut Negative), all negative values are replaced with 0V, effectively removing the negative portion of the signal. For example, when processing a bipolar sine wave, the module will retain the positive half-cycle, while the negative half-cycle is flattened to 0V. Conversely, in **Ct+** mode (Cut Positive), all positive values are replaced with 0V, allowing only the negative portion of the input signal to pass through.
 
 ![Screenshot of Sign-4II](module/Sign4II.png) 

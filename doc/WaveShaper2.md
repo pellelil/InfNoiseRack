@@ -1,4 +1,7 @@
 # Wave Shaper 2(poq)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Oversample-2x-green.svg?style=flat-square)<br>
 This module features two independent sections (A and B) for applying **wave shaping**. While both sections share the same settings, the input signals are process separately. At the top, you can control the modulation amount using a knob and/or trim+CV input, with a range of -1 (counterclockwise) to +1 (clockwise). Below this, a three-way switch allows you to select between different shaping-algorithms (explained later), while another three-way switch sets the input signal range (also detailed later, along with the reset button/input to reset range while in Auto mode). 
 
 At the bottom of the module, you'll find the A/B inputs and their corresponding A/B outputs, where each section processes its respective signal independently. The module can both be used to process modulation CV-signals and audio signals, hence you could use the A/B sections to process a (left/right) stereo signal. Via the context menu 2x oversampling can be enabled (off by default).

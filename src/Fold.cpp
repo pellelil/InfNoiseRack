@@ -294,7 +294,7 @@ struct FoldModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<CKSS>(Vec(switchCol, 262.384f), module, FoldModule::RANGE_PARAM));
 
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 297.267f), module, FoldModule::CV_INPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrCol,332.738), module, FoldModule::CV_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol,332.738), module, FoldModule::CV_OUTPUT));
     }
 
     void appendContextMenu(Menu* menu) override {

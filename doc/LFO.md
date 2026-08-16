@@ -20,11 +20,17 @@ Most Infinite-Noise modules process signals at audio rate (e.g., 48,000 times pe
 **Warning**: Lowering processing quality (whether auto or manual) reduces CPU usage, which is mostly a good thing, but in a few/edge cases it may have unintended side effects. If a slow-moving LFO is set to update every 16 cycles, it means that for 15 cycles, the module holds the exact same value, outputting an unchanged signal. While this is not an issue for most modules, it can interfere with detection-based modules, such as the [Slope Detector 2](SlopeDetector2.md#slope-detector-2), which may cause false state detections. If the LFO output is intended for use with a Slope Detector or similar modules, it is recommended to disable Auto mode and manually set the process quality to "Audio", ensuring small updates occur every cycle. 
 
 ## Simple LFO4-ss(a)
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
 This 4HP quad-LFO generates both Saw and Sine waveforms for each of its four independent LFOs. The frequency knobs allow precise rate control, while the three-way toggles determine the output range. As detailed earlier, the context menu provides additional output range options (defaulting to Bipolar: -5V to +5V) and lets you configure sync modes (disabled by default, but indicated by small red/green lights when active). Likewise the waveforms can be inverted using the context menu, and indicated by small lights near the output ports. *Some general info regarding the LFOs are listed in the top.*
 
 ![Screenshot of SLFO4ss](module/SLFO4ss.png) 
 
 ## Simple LFO4-st(a)
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
 This 4HP quad-LFO generates both Square and Triangle waveforms for each of its four independent LFOs. The frequency knobs set the LFO rates, while the three-way toggles determine the output range. As with the SLFO4ss, the context menu offers additional output range options (defaulting to Bipolar: -5V to +5V) and lets you configure sync modes (off by default, but indicated via red/green lights when enabled). Likewise the waveforms can be inverted using the context menu, and indicated by small lights near the output ports. *Some general info regarding the LFOs are listed in the top.*
 
 ![Screenshot of SLFO4st](module/SLFO4st.png) 
@@ -32,6 +38,9 @@ This 4HP quad-LFO generates both Square and Triangle waveforms for each of its f
 *When I need multiple LFOs with fixed frequencies (not affected by CV), the SLFO4st is my go-to quad-LFO. Each of its four LFOs operates at an independently set rate, and internal sync can be enabled via the context menu if/when needed. The combination of Square and Triangle waveforms makes it a highly versatile modulation source as Square waves can function as clocks, gates, or triggers, while Triangle waves provide smooth modulation curves for various parameters. If you need a little "chaos", the context-menu enables you to dial in chaos-rate individually for all 4 LFOs.*
 
 ## Tiny LFO(pa)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
 This compact 2HP module is the smallest LFO in the plugin. It allows frequency adjustments via knob and CV modulation (chaos-rate can be enabled/set via the context menu). Due to its small size, both range and PWM settings can only be adjusted using knobs, whereas the LFO1 supports both knob and CV control for PWM and modulation. Additionally, the TLFO does not support external synchronization with other LFOs. The module generates four waveforms — Saw, Square, Triangle, and Sine — which can be output simultaneously, all running at the same frequency and phase, though each waveform can be individually inverted via the context menu. When fed a polyphonic frequency CV-input, the output waveforms will also be polyphonic, where each channel can be running at a different rate. *Some general info regarding the LFOs are listed in the top.*
 
 ![Screenshot of TLFO](module/TLFO.png) 
@@ -45,6 +54,9 @@ As indicated by the arrow-heads, the frequency CV-input is normalized to the Sin
 *Among the Infinite-Noise LFOs, TLFO is a personal favorite. Despite its compact 2HP size, it offers great versatility. It supports CV frequency input, enabling polyphonic outputs, and allows manual PWM adjustments. The ability to manually set the output range ensures it can be directly connected to other modules, even if they lack a trim knob. If offset adjustments are needed, the output can be processed through one of the Tweak modules for further refinement.*
 
 ## LFO1(pa)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
 This 4HP single-LFO module generates four waveforms (Square, Triangle, Saw, and Sine) which can all be output simultaneously. When a polyphonic signal is fed into the frequency CV-input, the waveform-outputs will also be polyphonic, maintaining the same number of channels as the input (though the rate-indicator light will only reflect channel 1). The Bipolar/Unipolar switch works in conjunction with the range knob/input to define the output range of the waveforms. PWM can be adjusted via a knob and CV modulation (1% to 99%), and by default, it affects all four waveform types. However, the context menu allows PWM to be applied exclusively to the Square waveform, and it can decrease the PVM range in steps, down to 25%/75%. *Some general info regarding the LFOs are listed in the top.*
 
 Like TLFO, as indicated by the arrow-heads, the frequency CV-input is normalized to the Sine waveform-output, however as the trim-knob defaults to 0% it will have no effect until you start dialing in a none-zero trim-value.
@@ -68,6 +80,8 @@ The n-shot mode can be used to generate a **burst of multiple clocks/triggers**.
 **TIP**: To generate **polyphonic waveform outputs**, you need to provide a **polyphonic frequency CV**. This allows each waveform channel to run at a different frequency, since the frequency CV (after being attenuverted by the trim knob) is added to the frequency set by the main frequency knob. In this aspect you can use the **Poly** output of a [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-ipq) to generate such a polyphonic signal. By default, the Poly output provides 8 channels, but you can reduce the polyphony (for example, to 4 channels) via the context menu. Using the top four knobs of the Manual CV 8 Mk I, you can dial in four different voltage levels, which are then added to the base frequency set on the **LFO-1**, allowing each polyphonic channel of the waveform outputs to run at a different frequency.
 
 ## Phase-Driven LFO(p)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/ProcessQuality-Auto-green.svg?style=flat-square)<br>
 Technically, this module is not a traditional LFO since it does not contain an oscillator or use a frequency parameter. Instead, it directly takes a phase input within a 10V range (either bipolar or unipolar) to determine the waveform-phase, and thereby its output. However, due to its similarities with the LFO1 module, it is still categorized as an LFO, and its functionality is described in this section of the documentation. Due to the fact that the Phase-input accepts polyphonic input, **it's easy to generate multiple phase-shifted waveforms** (described as a TIP further down).
 
 At the top of the module, there is a phase input, which supports polyphonic signals (the four waveform outputs will match the number of channels in the phase input). A two-way switch next to the input determines whether the phase range is bipolar (-5V to +5V) or unipolar (0V to 10V). To cover the full waveform cycle, the input signal must span the entire selected range. This input signal will by default be clamped to the selected phase-range, but setting the "Exceed Rng" switch to the "Wrap" position, the incomming signal will be "wrapped" if exceeding the phase-range.

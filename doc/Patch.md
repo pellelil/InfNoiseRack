@@ -1,4 +1,5 @@
 # Patch(p)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Patch module is a specialized utility that I don’t use very often, but it’s extremely useful when experimenting or testing specific modules. When I do use it, I typically place two of them side-by-side as a **patchbay**—but first, let’s look at a single module on its own.
 
 The module consists of 8 pairs of internally connected input and output ports. By default, each input is directly connected to its corresponding output. Next to each input, there is a **Mute** switch which, when activated (red), breaks this connection and effectively disables the routing. The module supports polyphonic signals, so each output will match the number of channels of its corresponding input. By default, outputs are hard-clipped to the range −12V to +12V, though this behavior can be adjusted or disabled via the context menu.
