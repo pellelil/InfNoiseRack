@@ -2,17 +2,17 @@
 Ensured all module descriptions in manifest are identical to module descriptions in the manual. Also updated the manifest tags for several modules, e.g. LMCP2, VCMP1 and VCMP2 Mk I, are all able to work as 2-to-1 switches thanks to their "True"/"False" inputs in the top of the modules, but were not tagged as "Switch" in the maninfest. Various minor updates to the manual (e.g. added badges to highlight module features, and changed all module headers). Added support for multi-stage (color) push-buttons (needed one for the ADR Envelope).
 
 ## New modules
-- [ADR Envelope](doc/ADREnvelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).
+- **[ADR Envelope](doc/ADREnvelope.md#adr-envelope)**: Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).
 
 ## Updated modules
-- [Manuel Push 2](doc/ManCV.md#manuel-push-2): In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).
+- **[Manuel Push 2](doc/ManCV.md#manuel-push-2)**: In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).
 - [Cross-fade switch 4to1](doc/Switch.md#cross-fade-switch-4to1): Using the context menu you can now specify which volt-level the input should normalize to when not connected (e.g. if you need to switch/fade a fixed volt level to up to 4 different outputs). It defaults to 0V as previous version.
 
 ## Fixed modules
-- [Simple LFO4-ss](doc/LFO.md#simple-lfo4-ss): Phase light for LFO-4 and sync lights were not set correctly.
-- [Turing Machine](doc/TuringMachine.md#turing-machine): Min/Center/Max toggle-button appeared pressed (green) when adding module to rack. Min/Center/Max mode-lights changed to tiny-lights.
-- [LFO1](doc/LFO.md#lfo1): Sync-output remained being monophonic even when the frequency-input was polyphonic.
-- [Fold](doc/Fold.md#fold): Output port appeared to be monophonic ("red circle" was missing), but would output polyphonic signals.
+- **[Simple LFO4-ss](doc/LFO.md#simple-lfo4-ss)**: Phase light for LFO-4 and sync lights were not set correctly.
+- **[Turing Machine](doc/TuringMachine.md#turing-machine)**: Min/Center/Max toggle-button appeared pressed (green) when adding module to rack. Min/Center/Max mode-lights changed to tiny-lights.
+- **[LFO1](doc/LFO.md#lfo1)**: Sync-output remained being monophonic even when the frequency-input was polyphonic.
+- **[Fold](doc/Fold.md#fold)**: Output port appeared to be monophonic ("red circle" was missing), but would output polyphonic signals.
 
 # 2.0.2 
 Fixed various warnings based on cppcheck report from VCV. Going forward I now have a local release-check script I can run, which monitors the various issues reported from VCV. So future releases should be less painfull.
@@ -22,8 +22,8 @@ Fixed various warnings based on cppcheck report from VCV. Going forward I now ha
 All panel SVG-files were simplified and reduced in file-size, but appears the same as before (e.g. a hidden layer inside the files were removed).
 
 ## Updated Modules
-- [Poly-Merge](doc/PolyTools.md#poly-merge): Ligths (next to each input port) indicating channel count are now color-coded, whether input is availble (green) or whether it will simply output 0V (red). Ports that are not included in the output still shows as dimmed light. *Might have fixed a bug from 2.0.0, otherwise it was a bug caused by the new code that was fixed. Anyway no known bugs.*
-- [Poly-Split](doc/PolyTools.md#poly-split): Output ports that have available input still shows with a green light (whether cable is connected or not). However lights for output ports without available input will either show as dimmed (when no cable is connected), or red (if a cable is connected). This works both in mono- and poly-mode. E.g. if you in Poly-mode input a 6-channel polyphonic cable, and only insert a cable into output port 8, it will still output a 8 channel signal. The lights for port 1-6 will be green (as input is available), however the lights for ports 7 and 8 will now show as red (as no input is available, and ports 7 and 8 will simply output 0V).
+- **[Poly-Merge](doc/PolyTools.md#poly-merge)**: Ligths (next to each input port) indicating channel count are now color-coded, whether input is availble (green) or whether it will simply output 0V (red). Ports that are not included in the output still shows as dimmed light. *Might have fixed a bug from 2.0.0, otherwise it was a bug caused by the new code that was fixed. Anyway no known bugs.*
+- **[Poly-Split](doc/PolyTools.md#poly-split)**: Output ports that have available input still shows with a green light (whether cable is connected or not). However lights for output ports without available input will either show as dimmed (when no cable is connected), or red (if a cable is connected). This works both in mono- and poly-mode. E.g. if you in Poly-mode input a 6-channel polyphonic cable, and only insert a cable into output port 8, it will still output a 8 channel signal. The lights for port 1-6 will be green (as input is available), however the lights for ports 7 and 8 will now show as red (as no input is available, and ports 7 and 8 will simply output 0V).
 
 
 # 2.0.0 (First release - not included in VCV Library due to manifest issues)
