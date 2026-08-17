@@ -11,7 +11,7 @@ on:
     paths-ignore:
       # Updating the README, docs, or dev folder doesn't trigger a build
       - 'README*'
-      - 'CHANGELOG*'
+      - 'Status.md'
       - 'doc/**'
       - 'dev/**'
   pull_request:

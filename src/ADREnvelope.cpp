@@ -74,10 +74,10 @@ struct ADREnvelopeModule : InfNoiseModule {
     float releaseShape = 0.f;
     float oldAttackShape = 2.f;   // Sentinel: first processParams always rebuilds
     float oldReleaseShape = 2.f;
-    Lut1D<256> attackShapeLut;
-    Lut1D<256> attackShapeInvLut;
-    Lut1D<256> releaseShapeLut;
-    Lut1D<256> releaseShapeInvLut;
+    Lut1D<256> attackShapeLut{0.f, 1.f};
+    Lut1D<256> attackShapeInvLut{0.f, 1.f};
+    Lut1D<256> releaseShapeLut{0.f, 1.f};
+    Lut1D<256> releaseShapeInvLut{0.f, 1.f};
     float attackLevel = 10.f;
     float releaseLevel = 0.f;
     float deltaLevel = 10.f;  // Abs.diff between A.level and R.level
@@ -480,6 +480,7 @@ struct ADREnvelopeModule : InfNoiseModule {
                     phasePos += delayStep * delayChaosFactor;
                     if (phasePos >= 1.f) {
                         beginRelease();
+                        outTrig[BOR].trigger();
                     }
                 }
                 else if (phase == ap_release) {
