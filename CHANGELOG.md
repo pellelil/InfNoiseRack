@@ -6,7 +6,7 @@ Ensured all module descriptions in manifest are identical to module descriptions
 
 ## Updated modules
 - **[Manuel Push 2](doc/ManCV.md#manuel-push-2)**: In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).
-- [Cross-fade switch 4to1](doc/Switch.md#cross-fade-switch-4to1): Using the context menu you can now specify which volt-level the input should normalize to when not connected (e.g. if you need to switch/fade a fixed volt level to up to 4 different outputs). It defaults to 0V as previous version.
+- **[Cross-fade switch 4to1](doc/Switch.md#cross-fade-switch-4to1)**: Using the context menu you can now specify which volt-level the input should normalize to when not connected (e.g. if you need to switch/fade a fixed volt level to up to 4 different outputs). It defaults to 0V as previous version.
 
 ## Fixed modules
 - **[Simple LFO4-ss](doc/LFO.md#simple-lfo4-ss)**: Phase light for LFO-4 and sync lights were not set correctly.
