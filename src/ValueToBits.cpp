@@ -268,9 +268,9 @@ struct ValueToBitsModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rgtClm, 145.137f), module, ValueToBitsModule::MINCNTRMAX_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(lftClm, 132.091f), module, ValueToBitsModule::MINCNTRMAX_TRIM_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(lftClm, 159.021f), module, ValueToBitsModule::MINCNTRMAX_INPUT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(30.880f, 120.393f), module, ValueToBitsModule::MIN_LIGHT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(42.225f, 120.393f), module, ValueToBitsModule::CNTR_LIGHT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(54.538f, 120.393f), module, ValueToBitsModule::MAX_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(30.880f, 120.393f), module, ValueToBitsModule::MIN_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(42.225f, 120.393f), module, ValueToBitsModule::CNTR_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(54.538f, 120.393f), module, ValueToBitsModule::MAX_LIGHT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(27.891f, 145.973f), module, ValueToBitsModule::MINCNTRMAX_BTN_PARAM));
 
         // Individual bit-outputs and lights

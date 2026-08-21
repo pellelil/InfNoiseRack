@@ -37,6 +37,7 @@ struct ADREnvelopeModule : InfNoiseModule {
         BOR_OUTPUT,
         EOR_OUTPUT,
         ENVELOPE_OUTPUT,
+        INV_ENVELOPE_OUTPUT,
         OUTPUTS_LEN
     };
     enum LightId {
@@ -80,7 +81,6 @@ struct ADREnvelopeModule : InfNoiseModule {
     Lut1D<256> releaseShapeInvLut{0.f, 1.f};
     float attackLevel = 10.f;
     float releaseLevel = 0.f;
-    float deltaLevel = 10.f;  // Abs.diff between A.level and R.level
     float envelope = releaseLevel;  // Current Envelope voltage
     bool attackRetrig = false;
     bool delayRetrig = false;
@@ -92,7 +92,7 @@ struct ADREnvelopeModule : InfNoiseModule {
     bool timeLinked = false;
     bool shapeLinked = false;
     bool haveTriggerOutputs = false;
-    bool haveEnvelopeOutput = false;
+    bool haveEnvelopeOutput = false;  // ENVELOPE_OUTPUT or INV_ENVELOPE_OUTPUT connected
     actReqValue<rateChaos> delayRateChaos = actReqValue<rateChaos>(rc_default);
     actReqValue<rateChaos> attackRateChaos = actReqValue<rateChaos>(rc_default);
     actReqValue<rateChaos> releaseRateChaos = actReqValue<rateChaos>(rc_default);
@@ -153,17 +153,18 @@ struct ADREnvelopeModule : InfNoiseModule {
 
         configOutput(BOA_OUTPUT, "BOA (Begin Of Attack)");
         configOutput(EOA_OUTPUT, "EOA (End Of Attack)");
-        configOutput(BOR_OUTPUT, "BOR (Begin Of Release)");
+        configOutput(BOR_OUTPUT, "BOR (Begin Of Release)/(End Of Delay)");
         configOutput(EOR_OUTPUT, "EOR (End Of Release)");
         configOutput(ENVELOPE_OUTPUT, "Envelope");
-        
+        configOutput(INV_ENVELOPE_OUTPUT, "Inverted Envelope");
+
         // Set InfNoise features (e.g. menu-items) 
         haveProcQuality = true;
 		haveAutoProcQuality = false;
         haveOutQuantize = false;
         haveOutClipRange = false;  
 		haveGateDetect = true;
-		haveGateHighLow = true;
+		haveGateHighLow = false;
         haveTrigDetect = true;
 		haveTrigHighLow = true;
 
@@ -321,7 +322,6 @@ struct ADREnvelopeModule : InfNoiseModule {
         // Attack and Release levels
         attackLevel = params[A_LEVEL_PARAM].getValue();
         releaseLevel = params[R_LEVEL_PARAM].getValue();
-        deltaLevel = std::abs(releaseLevel - attackLevel);
 
         // Attack, Delay and Release steps (phasePos 0→1 over the phase time)
         attackStep = (attackTime > 0.f) ? procSampleTime / attackTime : 1.f;
@@ -361,7 +361,8 @@ struct ADREnvelopeModule : InfNoiseModule {
         // Check for output connections
         haveTriggerOutputs = outputs[BOA_OUTPUT].isConnected() || outputs[EOA_OUTPUT].isConnected() ||
             outputs[BOR_OUTPUT].isConnected() || outputs[EOR_OUTPUT].isConnected();
-        haveEnvelopeOutput = outputs[ENVELOPE_OUTPUT].isConnected();
+        haveEnvelopeOutput = outputs[ENVELOPE_OUTPUT].isConnected() ||
+            outputs[INV_ENVELOPE_OUTPUT].isConnected();
 
         bool newPhaseTrigMode = params[PHASE_GATE_TRIG_PARAM].getValue() < 0.5f;
         if (newPhaseTrigMode != phaseTrigMode) {
@@ -497,7 +498,7 @@ struct ADREnvelopeModule : InfNoiseModule {
             if (haveTriggerOutputs) {
                 for (int i = 0; i < 4; i++) {
                     outputs[BOA_OUTPUT + i].setVoltage(outTrig[i].running() 
-                        ? voltValues[gateOutHigh.act] : voltValues[gateOutLow.act]);
+                        ? voltValues[trigOutHigh.act] : voltValues[trigOutLow.act]);
                 }
             }
 
@@ -512,8 +513,9 @@ struct ADREnvelopeModule : InfNoiseModule {
                 else if (phase == ap_release)
                     envelope = attackLevel + (releaseLevel - attackLevel) * releaseShapeLut(phasePos);
 
-                // Output Envelope voltage
+                // Output Envelope and inverted Envelope (mirrored around A.level ↔ R.level)
                 outputs[ENVELOPE_OUTPUT].setVoltage(envelope);
+                outputs[INV_ENVELOPE_OUTPUT].setVoltage(attackLevel + releaseLevel - envelope);
             }
         }
 
@@ -578,7 +580,8 @@ struct ADREnvelopeModuleWidget : InfNoiseModuleWidget {
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(leftClm, 298.189f), module, ADREnvelopeModule::EOA_OUTPUT));
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 298.189f), module, ADREnvelopeModule::EOR_OUTPUT));
 
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(centerClm, 333.447f), module, ADREnvelopeModule::ENVELOPE_OUTPUT));
+        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(leftClm, 333.447f), module, ADREnvelopeModule::ENVELOPE_OUTPUT));
+        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 333.447f), module, ADREnvelopeModule::INV_ENVELOPE_OUTPUT));
     }
 
     void step() override {

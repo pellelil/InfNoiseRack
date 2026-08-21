@@ -82,6 +82,16 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + OnOffSwitch: -
 + Combine: -
 
+### Random
++ Random4: -
++ RandomCurve: -
++ Arm3XY: -
++ TuringMachine: -
+
+### Envelope
++ ADREnvelope: -
++ ADSDREnvelope: New module **Needs testing**
+
 ### Misc
 + Sign: -
 + Sign4I: -
@@ -94,10 +104,5 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + FlipFlop: -
 + SlopeDetector2: -
 + Patch: -
-+ Random4: -
-+ RandomCurve: -
-+ Arm3XY: -
-+ TuringMachine: -
 + BitsToValue: -
 + ValueToBits: -
-+ ADREnvelope: -

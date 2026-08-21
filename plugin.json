@@ -1,7 +1,7 @@
 {
     "slug": "InfiniteNoise",
     "name": "Infinite-Noise",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "license": "GPL-3.0-or-later",
     "brand": "Infinite-Noise",
     "author": "Pelle Liljendal",
@@ -666,6 +666,68 @@
       ]
     },
     {
+      "slug": "Random4",
+      "name": "Random-4",
+      "description": "Generates 4 (mono-/polyphonic) random values with min/max and distribution at each trigger or internal frequency.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Random.md#random-4",
+      "tags":  [
+        "Polyphonic",
+        "Random",
+        "Utility"
+      ]
+    },
+    {
+      "slug": "RandomCurve",
+      "name": "Random Curve",
+      "description": "Generates 6 shaped random cruves with min/max and distribution.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Random.md#random-curve",
+      "tags":  [
+        "Random",
+        "Utility"
+      ]
+    },
+    {
+      "slug": "Arm3XY",
+      "name": "Arm 3 XY",
+      "description": "Length and rotation of 3 'arms' (basically 3 polar vectors) generates a 'semi-random' curve X/Y-output.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Arm3XY.md#arm-3-xy",
+      "tags":  [
+        "Utility",
+        "Random"
+      ]
+    },
+    {
+      "slug": "TuringMachine",
+      "name": "Turing Machine",
+      "description": "Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/TuringMachine.md#turing-machine",
+      "tags":  [
+        "Random",
+        "Sequencer",
+        "Utility"
+      ]
+    },
+    {
+      "slug": "ADREnvelope",
+      "name": "ADR Envelope",
+      "description": "Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope). Times can be affected by Rate Chaos (set via context-menu).",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Envelope.md#adr-envelope",
+      "tags":  [
+        "Envelope generator",
+        "Utility"
+      ]
+    },
+    {
+      "slug": "ADSDREnvelope",
+      "name": "ADSDR Envelope",
+      "description": "Attack-Decay-Sustain-Delay-Release Envelope with attack/dectay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Envelope.md#adsdr-envelope",
+      "tags":  [
+        "Envelope generator",
+        "Utility"
+      ]
+    },
+    {
       "slug": "Sign",
       "name": "Sign",
       "description": "Outputs 9 different 'signed-versions' of the input signal(s).",
@@ -777,48 +839,6 @@
       ]
     },
     {
-      "slug": "Random4",
-      "name": "Random-4",
-      "description": "Generates 4 (mono-/polyphonic) random values with min/max and distribution at each trigger or internal frequency.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Random.md#random-4",
-      "tags":  [
-        "Polyphonic",
-        "Random",
-        "Utility"
-      ]
-    },
-    {
-      "slug": "RandomCurve",
-      "name": "Random Curve",
-      "description": "Generates 6 shaped random cruves with min/max and distribution.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Random.md#random-curve",
-      "tags":  [
-        "Random",
-        "Utility"
-      ]
-    },
-    {
-      "slug": "Arm3XY",
-      "name": "Arm 3 XY",
-      "description": "Length and rotation of 3 'arms' (basically 3 polar vectors) generates a 'semi-random' curve X/Y-output.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Arm3XY.md#arm-3-xy",
-      "tags":  [
-        "Utility",
-        "Random"
-      ]
-    },
-    {
-      "slug": "TuringMachine",
-      "name": "Turing Machine",
-      "description": "Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/TuringMachine.md#turing-machine",
-      "tags":  [
-        "Random",
-        "Sequencer",
-        "Utility"
-      ]
-    },
-    {
       "slug": "BitsToValue",
       "name": "Bits-to-Value",
       "description": "Converts 8 bits (gate-inputs) into a CV-value based on dialed in weights and specified range.",
@@ -835,16 +855,6 @@
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Bits.md#value-to-bits",
       "tags":  [
         "Polyphonic",
-        "Utility"
-      ]
-    },
-    {
-      "slug": "ADREnvelope",
-      "name": "ADR Envelope",
-      "description": "Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/ADREnvelope.md#adr-envelope",
-      "tags":  [
-        "Envelope generator",
         "Utility"
       ]
     }
