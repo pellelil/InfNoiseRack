@@ -697,17 +697,6 @@
       ]
     },
     {
-      "slug": "TuringMachine",
-      "name": "Turing Machine",
-      "description": "Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/TuringMachine.md#turing-machine",
-      "tags":  [
-        "Random",
-        "Sequencer",
-        "Utility"
-      ]
-    },
-    {
       "slug": "ADREnvelope",
       "name": "ADR Envelope",
       "description": "Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope). Times can be affected by Rate Chaos (set via context-menu).",
@@ -835,6 +824,17 @@
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Patch.md#patch",
       "tags":  [
         "Polyphonic",
+        "Utility"
+      ]
+    },
+    {
+      "slug": "TuringMachine",
+      "name": "Turing Machine",
+      "description": "Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/TuringMachine.md#turing-machine",
+      "tags":  [
+        "Random",
+        "Sequencer",
         "Utility"
       ]
     },

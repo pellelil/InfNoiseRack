@@ -236,7 +236,6 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Random-4](Random.md#random-4)(paq): Generates 4 (mono-/polyphonic) random values with min/max and distribution at each trigger or internal frequency.
 + [Random Curve](Random.md#random-curve)(aq): Generates 6 shaped random cruves with min/max and distribution.
 + [Arm 3 XY](Arm3XY.md#arm-3-xy)(a): Length and rotation of 3 'arms' (basically 3 polar vectors) generates a 'semi-random' curve X/Y-output.
-+ [Turing Machine](TuringMachine.md#turing-machine)(q): Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).
 
 ## Envelope
 + [ADR Envelope](Envelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope). Times can be affected by Rate Chaos (set via context-menu).
@@ -254,5 +253,6 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Flip-Flop](FlipFlop.md#flip-flop): Flip-flop module able to both do D-, T- or SR- flip-flops.
 + [Slope Detector 2](SlopeDetector2.md#slope-detector-2): 2 sections with threshold slope detection (rise/steady/fall) with latched phases and configurable Steady hold time.
 + [Patch](Patch.md#patch)(p): Mutable patch with 8 pairs of input/output for routing signals (typically you would use two modules at the same time to patch signals between them).
++ [Turing Machine](TuringMachine.md#turing-machine)(q): Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).
 + [Bits-to-Value](Bits.md#bits-to-value): Converts 8 bits (gate-inputs) into a CV-value based on dialed in weights and specified range.
 + [Value-to-Bits](Bits.md#value-to-bits)(p): Converts a CV-input (clamped in specified range) into 8 monophonic- and 1 polyphonic gate-output (up to 16 channels).

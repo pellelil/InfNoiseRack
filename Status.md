@@ -86,7 +86,6 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + Random4: -
 + RandomCurve: -
 + Arm3XY: -
-+ TuringMachine: -
 
 ### Envelope
 + ADREnvelope: -
@@ -104,5 +103,6 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + FlipFlop: -
 + SlopeDetector2: -
 + Patch: -
++ TuringMachine: -
 + BitsToValue: -
 + ValueToBits: -
