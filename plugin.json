@@ -350,6 +350,17 @@
       ]
     },
     {
+      "slug": "Merge2x4",
+      "name": "Merge2x4",
+      "description": "Merge with 2 section each with 4 inputs (merge can either sum or mix, and can have special handling of negative values).",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/MergeMult.md#merge2x4",
+      "tags":  [
+        "Polyphonic",
+        "Utility",
+        "Mixer"
+      ]
+    },
+    {
       "slug": "MergeMult4",
       "name": "Merge/Mult-4",
       "description": "Merge/Mult with 4 inputs/outputs (merge can either sum or mix, and can have special handling of negative values).",
@@ -359,17 +370,6 @@
         "Utility",
         "Mixer",
         "Multiple"
-      ]
-    },
-    {
-      "slug": "Merge2x4",
-      "name": "Merge2x4",
-      "description": "Merge with 2 section each with 4 inputs (merge can either sum or mix, and can have special handling of negative values).",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/MergeMult.md#merge2x4",
-      "tags":  [
-        "Polyphonic",
-        "Utility",
-        "Mixer"
       ]
     },
     {
@@ -709,7 +709,7 @@
     {
       "slug": "ADSDREnvelope",
       "name": "ADSDR Envelope",
-      "description": "Attack-Decay-Sustain-Delay-Release Envelope with attack/dectay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).",
+      "description": "Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Envelope.md#adsdr-envelope",
       "tags":  [
         "Envelope generator",

@@ -2,7 +2,7 @@
 Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules there were otherwise located in the "Misc" section at the end.
 
 ## New modules
-- **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/dectay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
+- **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
 
 ## Updated modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Added inverted Envelope-output. Fixed issue where the high/low outputs of BOA, EOA, BOR and EOR whould use gate-threshold values in stead of trigger-threshold values (only an issue if you changed output levels via the context menu). Also removed context menu-items to set gate-output levels, as the module don't have gate-outputs.

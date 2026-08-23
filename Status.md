@@ -43,9 +43,9 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + CvToGtTr8: -
 
 ### Merge/Mult
++ Mult2x4: -
 + Merge2x4: -
 + MergeMult4: -
-+ Mult2x4: -
 
 ### Logic/Value-compare
 + TinyLCMP2: -

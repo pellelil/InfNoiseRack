@@ -189,12 +189,12 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Manuel Mute 8](ManCV.md#manuel-mute-8)(pq): Controller to manually mute 8 signals.
 + [Mute 2](ManCV.md#mute-2)(p): 2 knob/cv-controlled mute-sections each with a single input/output-pair.
 + [CV-Toggle 8](ManCV.md#cv-toggle-8)(pq): Switch with 8 sections, each with 2 stages (via CV).
-+ [CV to Gate](CvToGt.md#cv-to-gate): Fire gate/trigger if CV is within specified range (1 section).
-+ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8): Fire gate/trigger if CV is within specified range (8 sections).
++ [CV to Gate](CvToGt.md#cv-to-gate)(p): Fire gate/trigger if CV is within specified range (1 section).
++ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8)(p): Fire gate/trigger if CV is within specified range (8 sections).
 
 ## Merge/Mult
-+ [Merge2x4](MergeMult.md#merge2x4)(pq): Merge with 2 section each with 4 inputs (merge can either sum or mix, and can have special handling of negative values).
 + [Mult2x4](MergeMult.md#mult2x4)(p): Mult with 2 section each with 4 outputs (also works as 1-to-8 mult).
++ [Merge2x4](MergeMult.md#merge2x4)(pq): Merge with 2 section each with 4 inputs (merge can either sum or mix, and can have special handling of negative values).
 + [Merge/Mult-4](MergeMult.md#mergemult-4)(pq): Merge/Mult with 4 inputs/outputs (merge can either sum or mix, and can have special handling of negative values).
 
 ## Logic/Value-compare
