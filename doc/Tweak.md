@@ -206,5 +206,4 @@ The screenshots below shows an example of an auto scaled signal. The left side s
 
 ![Auto scaled and offset signal](Img/AutoScaledOffsetSignal.png)
 
-
 [Go back to modules overview](manual.md#modules)
