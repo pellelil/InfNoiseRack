@@ -202,4 +202,9 @@ By default, the module continuously updates its internal scale/offset values in 
 
 ![Screenshot of Auto-Scale 4](module/AutoScale4.png)
 
+The screenshots below shows an example of an auto scaled signal. The left side shows the **raw/red** (non-scaled signal) which in this case covered the range from -12.5V to +12.V (25V peak-to-peak). The right side shows the **scaled/yellow** signal. However as an asymetric scale-range from -2V to +1V (3V peak-to-peak) was selected the output of the Auto-Scale 4 module is both automatic scaled and offset to ensure the output fills the selected range:
+
+![Auto scaled and offset signal](Img/AutoScaledOffsetSignal.png)
+
+
 [Go back to modules overview](manual.md#modules)
