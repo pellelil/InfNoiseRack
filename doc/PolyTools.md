@@ -53,7 +53,7 @@ Similar to the Poly-Stereo (see above) the purpose of the Poly-Quad (in the top)
 
 ![Screenshot of Poly-Quad](module/PolyQuad.png)
 
-As mentioned previously many modules (like switch modules) are not build to process (e.g. switch) multiple signals at once, however if they can switch polyphonic signals they can. The Poly-Stereo is build explicitly to handle stereo audio-signals (with special handling of solo signals), whereas the Poly-Quad can encode/decode (merge/split) up 4 signals. E.g. the output of a sequencer typically have at least 2 signals (trig and V/Oct), but often you have more CV-signals used for things like: amplification, panning, filter-control, and various other modulation. This is where the Poly-quad enters the equation, as it can encode/decode up to 4 monophonic signals wich can then be switched at the same time (when merged into a single 4-channel polyphonic signal). *E.g. VCV's own **SEQ 3** sequencer have 3 CV outputs (CV 1, CV 2 and CV 3) which along with the TRIG-output can be "encoded" into a combined 4-channel polyphonic signal using the Poly-Quad*.
+As mentioned previously many modules (like switch modules) are not build to process (e.g. switch) multiple signals at once, however if they can switch polyphonic signals they can. The Poly-Stereo is build explicitly to handle stereo audio-signals (with special handling of solo signals), whereas the Poly-Quad can encode/decode (merge/split) up to 4 signals. E.g. the output of a sequencer typically have at least 2 signals (trig and V/Oct), but often you have more CV-signals used for things like: amplification, panning, filter-control, and various other modulation. This is where the Poly-quad enters the equation, as it can encode/decode up to 4 monophonic signals wich can then be switched at the same time (when merged into a single 4-channel polyphonic signal). *E.g. VCV's own **SEQ 3** sequencer have 3 CV outputs (CV 1, CV 2 and CV 3) which along with the TRIG-output can be "encoded" into a combined 4-channel polyphonic signal using the Poly-Quad*.
 
 ![Poly-Quad used with SEQ3](img/PolyQuadSeq3.png)
 
@@ -63,7 +63,7 @@ Using the context menu **4>Poly output channels**, you can instead select a fixe
 
 The 4 outputs in the bottom section (E, F, G and H) will output the first 4 channels of the polyphonoic input you provide in the "Poly>4" input. Hence if the input have more than 4 channels, only channel 1-4 are used, and if the input have fewer than 4 channels the corresponding output will simply output 0V (e.g. inputting a 3-channel signal, channel E-G will output these 3 channels as monophonic signals, while H will simply output 0V).
 
-**TIP**: If you need to encode/decore more than 4 monophonic signals you should consider using [Poly-Merge](PolyTools.md#poly-merge) and [Poly-Split](PolyTools.md#poly-split) wich both can handle up to 16 channels, and thanks to their Mono/Poly-mode switchs they can merge/split both monophonic and polyphonic signals.
+**TIP**: If you need to encode/decore more than 4 monophonic signals you should consider using [Poly-Merge](PolyTools.md#poly-merge) and [Poly-Split](PolyTools.md#poly-split) which both can handle up to 16 channels, and thanks to their Mono/Poly-mode switchs they can merge/split both monophonic and polyphonic signals.
 
 ## MAN-TR, MAN-GT, & MAN-CV8I/II
 ![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)<br>

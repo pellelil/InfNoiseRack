@@ -250,7 +250,7 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Ring Modulator 3](RingMod3.md#ring-modulator-3)(pq): 3 Sections to perform ring-modulation of 3 signals.
 + [Increment/Decrement Offset](IncDecOffset.md#incrementdecrement-offset): Button/CV to increment/decrement offset applied to input signal.
 + [Delta-4](Delta4.md#delta-4)(p): Four sections measuring difference between current input and a captured reference level.
-+ [Flip-Flop](FlipFlop.md#flip-flop): Flip-flop module able to both do D-, T- or SR- flip-flops.
++ [Flip-Flop](FlipFlop.md#flip-flop)(p): Flip-flop module able to both do D-, T- or SR- flip-flops.
 + [Slope Detector 2](SlopeDetector2.md#slope-detector-2): 2 sections with threshold slope detection (rise/steady/fall) with latched phases and configurable Steady hold time.
 + [Patch](Patch.md#patch)(p): Mutable patch with 8 pairs of input/output for routing signals (typically you would use two modules at the same time to patch signals between them).
 + [Turing Machine](TuringMachine.md#turing-machine)(q): Turing machine for generating random sequences with 3-32 steps (16 gate/trigger- and 2-value outputs).

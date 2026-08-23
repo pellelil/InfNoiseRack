@@ -1,5 +1,5 @@
 # Flip-Flop
-![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Infinite-Noise Flip-Flop module integrates **three different types of flip-flops** into a single unit. In the top you find the 2-way switch wich lets you pick either **T-mode (Toggle Flip-Flop)** or **D-Mode (Data Flip-Flop)**. However thanks to the dedicate Set- and Reset-inputs **SR-mode (Set/Reset Flip-flop)** is available at all time (whether the 2-way switch is in the T- or D-position).
 
 A flip-flop stores and toggles between two states, outputting either High- (10V by default) or Low-gate (0V by default). The key difference between the three modes lies in how the module determines when the output should change. When switching between T- and D-modes, one of the two indicator lights above the "T/D" label illuminates, signifying the active mode.
@@ -11,6 +11,8 @@ Below the T/D and Clock inputs you will find the dedicated Set and Reset inputs,
 By default, the module is **enabled** and will react to inputs, but you can control whether it is enabled using the "En/Dis" (Enable/Disable) input. A small toggle button next to this input determines whether it functions in gate mode or trigger mode. In gate mode, the module is disabled while receiving a high gate and enabled when the gate is low (however this can be swapped using the context-menu). In trigger mode, each incoming trigger toggles the module between enabled and disabled states. A green light above "En" indicates when the module is enabled, while a red light above "Dis" signals that the module is disabled. When no cable is attached to the En/Dis port, the module will be enabled at all time. While **disabled** the T/D-, Clock-, Set- and Reset-inputs are all ignored. 
 
 At the bottom of the module, there are three output ports. The **Q** output is the primary flip-flop output, and toggling between high and low gates based on the active mode. The **!Q** Output provides an inverted version of "Q", meaning it outputs a low gate when "Q" is high and vice versa. The **ChQ** is a trigger output, and it fires each time Q toggles from low-to-high or high-to-low. *Like many other Infinite-Noise modules, at least one of these output needs to be connected for the module to function.*
+
+Most inputs/outputs can support/generate polyphonic signals, so the Flip-Flop can process up to 16 channels which can flip-flop individually. You can mix monophonic and polyphonic inputs (e.g. have a **polyphonic Set-input** which can set channels individually and have a **monophonic Reset-input** to reset all channels at once). If you do supply multiple polyphonic inputs they should ideally have the same number of channels. The **enable-input only supports monophonic signals**, hence all channels will be set as enabled/disabled based on this monophonic signal.
 
 ![Screenshot of FlipFlop](module/FlipFlop.png) 
 
