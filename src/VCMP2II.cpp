@@ -124,15 +124,15 @@ struct VCMP2IIModule : InfNoiseModule {
         divByZeroMode.updateActual();
 
         abOutputsConnected =
-            inputs[AB_MIN_OUTPUT].isConnected() ||
-            inputs[AB_MAX_OUTPUT].isConnected() ||
-            inputs[AB_NTZ_OUTPUT].isConnected() ||
-            inputs[AB_FFZ_OUTPUT].isConnected() ||
-            inputs[AB_ABSDIFF_OUTPUT].isConnected() ||
-            inputs[AB_AVG_OUTPUT].isConnected();
+            outputs[AB_MIN_OUTPUT].isConnected() ||
+            outputs[AB_MAX_OUTPUT].isConnected() ||
+            outputs[AB_NTZ_OUTPUT].isConnected() ||
+            outputs[AB_FFZ_OUTPUT].isConnected() ||
+            outputs[AB_ABSDIFF_OUTPUT].isConnected() ||
+            outputs[AB_AVG_OUTPUT].isConnected();
 
         int aChannels = std::max(inputs[A_INPUT].getChannels(), 1);
-        int bChannels = std::max(inputs[A_INPUT].getChannels(), 1);
+        int bChannels = std::max(inputs[B_INPUT].getChannels(), 1);
         abChannels = std::max(aChannels, bChannels);
         if (abOutputsConnected) {
             outputs[AB_MIN_OUTPUT].setChannels(abChannels);

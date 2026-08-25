@@ -131,12 +131,12 @@ struct VCMP2IModule : InfNoiseModule {
 
         // Available A/B channels
         abOutputsConnected =
-            inputs[AB_EQ_OUTPUT].isConnected() ||
-            inputs[AB_NEQ_OUTPUT].isConnected() ||
-            inputs[AB_EGT_OUTPUT].isConnected() ||
-            inputs[AB_GT_OUTPUT].isConnected() ||
-            inputs[AB_ELT_OUTPUT].isConnected() ||
-            inputs[AB_LT_OUTPUT].isConnected();
+            outputs[AB_EQ_OUTPUT].isConnected() ||
+            outputs[AB_NEQ_OUTPUT].isConnected() ||
+            outputs[AB_EGT_OUTPUT].isConnected() ||
+            outputs[AB_GT_OUTPUT].isConnected() ||
+            outputs[AB_ELT_OUTPUT].isConnected() ||
+            outputs[AB_LT_OUTPUT].isConnected();
         int aChannels = std::max(inputs[A_INPUT].getChannels(), 1);
         int bChannels = std::max(inputs[B_INPUT].getChannels(), 1);
         abChannels = std::max(aChannels, bChannels);
@@ -154,12 +154,12 @@ struct VCMP2IModule : InfNoiseModule {
 
         // Available C/D channels
         cdOutputsConnected =
-            inputs[CD_EQ_OUTPUT].isConnected() ||
-            inputs[CD_NEQ_OUTPUT].isConnected() ||
-            inputs[CD_EGT_OUTPUT].isConnected() ||
-            inputs[CD_GT_OUTPUT].isConnected() ||
-            inputs[CD_ELT_OUTPUT].isConnected() ||
-            inputs[CD_LT_OUTPUT].isConnected();
+            outputs[CD_EQ_OUTPUT].isConnected() ||
+            outputs[CD_NEQ_OUTPUT].isConnected() ||
+            outputs[CD_EGT_OUTPUT].isConnected() ||
+            outputs[CD_GT_OUTPUT].isConnected() ||
+            outputs[CD_ELT_OUTPUT].isConnected() ||
+            outputs[CD_LT_OUTPUT].isConnected();
         int cChannels = inputs[C_INPUT].isConnected()
             ? std::max(inputs[C_INPUT].getChannels(), 1)
             : aChannels;  // Normalize to A
@@ -285,7 +285,7 @@ struct VCMP2IModule : InfNoiseModule {
                     outputs[CD_ELT_OUTPUT].setVoltage(inTol || lt
                         ? trueInput[c]
                         : falseInput[c], c);
-                    outputs[CD_LT_OUTPUT].setVoltage(!inTol >= tol && lt
+                    outputs[CD_LT_OUTPUT].setVoltage(!inTol && lt
                         ? trueInput[c]
                         : falseInput[c], c);
                 }

@@ -132,12 +132,12 @@ struct LCMP2Module : InfNoiseModule {
 
         // Available A/B channels
         abOutputsConnected = 
-            inputs[AB_AND_OUTPUT].isConnected() ||
-            inputs[AB_NAND_OUTPUT].isConnected() ||
-            inputs[AB_OR_OUTPUT].isConnected() ||
-            inputs[AB_NOR_OUTPUT].isConnected() ||
-            inputs[AB_XOR_OUTPUT].isConnected() ||
-            inputs[AB_XNOR_OUTPUT].isConnected();
+            outputs[AB_AND_OUTPUT].isConnected() ||
+            outputs[AB_NAND_OUTPUT].isConnected() ||
+            outputs[AB_OR_OUTPUT].isConnected() ||
+            outputs[AB_NOR_OUTPUT].isConnected() ||
+            outputs[AB_XOR_OUTPUT].isConnected() ||
+            outputs[AB_XNOR_OUTPUT].isConnected();
         abChannels = std::max(
             std::max(inputs[A_INPUT].getChannels(), 1),
             std::max(inputs[B_INPUT].getChannels(), 1));
@@ -152,12 +152,12 @@ struct LCMP2Module : InfNoiseModule {
 
         // Available C/D channels
         cdOutputsConnected = 
-            inputs[CD_AND_OUTPUT].isConnected() ||
-            inputs[CD_NAND_OUTPUT].isConnected() ||
-            inputs[CD_OR_OUTPUT].isConnected() ||
-            inputs[CD_NOR_OUTPUT].isConnected() ||
-            inputs[CD_XOR_OUTPUT].isConnected() ||
-            inputs[CD_XNOR_OUTPUT].isConnected();
+            outputs[CD_AND_OUTPUT].isConnected() ||
+            outputs[CD_NAND_OUTPUT].isConnected() ||
+            outputs[CD_OR_OUTPUT].isConnected() ||
+            outputs[CD_NOR_OUTPUT].isConnected() ||
+            outputs[CD_XOR_OUTPUT].isConnected() ||
+            outputs[CD_XNOR_OUTPUT].isConnected();
         cdChannels = std::max(
             std::max(inputs[C_INPUT].getChannels(), 1),
             std::max(inputs[D_INPUT].getChannels(), 1));
@@ -245,12 +245,12 @@ struct LCMP2Module : InfNoiseModule {
                     bool cdAnd = cInput && dInput;
                     bool cdOr = cInput || dInput;
                     bool cdXor = cInput ^ dInput;
-                    outputs[CD_AND_OUTPUT].setVoltage(cdAnd ? trueInput[c] : falseInput[c]);
-                    outputs[CD_NAND_OUTPUT].setVoltage(!cdAnd ? trueInput[c] : falseInput[c]);
-                    outputs[CD_OR_OUTPUT].setVoltage(cdOr ? trueInput[c] : falseInput[c]);
-                    outputs[CD_NOR_OUTPUT].setVoltage(!cdOr ? trueInput[c] : falseInput[c]);
-                    outputs[CD_XOR_OUTPUT].setVoltage(cdXor ? trueInput[c] : falseInput[c]);
-                    outputs[CD_XNOR_OUTPUT].setVoltage(!cdXor ? trueInput[c] : falseInput[c]);
+                    outputs[CD_AND_OUTPUT].setVoltage(cdAnd ? trueInput[c] : falseInput[c], c);
+                    outputs[CD_NAND_OUTPUT].setVoltage(!cdAnd ? trueInput[c] : falseInput[c], c);
+                    outputs[CD_OR_OUTPUT].setVoltage(cdOr ? trueInput[c] : falseInput[c], c);
+                    outputs[CD_NOR_OUTPUT].setVoltage(!cdOr ? trueInput[c] : falseInput[c], c);
+                    outputs[CD_XOR_OUTPUT].setVoltage(cdXor ? trueInput[c] : falseInput[c], c);
+                    outputs[CD_XNOR_OUTPUT].setVoltage(!cdXor ? trueInput[c] : falseInput[c], c);
                 }
             }
         }
