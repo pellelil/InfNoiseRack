@@ -1,5 +1,5 @@
 # 2.0.4 (In development)
-Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules there were otherwise located in the "Misc" section at the end.
+Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section.
 
 ## New modules
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
@@ -9,6 +9,15 @@ Changed the order of the modules as they appear in the browser and manual for a 
 - **[Flip-Flop](doc/FlipFlop.md#flip-flop)**: All input/output (except enable/disable input) were made polyphonic, so there is basically a individual flip-flop for each channel of a polyphonic signal. You can mix polyphonic and monophonic signals (e.g. have a polyphonic Set-input and a monophonic Reset-input), however if using multiple polyphonic inputs they should ideally have the same number of channels.
 - **[Bits-to-Value](doc/Bits.md#bits-to-value)**: Min/Center/Max mode-lights changed to tiny-lights.
 - **[Value-to-Bits](doc/Bits.md#value-to-bits)**: Min/Center/Max mode-lights changed to tiny-lights.
+
+## Fixed modules
+- **[Logic Comparator-2](doc/Compare.md#logic-comparator-2)**: Fixed issues detecting connected outputs, and outputting polyphonic C/D results.
+- **[Value Comparator-2 Mk I](doc/Compare.md#value-comparator-2-mk-i)**: Fixed issues detecting connected outputs.
+- **[Value Comparator-2 Mk II](doc/Compare.md#value-comparator-2-mk-ii)**: Fixed issues detecting connected outputs.
+
+- **[LFO1](doc/LFO.md#lfo1)**: Fixed issue storing sync-out mode in json.
+
+
 
 # 2.0.3
 Ensured all module descriptions in manifest are identical to module descriptions in the manual. Also updated the manifest tags for several modules, e.g. LCMP2, VCMP1 and VCMP2 Mk I, are all able to work as 2-to-1 switches thanks to their "True"/"False" inputs in the top of the modules, but were not tagged as "Switch" in the maninfest. Various minor updates to the manual (e.g. added badges to highlight module features, and changed all module headers). Added support for multi-stage (color) push-buttons (needed one for the ADR Envelope).

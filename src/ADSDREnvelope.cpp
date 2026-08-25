@@ -154,10 +154,10 @@ struct ADSDREnvelopeModule : InfNoiseModule {
         
         configInput(PHASE_INPUT, "Phase (Gate/Trigger)");
         configSwitch(PHASE_GATE_TRIG_PARAM, 0.f, 1.f, 1.f, "Phase-mode", {"Trigger", "Gate"});
-        configInput(A_TRIG_INPUT, "ADc Trigger");
-        configButton(A_TRIG_BTN_PARAM, "Trig ADc");
-        configInput(DLR_TRIG_INPUT, "DlR Trigger");
-        configButton(DR_TRIG_BTN_PARAM, "Trig DlR");
+        configInput(A_TRIG_INPUT, "Attack/Decay Trigger");
+        configButton(A_TRIG_BTN_PARAM, "Trig Attack/Decay");
+        configInput(DLR_TRIG_INPUT, "Delay/Release Trigger");
+        configButton(DR_TRIG_BTN_PARAM, "Trig Delay/Release");
 
         configLight(ATTACK_LIGHT, "Attack/Decay phase (Green=Attack, Yellow=Decay, Red=Sustain)");
         configLight(RELEASE_LIGHT, "Release phase (Yellow=Delay, Green=Release, Red=Hold)");

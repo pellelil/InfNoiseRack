@@ -100,7 +100,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + RingMod3: -
 + IncDecOffset: -
 + Delta4: -
-+ FlipFlop: Made polyphonic **Needs testing**
++ FlipFlop: -
 + SlopeDetector2: -
 + Patch: -
 + TuringMachine: -
