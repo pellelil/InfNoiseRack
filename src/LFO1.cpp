@@ -222,7 +222,7 @@ struct LFO1Module : InfNoiseModule {
         json_object_set_new(rootJ, "pwmRange", json_integer((int)pwmRange.req));
         json_object_set_new(rootJ, "invWaveforms", json_boolean(invWaveforms.req));
         json_object_set_new(rootJ, "syncMode", json_integer((int)syncMode.req));
-        json_object_set_new(rootJ, "syncOutMode", json_boolean(syncOutMode.req));
+        json_object_set_new(rootJ, "syncOutMode", json_integer((int)syncOutMode.req));
         json_object_set_new(rootJ, "oneShotValue", json_integer(oneShotValue.req));
         json_object_set_new(rootJ, "oneShotCycles", json_integer(oneShotCycles.req));
         json_object_set_new(rootJ, "lfoRateChaos", json_integer((int)lfoRateChaos.req));
@@ -486,11 +486,9 @@ struct LFO1Module : InfNoiseModule {
                 if (syncIn && syncMode.act == sm_soft)
                     syncSign[c] *= -1.f;
 
-                // Handle one-shot (set count)
+                // Handle one-shot (set count for this channel only)
                 if (syncIn && oneShotBtn) {
-                    for (int c = 0; c < channels; c++) {
-                        oneShotCount[c] = (int)osCycleCount[oneShotCycles.act];
-                    }
+                    oneShotCount[c] = (int)osCycleCount[oneShotCycles.act];
                 }
 
                 // Calc freq/phase-step (can be different for each channel)
@@ -526,7 +524,7 @@ struct LFO1Module : InfNoiseModule {
                         syncOutTrigger[c].process(procSampleTime);
                         outputs[SYNC_OUTPUT].setVoltage(syncOutTrigger[c].isHigh()
                             ? voltValues[trigOutHigh.act]
-                            : voltValues[trigOutLow.act]);
+                            : voltValues[trigOutLow.act], c);
                     }
 
                     continue;
