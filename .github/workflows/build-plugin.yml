@@ -9,11 +9,13 @@ permissions:
 on:
   push:
     paths-ignore:
-      # Updating the README, docs, or dev folder doesn't trigger a build
+      # Updating the README, docs, agent notes, workflows, or dev folder doesn't trigger a build
       - 'README*'
       - 'Status.md'
+      - 'AGENTS.md'
       - 'doc/**'
       - 'dev/**'
+      - '.github/workflows/**'
   pull_request:
 
 env:
