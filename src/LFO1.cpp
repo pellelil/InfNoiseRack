@@ -56,10 +56,7 @@ struct LFO1Module : InfNoiseModule {
     float waveScale = 10.f; // Scale of each LFO (based on range)
     float waveOffset = -5.f;  // Offset of each LFO (based on range)
 
-    actReqValue<int> firstAddChannel[2] = {
-        actReqValue<int>(0), 
-        actReqValue<int>(0)
-    };
+    int prevLfoChannels = -1; // -1 = not yet seen; used to init newly added poly channels
     dsp::SchmittTrigger syncInTrigger[PORT_MAX_CHANNELS] = {
         dsp::SchmittTrigger(),
         dsp::SchmittTrigger(),
@@ -193,6 +190,7 @@ struct LFO1Module : InfNoiseModule {
         syncMode.setBoth(sm_hard);
         syncOutMode.setBoth(som_both);
         prevOneShot = false;
+        prevLfoChannels = -1;
         oneShotValue.setBoth(osv_Zero);
         oneShotCycles.setBoth(osc_1);
         lastSinOutput = 0.f;
@@ -437,23 +435,46 @@ struct LFO1Module : InfNoiseModule {
                         phase[c] = 0.f;
                         oneShotCount[c] = 0;
                         chaosFactor[c] = 1.f;
+                        syncSign[c] = 1.f;
+                        syncOutTrigger[c].reset();
 
                         if (c < channels) {
                             outputs[LFO_SQR_OUTPUT].setVoltage(osValue, c);
                             outputs[LFO_TRI_OUTPUT].setVoltage(osValue, c);
                             outputs[LFO_SAW_OUTPUT].setVoltage(osValue, c);
                             outputs[LFO_SIN_OUTPUT].setVoltage(osValue, c);
-
-                            if (outputs[SYNC_OUTPUT].isConnected()) {
-                                outputs[SYNC_OUTPUT].setVoltage(0.f, c);
-                                syncOutTrigger[c].reset();
-                            }
+                            outputs[SYNC_OUTPUT].setVoltage(0.f, c);
                         }
-                        syncSign[c] = 1.f;
                     }
                 }
 
                 prevOneShot = oneShotBtn;
+            }
+
+            // Newly added poly channels can keep leftover sync voltages/trigger
+            // state from a previous (wider) run. Init them so n-shot idle is 0V.
+            if (prevLfoChannels < 0) {
+                prevLfoChannels = channels;
+            }
+            else if (channels > prevLfoChannels) {
+                for (int c = prevLfoChannels; c < channels; c++) {
+                    phase[c] = 0.f;
+                    oneShotCount[c] = 0;
+                    chaosFactor[c] = 1.f;
+                    syncSign[c] = 1.f;
+                    syncOutTrigger[c].reset();
+                    outputs[SYNC_OUTPUT].setVoltage(0.f, c);
+                    if (oneShotBtn) {
+                        outputs[LFO_SQR_OUTPUT].setVoltage(osValue, c);
+                        outputs[LFO_TRI_OUTPUT].setVoltage(osValue, c);
+                        outputs[LFO_SAW_OUTPUT].setVoltage(osValue, c);
+                        outputs[LFO_SIN_OUTPUT].setVoltage(osValue, c);
+                    }
+                }
+                prevLfoChannels = channels;
+            }
+            else {
+                prevLfoChannels = channels;
             }
 
             // Get pwm values
@@ -491,6 +512,9 @@ struct LFO1Module : InfNoiseModule {
                     oneShotCount[c] = (int)osCycleCount[oneShotCycles.act];
                 }
 
+                // Waiting / finished n-shot for this channel (after applying a possible new sync-in)
+                bool nShotIdle = oneShotBtn && oneShotCount[c] == 0;
+
                 // Calc freq/phase-step (can be different for each channel)
                 float clockFreq = 2.f;  // 2 Hz
                 float pitch = params[FREQKNOB_PARAM].getValue();
@@ -504,118 +528,124 @@ struct LFO1Module : InfNoiseModule {
                 float cycleStep = processQualityCycles[procQuality.act];
                 float phaseStep = (clockFreq * cycleStep) / sampleRate;
 
-                // Detect syncIn, and update syncOut
-                if (syncIn && syncMode.act == sm_hard) {
+                bool phaseEnd = false;
+                if (nShotIdle) {
                     phase[c] = 0.f;
-                    chaosFactor[c] = rateChaosFactor(chaosAmount); // Hard-sync restarts the cycle
-                }
-                else if (!oneShotBtn || oneShotCount[c] > 0)
-                    phase[c] += phaseStep * syncSign[c] * chaosFactor[c];
-                bool phaseEnd = phase[c] < 0.f || phase[c] >= 1.f;
-                phase[c] -= std::floor(phase[c]);
-                if (phaseEnd)
-                    chaosFactor[c] = rateChaosFactor(chaosAmount); // New factor each completed cycle
-                if (phaseEnd && syncOutMode.act != som_onlySyncIn)
-                    syncOut = true;
-
-                // No more one-shots
-                if (oneShotBtn && oneShotCount[c] == 0) {
-                    if (outputs[SYNC_OUTPUT].isConnected()) {
-                        syncOutTrigger[c].process(procSampleTime);
-                        outputs[SYNC_OUTPUT].setVoltage(syncOutTrigger[c].isHigh()
-                            ? voltValues[trigOutHigh.act]
-                            : voltValues[trigOutLow.act], c);
-                    }
-
-                    continue;
-                }
-
-                // Last one-shot finished
-                if (oneShotBtn && !syncIn && phaseEnd && oneShotCount[c] == 1) {
-                    oneShotCount[c] = 0;
-                    phase[c] = 0.f;
-
-                    if (oneShotValue.act != osv_Last)
-                    {
-                        outputs[LFO_SQR_OUTPUT].setVoltage(osValue, c);
-                        outputs[LFO_TRI_OUTPUT].setVoltage(osValue, c);
-                        outputs[LFO_SAW_OUTPUT].setVoltage(osValue, c);
-                        outputs[LFO_SIN_OUTPUT].setVoltage(osValue, c);
-                    }
-
                     if (c == 0)
                         lights[FREQ_LIGHT].setBrightness(0.f);
                 }
                 else {
-                    // A one-shot cycle is finished (however not the last)
-                    if (oneShotBtn && !syncIn && phaseEnd)
-						oneShotCount[c]--;
-
-                    // Update freq-lights accoring to phase and frequency
-                    if (c == 0) {
-                        lights[FREQ_LIGHT].setBrightness(getFreqPhaseBrightness(clockFreq, phase[c], phaseLights.act));
+                    // Detect syncIn, and update syncOut
+                    if (syncIn && syncMode.act == sm_hard) {
+                        phase[c] = 0.f;
+                        chaosFactor[c] = rateChaosFactor(chaosAmount); // Hard-sync restarts the cycle
                     }
+                    else
+                        phase[c] += phaseStep * syncSign[c] * chaosFactor[c];
+                    phaseEnd = phase[c] < 0.f || phase[c] >= 1.f;
+                    phase[c] -= std::floor(phase[c]);
+                    if (phaseEnd)
+                        chaosFactor[c] = rateChaosFactor(chaosAmount); // New factor each completed cycle
+                    if (phaseEnd && syncOutMode.act != som_onlySyncIn)
+                        syncOut = true;
 
-                    // Calculate phase to use, based on PWM
-                    float pwmPhase = phase[c]; // PWM-phase (always used for square-waveform)
-                    if (pwm != 0.5f) {
-                        float revPwm = 1.f - pwm;
-                        pwmPhase = (phase[c] < pwm)
-                            ? (phase[c] / pwm) * 0.5f
-                            : ((phase[c] - pwm) / revPwm) * 0.5f + 0.5f;
+                    // Last one-shot finished
+                    if (oneShotBtn && !syncIn && phaseEnd && oneShotCount[c] == 1) {
+                        oneShotCount[c] = 0;
+                        phase[c] = 0.f;
+
+                        if (oneShotValue.act != osv_Last)
+                        {
+                            outputs[LFO_SQR_OUTPUT].setVoltage(osValue, c);
+                            outputs[LFO_TRI_OUTPUT].setVoltage(osValue, c);
+                            outputs[LFO_SAW_OUTPUT].setVoltage(osValue, c);
+                            outputs[LFO_SIN_OUTPUT].setVoltage(osValue, c);
+                        }
+
+                        if (c == 0)
+                            lights[FREQ_LIGHT].setBrightness(0.f);
                     }
-                    float calcPhase = (pwmMode.act == ppm_allWaveforms)
-                        ? pwmPhase
-                        : phase[c];
+                    else {
+                        // A one-shot cycle is finished (however not the last)
+                        if (oneShotBtn && !syncIn && phaseEnd)
+                            oneShotCount[c]--;
 
-                    // Output Square
-                    if (haveSqrOutputs) {
-                        output = (phase[c] < pwm)
-                            ? 1.f
-                            : -1.f;
-                        output = modNormSquare(output * invSign, modValue, pwmPhase) * waveScale + waveOffset;
-                        output = clipToVoltRange(output, outClipRange.act);
-                        outputs[LFO_SQR_OUTPUT].setVoltage(output, c);
-                    }
+                        // Update freq-lights accoring to phase and frequency
+                        if (c == 0) {
+                            lights[FREQ_LIGHT].setBrightness(getFreqPhaseBrightness(clockFreq, phase[c], phaseLights.act));
+                        }
 
-                    // Output Triangle
-                    if (haveTriOutputs) {
-                        output = (calcPhase < 0.25f)
-                            ? (calcPhase * 4.f)
-                            : (calcPhase < 0.75f)
-                            ? 1.f - ((calcPhase - 0.25f) * 4.f)
-                            : ((calcPhase - 0.75f) * 4.f) - 1.f;
-                        output = modNorm(output * invSign, modValue) * waveScale + waveOffset;
-                        output = clipToVoltRange(output, outClipRange.act);
-                        outputs[LFO_TRI_OUTPUT].setVoltage(output, c);
-                    }
+                        // Calculate phase to use, based on PWM
+                        float pwmPhase = phase[c]; // PWM-phase (always used for square-waveform)
+                        if (pwm != 0.5f) {
+                            float revPwm = 1.f - pwm;
+                            pwmPhase = (phase[c] < pwm)
+                                ? (phase[c] / pwm) * 0.5f
+                                : ((phase[c] - pwm) / revPwm) * 0.5f + 0.5f;
+                        }
+                        float calcPhase = (pwmMode.act == ppm_allWaveforms)
+                            ? pwmPhase
+                            : phase[c];
 
-                    // Output Saw (down)
-                    if (haveSawOutputs) {
-                        output = modNorm((1.f - calcPhase * 2.f) * invSign, modValue) * waveScale + waveOffset;
-                        output = clipToVoltRange(output, outClipRange.act);
-                        outputs[LFO_SAW_OUTPUT].setVoltage(output, c);
-                    }
+                        // Output Square
+                        if (haveSqrOutputs) {
+                            output = (phase[c] < pwm)
+                                ? 1.f
+                                : -1.f;
+                            output = modNormSquare(output * invSign, modValue, pwmPhase) * waveScale + waveOffset;
+                            output = clipToVoltRange(output, outClipRange.act);
+                            outputs[LFO_SQR_OUTPUT].setVoltage(output, c);
+                        }
 
-                    // Output Sine
-                    if (haveSinOutputs || freqModTrim != 0.f) {
-                        output = modNorm(bSin(calcPhase) * invSign, modValue) * waveScale + waveOffset;
-                        output = clipToVoltRange(output, outClipRange.act);
-                        if (haveSinOutputs)
-                            outputs[LFO_SIN_OUTPUT].setVoltage(output, c);
-                        lastSinOutput = output; // Used for freq-trim if no freq-input is connected
+                        // Output Triangle
+                        if (haveTriOutputs) {
+                            output = (calcPhase < 0.25f)
+                                ? (calcPhase * 4.f)
+                                : (calcPhase < 0.75f)
+                                ? 1.f - ((calcPhase - 0.25f) * 4.f)
+                                : ((calcPhase - 0.75f) * 4.f) - 1.f;
+                            output = modNorm(output * invSign, modValue) * waveScale + waveOffset;
+                            output = clipToVoltRange(output, outClipRange.act);
+                            outputs[LFO_TRI_OUTPUT].setVoltage(output, c);
+                        }
+
+                        // Output Saw (down)
+                        if (haveSawOutputs) {
+                            output = modNorm((1.f - calcPhase * 2.f) * invSign, modValue) * waveScale + waveOffset;
+                            output = clipToVoltRange(output, outClipRange.act);
+                            outputs[LFO_SAW_OUTPUT].setVoltage(output, c);
+                        }
+
+                        // Output Sine
+                        if (haveSinOutputs || freqModTrim != 0.f) {
+                            output = modNorm(bSin(calcPhase) * invSign, modValue) * waveScale + waveOffset;
+                            output = clipToVoltRange(output, outClipRange.act);
+                            if (haveSinOutputs)
+                                outputs[LFO_SIN_OUTPUT].setVoltage(output, c);
+                            lastSinOutput = output; // Used for freq-trim if no freq-input is connected
+                        }
                     }
                 }
 
-                // Output syncOut if connected
-                if (outputs[SYNC_OUTPUT].isConnected()) {
-                    if (!syncOutTrigger[c].process(procSampleTime) && syncOut) {
-                        syncOutTrigger[c].trigger();
-                    }
-                    outputs[SYNC_OUTPUT].setVoltage(syncOutTrigger[c].isHigh()
-                        ? voltValues[trigOutHigh.act]
-                        : voltValues[trigOutLow.act], c);
-                }
+                // Always write this channel's sync-out (1 ms pulse). When n-shot is
+                // idle, only let an in-flight pulse finish — do not start a new one.
+                if (!syncOutTrigger[c].process(procSampleTime) && syncOut && !nShotIdle)
+                    syncOutTrigger[c].trigger();
+                outputs[SYNC_OUTPUT].setVoltage(syncOutTrigger[c].isHigh()
+                    ? voltValues[trigOutHigh.act]
+                    : voltValues[trigOutLow.act], c);
+            }
+        }
+        else if (outputs[SYNC_OUTPUT].isConnected()) {
+            // Keep 1 ms sync pulses on wall-clock time when the LFO loop is skipped
+            int syncChannels = outputs[SYNC_OUTPUT].getChannels();
+            if (syncChannels < 1)
+                syncChannels = 1;
+            for (int c = 0; c < syncChannels; c++) {
+                syncOutTrigger[c].process(args.sampleTime);
+                outputs[SYNC_OUTPUT].setVoltage(syncOutTrigger[c].isHigh()
+                    ? voltValues[trigOutHigh.act]
+                    : voltValues[trigOutLow.act], c);
             }
         }
 
