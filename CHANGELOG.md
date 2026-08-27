@@ -11,11 +11,10 @@ Changed the order of the modules as they appear in the browser and manual for a 
 - **[Value-to-Bits](doc/Bits.md#value-to-bits)**: Min/Center/Max mode-lights changed to tiny-lights.
 
 ## Fixed modules
-- **[Logic Comparator-2](doc/Compare.md#logic-comparator-2)**: Fixed issues detecting connected outputs, and outputting polyphonic C/D results.
+- **[Logic Comparator-2](doc/Compare.md#logic-comparator-2)**: Fixed issues detecting connected outputs, using normalized A/B input when no A/B outputs were connected and outputting polyphonic C/D results.
 - **[Value Comparator-2 Mk I](doc/Compare.md#value-comparator-2-mk-i)**: Fixed issues detecting connected outputs.
 - **[Value Comparator-2 Mk II](doc/Compare.md#value-comparator-2-mk-ii)**: Fixed issues detecting connected outputs.
 - **[LFO1](doc/LFO.md#lfo1)**: Fixed issue storing sync-out mode in json and issue with polyphonic Sync out triggers in n-shot mode.
-
 
 
 # 2.0.3
