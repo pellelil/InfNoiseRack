@@ -502,18 +502,18 @@ struct ADREnvelopeModule : InfNoiseModule {
                 }
             }
 
-            // Generate envelope output
+            // Generate envelope (always, so interrupts map from the current voltage
+            // even when Env/!Env are unpatched — same rule as ADSDR Envelope).
             if (phase == ap_holdA)
-                envelope = attackLevel;  // Must be set whether or not envelope output is connected
+                envelope = attackLevel;
             else if (phase == ap_holdR)
-                envelope = releaseLevel;  // Must be set whether or not envelope output is connected
-            if (haveEnvelopeOutput) {
-                if (phase == ap_attack)
-                    envelope = releaseLevel + (attackLevel - releaseLevel) * attackShapeLut(phasePos);
-                else if (phase == ap_release)
-                    envelope = attackLevel + (releaseLevel - attackLevel) * releaseShapeLut(phasePos);
+                envelope = releaseLevel;
+            else if (phase == ap_attack)
+                envelope = releaseLevel + (attackLevel - releaseLevel) * attackShapeLut(phasePos);
+            else if (phase == ap_release)
+                envelope = attackLevel + (releaseLevel - attackLevel) * releaseShapeLut(phasePos);
 
-                // Output Envelope and inverted Envelope (mirrored around A.level ↔ R.level)
+            if (haveEnvelopeOutput) {
                 outputs[ENVELOPE_OUTPUT].setVoltage(envelope);
                 outputs[INV_ENVELOPE_OUTPUT].setVoltage(attackLevel + releaseLevel - envelope);
             }

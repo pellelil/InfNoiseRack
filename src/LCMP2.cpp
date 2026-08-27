@@ -202,9 +202,18 @@ struct LCMP2Module : InfNoiseModule {
 
             bool abOr[PORT_MAX_CHANNELS] = { false };  // used as normalized input for C
             bool abAnd[PORT_MAX_CHANNELS] = { false }; // used as normalized input for D
+            bool cConnected = inputs[C_INPUT].isConnected();
+            bool dConnected = inputs[D_INPUT].isConnected();
+            // C/D normalize to A OR B / A AND B when unpatched, so A/B logic
+            // must run even if no A/B output jacks are connected.
+            bool needAbLogic = abOutputsConnected ||
+                (cdOutputsConnected && (!cConnected || !dConnected));
 
-            if (abOutputsConnected) {
-                for (int c = 0; c < abChannels; c++) {
+            if (needAbLogic) {
+                int logicChannels = abChannels;
+                if (cdOutputsConnected && (!cConnected || !dConnected))
+                    logicChannels = std::max(logicChannels, cdChannels);
+                for (int c = 0; c < logicChannels; c++) {
                     bool aInput = inputs[A_INPUT].isConnected() 
                         ? inputs[A_INPUT].getPolyVoltage(c) >= trueDetectValues[gateDetHigh.act]
                         : false;
@@ -218,25 +227,27 @@ struct LCMP2Module : InfNoiseModule {
 
                     abAnd[c] = aInput && bInput;
                     abOr[c] = aInput || bInput;
-                    bool abXor = aInput ^ bInput;
 
-                    outputs[AB_AND_OUTPUT].setVoltage(abAnd[c] ? trueInput[c] : falseInput[c], c);
-                    outputs[AB_NAND_OUTPUT].setVoltage(!abAnd[c] ? trueInput[c] : falseInput[c], c);
-                    outputs[AB_OR_OUTPUT].setVoltage(abOr[c] ? trueInput[c] : falseInput[c], c);
-                    outputs[AB_NOR_OUTPUT].setVoltage(!abOr[c] ? trueInput[c] : falseInput[c], c);
-                    outputs[AB_XOR_OUTPUT].setVoltage(abXor ? trueInput[c] : falseInput[c], c);
-                    outputs[AB_XNOR_OUTPUT].setVoltage(!abXor ? trueInput[c] : falseInput[c], c);
+                    if (abOutputsConnected && c < abChannels) {
+                        bool abXor = aInput ^ bInput;
+                        outputs[AB_AND_OUTPUT].setVoltage(abAnd[c] ? trueInput[c] : falseInput[c], c);
+                        outputs[AB_NAND_OUTPUT].setVoltage(!abAnd[c] ? trueInput[c] : falseInput[c], c);
+                        outputs[AB_OR_OUTPUT].setVoltage(abOr[c] ? trueInput[c] : falseInput[c], c);
+                        outputs[AB_NOR_OUTPUT].setVoltage(!abOr[c] ? trueInput[c] : falseInput[c], c);
+                        outputs[AB_XOR_OUTPUT].setVoltage(abXor ? trueInput[c] : falseInput[c], c);
+                        outputs[AB_XNOR_OUTPUT].setVoltage(!abXor ? trueInput[c] : falseInput[c], c);
+                    }
                 }
             }
 
             if (cdOutputsConnected) {
                 for (int c = 0; c < cdChannels; c++) {
-                    bool cInput = inputs[C_INPUT].isConnected() 
+                    bool cInput = cConnected
                         ? inputs[C_INPUT].getPolyVoltage(c) >= trueDetectValues[gateDetHigh.act]
                         : abOr[c];
                     if (params[C_INV_PARAM].getValue() > 0.5f)
 						cInput = !cInput;
-                    bool dInput = inputs[D_INPUT].isConnected() 
+                    bool dInput = dConnected
                         ? inputs[D_INPUT].getPolyVoltage(c) >= trueDetectValues[gateDetHigh.act]
                         : abAnd[c];
                     if (params[D_INV_PARAM].getValue() > 0.5f)
