@@ -174,8 +174,7 @@ struct VCMP1Module : InfNoiseModule {
             outputs[AB_NEQ_OUTPUT].setChannels(abChannels);
             outputs[AB_EGT_OUTPUT].setChannels(abChannels);
             outputs[AB_GT_OUTPUT].setChannels(abChannels);
-            outputs[AB_GT_OUTPUT].setChannels(abChannels);
-            outputs[AB_GT_OUTPUT].setChannels(abChannels);
+            outputs[AB_ELT_OUTPUT].setChannels(abChannels);
             outputs[AB_LT_OUTPUT].setChannels(abChannels);
         
             outputs[AB_CROSS_OUTPUT].setChannels(abChannels);
