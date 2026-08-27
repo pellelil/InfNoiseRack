@@ -6,7 +6,7 @@ Changed the order of the modules as they appear in the browser and manual for a 
 
 ## Updated modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Added inverted Envelope-output. Fixed issue where the high/low outputs of BOA, EOA, BOR and EOR whould use gate-threshold values in stead of trigger-threshold values (only an issue if you changed output levels via the context menu). Also removed context menu-items to set gate-output levels, as the module don't have gate-outputs.
-- **[Flip-Flop](doc/FlipFlop.md#flip-flop)**: All input/output (except enable/disable input) were made polyphonic, so there is basically a individual flip-flop for each channel of a polyphonic signal. You can mix polyphonic and monophonic signals (e.g. have a polyphonic Set-input and a monophonic Reset-input), however if using multiple polyphonic inputs they should ideally have the same number of channels.
+- **[Flip-Flop](doc/FlipFlop.md#flip-flop)**: All input/output (except enable/disable input) were made polyphonic, so there is basically an individual flip-flop for each channel of a polyphonic signal. You can mix polyphonic and monophonic signals (e.g. have a polyphonic Set-input and a monophonic Reset-input), however if using multiple polyphonic inputs they should ideally have the same number of channels.
 - **[Bits-to-Value](doc/Bits.md#bits-to-value)**: Min/Center/Max mode-lights changed to tiny-lights.
 - **[Value-to-Bits](doc/Bits.md#value-to-bits)**: Min/Center/Max mode-lights changed to tiny-lights.
 

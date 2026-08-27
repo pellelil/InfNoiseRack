@@ -117,7 +117,7 @@ struct FlipFlopModule : InfNoiseModule {
         lastMode = -1.f; // force update of mode lights
         enDisGateMode.setBoth((enDisGateModeType)getJsonInt(rootJ, "enDisGateMode", (int)enDisGateModeType::edgm_Disable));
         undefOprOutput.setBoth((undefOprOutputType)getJsonInt(rootJ, "undefOprOutput", (int)undefOprOutputType::uoo_unchanged));
-        if (jsonVersion == 1) {
+        if (jsonVersion < 2) {
             for (int c = 0; c < PORT_MAX_CHANNELS; c++)
                 qHigh[c] = false;
             qHigh[0] = getJsonInt(rootJ, "qHigh", 0) == 1;
