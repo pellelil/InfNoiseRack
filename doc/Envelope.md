@@ -7,6 +7,8 @@ As indicated by the grey arrows in the top, the A.trig and DR.trig inputs are no
 
 *Technically the module is an **ASDR envelope generator (Attack, Sustain, Delay, Release)**, or an **ASR envelope** when no delay is dialed in. Attack, Delay, and Release are timed stages; Sustain is the held level (**A.level**) while waiting for Delay/Release to be triggered — so the **A.level knob is effectively the sustain level**. However "ASDR" would probably confuse users into thinking it was an **ADSR** generator, so the "S" (Sustain) is deliberately left out of the name.*
 
+![ADR Envelope stages](img/ADREnvelopeStages.png)
+
 Unlike a classic ADSR that always returns to 0 V, both phase end-levels are set by knobs in the range −10V to +10V. Defaults are A.level = 10V and R.level = 0V, which covers the usual unipolar envelope case, but you can set any levels you might need. Initialized (before any inputs are supplied) the module will be at the end of/after of a release phase (waiting for an attack phase to begin), hence the Envelope will be default output R.level. Using an ADR envelope, there are three phases (only two if delay time is 0):
 + **Attack**: Envelope transitions toward **A.level** (over **A.time**, with **A.shape**), which is then held (**sustain**).
 + **Delay**: Holds current envelope output level till **D.time** has elapsed.
@@ -54,6 +56,8 @@ For the attack/release phases you both find a begin-trigger output (e.g. **BOA=B
 The **ADSDR Envelope (Attack, Decay, Sustain, Delay, Release)** is very similar to the **ADR Envelope** (described above), but as it can be used as a traditional **ADSR Envelope** (when Delay time is set to 0) it does include "S" (Sustain) in its name. Since there are two D's in the name, some of the inputs/knobs are labeled with 2 letters to distinguish them from each other ("Dc" = Decay, "Dl" = Delay) - however the tooltips will hold the full names ("Decay" or "Delay"). The trigger inputs are likewise named **ADc.trig** (starts Attack, then Decay) and **DlR.trig** (starts Delay, then Release), so the "D" is not mistaken for Decay when it means Delay.
 
 Beside the module being wider, the top of the module is identical to the top of the ADR Envelope, so scroll up to read how the **Phase**, **ADc.trig** and **DlR.trig** inputs are used. The only difference being that ADSDR Envelope uses the labels **ADc.trig** instead of **A.trig**, and **DlR.trig** instead of **DR.trig**. With Phase in gate mode this is a classic ADSR: gate high runs Attack → Decay → hold at Sustain; the falling edge starts Delay → Release (straight to Release if Dl.time is 0).
+
+![ADSDR Envelope stages](img/ADSDREnvelopeStages.png)
 
 I've kept the same light-colors near the two labels as the ADR Envelope, but as it have an extra phase, the left-most light now also introduce a yellow light for the Decay-phase:
 + **ADc.trig light is green** while the attack is running (Envelope output is transitioning to A.level).
