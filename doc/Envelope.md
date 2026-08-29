@@ -11,6 +11,10 @@ If a phase is interrupted mid-ramp (for example the phase-gate falls before Atta
 
 Both modules can apply **Rate Chaos** per time knob from the context menu. If that phase's time is non-zero and Rate Chaos is above 0%, each time the phase begins its duration is varied slightly — or wildly (e.g. randomly slow vs fast attacks). General use of Rate Chaos is described in the [main manual](manual.md#rate-chaos).
 
+Each ramping phase (Attack, Decay, and Release) has a **shape** knob from −1 to +1. Center (0) is **linear**. Turn counterclockwise for **exponential**, clockwise for **logarithmic** (Delay has no shape — it simply holds). An exponential **rise** starts slow and steepens toward the target, while an exponential **fall** drops quickly and then eases in (the usual analog-style release). A logarithmic rise does the opposite (fast then slow), and a logarithmic fall stays near the start-level before dropping late. The illustration below shows 100% / 50% exponential, linear, and 50% / 100% logarithmic in both directions.
+
+![Envelope shapes](img/EnvelopeShapes.png)
+
 ## ADR Envelope
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
