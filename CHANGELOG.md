@@ -7,12 +7,13 @@ Changed the order of the modules as they appear in the browser and manual for a 
 ## Updated modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Added inverted Envelope-output. Fixed issue where the high/low outputs of BOA, EOA, BOR and EOR whould use gate-threshold values in stead of trigger-threshold values (only an issue if you changed output levels via the context menu). Also removed context menu-items to set gate-output levels, as the module don't have gate-outputs.
 - **[Flip-Flop](doc/FlipFlop.md#flip-flop)**: All input/output (except enable/disable input) were made polyphonic, so there is basically an individual flip-flop for each channel of a polyphonic signal. You can mix polyphonic and monophonic signals (e.g. have a polyphonic Set-input and a monophonic Reset-input), however if using multiple polyphonic inputs they should ideally have the same number of channels.
+- **[Random Curve](doc/Random.md#random-curve)**: Added step-mode context menu, so steps can occur either mid-phase (as in previous versions) or at the start of the phase (at the same time as the trigger output fires a trigger). Fixed issue where trigger output would not fire unless one of the six curve outputs was in use (e.g., if you simply used this module with **LFO rate chaos** to generate a series of "chaotic triggers").
 - **[Bits-to-Value](doc/Bits.md#bits-to-value)**: Min/Center/Max mode-lights changed to tiny-lights.
 - **[Value-to-Bits](doc/Bits.md#value-to-bits)**: Min/Center/Max mode-lights changed to tiny-lights.
 
 ## Fixed modules
-- **[Logic Comparator-2](doc/Compare.md#logic-comparator-2)**: Fixed issues detecting connected outputs, using normalized A/B input when no A/B outputs were connected and outputting polyphonic C/D results.
-- **[Value Comparator-1](doc/Compare.md#value-comparator-1)**: Fixed issue where the A<=B output never received a channel count, so it stayed silent (0 channels) even when other comparison outputs were polyphonic.
+- **[Logic Comparator-2](doc/Compare.md#logic-comparator-2)**: Fixed issues: detecting connected outputs, using normalized A/B input when no A/B outputs were connected and outputting polyphonic C/D results.
+- **[Value Comparator-1](doc/Compare.md#value-comparator-1)**: Fixed issue where the A<=B output stayed monophonic while other output could be polyphonic.
 - **[Value Comparator-2 Mk I](doc/Compare.md#value-comparator-2-mk-i)**: Fixed issues detecting connected outputs.
 - **[Value Comparator-2 Mk II](doc/Compare.md#value-comparator-2-mk-ii)**: Fixed issues detecting connected outputs.
 - **[LFO1](doc/LFO.md#lfo1)**: Fixed issue storing sync-out mode in json and issue with polyphonic Sync out triggers in n-shot mode.

@@ -85,6 +85,8 @@ At the bottom of the module, six outputs each generate a different type of "curv
 + User1: User-configurable curve (default: Log).
 + User2: User-configurable curve (default: Top rounded/bottom sharp).
 
+By default, the "Step" output will "step" (change between the previous/next random value) mid-phase (marked by a **dim light** next to the "Step" output). However, via the context menu, you can change the **step mode** so that it instead steps at the beginning of the phase (marked by a **red light** next to the "Step" output). This mode can be beneficial if you need the waveform to "step" at the same time as the Trigger outputs fire a trigger.
+
 The screenshot belows shows the exact same progression of random values, displayed using 6 different curve-outputs. All curves begins and ends at exactly the same value (at exactly the same time), however the transition between those "points" is different for each curve-type. In the example a uniform distribution with forced polarity was used:
 
 ![Screenshot of Random curve examples](img/RandomCurveExamples.png) 

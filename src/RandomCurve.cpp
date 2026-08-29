@@ -54,6 +54,7 @@ struct RandomCurveModule : InfNoiseModule {
         DIST_RANGE_LIGHT,
         ENUMS(USER1_MODE_LIGHT, 3),
         ENUMS(USER2_MODE_LIGHT, 3),
+        STEP_MODE_LIGHT,
         LIGHTS_LEN
     };
     
@@ -71,6 +72,9 @@ struct RandomCurveModule : InfNoiseModule {
     };
     bool user1UseLog = true;
     bool user2UseLog = true;
+
+    enum stepModeType { sm_midPhase, sm_phaseStart };
+    actReqValue<stepModeType> stepMode = actReqValue<stepModeType>(sm_midPhase);
 
     enum distRangeType { dr_pct60, dr_pct65, dr_pct70, dr_pct75, dr_pct80, dr_pct85, dr_pct90, dr_pct95, dr_pct100 };
     actReqValue<distRangeType> distRange = actReqValue<distRangeType>(distRangeType::dr_pct100);
@@ -134,6 +138,7 @@ struct RandomCurveModule : InfNoiseModule {
         configOutput(USER1_OUTPUT, "User 1");
         configOutput(USER2_OUTPUT, "User 2");
 
+        configLight(STEP_MODE_LIGHT, "Step-mode (dim=mid-phase, Red=phase start)");
         configLight(USER1_MODE_LIGHT, "User 1 curve (green=Log, red=Exp, blue=Top, orange=Bottom)");
         configLight(USER2_MODE_LIGHT, "User 2 curve (green=Log, red=Exp, blue=Top, orange=Bottom)");
 
@@ -196,6 +201,7 @@ struct RandomCurveModule : InfNoiseModule {
         maxValue[NEXT_RND] = -5.f;
         user1Mode.setBoth(ucm_Log);
         user2Mode.setBoth(ucm_Top);
+        stepMode.setBoth(sm_midPhase);
         applyUserModeLight(USER1_MODE_LIGHT, user1Mode.act);
         applyUserModeLight(USER2_MODE_LIGHT, user2Mode.act);
         outputInfos[USER1_OUTPUT]->name = monoPortPrefix() + userCurveModeTooltip[(int)user1Mode.act];
@@ -222,6 +228,7 @@ struct RandomCurveModule : InfNoiseModule {
         chaosFactor = getJsonFloat(rootJ, "chaosFactor", 1.f);
         user1Mode.setBoth((userCurveModeType)getJsonInt(rootJ, "user1Mode", (int)ucm_Log));
         user2Mode.setBoth((userCurveModeType)getJsonInt(rootJ, "user2Mode", (int)ucm_Top));
+        stepMode.setBoth((stepModeType)getJsonInt(rootJ, "stepMode", (int)sm_midPhase));
         applyUserModeLight(USER1_MODE_LIGHT, user1Mode.act);
         applyUserModeLight(USER2_MODE_LIGHT, user2Mode.act);
         outputInfos[USER1_OUTPUT]->name = monoPortPrefix() + userCurveModeTooltip[(int)user1Mode.act];
@@ -247,6 +254,7 @@ struct RandomCurveModule : InfNoiseModule {
         json_object_set_new(rootJ, "chaosFactor", json_real(chaosFactor));
         json_object_set_new(rootJ, "user1Mode", json_integer((int)user1Mode.req));
         json_object_set_new(rootJ, "user2Mode", json_integer((int)user2Mode.req));
+        json_object_set_new(rootJ, "stepMode", json_integer((int)stepMode.req));
     }
 
     void processParams(const ProcessArgs& args) {
@@ -285,8 +293,13 @@ struct RandomCurveModule : InfNoiseModule {
             outputInfos[USER2_OUTPUT]->name = monoPortPrefix() + userCurveModeTooltip[i];
             updateUserCurveLuts();
         }
+        if (stepMode.needsUpdate()) {
+            stepMode.updateActual();
+            lights[STEP_MODE_LIGHT].setBrightness(stepMode.act == sm_phaseStart ? 1.f : 0.f);
+        }
 
-        haveOutputs = outputs[LINEAR_OUTPUT].isConnected() ||
+        haveOutputs = outputs[TRIG_OUTPUT].isConnected() ||
+            outputs[LINEAR_OUTPUT].isConnected() ||
             outputs[STEP_OUTPUT].isConnected() ||
             outputs[CURVE_OUTPUT].isConnected() ||
             outputs[SPIKY_OUTPUT].isConnected() ||
@@ -448,7 +461,7 @@ struct RandomCurveModule : InfNoiseModule {
             }
 
             if (outputs[STEP_OUTPUT].isConnected()) {
-                voltage = phase < 0.5f
+                voltage = stepMode.act == sm_midPhase && phase < 0.5f
 					? rndValue[PREV_RND]
 					: rndValue[NEXT_RND];
 
@@ -553,6 +566,7 @@ struct RandomCurveModuleWidget : InfNoiseModuleWidget {
         row = 262.591f;
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(lftClm, row), module, RandomCurveModule::LINEAR_OUTPUT));
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rgtClm, row), module, RandomCurveModule::STEP_OUTPUT));
+        addChild(createLightCentered<TinyLight<RedLight>>(Vec(33.509f, 253.323f), module, RandomCurveModule::STEP_MODE_LIGHT));
 
         row = 297.664f;
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(lftClm, row), module, RandomCurveModule::CURVE_OUTPUT));
@@ -571,6 +585,11 @@ struct RandomCurveModuleWidget : InfNoiseModuleWidget {
         assert(module);
 
         menu->addChild(new MenuSeparator);
+
+        menu->addChild(createIndexPtrSubmenuItem("Step-mode",
+            { "At mid-phase (default)", "At phase start" },
+            &module->stepMode.req
+        ));
         
         menu->addChild(createIndexPtrSubmenuItem("User 1 curve mode",
             { "Log", "Exp", "Top rounded/bottom sharp", "Bottom rounded/top sharp" },
