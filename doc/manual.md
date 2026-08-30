@@ -239,7 +239,7 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 
 ## Envelope
 + [ADR Envelope](Envelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope). Times can be affected by Rate Chaos (set via context-menu).
-+ [ADSDR Envelope](Envelope.md#adsdr-envelope): Attack-Decay-Sustain-Delay-Release Envelope with attack/dectay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
++ [ADSDR Envelope](Envelope.md#adsdr-envelope): Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
 
 ## Misc
 + [Sign](Sign.md#sign)(pq): Outputs 9 different 'signed-versions' of the input signal(s).
