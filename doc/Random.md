@@ -46,7 +46,7 @@ When the distribution mode is set to **Center/Edge**, you have the option to ena
 
 <a name="random-4paq"></a>
 ## Random-4
-![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
@@ -54,7 +54,7 @@ This compact 2HP module generates four random outputs each time it receives a tr
 
 The module features various mode options, accessible via the context menu, allowing you to modify the Mn/Cn/Mx offset mode, adjust the distribution behavior, or enable/disable Forced Polarity (explained above). Small green indicator lights on the panel illuminate to show active modes, reducing the need to open the menu for verification. The green light next to "Dist" indicates when Forced Polarity is enabled, but this only applies when Center/Edge distribution is active.
 
-By default, each of the four outputs generates a single monophonic value per trigger event. However, the context menu allows you to select polyphonic output, where each of the four outputs can generate up to 16 independent random values per trigger (one per channel). In total, this means the module can output up to 64 random values simultaneously (4 outputs × 16 channels).
+By default, **Polyphony** is **Auto**: each of the four outputs matches the number of channels on the Trigger input (or one channel if no trigger is connected, using the internal LFO). You can instead pick a fixed channel count (1–16) from the context menu; the module then always outputs that many channels regardless of the Trigger input. A small **red light** at the upper-left of the Trigger input is lit when a fixed count is selected. When a trigger cable is connected, each output channel is triggered independently from the corresponding trigger channel. In total, this means the module can output up to 64 random values simultaneously (4 outputs × 16 channels).
 
 ![Screenshot of Random-4](module/Random4.png) 
 

@@ -36,6 +36,7 @@ struct Random4Module : InfNoiseModule {
         CNTR_EDGE_LIGHT,
         MIN_MAX_LIGHT,
         DIST_RANGE_LIGHT,
+        FIXED_CHANNEL_LIGHT,
         LIGHTS_LEN
     };
 
@@ -49,8 +50,9 @@ struct Random4Module : InfNoiseModule {
     actReqValue<bool> forcedPolarity = actReqValue<bool>(false);
     enum distModeType { dm_CntrEdge, dm_MinMax };
     actReqValue<distModeType> distMode = actReqValue<distModeType>(distModeType::dm_CntrEdge);
-    actReqValue<polyphonyMode> polyphony = actReqValue<polyphonyMode>(mono_1);
+    actReqValue<polyphonyMode> polyphony = actReqValue<polyphonyMode>(poly_auto);
     int channels = 1;
+    bool haveTrigInput = false;
     bool haveOutputs = false;
     int firstIdx = -1;
     int lastIdx = -1;
@@ -58,7 +60,7 @@ struct Random4Module : InfNoiseModule {
     float minValue = -5.f;
     float maxValue = 5.f;
     float dist = 0.f;
-    dsp::SchmittTrigger trigger;
+    dsp::SchmittTrigger trigger[PORT_MAX_CHANNELS];
     actReqValue<rateChaos> lfoRateChaos = actReqValue<rateChaos>(rc_default);
     float trigPhaseStep = 0.f;
     float trigPhase = 0.f;
@@ -92,6 +94,7 @@ struct Random4Module : InfNoiseModule {
         configInput(TRIG_INPUT, "Trigger (normalized to Trigger-LFO)");
         configParam<infNoiseLfoFreqQnt>(TRIG_FREQ_PARAM, -8.f, 10.f, 1.f, "Trigger-LFO frequency", " Hz", 2, 1);
         configLight(FREQ_LIGHT, "LFO phase");
+        configLight(FIXED_CHANNEL_LIGHT, "Fixed polyphony if lit");
         
         configParam(RANGE_PARAM, 0.f, 10.f, 10.f, "Range (0V to 10V)", " v", 0, 1);
         configParam(MIN_CNTR_MAX_PARAM, -10.f, 10.f, 0.f, "Center (-10V to 10V)", " v", 0, 1);
@@ -135,11 +138,12 @@ struct Random4Module : InfNoiseModule {
         minCntrMax.setBoth(minCntrMaxType::mcm_Center);
         forcedPolarity.setBoth(false);
         distMode.setBoth(distModeType::dm_CntrEdge);
-        polyphony.setBoth(mono_1);
+        polyphony.setBoth(poly_auto);
         distRange.setBoth(distRangeType::dr_pct100);
         distRangeFactor = dstRngFactors[(int)dr_pct100];
 
-        trigger.reset();
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            trigger[c].reset();
         for (int i = 0; i < 4 * 16; i++)
             prevSign[i] = (randomNorm() < 0.5f) ? -1.f : 1.f;
         for (int i = 0; i < 4; i++) {
@@ -155,7 +159,7 @@ struct Random4Module : InfNoiseModule {
         forcedPolarity.setBoth(getJsonBool(rootJ, "forcedPolarity", false));
         distMode.setBoth((distModeType)getJsonInt(rootJ, "distMode", (int)distModeType::dm_CntrEdge));
         distRange.setBoth((distRangeType)getJsonInt(rootJ, "distRange", (int)distRangeType::dr_pct100));
-        polyphony.setBoth((polyphonyMode)getJsonInt(rootJ, "polyphony", (int)polyphonyMode::mono_1));
+        polyphony.setBoth((polyphonyMode)getJsonInt(rootJ, "polyphony", (int)polyphonyMode::poly_auto));
         lfoRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "lfoRateChaos", (int)rc_default));
         getJsonFloatArray(rootJ, "held", &heldValue[0][0], 4 * PORT_MAX_CHANNELS, 0.f);
         getJsonFloatArray(rootJ, "prevSign", prevSign, 4 * PORT_MAX_CHANNELS, -1.f);
@@ -163,7 +167,8 @@ struct Random4Module : InfNoiseModule {
         if (trigPhase >= 1.f)
             trigPhase -= std::truncf(trigPhase);
         chaosFactor = getJsonFloat(rootJ, "chaosFactor", 1.f);
-        trigger.reset();
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            trigger[c].reset();
     }
 
     void dataToJson(json_t* rootJ) override {
@@ -231,8 +236,17 @@ struct Random4Module : InfNoiseModule {
         }
 
         // Check for outputs in use
+        haveTrigInput = inputs[TRIG_INPUT].isConnected();
         polyphony.updateActual();
-        channels = (int)polyphony.act + 1;
+        if (polyphony.act == poly_auto) {
+            channels = haveTrigInput
+                ? std::max(1, inputs[TRIG_INPUT].getChannels())
+                : 1;
+            lights[FIXED_CHANNEL_LIGHT].setBrightness(0.f);
+        } else {
+            channels = polyphonyModeChannels[polyphony.act];
+            lights[FIXED_CHANNEL_LIGHT].setBrightness(1.f);
+        }
         haveOutputs = false;
         firstIdx = -1;
         lastIdx = -1;
@@ -265,7 +279,7 @@ struct Random4Module : InfNoiseModule {
         else
         {
             float phaseRedFactor = 0.f; //TODO: set based on "Value-based freq"
-            float phaseGreenFactor = (inputs[TRIG_INPUT].isConnected() || phaseRedFactor == 1.f) ? 0.f : 1.f;
+            float phaseGreenFactor = (haveTrigInput || phaseRedFactor == 1.f) ? 0.f : 1.f;
             lights[FREQ_LIGHT].setBrightness(phaseBrght * phaseGreenFactor);
             lights[FREQ_LIGHT + 1].setBrightness(phaseBrght * phaseRedFactor);
         }
@@ -283,7 +297,7 @@ struct Random4Module : InfNoiseModule {
         // Set Auto process-quality
         if (autoProcQuality.act) {
             if (haveOutputs) {
-                if (inputs[TRIG_INPUT].isConnected())
+                if (haveTrigInput)
                     procQuality.setBoth(pq_audioRate, false);
                 else
                 {
@@ -314,12 +328,9 @@ struct Random4Module : InfNoiseModule {
             ((cycle256 & processQualityPatterns[procQuality.act]) == processQualityPatterns[procQuality.act]));
 
         if (doProcess && haveOutputs) {
-            float trig;
-            if (inputs[TRIG_INPUT].isConnected()) {
-                trig = inputs[TRIG_INPUT].getVoltage();
-            }
-            else {
-                trig = trigPhase < 0.5f ? 10.f : 0.f;
+            float lfoTrig = 0.f;
+            if (!haveTrigInput) {
+                lfoTrig = trigPhase < 0.5f ? 10.f : 0.f;
                 trigPhase += trigPhaseStep * chaosFactor;
                 if (trigPhase >= 1.f) {
                     trigPhase -= std::truncf(trigPhase); // robust if a fast cycle overshoots past 1.0
@@ -334,11 +345,15 @@ struct Random4Module : InfNoiseModule {
                     ? 1.f - trigPhase
                     : 0.f;
 
-            if (trigger.process(trig,
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
-                for (int i = firstIdx; i <= lastIdx; i++) {
-                    if (outputs[RND1_OUTPUT + i].isConnected()) {
-                        for (int c = 0; c < channels; c++) {
+            float thrLow = trueDetectValues[trigDetLow.act];
+            float thrHigh = trueDetectValues[trigDetHigh.act];
+            for (int c = 0; c < channels; c++) {
+                float trig = haveTrigInput
+                    ? inputs[TRIG_INPUT].getPolyVoltage(c)
+                    : lfoTrig;
+                if (trigger[c].process(trig, thrLow, thrHigh)) {
+                    for (int i = firstIdx; i <= lastIdx; i++) {
+                        if (outputs[RND1_OUTPUT + i].isConnected()) {
                             float voltage = randomMinMaxDist(minValue, maxValue, dist,
                                 distMode.act == dm_MinMax, forcedPolarity.act, prevSign[i*16 + c]);
                             voltage = quantizeToMode(voltage, outQuantize.act);
@@ -359,7 +374,10 @@ struct Random4ModuleWidget : InfNoiseModuleWidget {
         initializeWidget(module, "res/Random4");
 
         const float cntrClm = 15.f;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 50.374f), module, Random4Module::TRIG_INPUT));
+        const float trigRow = 50.374f;
+        const float lgtOfs = 10.021f;
+        addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, trigRow), module, Random4Module::TRIG_INPUT));
+        addChild(createLightCentered<TinyLight<RedLight>>(Vec(cntrClm - lgtOfs, trigRow - lgtOfs), module, Random4Module::FIXED_CHANNEL_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 79.838f), module, Random4Module::TRIG_FREQ_PARAM));
         addChild(createLightCentered<SmallLight<GreenRedLight>>(Vec(5.770f, 65.836f), module, Random4Module::FREQ_LIGHT));
 
@@ -403,7 +421,7 @@ struct Random4ModuleWidget : InfNoiseModuleWidget {
             &module->distRange.req
         ));
 
-        std::vector<std::string> polyNames = getPolyphonyModeNames(false);
+        std::vector<std::string> polyNames = getPolyphonyModeNames(true);
         menu->addChild(createIndexPtrSubmenuItem("Polyphony", polyNames,
             &module->polyphony.req));
 
