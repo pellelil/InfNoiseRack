@@ -42,6 +42,8 @@ The lights next to A.trig and DR.trig indicate the active phase, and the color i
 + **DR.trig light is green** while release is active (Envelope is transitioning to R.level)
 + **DR.trig light is red** when R.level has been reached (Envelope output is held at R.level)
 
+**TIP**: While we typically think of an envelope as a full cycle (at least an Attack and a Release phase), there is nothing preventing you from **using only the Attack phase** (the envelope transitions from R.level to A.level over A.time using A.shape, and is then held at A.level). When used this way, A.retrig should be enabled so that the full Attack phase begins each time A.trig is triggered. *If needed, you can use the DR.trig input to "reset" the envelope back to R.level (so the signal is not held at A.level). For example, you could connect EOA to DR.trig so the envelope "automatically" returns to R.level once A.level has been reached.*
+
 Between the A./R. time/shape-knobs you find a small latched **Link-button**. When pressed (green) the release-knob will be linked to the attack-knob (e.g. linking R.time to A.time). When linked, the release-knob is rendered inactive, and instead it will take its value directly from the attack-knob. The shape link-button have two modes, so pressed a 2nd time it turns **red where R.shape is linked to A.shape reversed** (the more counter clockwise you turn A.shape the more R.shape will turn clockwise - and vice versa). These link buttons makes it easy for you to dial-in the exact same values for both the attack- and release knobs (e.g. if you want to ensure that attack and release have the same time- and/or shape-setting).
 
 ![Screenshot of ADR Envelope](module/ADREnvelope.png)
