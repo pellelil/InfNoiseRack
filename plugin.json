@@ -717,6 +717,17 @@
       ]
     },
     {
+      "slug": "EnvelopePhaseExpander",
+      "name": "Envelope Phase Expander",
+      "description": "Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for movement (Rise, Steady and Fall).",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Envelope.md#envelope-phase-expander",
+      "tags":  [
+        "Envelope generator",
+        "Expander",
+        "Utility"
+      ]
+    },
+    {
       "slug": "Sign",
       "name": "Sign",
       "description": "Outputs 9 different 'signed-versions' of the input signal(s).",

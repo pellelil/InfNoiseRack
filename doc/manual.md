@@ -240,6 +240,7 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 ## Envelope
 + [ADR Envelope](Envelope.md#adr-envelope): Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope). Times can be affected by Rate Chaos (set via context-menu).
 + [ADSDR Envelope](Envelope.md#adsdr-envelope): Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
++ [Envelope Phase Expander](Envelope.md#envelope-phase-expander): Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for movement (Rise, Steady and Fall).
 
 ## Misc
 + [Sign](Sign.md#sign)(pq): Outputs 9 different 'signed-versions' of the input signal(s).

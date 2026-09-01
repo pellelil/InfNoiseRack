@@ -240,6 +240,7 @@ void init(Plugin *p) {
 	// Add modules here
 	p->addModel(modelADREnvelope);
 	p->addModel(modelADSDREnvelope);
+	p->addModel(modelEnvelopePhaseExpander);
 	p->addModel(modelArm3XY);
 	p->addModel(modelAutoScale4);
 	p->addModel(modelBernoulliSwitch);

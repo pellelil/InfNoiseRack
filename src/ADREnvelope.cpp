@@ -5,9 +5,9 @@
 #include "inComponents.hpp"
 #include "inMath.hpp"
 #include "inUtil.hpp"
-#include <cstdlib>
+#include "InfNoiseEnvelope.hpp"
 
-struct ADREnvelopeModule : InfNoiseModule {
+struct ADREnvelopeModule : InfNoiseEnvelopeModule {
     enum ParamId {
         PHASE_GATE_TRIG_PARAM,
         A_TRIG_BTN_PARAM,
@@ -21,8 +21,9 @@ struct ADREnvelopeModule : InfNoiseModule {
         R_SHAPE_PARAM,
         A_LEVEL_PARAM,
         R_LEVEL_PARAM,
-        TIME_LINK_PARAM,
-        SHAPE_LINK_PARAM,
+        R_TIME_LINK_PARAM,
+        R_SHAPE_LINK_PARAM,
+        DELAY_TIME_LINK_PARAM,
         PARAMS_LEN
     };
     enum InputsId {
@@ -48,23 +49,6 @@ struct ADREnvelopeModule : InfNoiseModule {
         LIGHTS_LEN
     };
 
-    // Five sub-phases: Attack/Release each have a ramp and a hold; Delay is hold-only.
-    // Default is ap_holdR (idle at R.level, waiting for attack).
-    enum adrPhase {
-        ap_attack,   // ramping to A.level  (A light green)
-        ap_holdA,    // held at A.level     (A light red)
-        ap_delay,    // delay hold          (DR light yellow)
-        ap_release,  // ramping to R.level  (DR light green)
-        ap_holdR,    // held at R.level     (DR light red)
-        ap_len
-    };
-    adrPhase phase = ap_holdR;  // Current/active phase
-    float phasePos = 0.f;        // Position within current phase (0 to 1)
-    float attackLightGreen[ap_len] = { 1.f, 0.f, 0.f, 0.f, 0.f };
-    float attackLightRed[ap_len]   = { 0.f, 1.f, 0.f, 0.f, 0.f };
-    float releaseLightGreen[ap_len] = { 0.f, 0.f, 1.f, 1.f, 0.f };
-    float releaseLightRed[ap_len]   = { 0.f, 0.f, 1.f, 0.f, 1.f };
-    
     float attackTime = 0.f;
     float delayTime = 0.f;
     float releaseTime = 0.f;
@@ -81,16 +65,16 @@ struct ADREnvelopeModule : InfNoiseModule {
     Lut1D<256> releaseShapeInvLut{0.f, 1.f};
     float attackLevel = 10.f;
     float releaseLevel = 0.f;
-    float envelope = releaseLevel;  // Current Envelope voltage
     bool attackRetrig = false;
     bool delayRetrig = false;
     bool havePhaseInput = false;
     bool haveAttTrigInput = false;
     bool haveRelTrigInput = false;
     bool phaseTrigMode = false; // false = gate (default), true = trigger
-    /// Set in processParams; used by widget overlay (R knobs follow A when linked).
-    bool timeLinked = false;
-    bool shapeLinked = false;
+    /// Set in processParams; used by widget overlay (D/R knobs follow A when linked).
+    bool delayTimeLinked = false;
+    bool releaseTimeLinked = false;
+    bool releaseShapeLinked = false;
     bool haveTriggerOutputs = false;
     bool haveEnvelopeOutput = false;  // ENVELOPE_OUTPUT or INV_ENVELOPE_OUTPUT connected
     actReqValue<rateChaos> delayRateChaos = actReqValue<rateChaos>(rc_default);
@@ -121,7 +105,9 @@ struct ADREnvelopeModule : InfNoiseModule {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
         configLight(PROCQUAL_LIGHT, processQualityNames[procQuality.act]);
         configLight(CLIP_RANGE_LIGHT, getClipRangeLightName(outClipRange.act));
-        
+
+        envelope = releaseLevel;
+        prevEnvelope = envelope;
         configInput(PHASE_INPUT, "Phase (Gate/Trigger)");
         configSwitch(PHASE_GATE_TRIG_PARAM, 0.f, 1.f, 1.f, "Phase-mode", {"Trigger", "Gate"});
         configInput(A_TRIG_INPUT, "Attack Trigger");
@@ -144,12 +130,13 @@ struct ADREnvelopeModule : InfNoiseModule {
             timeBase, timeMult, -timeMult);
         configParam(R_TIME_PARAM, 0.f, 1.f, 0.f, "Release time (0 to 10 s)", " s",
             timeBase, timeMult, -timeMult);
-        configParam(A_SHAPE_PARAM, -1.f, 1.f, 0.f, "Attack shape (-1 to +1)");
-        configParam(R_SHAPE_PARAM, -1.f, 1.f, 0.f, "Release shape (-1 to +1)");
+        configParam(A_SHAPE_PARAM, -1.f, 1.f, 0.f, "Attack shape (Exp/Lin/Log)");
+        configParam(R_SHAPE_PARAM, -1.f, 1.f, 0.f, "Release shape (Exp/Lin/Log)");
         configParam(A_LEVEL_PARAM, -10.f, 10.f, 10.f, "Attack level (-10V to +10V)", " V");
         configParam(R_LEVEL_PARAM, -10.f, 10.f, 0.f, "Release level (-10V to +10V)", " V");
-        configSwitch(TIME_LINK_PARAM, 0.f, 1.f, 0.f, "Time link", {"Disabled", "Enabled"});
-        configSwitch(SHAPE_LINK_PARAM, 0.f, 2.f, 0.f, "Shape link", {"Disabled", "Enabled", "Reversed"});
+        configSwitch(R_TIME_LINK_PARAM, 0.f, 1.f, 0.f, "Release time link", {"Disabled", "Enabled"});
+        configSwitch(R_SHAPE_LINK_PARAM, 0.f, 2.f, 0.f, "Release shape link", {"Disabled", "Enabled", "Reversed"});
+        configSwitch(DELAY_TIME_LINK_PARAM, 0.f, 1.f, 0.f, "Delay time link", {"Disabled", "Enabled"});
 
         configOutput(BOA_OUTPUT, "BOA (Begin Of Attack)");
         configOutput(EOA_OUTPUT, "EOA (End Of Attack)");
@@ -172,10 +159,8 @@ struct ADREnvelopeModule : InfNoiseModule {
 	}
 
     void onReset(const ResetEvent& e) override {
-        InfNoiseModule::onReset(e);
+        InfNoiseEnvelopeModule::onReset(e);
 
-        phase = ap_holdR;
-        phasePos = 0.f;
         delayRateChaos.setBoth(rc_default);
         attackRateChaos.setBoth(rc_default);
         releaseRateChaos.setBoth(rc_default);
@@ -190,69 +175,32 @@ struct ADREnvelopeModule : InfNoiseModule {
             outTrig[i].reset();
         phaseTrigMode = false;
         envelope = releaseLevel;
+        prevEnvelope = envelope;
+        envMotion = em_steady;
         oldAttackShape = 2.f;
         oldReleaseShape = 2.f;
     }
 
     void dataFromJson(json_t* rootJ) override {
-        InfNoiseModule::dataFromJson(rootJ);
+        InfNoiseEnvelopeModule::dataFromJson(rootJ);
 
         delayRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "delayRateChaos", (int)rc_default));
         attackRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "attackRateChaos", (int)rc_default));
         releaseRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "releaseRateChaos", (int)rc_default));
-        phase = (adrPhase)getJsonInt(rootJ, "phase", (int)ap_holdR);
-        phasePos = getJsonFloat(rootJ, "phasePos", 0.f);
-        envelope = getJsonFloat(rootJ, "envelope", releaseLevel);
+        // Pre-v3 ADR phase enum had no ap_decay (holdA was 1). Shift values >= ap_decay up by 1.
+        if (jsonVersion < 3) {
+            int p = getJsonInt(rootJ, "phase", (int)ap_holdR);
+            if (p >= (int)ap_decay)
+                p += 1;
+            phase = (adrPhase)clamp(p, (int)ap_attack, (int)ap_holdR);
+        }
     }
 
     void dataToJson(json_t* rootJ) override {
+        InfNoiseEnvelopeModule::dataToJson(rootJ);
         json_object_set_new(rootJ, "delayRateChaos", json_integer((int)delayRateChaos.req));
         json_object_set_new(rootJ, "attackRateChaos", json_integer((int)attackRateChaos.req));
         json_object_set_new(rootJ, "releaseRateChaos", json_integer((int)releaseRateChaos.req));
-        json_object_set_new(rootJ, "phase", json_integer((int)phase));
-        json_object_set_new(rootJ, "phasePos", json_real(phasePos));
-        json_object_set_new(rootJ, "envelope", json_real(envelope));
-    }
-
-    float readTimeParam(int paramId, float sampleTime) {
-        float t = getParamQuantity(paramId)->getDisplayValue();
-        return (t < sampleTime) ? 0.f : t;
-    }
-
-    // Mix linear with normExp (shape < 0) or normLog (shape > 0). Fill-time only.
-    static float applyShape(float x, float shape) {
-        if (shape < 0.f)
-            return x + (-shape) * (normExp(x) - x);
-        if (shape > 0.f)
-            return x + shape * (normLog(x) - x);
-        return x;
-    }
-
-    // Forward LUT: shaped 0→1 vs phasePos. Inverse: phasePos vs shaped (interrupt).
-    static void rebuildShapeLuts(float shape, Lut1D<256>& fwd, Lut1D<256>& inv) {
-        const int n = Lut1D<256>::Size;
-        for (int i = 0; i < n; i++) {
-            float x = (float)i / (float)(n - 1);
-            fwd.data[i] = applyShape(x, shape);
-        }
-        fwd.data[0] = 0.f;
-        fwd.data[n - 1] = 1.f;
-
-        int lo = 0;
-        for (int j = 0; j < n; j++) {
-            float y = (float)j / (float)(n - 1);
-            while (lo < n - 1 && fwd.data[lo + 1] < y)
-                lo++;
-            float y0 = fwd.data[lo];
-            float y1 = fwd.data[lo + 1];
-            float x0 = (float)lo / (float)(n - 1);
-            float x1 = (float)(lo + 1) / (float)(n - 1);
-            float denom = y1 - y0;
-            float frac = (denom > 1e-12f) ? (y - y0) / denom : 0.f;
-            inv.data[j] = x0 + frac * (x1 - x0);
-        }
-        inv.data[0] = 0.f;
-        inv.data[n - 1] = 1.f;
     }
 
     // phasePos along the full R.level ↔ A.level span from the current envelope.
@@ -278,7 +226,7 @@ struct ADREnvelopeModule : InfNoiseModule {
         phase = ap_attack;
         outTrig[BOA].trigger();
         if (attackTime == 0.f || phasePos >= 1.f) {
-            phase = ap_holdA;
+            phase = ap_sustain;
             phasePos = 1.f;
             outTrig[EOA].trigger();
         }
@@ -310,8 +258,13 @@ struct ADREnvelopeModule : InfNoiseModule {
         // Attack, Delay and Release times
         attackTime = readTimeParam(A_TIME_PARAM, args.sampleTime);
         delayTime = readTimeParam(DELAY_TIME_PARAM, args.sampleTime);
-        timeLinked = params[TIME_LINK_PARAM].getValue() > 0.5f;
-        if (timeLinked) {
+        delayTimeLinked = params[DELAY_TIME_LINK_PARAM].getValue() > 0.5f;
+        if (delayTimeLinked) {
+            params[DELAY_TIME_PARAM].setValue(params[A_TIME_PARAM].getValue());
+            delayTime = attackTime;
+        }
+        releaseTimeLinked = params[R_TIME_LINK_PARAM].getValue() > 0.5f;
+        if (releaseTimeLinked) {
             params[R_TIME_PARAM].setValue(params[A_TIME_PARAM].getValue());
             releaseTime = attackTime;
         }
@@ -330,9 +283,9 @@ struct ADREnvelopeModule : InfNoiseModule {
 
         // Attack and Release shapes
         attackShape = params[A_SHAPE_PARAM].getValue();
-        float shapeLink = params[SHAPE_LINK_PARAM].getValue();
-        shapeLinked = shapeLink > 0.5f;
-        if (shapeLinked) {
+        float shapeLink = params[R_SHAPE_LINK_PARAM].getValue();
+        releaseShapeLinked = shapeLink > 0.5f;
+        if (releaseShapeLinked) {
             float linkedShape = (shapeLink > 1.5f) ? -attackShape : attackShape;
             params[R_SHAPE_PARAM].setValue(linkedShape);
             releaseShape = linkedShape;
@@ -392,6 +345,8 @@ struct ADREnvelopeModule : InfNoiseModule {
             ((cycle256 & processQualityPatterns[procQuality.act]) == processQualityPatterns[procQuality.act]));
 
         if (doProcess) {
+            prevEnvelope = envelope;
+
             // Handle direct A.trig
             float attVolt = haveAttTrigInput ? inputs[A_TRIG_INPUT].getVoltage() : 0.f;
             if (params[A_TRIG_BTN_PARAM].getValue() > 0.5f)
@@ -408,7 +363,7 @@ struct ADREnvelopeModule : InfNoiseModule {
 
             // Handle Phase input
             // Dedicated A.trig / DR.trig take priority; Phase fills unpatched sides.
-            bool phaseIsAttack = phase == ap_attack || phase == ap_holdA;
+            bool phaseIsAttack = phase == ap_attack || phase == ap_sustain;
             if (havePhaseInput) {
                 bool phaseTrigToAttack = !phaseIsAttack;
                 float phaseVolt = inputs[PHASE_INPUT].getVoltage();
@@ -472,7 +427,7 @@ struct ADREnvelopeModule : InfNoiseModule {
                 if (phase == ap_attack) {
                     phasePos += attackStep * attackChaosFactor;
                     if (phasePos >= 1.f) {
-                        phase = ap_holdA;
+                        phase = ap_sustain;
                         phasePos = 0.f;
                         outTrig[EOA].trigger();       
                     }
@@ -504,7 +459,7 @@ struct ADREnvelopeModule : InfNoiseModule {
 
             // Generate envelope (always, so interrupts map from the current voltage
             // even when Env/!Env are unpatched — same rule as ADSDR Envelope).
-            if (phase == ap_holdA)
+            if (phase == ap_sustain)
                 envelope = attackLevel;
             else if (phase == ap_holdR)
                 envelope = releaseLevel;
@@ -517,6 +472,8 @@ struct ADREnvelopeModule : InfNoiseModule {
                 outputs[ENVELOPE_OUTPUT].setVoltage(envelope);
                 outputs[INV_ENVELOPE_OUTPUT].setVoltage(attackLevel + releaseLevel - envelope);
             }
+            updateEnvMotion();
+            pushToExpanders();
         }
 
         cycle256++;
@@ -524,10 +481,12 @@ struct ADREnvelopeModule : InfNoiseModule {
 };
 
 struct ADREnvelopeModuleWidget : InfNoiseModuleWidget {
-    InfNoiseDisableOverlayGroup* linkTimeOverlayGroup = nullptr;
-    InfNoiseDisableOverlayGroup* linkShapeOverlayGroup = nullptr;
-    bool timeLinked = false;
-    bool shapeLinked = false;
+    InfNoiseDisableOverlayGroup* delayLinkTimeOverlayGroup = nullptr;
+    InfNoiseDisableOverlayGroup* releaseLinkTimeOverlayGroup = nullptr;
+    InfNoiseDisableOverlayGroup* releaseLinkShapeOverlayGroup = nullptr;
+    bool delayTimeLinked = false;
+    bool releaseTimeLinked = false;
+    bool releaseShapeLinked = false;
 
     ADREnvelopeModuleWidget(ADREnvelopeModule *module) {
         initializeWidget(module, "res/ADREnvelope");
@@ -553,25 +512,30 @@ struct ADREnvelopeModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(6.133f, 123.334f), module, ADREnvelopeModule::D_RETRIG_PARAM));
 
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(44.500f, 121.126f), module, ADREnvelopeModule::DELAY_TIME_PARAM));
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(centerClm, 106.091f), module, ADREnvelopeModule::DELAY_TIME_LINK_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(leftClm, 154.524f), module, ADREnvelopeModule::A_TIME_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rightClm, 154.524f), module, ADREnvelopeModule::R_TIME_PARAM));
-        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(centerClm, 139.489f), module, ADREnvelopeModule::TIME_LINK_PARAM));
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(centerClm, 139.489f), module, ADREnvelopeModule::R_TIME_LINK_PARAM));
         
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(leftClm, 186.869f), module, ADREnvelopeModule::A_SHAPE_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rightClm, 186.869f), module, ADREnvelopeModule::R_SHAPE_PARAM));
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_black, bc_green, bc_red>>(
-            Vec(centerClm, 172.888f), module, ADREnvelopeModule::SHAPE_LINK_PARAM));
+            Vec(centerClm, 172.888f), module, ADREnvelopeModule::R_SHAPE_LINK_PARAM));
         
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(leftClm, 223.274f), module, ADREnvelopeModule::A_LEVEL_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rightClm, 223.274f), module, ADREnvelopeModule::R_LEVEL_PARAM));
 
         InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
-        linkTimeOverlayGroup = overlayManager.addGroup("R.time linked to A.time");
-        linkTimeOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
+        delayLinkTimeOverlayGroup = overlayManager.addGroup("D.time linked to A.time");
+        delayLinkTimeOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
+            ADREnvelopeModule::DELAY_TIME_PARAM
+        });
+        releaseLinkTimeOverlayGroup = overlayManager.addGroup("R.time linked to A.time");
+        releaseLinkTimeOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
             ADREnvelopeModule::R_TIME_PARAM
         });
-        linkShapeOverlayGroup = overlayManager.addGroup("R.shape linked to A.shape");
-        linkShapeOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
+        releaseLinkShapeOverlayGroup = overlayManager.addGroup("R.shape linked to A.shape");
+        releaseLinkShapeOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
             ADREnvelopeModule::R_SHAPE_PARAM
         });
 
@@ -591,16 +555,22 @@ struct ADREnvelopeModuleWidget : InfNoiseModuleWidget {
             return;
 
         auto* m = static_cast<ADREnvelopeModule*>(module);
-        if (linkTimeOverlayGroup) {
-            if (m->timeLinked != timeLinked) {
-                timeLinked = m->timeLinked;
-                linkTimeOverlayGroup->setActive(timeLinked);
+        if (delayLinkTimeOverlayGroup) {
+            if (m->delayTimeLinked != delayTimeLinked) {
+                delayTimeLinked = m->delayTimeLinked;
+                delayLinkTimeOverlayGroup->setActive(delayTimeLinked);
             }
         }
-        if (linkShapeOverlayGroup) {
-            if (m->shapeLinked != shapeLinked) {
-                shapeLinked = m->shapeLinked;
-                linkShapeOverlayGroup->setActive(shapeLinked);
+        if (releaseLinkTimeOverlayGroup) {
+            if (m->releaseTimeLinked != releaseTimeLinked) {
+                releaseTimeLinked = m->releaseTimeLinked;
+                releaseLinkTimeOverlayGroup->setActive(releaseTimeLinked);
+            }
+        }
+        if (releaseLinkShapeOverlayGroup) {
+            if (m->releaseShapeLinked != releaseShapeLinked) {
+                releaseShapeLinked = m->releaseShapeLinked;
+                releaseLinkShapeOverlayGroup->setActive(releaseShapeLinked);
             }
         }
     }

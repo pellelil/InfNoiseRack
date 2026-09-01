@@ -5,9 +5,9 @@
 #include "inComponents.hpp"
 #include "inMath.hpp"
 #include "inUtil.hpp"
-#include <cstdlib>
+#include "InfNoiseEnvelope.hpp"
 
-struct ADSDREnvelopeModule : InfNoiseModule {
+struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
     enum ParamId {
         PHASE_GATE_TRIG_PARAM,
         A_TRIG_BTN_PARAM,
@@ -57,24 +57,6 @@ struct ADSDREnvelopeModule : InfNoiseModule {
         LIGHTS_LEN
     };
 
-    // Six sub-phases: Attack/Decay/Release are ramps; Sustain/Delay/HoldR are holds.
-    // Default is ap_holdR (idle at R.level, waiting for attack).
-    enum adrPhase {
-        ap_attack,   // ramping to A.level     (A light green)
-        ap_decay,    // ramping to Sustain     (A light yellow)
-        ap_sustain,  // held at Sustain        (A light red)
-        ap_delay,    // delay hold             (DR light yellow)
-        ap_release,  // ramping to R.level     (DR light green)
-        ap_holdR,    // held at R.level        (DR light red)
-        ap_len
-    };
-    adrPhase phase = ap_holdR;  // Current/active phase
-    float phasePos = 0.f;        // Position within current phase (0 to 1)
-    float attackLightGreen[ap_len] = { 1.f, 1.f, 0.f, 0.f, 0.f, 0.f };
-    float attackLightRed[ap_len]   = { 0.f, 1.f, 1.f, 0.f, 0.f, 0.f };
-    float releaseLightGreen[ap_len] = { 0.f, 0.f, 0.f, 1.f, 1.f, 0.f };
-    float releaseLightRed[ap_len]   = { 0.f, 0.f, 0.f, 1.f, 0.f, 1.f };
-    
     float attackTime = 0.f;
     float decayTime = 0.f;
     float delayTime = 0.f;
@@ -98,7 +80,6 @@ struct ADSDREnvelopeModule : InfNoiseModule {
     float attackLevel = 10.f;
     float sustainLevel = 5.f;
     float releaseLevel = 0.f;
-    float envelope = releaseLevel;  // Current Envelope voltage
     float rampFrom = 0.f;           // Start level of the active ramp
     float rampTo = 10.f;            // Target level of the active ramp
     bool attackRetrig = false;
@@ -151,7 +132,9 @@ struct ADSDREnvelopeModule : InfNoiseModule {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
         configLight(PROCQUAL_LIGHT, processQualityNames[procQuality.act]);
         configLight(CLIP_RANGE_LIGHT, getClipRangeLightName(outClipRange.act));
-        
+
+        envelope = releaseLevel;
+        prevEnvelope = envelope;
         configInput(PHASE_INPUT, "Phase (Gate/Trigger)");
         configSwitch(PHASE_GATE_TRIG_PARAM, 0.f, 1.f, 1.f, "Phase-mode", {"Trigger", "Gate"});
         configInput(A_TRIG_INPUT, "Attack/Decay Trigger");
@@ -176,9 +159,9 @@ struct ADSDREnvelopeModule : InfNoiseModule {
             timeBase, timeMult, -timeMult);
         configParam(R_TIME_PARAM, 0.f, 1.f, 0.f, "Release time (0 to 10 s)", " s",
             timeBase, timeMult, -timeMult);
-        configParam(A_SHAPE_PARAM, -1.f, 1.f, 0.f, "Attack shape (-1 to +1)");
-        configParam(DC_SHAPE_PARAM, -1.f, 1.f, 0.f, "Decay shape (-1 to +1)");
-        configParam(R_SHAPE_PARAM, -1.f, 1.f, 0.f, "Release shape (-1 to +1)");
+        configParam(A_SHAPE_PARAM, -1.f, 1.f, 0.f, "Attack shape (Exp/Lin/Log)");
+        configParam(DC_SHAPE_PARAM, -1.f, 1.f, 0.f, "Decay shape (Exp/Lin/Log)");
+        configParam(R_SHAPE_PARAM, -1.f, 1.f, 0.f, "Release shape (Exp/Lin/Log)");
         configParam(A_LEVEL_PARAM, -10.f, 10.f, 10.f, "Attack level (-10V to +10V)", " V");
         configParam(SUSTAIN_LEVEL_PARAM, -10.f, 10.f, 5.f, "Sustain level (-10V to +10V)", " V");
         configParam(R_LEVEL_PARAM, -10.f, 10.f, 0.f, "Release level (-10V to +10V)", " V");
@@ -212,10 +195,8 @@ struct ADSDREnvelopeModule : InfNoiseModule {
 	}
 
     void onReset(const ResetEvent& e) override {
-        InfNoiseModule::onReset(e);
+        InfNoiseEnvelopeModule::onReset(e);
 
-        phase = ap_holdR;
-        phasePos = 0.f;
         attackRateChaos.setBoth(rc_default);
         decayRateChaos.setBoth(rc_default);
         delayRateChaos.setBoth(rc_default);
@@ -232,6 +213,8 @@ struct ADSDREnvelopeModule : InfNoiseModule {
             outTrig[i].reset();
         phaseTrigMode = false;
         envelope = releaseLevel;
+        prevEnvelope = envelope;
+        envMotion = em_steady;
         rampFrom = releaseLevel;
         rampTo = attackLevel;
         oldAttackShape = 2.f;
@@ -240,70 +223,24 @@ struct ADSDREnvelopeModule : InfNoiseModule {
     }
 
     void dataFromJson(json_t* rootJ) override {
-        InfNoiseModule::dataFromJson(rootJ);
+        InfNoiseEnvelopeModule::dataFromJson(rootJ);
 
         attackRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "attackRateChaos", (int)rc_default));
         decayRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "decayRateChaos", (int)rc_default));
         delayRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "delayRateChaos", (int)rc_default));
         releaseRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "releaseRateChaos", (int)rc_default));
-        phase = (adrPhase)getJsonInt(rootJ, "phase", (int)ap_holdR);
-        phasePos = getJsonFloat(rootJ, "phasePos", 0.f);
-        envelope = getJsonFloat(rootJ, "envelope", releaseLevel);
         rampFrom = getJsonFloat(rootJ, "rampFrom", releaseLevel);
         rampTo = getJsonFloat(rootJ, "rampTo", attackLevel);
     }
 
     void dataToJson(json_t* rootJ) override {
+        InfNoiseEnvelopeModule::dataToJson(rootJ);
         json_object_set_new(rootJ, "attackRateChaos", json_integer((int)attackRateChaos.req));
         json_object_set_new(rootJ, "decayRateChaos", json_integer((int)decayRateChaos.req));
         json_object_set_new(rootJ, "delayRateChaos", json_integer((int)delayRateChaos.req));
         json_object_set_new(rootJ, "releaseRateChaos", json_integer((int)releaseRateChaos.req));
-        json_object_set_new(rootJ, "phase", json_integer((int)phase));
-        json_object_set_new(rootJ, "phasePos", json_real(phasePos));
-        json_object_set_new(rootJ, "envelope", json_real(envelope));
         json_object_set_new(rootJ, "rampFrom", json_real(rampFrom));
         json_object_set_new(rootJ, "rampTo", json_real(rampTo));
-    }
-
-    float readTimeParam(int paramId, float sampleTime) {
-        float t = getParamQuantity(paramId)->getDisplayValue();
-        return (t < sampleTime) ? 0.f : t;
-    }
-
-    // Mix linear with normExp (shape < 0) or normLog (shape > 0). Fill-time only.
-    static float applyShape(float x, float shape) {
-        if (shape < 0.f)
-            return x + (-shape) * (normExp(x) - x);
-        if (shape > 0.f)
-            return x + shape * (normLog(x) - x);
-        return x;
-    }
-
-    // Forward LUT: shaped 0→1 vs phasePos. Inverse: phasePos vs shaped (interrupt).
-    static void rebuildShapeLuts(float shape, Lut1D<256>& fwd, Lut1D<256>& inv) {
-        const int n = Lut1D<256>::Size;
-        for (int i = 0; i < n; i++) {
-            float x = (float)i / (float)(n - 1);
-            fwd.data[i] = applyShape(x, shape);
-        }
-        fwd.data[0] = 0.f;
-        fwd.data[n - 1] = 1.f;
-
-        int lo = 0;
-        for (int j = 0; j < n; j++) {
-            float y = (float)j / (float)(n - 1);
-            while (lo < n - 1 && fwd.data[lo + 1] < y)
-                lo++;
-            float y0 = fwd.data[lo];
-            float y1 = fwd.data[lo + 1];
-            float x0 = (float)lo / (float)(n - 1);
-            float x1 = (float)(lo + 1) / (float)(n - 1);
-            float denom = y1 - y0;
-            float frac = (denom > 1e-12f) ? (y - y0) / denom : 0.f;
-            inv.data[j] = x0 + frac * (x1 - x0);
-        }
-        inv.data[0] = 0.f;
-        inv.data[n - 1] = 1.f;
     }
 
     // phasePos along fromLevel → toLevel from the current envelope. Also sets rampFrom/rampTo.
@@ -503,6 +440,8 @@ struct ADSDREnvelopeModule : InfNoiseModule {
             ((cycle256 & processQualityPatterns[procQuality.act]) == processQualityPatterns[procQuality.act]));
 
         if (doProcess) {
+            prevEnvelope = envelope;
+
             // Handle direct A.trig
             float attVolt = haveAttTrigInput ? inputs[A_TRIG_INPUT].getVoltage() : 0.f;
             if (params[A_TRIG_BTN_PARAM].getValue() > 0.5f)
@@ -639,6 +578,8 @@ struct ADSDREnvelopeModule : InfNoiseModule {
                 outputs[ENVELOPE_OUTPUT].setVoltage(envelope);
                 outputs[INV_ENVELOPE_OUTPUT].setVoltage(attackLevel + releaseLevel - envelope);
             }
+            updateEnvMotion();
+            pushToExpanders();
         }
 
         cycle256++;

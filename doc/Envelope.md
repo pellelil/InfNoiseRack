@@ -11,6 +11,8 @@ The **time knobs dial in a duration** for each phase. If Attack, Decay, or Relea
 
 If a phase is interrupted mid-ramp (for example the phase-gate falls before Attack finishes), the new phase starts from the **current envelope voltage**, not from the previous target. An already-active phase is ignored unless you enable Attack and/or Delay retrig. **Attack/Delay retrig is only possible on the dedicated trig inputs** — Phase always switches between Attack and Delay/Release, whether it is in gate or trigger mode. With Attack retrig enabled, each A.trig / ADc.trig jumps to R.level and starts a new Attack. With Delay retrig enabled and a non-zero Delay time, DR.trig / DlR.trig can restart Delay while Delay or Release is already active.
 
+Both modules have trigger outputs for when various phases begin (e.g. **BOA = Begin Of Attack**) and end (e.g. **EOA = End Of Attack**). However the Envelope Phase Expander module (described below) can be used an an expander for both the ADR- and ADSDR Envelope. It in stead have multiple gate outputs, where each of the 6 top-most outpouts are high while the associated phase is active (phases where time=0 will always output a low gate). The last 3 gate outputs will indicate whether the envelope is rising, steady or falling.
+
 Both modules can apply **Rate Chaos** per time knob from the context menu. If that phase's time is non-zero and Rate Chaos is above 0%, each time the phase begins its duration is varied slightly — or wildly (e.g. randomly slow vs fast attacks). General use of Rate Chaos is described in the [main manual](manual.md#rate-chaos).
 
 Each ramping phase (Attack, Decay, and Release) has a **shape** knob from −1 to +1. Center (0) is **linear**. Turn counterclockwise for **exponential**, clockwise for **logarithmic** (Delay has no shape — it simply holds). An exponential **rise** starts slow and steepens toward the target, while an exponential **fall** drops quickly and then eases in (the usual analog-style release). A logarithmic rise does the opposite (fast then slow), and a logarithmic fall stays near the start-level before dropping late. The illustration below shows 100% / 50% exponential, linear, and 50% / 100% logarithmic in both directions.
@@ -44,7 +46,7 @@ The lights next to A.trig and DR.trig indicate the active phase, and the color i
 
 **TIP**: While we typically think of an envelope as a full cycle (at least an Attack and a Release phase), there is nothing preventing you from **using only the Attack phase** (the envelope transitions from R.level to A.level over A.time using A.shape, and is then held at A.level). When used this way, A.retrig should be enabled so that the full Attack phase begins each time A.trig is triggered. *If needed, you can use the DR.trig input to "reset" the envelope back to R.level (so the signal is not held at A.level). For example, you could connect EOA to DR.trig so the envelope "automatically" returns to R.level once A.level has been reached.*
 
-Between the A./R. time/shape-knobs you find a small latched **Link-button**. When pressed (green) the release-knob will be linked to the attack-knob (e.g. linking R.time to A.time). When linked, the release-knob is rendered inactive, and instead it will take its value directly from the attack-knob. The shape link-button have two modes, so pressed a 2nd time it turns **red where R.shape is linked to A.shape reversed** (the more counter clockwise you turn A.shape the more R.shape will turn clockwise - and vice versa). These link buttons makes it easy for you to dial-in the exact same values for both the attack- and release knobs (e.g. if you want to ensure that attack and release have the same time- and/or shape-setting).
+Next to **D.time**, and between the A./R. time/shape-knobs, you find small latched **Link-buttons**. When pressed (green) the linked knob follows Attack: **D.time** or **R.time** takes its value from **A.time**. When linked, that knob is rendered inactive. The shape link-button have two modes, so pressed a 2nd time it turns **red where R.shape is linked to A.shape reversed** (the more counter clockwise you turn A.shape the more R.shape will turn clockwise - and vice versa). These link buttons makes it easy for you to dial-in the exact same values (e.g. D.time = A.time, or attack and release with the same time- and/or shape-setting).
 
 ![Screenshot of ADR Envelope](module/ADREnvelope.png)
 
@@ -96,5 +98,28 @@ To assist dialing in the same times/shapes you'll find **2 sets of link buttons*
 **TIP**: For a random jagged signal (envelope basically switching between Attack and Release) you can use the A- and B-outputs of a [Bernoulli Switch](Switch.md#bernoulli-switch) as inputs to ADc.trig and DlR.trig. Using the Clock knob of the Bernoully Switch you can set the rate at which Adc.Trig and DlR.trig can trigger a change. If you center the Probabillity switch of the Bernoully knob, and input a slow moving bipolar waveform (e.g. Sine) into it's Probabillity CV-input you can change the probablility of the Bernoulli Switch either triggering an Attack or a Release.
 
 ![Random jagged envelope](img/RandomJaggedEnvelope.png)
+
+## Envelope Phase Expander
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Expander-Yes-green.svg?style=flat-square)<br>
+The Envelope Phase Expander can be used as an **expander for ADR Envelope or ADSDR Envelope** and outputs **gates** for the active envelope stage, plus Rise / Fall / Steady based on whether the envelope voltage is moving. Since the ADR Envelope don't have a decay phase, the decay output will only output low-gate (default 0V) when used to expand and ADR Envelope.
+
+Place it to the left or right of a compatible envelope module. The two lights under **EPE** show connection status:
+
++ **Green** on the left or right = that side is the active host.
++ **Red** = a problem for that side (or both sides in Auto when there is no unique host).
++ **Off** = that side is not used for the current Expander-mode.
+
+By deault **Expander-mode** (set via context menu) defaults to Auto where it will automatic detect an Envelope module to its left or right side. If there is both an Expander module to its left and right, you must set a forced Left- or Right expander-mode:
+
++ **Auto** (default): connect when exactly one neighbor is an ADR/ADSDR Envelope. If both sides are envelopes, both lights go red and no gates are driven until you choose Left or Right.
++ **Left** / **Right**: always use that side; red on that light if no envelope is there, otherwise green.
+
+The first six outputs are mutually exclusive phase gates (only one high at a time). A phase that is skipped (time 0) never becomes active, so its gate stays low. **Decay** stays low for ADR Envelope (that module has no Decay stage). **Idle** is high while the envelope holds at R.level after Release (or at init).
+
++ **Attack**, **Decay**, **Sust.**, **Delay**, **Rel.**, **Idle** — high during that phase.
++ **Rise**, **Fall**, **Stdy** — mutually exclusive; high when the envelope voltage is increasing, decreasing, or unchanged. Rise and Fall switch on the first moving sample. **Stdy** waits until the envelope has been unchanged for 3 consecutive samples (avoids a 1-sample spike at phase seams, e.g. when BOS is patched to DlR.trig). These are independent of phase names (e.g. Attack can light **Fall** if A.level is below R.level).
+
+![Screenshot of Envelope Phase Expander](module/EnvelopePhaseExpander.png)
 
 [Go back to modules overview](manual.md#modules)

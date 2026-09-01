@@ -14,6 +14,7 @@ extern Plugin* pluginInstance;
 
 extern Model* modelADREnvelope;
 extern Model* modelADSDREnvelope;
+extern Model* modelEnvelopePhaseExpander;
 extern Model* modelArm3XY;
 extern Model* modelAutoScale4;
 extern Model* modelBernoulliSwitch;
@@ -111,7 +112,7 @@ struct InfNoiseModule : Module {
     bool mustProcessParams = true; // Params MUST be processed at first/next cycle (e.g. after create, load, reset, sample-rate change or randomize)
     bool wasJustReset = false;  // Set true in InfNoiseModule.onReset, cleared in postProcessParams
     bool wasJustLoaded = false;  // Set true in InfNoiseModule.dataFromJson, cleared in postProcessParams
-    const int currentJson = 2;  // Manually incremented for "breaking changes" to json-format
+    const int currentJson = 3;  // Manually incremented for "breaking changes" to json-format
     int jsonVersion = currentJson; // Used to detect if the module has been saved with a previous json-version of the plugin
     processQuality prevProcessQuality = pq_audioRate;  // Used to detect if process-quality has changed
     voltRange prevOutClipRange = vr_mp12;              // Used to detect if clipping-range has changed
