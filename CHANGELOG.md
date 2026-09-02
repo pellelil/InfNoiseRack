@@ -1,6 +1,5 @@
 # 2.0.4 (In development)
-- Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. 
-- Addressed issue regarding latchable buttons. Many modules (e.g. [Manuel Push 2](doc/ManCV.md#manuel-push-2)) have a small button which can toggle the latch-state of a bigger button. In previous versions, if the bigger button was latched/pressed and you pressed the small button to toggle from latched-state to momentary-state, the bigger button remained being pressed until manually clicked. Now, when the state is changed from latched-state to momentary-state, the big button will "release" if it was pressed.
+Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. 
 
 ## New modules
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
@@ -20,7 +19,7 @@
 - **[Value Comparator-1](doc/Compare.md#value-comparator-1)**: Fixed issue where the A<=B output stayed monophonic while other output could be polyphonic.
 - **[Value Comparator-2 Mk I](doc/Compare.md#value-comparator-2-mk-i)**: Fixed issues detecting connected outputs.
 - **[Value Comparator-2 Mk II](doc/Compare.md#value-comparator-2-mk-ii)**: Fixed issues detecting connected outputs.
-- **Manuel Push 2**, **Manuel Trigger**, **Gate and CV**, **ON/OFF Switch**, **Manuel CV 8 Mk I**, **CV-Toggle 8**, **Turing Machine, Mute 2**, **Manuel Mute 8**, **Manuel Gate 8**, **Manuel CV 8 Mk II**, **Sample and Update** and **Delta-4**: Modules fixed regarding latchable buttons that stayded "pressed" when changed to momentary.
+- **Manuel Push 2**, **Manuel Trigger**, **Gate and CV**, **ON/OFF Switch**, **Manuel CV 8 Mk I**, **CV-Toggle 8**, **Turing Machine, Mute 2**, **Manuel Mute 8**, **Manuel Gate 8**, **Manuel CV 8 Mk II**, **Sample and Update** and **Delta-4**: Fixed issue with latchable buttons that stayded "pressed" when changed to momentary.
 
 
 # 2.0.3
