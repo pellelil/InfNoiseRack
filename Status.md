@@ -90,7 +90,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 ### Envelope
 + ADREnvelope: -
 + ADSDREnvelope: New module **Needs testing**
-+ EnvelopePhaseExpander: New module **Needs testing**
++ EnvelopePhaseExpander: -
 
 ### Misc
 + Sign: -

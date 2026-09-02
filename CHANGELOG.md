@@ -15,11 +15,12 @@
 - **[Value-to-Bits](doc/Bits.md#value-to-bits)**: Min/Center/Max mode-lights changed to tiny-lights.
 
 ## Fixed modules
+- **[LFO1](doc/LFO.md#lfo1)**: Fixed issue storing sync-out mode in json and issue with polyphonic Sync out triggers in n-shot mode.
 - **[Logic Comparator-2](doc/Compare.md#logic-comparator-2)**: Fixed issues: detecting connected outputs, using normalized A/B input when no A/B outputs were connected and outputting polyphonic C/D results.
 - **[Value Comparator-1](doc/Compare.md#value-comparator-1)**: Fixed issue where the A<=B output stayed monophonic while other output could be polyphonic.
 - **[Value Comparator-2 Mk I](doc/Compare.md#value-comparator-2-mk-i)**: Fixed issues detecting connected outputs.
 - **[Value Comparator-2 Mk II](doc/Compare.md#value-comparator-2-mk-ii)**: Fixed issues detecting connected outputs.
-- **[LFO1](doc/LFO.md#lfo1)**: Fixed issue storing sync-out mode in json and issue with polyphonic Sync out triggers in n-shot mode.
+- **Manuel Push 2**, **Manuel Trigger**, **Gate and CV**, **ON/OFF Switch**, **Manuel CV 8 Mk I**, **CV-Toggle 8**, **Turing Machine, Mute 2**, **Manuel Mute 8**, **Manuel Gate 8**, **Manuel CV 8 Mk II**, **Sample and Update** and **Delta-4**: Modules fixed regarding latchable buttons that stayded "pressed" when changed to momentary.
 
 
 # 2.0.3
