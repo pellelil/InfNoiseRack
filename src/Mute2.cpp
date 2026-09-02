@@ -271,9 +271,9 @@ struct Mute2ModuleWidget : InfNoiseModuleWidget {
 
     void step() override {
         if (module) {
-            bothBtn->momentary = module->params[Mute2Module::BOTH_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(bothBtn, module->params[Mute2Module::BOTH_LATCH_PARAM].getValue() < 0.5f);
             for (int i = 0; i < 2; i++) {
-                sectBtn[i]->momentary = module->params[Mute2Module::A_LATCH_PARAM + i].getValue() < 0.5f;
+                applyButtonMomentary(sectBtn[i], module->params[Mute2Module::A_LATCH_PARAM + i].getValue() < 0.5f);
             }
         }
 

@@ -325,9 +325,9 @@ struct ManCV8IIModuleWidget : InfNoiseModuleWidget {
     
     void step() override {
         if (module) {
-            allBtn->momentary = module->params[ManCV8IIModule::ALL_BUTTON_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(allBtn, module->params[ManCV8IIModule::ALL_BUTTON_LATCH_PARAM].getValue() < 0.5f);
             for (int i = 0; i < 8; i++) {
-                onOffBtn[i]->momentary = module->params[ManCV8IIModule::BUTTON1_LATCH_PARAM + i].getValue() < 0.5f;
+                applyButtonMomentary(onOffBtn[i], module->params[ManCV8IIModule::BUTTON1_LATCH_PARAM + i].getValue() < 0.5f);
             }
         }
 

@@ -325,7 +325,7 @@ struct CvToggle8ModuleWidget : InfNoiseModuleWidget {
 
     void step() override {
         if (module) {
-            manBtn->momentary = module->params[CvToggle8Module::MANUAL_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(manBtn, module->params[CvToggle8Module::MANUAL_LATCH_PARAM].getValue() < 0.5f);
         }
 
         InfNoiseModuleWidget::step();

@@ -280,9 +280,9 @@ struct ManMute8ModuleWidget : InfNoiseModuleWidget {
 
     void step() override {
         if (module) {
-            allBtn->momentary = module->params[ManMute8Module::MUTE_ALL_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(allBtn, module->params[ManMute8Module::MUTE_ALL_LATCH_PARAM].getValue() < 0.5f);
             for (int i = 0; i < 8; i++) {
-                muteBtn[i]->momentary = module->params[ManMute8Module::LATCH1_PARAM + i].getValue() < 0.5f;
+                applyButtonMomentary(muteBtn[i], module->params[ManMute8Module::LATCH1_PARAM + i].getValue() < 0.5f);
             }
         }
 

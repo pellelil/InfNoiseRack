@@ -266,7 +266,7 @@ struct ManPush2ModuleWidget : InfNoiseModuleWidget {
     void step() override {
         if (module) {
             for (int i=0; i < 2; i++) {
-                pushBtn[i]->momentary = module->params[ManPush2Module::PUSH1_LATCH_PARAM + i].getValue() < 0.5f;
+                applyButtonMomentary(pushBtn[i], module->params[ManPush2Module::PUSH1_LATCH_PARAM + i].getValue() < 0.5f);
 			}
         }
 

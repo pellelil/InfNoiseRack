@@ -102,23 +102,19 @@ To assist dialing in the same times/shapes you'll find **2 sets of link buttons*
 ## Envelope Phase Expander
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Expander-Yes-green.svg?style=flat-square)<br>
-The Envelope Phase Expander can be used as an **expander for ADR Envelope or ADSDR Envelope** and outputs **gates** for the active envelope stage, plus Rise / Fall / Steady based on whether the envelope voltage is moving. Since the ADR Envelope don't have a decay phase, the decay output will only output low-gate (default 0V) when used to expand and ADR Envelope.
+The Envelope Phase Expander (**EPE**) can be used as an **expander for ADR Envelope or ADSDR Envelope** and outputs **gates** for the active envelope stage (Attack, Decay, Sustain, Delay, Release and Idle), plus movement (Rise, Steady and Fall) based on whether the envelope voltage is moving. Since the ADR Envelope don't have a decay phase, the decay output will only output low-gate (default 0V) when used to expand and ADR Envelope.
 
-Place it to the left or right of a compatible envelope module. The two lights under **EPE** show connection status:
+By deault **Expander-mode** (set via context menu) defaults to **Auto** where it will automatic detect an ADR/ADSDR Envelope module to its left or right side. If there is both an Expander module to its left and right, you must set a forced Left- or Right expander-mode. In the top of the module below the "EPE" label you see two lights. These lights indicate the connection-state of the module.
 
 + **Green** on the left or right = that side is the active host.
 + **Red** = a problem for that side (or both sides in Auto when there is no unique host).
 + **Off** = that side is not used for the current Expander-mode.
 
-By deault **Expander-mode** (set via context menu) defaults to Auto where it will automatic detect an Envelope module to its left or right side. If there is both an Expander module to its left and right, you must set a forced Left- or Right expander-mode:
-
-+ **Auto** (default): connect when exactly one neighbor is an ADR/ADSDR Envelope. If both sides are envelopes, both lights go red and no gates are driven until you choose Left or Right.
-+ **Left** / **Right**: always use that side; red on that light if no envelope is there, otherwise green.
+**Auto** (default): connect when exactly one neighbor is an ADR/ADSDR Envelope. If both sides are envelopes, both lights go red and no gates are driven until you choose Left or Right. **Left** / **Right**: always use that side; red on that light if no envelope is there, otherwise green.
 
 The first six outputs are mutually exclusive phase gates (only one high at a time). A phase that is skipped (time 0) never becomes active, so its gate stays low. **Decay** stays low for ADR Envelope (that module has no Decay stage). **Idle** is high while the envelope holds at R.level after Release (or at init).
 
-+ **Attack**, **Decay**, **Sust.**, **Delay**, **Rel.**, **Idle** — high during that phase.
-+ **Rise**, **Fall**, **Stdy** — mutually exclusive; high when the envelope voltage is increasing, decreasing, or unchanged. Rise and Fall switch on the first moving sample. **Stdy** waits until the envelope has been unchanged for 3 consecutive samples (avoids a 1-sample spike at phase seams, e.g. when BOS is patched to DlR.trig). These are independent of phase names (e.g. Attack can light **Fall** if A.level is below R.level).
+Likewise the last three outputs are also mutually exclusive movement gates (only one high at a time). In a typical envelope attack is always a rise, whereas decay and release are typical falls. However as you can freely set A.level, Sustain and R.level for an ADSDR Envelope, this is not set in stone (e.g. the Attack can be fall, and the Decay can be a rise). Rise and Fall switch on the first moving sample. **Stdy** waits until the envelope has been unchanged for 3 consecutive samples (avoids a 1-sample spike at phase seams, e.g. when BOS is patched to DlR.trig). 
 
 ![Screenshot of Envelope Phase Expander](module/EnvelopePhaseExpander.png)
 

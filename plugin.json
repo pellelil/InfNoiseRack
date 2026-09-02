@@ -594,20 +594,20 @@
       ]
     },
     {
-      "slug": "CrossFadeSwitch1to4",
-      "name": "Cross-fade switch 1to4",
-      "description": "Cross-fade/switch 1 input into up to 4 outputs.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Switch.md#cross-fade-switch-1to4",
+      "slug": "CrossFadeSwitch4to1",
+      "name": "Cross-fade switch 4to1",
+      "description": "Cross-fade/switch up to 4 inputs into 1 output.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Switch.md#cross-fade-switch-4to1",
       "tags":  [
         "Polyphonic",
         "Switch"
       ]
     },
     {
-      "slug": "CrossFadeSwitch4to1",
-      "name": "Cross-fade switch 4to1",
-      "description": "Cross-fade/switch up to 4 inputs into 1 output.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Switch.md#cross-fade-switch-4to1",
+      "slug": "CrossFadeSwitch1to4",
+      "name": "Cross-fade switch 1to4",
+      "description": "Cross-fade/switch 1 input into up to 4 outputs.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Switch.md#cross-fade-switch-1to4",
       "tags":  [
         "Polyphonic",
         "Switch"

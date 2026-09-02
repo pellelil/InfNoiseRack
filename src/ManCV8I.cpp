@@ -192,7 +192,7 @@ struct ManCV8IModuleWidget : InfNoiseModuleWidget {
 
     void step() override {
         if (module) {
-            muteBtn->momentary = module->params[ManCV8IModule::MUTE_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(muteBtn, module->params[ManCV8IModule::MUTE_LATCH_PARAM].getValue() < 0.5f);
         }
         InfNoiseModuleWidget::step();
     }

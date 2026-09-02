@@ -778,7 +778,7 @@ struct TuringMachineModuleWidget : InfNoiseModuleWidget {
 
     void step() override {
         if (module) {
-            lockBtn->momentary = module->params[TuringMachineModule::LOCK_BTN_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(lockBtn, module->params[TuringMachineModule::LOCK_BTN_LATCH_PARAM].getValue() < 0.5f);
         }
 
         InfNoiseModuleWidget::step();

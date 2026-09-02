@@ -212,8 +212,8 @@ struct ManTrGtCvModuleWidget : InfNoiseModuleWidget {
 
     void step() override {
         if (module) {
-            gateBtn[0]->momentary = module->params[ManTrGtCvModule::GATE1_LATCH_PARAM].getValue() < 0.5f;
-            gateBtn[1]->momentary = module->params[ManTrGtCvModule::GATE2_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(gateBtn[0], module->params[ManTrGtCvModule::GATE1_LATCH_PARAM].getValue() < 0.5f);
+            applyButtonMomentary(gateBtn[1], module->params[ManTrGtCvModule::GATE2_LATCH_PARAM].getValue() < 0.5f);
         }
 
         InfNoiseModuleWidget::step();

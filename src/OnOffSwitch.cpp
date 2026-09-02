@@ -212,7 +212,7 @@ struct OnOffSwitchModuleWidget : InfNoiseModuleWidget {
 
     void step() override {
         if (module) {
-            onOffBtn->momentary = module->params[OnOffSwitchModule::ON_OFF_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(onOffBtn, module->params[OnOffSwitchModule::ON_OFF_LATCH_PARAM].getValue() < 0.5f);
         }
 
         InfNoiseModuleWidget::step();

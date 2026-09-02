@@ -223,9 +223,9 @@ struct ManGate8ModuleWidget : InfNoiseModuleWidget {
 
     void step() override {
         if (module) {
-            allBtn->momentary = module->params[ManGate8Module::GATE_ALL_LATCH_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(allBtn, module->params[ManGate8Module::GATE_ALL_LATCH_PARAM].getValue() < 0.5f);
             for (int i = 0; i < 8; i++) {
-                gateBtn[i]->momentary = module->params[ManGate8Module::GATE1_LATCH_PARAM + i].getValue() < 0.5f;
+                applyButtonMomentary(gateBtn[i], module->params[ManGate8Module::GATE1_LATCH_PARAM + i].getValue() < 0.5f);
             }
         }
 

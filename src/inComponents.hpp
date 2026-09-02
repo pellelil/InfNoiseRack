@@ -55,6 +55,20 @@ inline const char* infNoiseSmallButtonSvgPath(buttonColor color) {
 ///   addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(pos, module, PARAM));
 ///   addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(pos, module, PARAM));
 
+/// Sync SvgSwitch::momentary from a latch companion (or mode switch).
+/// On latched→momentary, release the param unless the mouse is dragging this widget.
+inline void applyButtonMomentary(SvgSwitch* btn, bool wantMomentary) {
+    if (!btn)
+        return;
+    if (wantMomentary && !btn->momentary) {
+        if (APP->event->draggedWidget != btn) {
+            if (ParamQuantity* pq = btn->getParamQuantity())
+                pq->setValue(pq->getMinValue());
+        }
+    }
+    btn->momentary = wantMomentary;
+}
+
 /// @brief About same size as: SmallLight
 template<buttonColor OnColor, bool IsMomentary = false>
 struct infNoiseLtSmallButton : SvgSwitch {

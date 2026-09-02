@@ -309,8 +309,8 @@ struct Delta4ModuleWidget : InfNoiseModuleWidget {
     void step() override {
         Delta4Module* m = dynamic_cast<Delta4Module*>(module);
         if (m && resetPushBtn) {
-            // RESET_LATCH_PARAM: 0 = Latched, 1 = Momentary
-            resetPushBtn->momentary = m->params[Delta4Module::RESET_TRIGGATE_PARAM].getValue() > 0.5f;
+            // RESET_TRIGGATE_PARAM: 0 = Latched, 1 = Momentary
+            applyButtonMomentary(resetPushBtn, m->params[Delta4Module::RESET_TRIGGATE_PARAM].getValue() > 0.5f);
         }
 
         InfNoiseModuleWidget::step();

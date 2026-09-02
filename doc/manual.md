@@ -62,7 +62,7 @@ When a module, such as a merge module, has multiple inputs which you want to pro
 
 To ensure a signal have as many channels as another signal, you can use a module like [Poly-Shuffle](PolyTools.md#poly-shuffle) which can adjust polyphony—whether you need to add, repeat/clone, or remove channels. For more control over polyphonic routing, the [PolySplit](PolyTools.md#poly-split) module allows you to separate a polyphonic signal into individual monophonic/polyphonic signals, which is particularly useful when processing channels individually in modules that do not support polyphony. Conversely, the [PolyMerge](PolyTools.md#poly-merge) module lets you combine multiple monophonic/polyphonic signals into a single polyphonic signal, making it easier to reintegrate individual channels into a structured polyphonic workflow. Additionally, you’ll find more polyphonic utility modules, each designed for specific tasks related specifically to polyphonic signal processing.
 
-In the [Modules section](#modules) at the bottom, you find a list of all modules included in the Infinite-Noise pluging. Whithin this list you find the category **Polyphonic-tools**. These are all utility modules aimed at processing polyphonic signals in various ways, and convert between monophonic and polyphonic signals.
+In the [Modules section](#modules) at the bottom, you find a list of all modules included in the Infinite-Noise plugin. Whithin this list you find the category **Polyphonic-tools**. These are all utility modules aimed at processing polyphonic signals in various ways, and convert between monophonic and polyphonic signals.
 
 ### Saving- and loading patches
 By standard when you save/load your patches in VCV, it will save/load all modules with connected cables, values dialed in by knobs, and the selections made by (latched) toggle-buttons and 2/3-way switches. In addition the Infinite-Noise modules will also save/load the selections you made using the context-menu, and it will also save/load "the state" of the module. E.g. the [Turing Machine](TuringMachine.md#turing-machine) have a 32-step internal bit-sequence which is saved/loaded with the patch. Likewise the [S&H/T&H/H&T modules](Shth.md) will save/load the last hold sample-values and so on.
@@ -224,8 +224,8 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Poly-Scale](PolyTools.md#poly-scale)(p): Scale (attenuvert/amplify) individuel- or group of channels of a polyphonic-signal.
 
 ## Switch and cross-fade modules
-+ [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4)(p): Cross-fade/switch 1 input into up to 4 outputs.
 + [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1)(p): Cross-fade/switch up to 4 inputs into 1 output.
++ [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4)(p): Cross-fade/switch 1 input into up to 4 outputs.
 + [Cross-fade 1x2](CrossFade.md#cross-fade-1x2)(p): Cross-fade a stereo-signal, or two separate mono signals by knob/CV.
 + [Cross-fade 4x1](CrossFade.md#cross-fade-4x1)(p): Cross-fade 4 separate (mono) signals, by separate- and master cross-fade knob/CV.
 + [Bernoulli Switch](Switch.md#bernoulli-switch)(p): Bernoulli switch with both 'A/B->' (2 input, 1 output) and '->A/B' (1 input, 2 output) sections.

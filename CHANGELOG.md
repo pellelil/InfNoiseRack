@@ -1,9 +1,10 @@
 # 2.0.4 (In development)
-Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section.
+- Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. 
+- Addressed issue regarding latchable buttons. Many modules (e.g. [Manuel Push 2](doc/ManCV.md#manuel-push-2)) have a small button which can toggle the latch-state of a bigger button. In previous versions, if the bigger button was latched/pressed and you pressed the small button to toggle from latched-state to momentary-state, the bigger button remained being pressed until manually clicked. Now, when the state is changed from latched-state to momentary-state, the big button will "release" if it was pressed.
 
 ## New modules
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
-- **[EnvelopePhaseExpander](doc/Envelope.md#envelope-phase-expander)**: Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for movement (Rise, Steady and Fall).
+- **[EnvelopePhaseExpander](doc/Envelope.md#envelope-phase-expander)**: Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for movement (Rise, Steady and Fall). 
 
 ## Updated modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Added inverted Envelope-output. Added a Delay time link button (D.time can follow A.time). Fixed issue where the high/low outputs of BOA, EOA, BOR and EOR whould use gate-threshold values in stead of trigger-threshold values (only an issue if you changed output levels via the context menu). Also removed context menu-items to set gate-output levels, as the module don't have gate-outputs.

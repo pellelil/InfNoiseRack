@@ -377,9 +377,9 @@ struct SampleAndUpdateModuleWidget : InfNoiseModuleWidget {
         InfNoiseModuleWidget::step();
 
         if (module) {
-            sampleBtn->momentary = module->params[SampleAndUpdateModule::SAMPLE_MODE_PARAM].getValue() < 0.5f;
-            updateBtn->momentary = module->params[SampleAndUpdateModule::UPDATE_MODE_PARAM].getValue() < 0.5f;
-            resetBtn->momentary = module->params[SampleAndUpdateModule::RESET_MODE_PARAM].getValue() < 0.5f;
+            applyButtonMomentary(sampleBtn, module->params[SampleAndUpdateModule::SAMPLE_MODE_PARAM].getValue() < 0.5f);
+            applyButtonMomentary(updateBtn, module->params[SampleAndUpdateModule::UPDATE_MODE_PARAM].getValue() < 0.5f);
+            applyButtonMomentary(resetBtn, module->params[SampleAndUpdateModule::RESET_MODE_PARAM].getValue() < 0.5f);
         }
     }
 
