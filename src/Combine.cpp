@@ -55,6 +55,7 @@ struct CombineModule : InfNoiseModule {
     float rfDelta = 0.f; // Delta for Rise/Fall mode
     float rfPrevVoltage[PORT_MAX_CHANNELS] = { 0.f };
     bool rfUseFirst[PORT_MAX_CHANNELS] = { false };
+    bool rangeUnused = false; // processParams; widget overlay (Range unused except U/L)
     enum highOnModeType { hom_A, hom_B };
     actReqValue<highOnModeType> highOnMode = actReqValue<highOnModeType>(hom_A);
     
@@ -190,6 +191,7 @@ struct CombineModule : InfNoiseModule {
         outputs[GATE_OUTPUT].setChannels(channels);
 
         mode = (modeType)params[MODE_PARAM].getValue();
+        rangeUnused = (mode != m_UpperLower);
         modeChanged = modeChanged || mode != prevMode;
         if (modeChanged) {
             prevMode = mode;
@@ -274,6 +276,9 @@ struct CombineModule : InfNoiseModule {
 };
 
 struct CombineModuleWidget : InfNoiseModuleWidget {
+    InfNoiseDisableOverlayGroup* rangeOverlayGroup = nullptr;
+    bool rangeUnused = false;
+
     CombineModuleWidget(CombineModule *module) {
         initializeWidget(module, "res/Combine");
 
@@ -288,6 +293,12 @@ struct CombineModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<CKSSThree>(Vec(switchCol, 148.649f), module, CombineModule::MODE_PARAM));
         addParam(createParamCentered<CKSS>(Vec(switchCol, 190.043f), module, CombineModule::RANGE_PARAM));
 
+        InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
+        rangeOverlayGroup = overlayManager.addGroup("Range only used in U/L mode");
+        rangeOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
+            CombineModule::RANGE_PARAM
+        });
+
         // A and B inputs
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 227.673f), module, CombineModule::A_INPUT));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 262.931f), module, CombineModule::B_INPUT));
@@ -296,6 +307,20 @@ struct CombineModuleWidget : InfNoiseModuleWidget {
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(5.969f, 317.487f), module, CombineModule::GATE_MODE_LIGHT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 298.189f), module, CombineModule::AB_OUTPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 333.447f), module, CombineModule::GATE_OUTPUT));
+    }
+
+    void step() override {
+        InfNoiseModuleWidget::step();
+
+        if (!module)
+            return;
+
+        auto* m = static_cast<CombineModule*>(module);
+        if (m->rangeUnused != rangeUnused) {
+            rangeUnused = m->rangeUnused;
+            if (rangeOverlayGroup)
+                rangeOverlayGroup->setActive(rangeUnused);
+        }
     }
 
     void appendContextMenu(Menu* menu) override {

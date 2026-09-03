@@ -45,6 +45,7 @@ struct WaveShaper2Module : InfNoiseModule {
     enum sectionSelectionType { ss_individual, ss_common };
     actReqValue<sectionSelectionType> sectSelection = actReqValue<sectionSelectionType>(ss_individual);
     dsp::TSchmittTrigger<float> resetTrigger;
+    bool resetUnused = false; // processParams; widget overlay (Reset unused except Automatic range)
     static constexpr int maxChannels = PORT_MAX_CHANNELS;
     dsp::Upsampler<2, 8> upsampler[2][maxChannels];
     dsp::Decimator<2, 8> decimator[2][maxChannels];
@@ -208,7 +209,8 @@ struct WaveShaper2Module : InfNoiseModule {
             scaleData[1].reset();
             scaleData[2].reset();
         }
-        valRange = newValRange;       
+        valRange = newValRange;
+        resetUnused = (valRange != vr_auto); 
 
         // Outputs
         haveOutput = outputs[A_OUTPUT].isConnected() || outputs[B_OUTPUT].isConnected();
@@ -316,6 +318,9 @@ struct WaveShaper2Module : InfNoiseModule {
 };
 
 struct WaveShaper2ModuleWidget : InfNoiseModuleWidget {
+    InfNoiseDisableOverlayGroup* resetOverlayGroup = nullptr;
+    bool resetUnused = false;
+
     WaveShaper2ModuleWidget(WaveShaper2Module *module) {
         initializeWidget(module, "res/WaveShaper2");
 
@@ -335,6 +340,12 @@ struct WaveShaper2ModuleWidget : InfNoiseModuleWidget {
         // Reset automatic value-range
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 222.638f), module, WaveShaper2Module::RESET_INPUT));
 
+        InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
+        resetOverlayGroup = overlayManager.addGroup("Reset only in Automatic range");
+        resetOverlayGroup->addTargets(InfNoiseOverlayTargetType::input, {
+            WaveShaper2Module::RESET_INPUT
+        });
+
         // A/B inputs
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 253.823f), module, WaveShaper2Module::A_INPUT));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 278.455f), module, WaveShaper2Module::B_INPUT));
@@ -342,6 +353,20 @@ struct WaveShaper2ModuleWidget : InfNoiseModuleWidget {
         // A/B outputs
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 308.106f), module, WaveShaper2Module::A_OUTPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 332.738f), module, WaveShaper2Module::B_OUTPUT));
+    }
+
+    void step() override {
+        InfNoiseModuleWidget::step();
+
+        if (!module)
+            return;
+
+        auto* m = static_cast<WaveShaper2Module*>(module);
+        if (m->resetUnused != resetUnused) {
+            resetUnused = m->resetUnused;
+            if (resetOverlayGroup)
+                resetOverlayGroup->setActive(resetUnused);
+        }
     }
 
     void appendContextMenu(Menu* menu) override {

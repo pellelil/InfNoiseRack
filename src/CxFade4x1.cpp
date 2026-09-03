@@ -68,7 +68,8 @@ struct CxFade4x1Module : InfNoiseModule {
     int channels[4] = { 1, 1, 1, 1 };
     dsp::SchmittTrigger masterToggleTrig;
     dsp::SchmittTrigger sectionToggleTrig[4];
-    
+    bool triggerMode[5] = { false, false, false, false, false }; // processParams; widget overlays (trim unused in trigger)
+
     CxFade4x1Module() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
         configLight(PROCQUAL_LIGHT, processQualityNames[procQuality.act]);
@@ -141,6 +142,8 @@ struct CxFade4x1Module : InfNoiseModule {
         //--------------------
 
         fadeMode.updateActual();
+        for (int i = 0; i < 5; i++)
+            triggerMode[i] = params[CROSSFADE_M_TRIG_PARAM + i].getValue() > 0.5f;
 
         haveOutput[0] = outputs[XFD_1_OUTPUT].isConnected() || outputs[FLP_1_OUTPUT].isConnected();
         haveOutput[1] = outputs[XFD_2_OUTPUT].isConnected() || outputs[FLP_2_OUTPUT].isConnected();
@@ -270,6 +273,9 @@ struct CxFade4x1Module : InfNoiseModule {
 };
 
 struct CxFade4x1ModuleWidget : InfNoiseModuleWidget {
+    InfNoiseDisableOverlayGroup* trimOverlayGroup[5] = {};
+    bool triggerMode[5] = { false, false, false, false, false };
+
     CxFade4x1ModuleWidget( CxFade4x1Module *module) {
         initializeWidget(module, "res/CxFade4x1");
 
@@ -312,6 +318,30 @@ struct CxFade4x1ModuleWidget : InfNoiseModuleWidget {
                 addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(xFdCol, inpOutRow), module, CxFade4x1Module::XFD_1_OUTPUT + i));
                 addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(flpCol, inpOutRow), module, CxFade4x1Module::FLP_1_OUTPUT + i));
                 inpOutRow += inpOutRowSpacing;
+            }
+        }
+
+        InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
+        for (int i = 0; i < 5; i++) {
+            trimOverlayGroup[i] = overlayManager.addGroup("Trim ignored in trigger mode");
+            trimOverlayGroup[i]->addTargets(InfNoiseOverlayTargetType::param, {
+                CxFade4x1Module::CROSSFADE_M_TRIM_PARAM + i
+            });
+        }
+    }
+
+    void step() override {
+        InfNoiseModuleWidget::step();
+
+        if (!module)
+            return;
+
+        auto* m = static_cast<CxFade4x1Module*>(module);
+        for (int i = 0; i < 5; i++) {
+            if (m->triggerMode[i] != triggerMode[i]) {
+                triggerMode[i] = m->triggerMode[i];
+                if (trimOverlayGroup[i])
+                    trimOverlayGroup[i]->setActive(triggerMode[i]);
             }
         }
     }

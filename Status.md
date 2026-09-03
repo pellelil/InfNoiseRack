@@ -74,17 +74,17 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + PolyVCMP: -
 
 ### Switches
-+ CrossFadeSwitch1to4: -
-+ CrossFadeSwitch4to1: -
-+ CxFade1x2: -
-+ CxFade4x1: -
++ CxFade1x2: Added overlay on top of trim-knob when CV-Mode is in Trigger mode **Needs testing**
++ CxFade4x1: Added overlay on top of trim-knob when CV-Mode is in Trigger mode (Master and sections 1–4 independently) **Needs testing**
++ CrossFadeSwitch1to4: Added overlay on top of trim-knob when CV-Mode is in Trigger only mode **Needs testing**
++ CrossFadeSwitch4to1: Added overlay on top of trim-knob when CV-Mode is in Trigger only mode **Needs testing**
 + BernoulliSwitch: -
 + OnOffSwitch: -
-+ Combine: -
++ Combine: Added overlay on top of Range switch when not in U/L mode **Needs testing**
 
 ### Random
 + Random4: -
-+ RandomCurve: -
++ RandomCurve: Added overlay on top of FP (Forced Polarity) button when distribution is Min/Max **Needs testing**
 + Arm3XY: -
 
 ### Envelope
@@ -97,7 +97,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + Sign4I: -
 + Sign4II: -
 + Fold: -
-+ WaveShaper2: -
++ WaveShaper2: Added overlay on top of Reset-input when Value-range is not Automatic **Needs testing**
 + RingMod3: -
 + IncDecOffset: -
 + Delta4: -

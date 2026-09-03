@@ -13,7 +13,7 @@ If the input signal is symmetric around the center of the range (0V for bipolar,
 
 Below the Bias knob/input, you’ll find a two-way mode switch:
 * **Fld = Fold**: In Fold mode (default), values that exceed the upper limit fold downward, and values that exceed the lower limit fold upward. For example, with the default bipolar range (−5V to +5V), an input of +6V (1V above the top) folds down to +4V (+5V − 1V). Likewise, an input of −7V (2V below the bottom) folds up to −3V (−5V + 2V).
-* **Wrp = Wrap**: In Wrap mode, values that exceed the top of the range wrap around and re-enter from the bottom, and vice versa. For example, in the bipolar range, an input of +6V (1V above the top) wraps to −4V (1V above the bottom at −5V). Similarly, an input of −7V (2V below the bottom) wraps around from the top and becomes +3V (2V below the top at +5V).
+* **Wrp = Wrap**: In Wrap mode, values that exceed the top of the range "wrap around" and re-enter from the bottom, and vice versa. For example, in the bipolar range, an input of +6V (1V above the top) wraps to −4V (1V above the bottom at −5V). Similarly, an input of −7V (2V below the bottom) wraps around from the top and becomes +3V (2V below the top at +5V).
 
 ![Fold and Wrap output](img/FoldWrapOutput.png)
 

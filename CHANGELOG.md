@@ -1,5 +1,8 @@
 # 2.0.4 (In development)
-Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. 
+- Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. A few other modules were re-ordered as well for a more "logic" order. *Going forward, order should not change unless for new modules.*
+- In multiple modules, overlay(s) were added on top of controls (e.g. knobs/ports) when these are rendered "not in use" due to certain configurations set via switches (see **Updated modules** below).
+- In multiple modules, latchable/pressed buttons remained pressed when set to momentary (see **Fixed modules** below).
+
 
 ## New modules
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
@@ -9,7 +12,13 @@ Changed the order of the modules as they appear in the browser and manual for a 
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Added inverted Envelope-output. Added a Delay time link button (D.time can follow A.time). Fixed issue where the high/low outputs of BOA, EOA, BOR and EOR whould use gate-threshold values in stead of trigger-threshold values (only an issue if you changed output levels via the context menu). Also removed context menu-items to set gate-output levels, as the module don't have gate-outputs.
 - **[Flip-Flop](doc/FlipFlop.md#flip-flop)**: All input/output (except enable/disable input) were made polyphonic, so there is basically an individual flip-flop for each channel of a polyphonic signal. You can mix polyphonic and monophonic signals (e.g. have a polyphonic Set-input and a monophonic Reset-input), however if using multiple polyphonic inputs they should ideally have the same number of channels.
 - **[Random-4](doc/Random.md#random-4)**: Trig-input now accepts a polyphonic signal, so new random values can be triggered independently per channel. Polyphony defaults to **Auto** (same number of channels as the Trig-input, or 1 if no input is connected); a fixed count can still be selected regardless of the Trig-input (a red light next to the Trig-input is lit when a fixed count is used).
-- **[Random Curve](doc/Random.md#random-curve)**: Added step-mode context menu, so steps can occur either mid-phase (as in previous versions) or at the start of the phase (at the same time as the trigger output fires a trigger). Fixed issue where trigger output would not fire unless one of the six curve outputs was in use (e.g., if you simply used this module with **LFO rate chaos** to generate a series of "chaotic triggers").
+- **[Random Curve](doc/Random.md#random-curve)**: Added step-mode context menu, so steps can occur either mid-phase (as in previous versions) or at the start of the phase (at the same time as the trigger output fires a trigger). Fixed issue where trigger output would not fire unless one of the six curve outputs was in use (e.g., if you simply used this module with **LFO rate chaos** to generate a series of "chaotic triggers"). Added overlay on top of the FP (Forced Polarity) button when distribution is Min/Max (as Forced Polarity is only used in Center/Edge mode).
+- **[Cross-fade 1x2](doc/CrossFade.md#cross-fade-1x2)**: Added overlay on top of trim-knob when CV-Mode is in Trigger mode (as the trim is then ignored).
+- **[Cross-fade 4x1](doc/CrossFade.md#cross-fade-4x1)**: Added overlay on top of trim-knob when CV-Mode is in Trigger mode (as the trim is then ignored). Each of the five sections (Master plus 1–4) has its own overlay.
+- **[Cross-fade switch 4to1](doc/Switch.md#cross-fade-switch-4to1)**: Added overlay on top of trim-knob when CV-Mode is in Trigger mode (as the trim is then ignored). Likewise an overlay was added on top of Reset-input when not in Trigger mode.
+- **[Cross-fade switch 1to4](doc/Switch.md#cross-fade-switch-1to4)**: Added overlay on top of trim-knob when CV-Mode is in Trigger mode (as the trim is then ignored). Likewise an overlay was added on top of Reset-input when not in Trigger mode.
+- **[Combine](doc/Switch.md#combine)**: Added overlay on top of the Range switch when not in Upper/Lower mode (as Range is then ignored).
+- **[Wave Shaper 2](doc/WaveShaper2.md#wave-shaper-2)**: Added overlay on top of Reset-input when Value-range is not Automatic (as Reset is then ignored).
 - **[Bits-to-Value](doc/Bits.md#bits-to-value)**: Min/Center/Max mode-lights changed to tiny-lights.
 - **[Value-to-Bits](doc/Bits.md#value-to-bits)**: Min/Center/Max mode-lights changed to tiny-lights.
 
@@ -19,7 +28,7 @@ Changed the order of the modules as they appear in the browser and manual for a 
 - **[Value Comparator-1](doc/Compare.md#value-comparator-1)**: Fixed issue where the A<=B output stayed monophonic while other output could be polyphonic.
 - **[Value Comparator-2 Mk I](doc/Compare.md#value-comparator-2-mk-i)**: Fixed issues detecting connected outputs.
 - **[Value Comparator-2 Mk II](doc/Compare.md#value-comparator-2-mk-ii)**: Fixed issues detecting connected outputs.
-- **Manuel Push 2**, **Manuel Trigger**, **Gate and CV**, **ON/OFF Switch**, **Manuel CV 8 Mk I**, **CV-Toggle 8**, **Turing Machine, Mute 2**, **Manuel Mute 8**, **Manuel Gate 8**, **Manuel CV 8 Mk II**, **Sample and Update** and **Delta-4**: Fixed issue with latchable buttons that stayded "pressed" when changed to momentary.
+- **Manuel Push 2**, **Manuel Trigger Gate and CV**, **ON/OFF Switch**, **Manuel CV 8 Mk I**, **CV-Toggle 8**, **Turing Machine, Mute 2**, **Manuel Mute 8**, **Manuel Gate 8**, **Manuel CV 8 Mk II**, **Sample and Update** and **Delta-4**: Fixed issue with latchable buttons that stayded "pressed" when changed to momentary.
 
 
 # 2.0.3
@@ -107,10 +116,10 @@ As everying in this very-first release is new, it only consists of "New Modules"
 - [Poly-Value Compare](doc/PolyTools.md#poly-value-compare)
 - [Poly-Offset](doc/PolyTools.md#poly-offset)
 - [Poly-Scale](doc/PolyTools.md#poly-scale)
-- [Cross-fade switch 1to4](doc/Switch.md#cross-fade-switch-1to4)
-- [Cross-fade switch 4to1](doc/Switch.md#cross-fade-switch-4to1)
 - [Cross-fade 1x2](doc/CrossFade.md#cross-fade-1x2)
 - [Cross-fade 4x1](doc/CrossFade.md#cross-fade-4x1)
+- [Cross-fade switch 1to4](doc/Switch.md#cross-fade-switch-1to4)
+- [Cross-fade switch 4to1](doc/Switch.md#cross-fade-switch-4to1)
 - [Bernoulli Switch](doc/Switch.md#bernoulli-switch)
 - [ON/OFF Switch](doc/Switch.md#onoff-switch)
 - [Combine](doc/Switch.md#combine)

@@ -223,11 +223,11 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Poly-Offset](PolyTools.md#poly-offset)(p): Offset individuel- or group of channels of a polyphonic-signal.
 + [Poly-Scale](PolyTools.md#poly-scale)(p): Scale (attenuvert/amplify) individuel- or group of channels of a polyphonic-signal.
 
-## Switch and cross-fade modules
-+ [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1)(p): Cross-fade/switch up to 4 inputs into 1 output.
-+ [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4)(p): Cross-fade/switch 1 input into up to 4 outputs.
+## Cross-fade and Switch modules
 + [Cross-fade 1x2](CrossFade.md#cross-fade-1x2)(p): Cross-fade a stereo-signal, or two separate mono signals by knob/CV.
 + [Cross-fade 4x1](CrossFade.md#cross-fade-4x1)(p): Cross-fade 4 separate (mono) signals, by separate- and master cross-fade knob/CV.
++ [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1)(p): Cross-fade/switch up to 4 inputs into 1 output.
++ [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4)(p): Cross-fade/switch 1 input into up to 4 outputs.
 + [Bernoulli Switch](Switch.md#bernoulli-switch)(p): Bernoulli switch with both 'A/B->' (2 input, 1 output) and '->A/B' (1 input, 2 output) sections.
 + [ON/OFF Switch](Switch.md#onoff-switch)(p): Toggles between outputting the ON- or the OFF-signal, using button-, gate- or trigger to switch.
 + [Combine](Switch.md#combine)(p): Combines (switches between) 2 inputs based on 3 different algorithms.
@@ -249,7 +249,7 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Fold](Fold.md#fold)(poq): Applying gain and bias to input, in order to affect fold or wrap.
 + [Wave Shaper 2](WaveShaper2.md#wave-shaper-2)(poq): Have 3 different wave-shaping algorithms which can be modify 2 separate signals.
 + [Ring Modulator 3](RingMod3.md#ring-modulator-3)(pq): 3 Sections to perform ring-modulation of 3 signals.
-+ [Increment/Decrement Offset](IncDecOffset.md#incrementdecrement-offset): Button/CV to increment/decrement offset applied to input signal.
++ [Increment/Decrement Offset](IncDecOffset.md#incrementdecrement-offset)(p): Button/CV to increment/decrement offset applied to input signal.
 + [Delta-4](Delta4.md#delta-4)(p): Four sections measuring difference between current input and a captured reference level.
 + [Flip-Flop](FlipFlop.md#flip-flop)(p): Flip-flop module able to both do D-, T- or SR- flip-flops.
 + [Slope Detector 2](SlopeDetector2.md#slope-detector-2): 2 sections with threshold slope detection (rise/steady/fall) with latched phases and configurable Steady hold time.

@@ -54,7 +54,8 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
     triggerDirection pingPongDir = td_Down;
     dsp::SchmittTrigger selectTrig;
     dsp::SchmittTrigger resetTrig;
-    
+    bool triggerMode = false; // processParams; widget overlays (trim unused in trigger, Reset unused in CV)
+
 	CrossFadeSwitch4to1Module() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
         configLight(PROCQUAL_LIGHT, processQualityNames[procQuality.act]);
@@ -148,8 +149,9 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
             }
         }
 
+        triggerMode = params[CVMODE_PARAM].getValue() > 0.5f;
         // Cross-fade not available when in trigger-mode and input connected
-        if (inputs[SELECT_INPUT].isConnected() && params[CVMODE_PARAM].getValue() > 0.5f) {
+        if (inputs[SELECT_INPUT].isConnected() && triggerMode) {
             params[SELECTMODE_PARAM].setValue(0.f);
 		}
 
@@ -307,6 +309,10 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
 };
 
 struct CrossFadeSwitch4to1ModuleWidget : InfNoiseModuleWidget {
+    InfNoiseDisableOverlayGroup* trimOverlayGroup = nullptr;
+    InfNoiseDisableOverlayGroup* resetOverlayGroup = nullptr;
+    bool triggerMode = false;
+
     CrossFadeSwitch4to1ModuleWidget(CrossFadeSwitch4to1Module *module) {
         initializeWidget(module, "res/CrossFadeSwitch4to1");
 
@@ -318,6 +324,18 @@ struct CrossFadeSwitch4to1ModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntClm, 93.825f), module, CrossFadeSwitch4to1Module::SELECT_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(btnClm, 108.785f), module, CrossFadeSwitch4to1Module::CVMODE_PARAM));
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntClm, 128.124f), module, CrossFadeSwitch4to1Module::RESET_INPUT));
+
+        InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
+        trimOverlayGroup = overlayManager.addGroup("Trim ignored in trigger mode");
+        trimOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
+            CrossFadeSwitch4to1Module::SELECT_TRIM_PARAM
+        });
+        resetOverlayGroup = overlayManager.addGroup("Reset only in trigger mode");
+        resetOverlayGroup->addTargets(InfNoiseOverlayTargetType::input, {
+            CrossFadeSwitch4to1Module::RESET_INPUT
+        });
+        // Default CV-Switch/Fade: Reset is unused, so cover it until trigger mode is enabled.
+        resetOverlayGroup->setActive(true);
 
         addParam(createParamCentered<CKSSThree>(Vec(11.291f, 155.807f), module, CrossFadeSwitch4to1Module::COUNT_PARAM));
 
@@ -332,6 +350,22 @@ struct CrossFadeSwitch4to1ModuleWidget : InfNoiseModuleWidget {
         }
 
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntClm, row), module, CrossFadeSwitch4to1Module::CV_OUTPUT));
+    }
+
+    void step() override {
+        InfNoiseModuleWidget::step();
+
+        if (!module)
+            return;
+
+        auto* m = static_cast<CrossFadeSwitch4to1Module*>(module);
+        if (m->triggerMode != triggerMode) {
+            triggerMode = m->triggerMode;
+            if (trimOverlayGroup)
+                trimOverlayGroup->setActive(triggerMode);
+            if (resetOverlayGroup)
+                resetOverlayGroup->setActive(!triggerMode);
+        }
     }
 
     void appendContextMenu(Menu* menu) override {

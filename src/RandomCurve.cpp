@@ -92,6 +92,7 @@ struct RandomCurveModule : InfNoiseModule {
     float chaosFactor = 1.f; // Current phase-step factor (new each cycle)
     float phaseBrght = 0.f; // Brightness for freq-light based on phase
     bool forcedPolarity = false;
+    bool forcedPolUnused = false; // processParams; widget overlay (FP unused except Center/Edge)
     float prevSign = -1.f; // Previous sign
     float rndValue[2] = {0.f, 0.f}; // Random values [0=Curr] and [1=Next]
     float minValue[2] = {0.f, 0.f}; // Min values [0=Curr] and [1=Next]
@@ -318,7 +319,8 @@ struct RandomCurveModule : InfNoiseModule {
 		}
 
         forcedPolarity = params[FORCED_POL_PARAM].getValue() > 0.5f;
-        lights[MIN_MAX_MODE_LIGHT].setBrightness(params[DIST_MODE_PARAM].getValue() > 0.5f ? 0.f : 1.f);   
+        forcedPolUnused = params[DIST_MODE_PARAM].getValue() < 0.5f;
+        lights[MIN_MAX_MODE_LIGHT].setBrightness(forcedPolUnused ? 1.f : 0.f); 
 
         // Handle dist-range
         if (distRange.needsUpdate()) {
@@ -522,6 +524,9 @@ struct RandomCurveModule : InfNoiseModule {
 };
 
 struct RandomCurveModuleWidget : InfNoiseModuleWidget {
+    InfNoiseDisableOverlayGroup* forcedPolOverlayGroup = nullptr;
+    bool forcedPolUnused = false;
+
     RandomCurveModuleWidget(RandomCurveModule *module) {
         initializeWidget(module, "res/RandomCurve");
 
@@ -555,6 +560,12 @@ struct RandomCurveModuleWidget : InfNoiseModuleWidget {
 
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(42.933f, 185.508f), module, RandomCurveModule::FORCED_POL_PARAM));
 
+        InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
+        forcedPolOverlayGroup = overlayManager.addGroup("Forced polarity only in Center/Edge mode");
+        forcedPolOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
+            RandomCurveModule::FORCED_POL_PARAM
+        });
+
         addChild(createLightCentered<TinyLight<BlueLight>>(Vec(53.790f, 197.092f), module, RandomCurveModule::DIST_RANGE_LIGHT));
 
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(31.822f, 228.511f), module, RandomCurveModule::DIST_MODE_PARAM));
@@ -577,6 +588,20 @@ struct RandomCurveModuleWidget : InfNoiseModuleWidget {
         addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rgtClm, row), module, RandomCurveModule::USER2_OUTPUT));
         addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(4.774f, 323.470f), module, RandomCurveModule::USER1_MODE_LIGHT));
         addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(33.509f, 323.470f), module, RandomCurveModule::USER2_MODE_LIGHT));
+    }
+
+    void step() override {
+        InfNoiseModuleWidget::step();
+
+        if (!module)
+            return;
+
+        auto* m = static_cast<RandomCurveModule*>(module);
+        if (m->forcedPolUnused != forcedPolUnused) {
+            forcedPolUnused = m->forcedPolUnused;
+            if (forcedPolOverlayGroup)
+                forcedPolOverlayGroup->setActive(forcedPolUnused);
+        }
     }
 
     void appendContextMenu(Menu* menu) override {

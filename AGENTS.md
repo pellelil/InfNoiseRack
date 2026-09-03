@@ -9,5 +9,5 @@ This GitHub repo is the public plugin; git/PRs are appropriate here. Items below
 - For published modules, append new `ParamId` / `InputsId` / `OutputsId` values immediately before `PARAMS_LEN` / `INPUTS_LEN` / `OUTPUTS_LEN`; do not insert, reorder, or delete existing ids. `LightId` order is not patch-critical (lights are set at runtime).
 - `currentJson` is what new saves write. `jsonVersion` is loaded from the patch and can be any older value. `if (jsonVersion == N)` for N < `currentJson` is live compatibility — not dead code because HEAD's `currentJson` is higher. Check git history of `currentJson` before claiming old patches already used today's version. Do not replace those version branches with a JSON-type check.
 - `plugin.json` must be UTF-8 without BOM (file starts with `{`). Prefer `StrReplace`. Do not require `scripts/` (not in this tree).
-- C++: tabs in `src/`, VCV-style names, no C++14/17-only APIs, no blank line between every statement.
+- C++: tabs in `src/`, VCV-style names, no C++14/17-only APIs, no blank line between every statement. Do not put `///` above a one-line member; use a trailing `//` when a note is needed.
 - When assigning `inputInfos` / `outputInfos` names later, prepend `monoPortPrefix()` / `polyPortPrefix()`.

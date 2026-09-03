@@ -13,12 +13,11 @@ By default, the **difference (current-reference)** is being output as a signed v
 + **"In" (Inversed)**: Outputs the signed difference, however inverted (difference * -1).
 + **"Ab" (Absolute)**: Outputs the absolute difference (a negative difference will output as positive).
 
-The 2-way switch above the inputs lets you switch reference-mode between "Individual" (default), and "A-only". In **Individual reference-mode** all 4 sections are treaded individual, and for all (up to) 16 channels for each section will update its own (individual) references when it resets. When you switch to **A-only reference mode** all sections will in stead output the difference between the input in that section, with reference values from the A-section. When operating in this mode, all inputs should ideally have the same number of channels, or at least the **A input** should have as many—or more—channels than the other three inputs. *The A-section can be monophonic, in which case the same/single reference value will be used for all channels of the B-, C- and D-sections.*.
+The 2-way switch above the inputs lets you switch reference-mode between "Individual" (default), and "A-only". 
+
+- **Individual reference-mode** All 4 sections are treaded individual, and for all (up to) 16 channels for each section will update its own (individual) references when it resets. 
+- **A-only reference mode**: All sections will in stead output the difference between the input in that section, with reference values from the A-section. When operating in this mode, all inputs should ideally have the same number of channels, or at least the **A input** should have as many—or more—channels than the other three inputs. *The A-section can be monophonic, in which case the same/single reference value will be used for all channels of the B-, C- and D-sections.*.
 
 ![Screenshot of Delta-4](module/Delta4.png)
-
-**TIP**: Reference-mode **A-only**, can be used when you want to remove a dynamic DC offset from the **B**, **C**, and **D** inputs. In this setup, the dynamic DC offset should be connected to the **A** input. The reset mode should then be switched to **gate**, where you can either latch the reset button or feed a constant high gate (for example from [Manual Push2](ManCV.md#manuel-push-2)). This keeps the **A reference** continuously updated. Since **A-only** mode is selected, the reference value will be subtracted from the **B**, **C**, and **D** inputs, effectively removing the offset. *The reference is also subtracted from the A signal itself, so the A output will simply produce 0V (A-A)*. 
-
-*If needed (based on the polarity of your DC-offset) you can switch the output-mode to **"In" (inverted)**, in which case the inverted difference is output in stead*.
 
 [Go back to modules overview](manual.md#modules)

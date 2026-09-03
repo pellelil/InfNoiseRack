@@ -35,6 +35,7 @@ struct CxFade1x2Module : InfNoiseModule {
     actReqValue<fadeKnobMode> fadeMode = actReqValue<fadeKnobMode>(fm_linear);
     int channels[2] = { 1, 1 };  // [0] = left, [1] = right
     dsp::SchmittTrigger toggleTrig;
+    bool triggerMode = false; // processParams; widget overlay (trim unused in trigger)
 
     CxFade1x2Module() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -91,6 +92,7 @@ struct CxFade1x2Module : InfNoiseModule {
         //--------------------
 
         fadeMode.updateActual();
+        triggerMode = params[CROSSFADE_TRIG_PARAM].getValue() > 0.5f;
 
         // 1(Left)-channels count
         int channelsA1 = inputs[A1_INPUT].isConnected()
@@ -215,6 +217,9 @@ struct CxFade1x2Module : InfNoiseModule {
 };
 
 struct CxFade1x2ModuleWidget : InfNoiseModuleWidget {
+    InfNoiseDisableOverlayGroup* trimOverlayGroup = nullptr;
+    bool triggerMode = false;
+
     CxFade1x2ModuleWidget(CxFade1x2Module *module) {
         initializeWidget(module, "res/CxFade1x2");
 
@@ -226,6 +231,12 @@ struct CxFade1x2ModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 104.365f), module, CxFade1x2Module::CROSSFADE_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(25.287f, 92.307f), module, CxFade1x2Module::CROSSFADE_TRIG_PARAM));
 
+        InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
+        trimOverlayGroup = overlayManager.addGroup("Trim ignored in trigger mode");
+        trimOverlayGroup->addTargets(InfNoiseOverlayTargetType::param, {
+            CxFade1x2Module::CROSSFADE_TRIM_PARAM
+        });
+
         // 1(Left) Inputs/output  
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 151.000f), module, CxFade1x2Module::A1_INPUT));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 182.739f), module, CxFade1x2Module::B1_INPUT));
@@ -235,6 +246,20 @@ struct CxFade1x2ModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 265.881f), module, CxFade1x2Module::A2_INPUT));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 297.620f), module, CxFade1x2Module::B2_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 332.895f), module, CxFade1x2Module::RIGHT2_OUTPUT));
+    }
+
+    void step() override {
+        InfNoiseModuleWidget::step();
+
+        if (!module)
+            return;
+
+        auto* m = static_cast<CxFade1x2Module*>(module);
+        if (m->triggerMode != triggerMode) {
+            triggerMode = m->triggerMode;
+            if (trimOverlayGroup)
+                trimOverlayGroup->setActive(triggerMode);
+        }
     }
 
     void appendContextMenu(Menu* menu) override {
