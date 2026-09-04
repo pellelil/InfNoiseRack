@@ -114,6 +114,8 @@ void InfNoiseModuleWidget::applyPortPrefixes() {
 }
 
 static std::string inSettingsFileName = asset::user("InfiniteNoise.json");
+static const int gSettingsCurrentJson = 1; // Manually incremented for breaking changes to InfiniteNoise.json
+static int gSettingsJsonVersion = gSettingsCurrentJson; // Loaded from file; defaults to 1 if missing
 static panelThemeType gPanelTheme = theme_Auto;
 static bool gShowPortPrefix = true;
 static bool gShowLogoStatusLights = true;
@@ -137,30 +139,19 @@ void inLoadSettings() { // Load Infinite-Noise settings (panel theme, port prefi
 		json_error_t error;
 		json_t* rootJ = json_loadf(file, 0, &error);
 
-		json_t* jsonVal = json_object_get(rootJ, "panelTheme");
-		if (jsonVal) {
-			int val = json_integer_value(jsonVal);
-			if (val >= theme_Auto && val <= theme_Black) {
-				gPanelTheme = (panelThemeType)val;
-			}
+		gSettingsJsonVersion = getJsonInt(rootJ, "jsonVersion", 1);
+
+		int val = getJsonInt(rootJ, "panelTheme", (int)gPanelTheme);
+		if (val >= theme_Auto && val <= theme_Black) {
+			gPanelTheme = (panelThemeType)val;
 		}
 
-		jsonVal = json_object_get(rootJ, "showPortPrefix");
-		if (jsonVal && json_is_boolean(jsonVal)) {
-			gShowPortPrefix = json_boolean_value(jsonVal);
-		}
+		gShowPortPrefix = getJsonBool(rootJ, "showPortPrefix", gShowPortPrefix);
+		gShowLogoStatusLights = getJsonBool(rootJ, "showLogoStatusLights", gShowLogoStatusLights);
 
-		jsonVal = json_object_get(rootJ, "showLogoStatusLights");
-		if (jsonVal && json_is_boolean(jsonVal)) {
-			gShowLogoStatusLights = json_boolean_value(jsonVal);
-		}
-
-		jsonVal = json_object_get(rootJ, "panelMountMode");
-		if (jsonVal) {
-			int val = json_integer_value(jsonVal);
-			if (val >= mount_None && val <= mount_Random) {
-				gPanelMountMode = (panelMountMode)val;
-			}
+		val = getJsonInt(rootJ, "panelMountMode", (int)gPanelMountMode);
+		if (val >= mount_None && val <= mount_Random) {
+			gPanelMountMode = (panelMountMode)val;
 		}
 
 		fclose(file);
@@ -172,6 +163,10 @@ void inSaveSettings() { // Save Infinite-Noise settings (panel theme, port prefi
 	FILE* file = fopen(inSettingsFileName.c_str(), "w");
 	if (file) {
 		json_t* rootJ = json_object();
+
+		gSettingsJsonVersion = gSettingsCurrentJson; // Always saved as current version
+		json_object_set_new(rootJ, "jsonVersion", json_integer(gSettingsCurrentJson));
+
 		json_object_set_new(rootJ, "panelTheme", json_integer((int)gPanelTheme));
 		json_object_set_new(rootJ, "showPortPrefix", json_boolean(gShowPortPrefix));
 		json_object_set_new(rootJ, "showLogoStatusLights", json_boolean(gShowLogoStatusLights));
