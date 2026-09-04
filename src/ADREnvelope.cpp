@@ -187,12 +187,12 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
         delayRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "delayRateChaos", (int)rc_default));
         attackRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "attackRateChaos", (int)rc_default));
         releaseRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "releaseRateChaos", (int)rc_default));
-        // Pre-v3 ADR phase enum had no ap_decay (holdA was 1). Shift values >= ap_decay up by 1.
+        // Pre-v3 ADR phase enum had no ep_decay (holdA was 1). Shift values >= ep_decay up by 1.
         if (jsonVersion < 3) {
-            int p = getJsonInt(rootJ, "phase", (int)ap_holdR);
-            if (p >= (int)ap_decay)
+            int p = getJsonInt(rootJ, "phase", (int)ep_idle);
+            if (p >= (int)ep_decay)
                 p += 1;
-            phase = (adrPhase)clamp(p, (int)ap_attack, (int)ap_holdR);
+            phase = (envPhase)clamp(p, (int)ep_attack, (int)ep_idle);
         }
     }
 
@@ -223,10 +223,10 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
         else {
             phasePos = phasePosFromEnvelope(true);
         }
-        phase = ap_attack;
+        phase = ep_attack;
         outTrig[BOA].trigger();
         if (attackTime == 0.f || phasePos >= 1.f) {
-            phase = ap_sustain;
+            phase = ep_sustain;
             phasePos = 1.f;
             outTrig[EOA].trigger();
         }
@@ -234,11 +234,11 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
     }
 
     void beginRelease() {
-        phase = ap_release;
+        phase = ep_release;
         phasePos = phasePosFromEnvelope(false);
         outTrig[BOR].trigger();
         if (releaseTime == 0.f || phasePos >= 1.f) {
-            phase = ap_holdR;
+            phase = ep_idle;
             outTrig[EOR].trigger();
         }
         releaseChaosFactor = rateChaosFactor(releaseChaosAmount);
@@ -363,7 +363,7 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
 
             // Handle Phase input
             // Dedicated A.trig / DR.trig take priority; Phase fills unpatched sides.
-            bool phaseIsAttack = phase == ap_attack || phase == ap_sustain;
+            bool phaseIsAttack = phase == ep_attack || phase == ep_sustain;
             if (havePhaseInput) {
                 bool phaseTrigToAttack = !phaseIsAttack;
                 float phaseVolt = inputs[PHASE_INPUT].getVoltage();
@@ -415,7 +415,7 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
                 beginAttack();
             } else if (relTriggered) {
                 if (delayTime > 0.f) {
-                    phase = ap_delay;
+                    phase = ep_delay;
                     phasePos = 0.f;
                     delayChaosFactor = rateChaosFactor(delayChaosAmount);
                 }
@@ -424,25 +424,25 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
                 }
             }
             else { // Handle transition/delay/hold
-                if (phase == ap_attack) {
+                if (phase == ep_attack) {
                     phasePos += attackStep * attackChaosFactor;
                     if (phasePos >= 1.f) {
-                        phase = ap_sustain;
+                        phase = ep_sustain;
                         phasePos = 0.f;
                         outTrig[EOA].trigger();       
                     }
                 }
-                else if (phase == ap_delay) {
+                else if (phase == ep_delay) {
                     phasePos += delayStep * delayChaosFactor;
                     if (phasePos >= 1.f) {
                         beginRelease();
                         outTrig[BOR].trigger();
                     }
                 }
-                else if (phase == ap_release) {
+                else if (phase == ep_release) {
                     phasePos += releaseStep * releaseChaosFactor;
                     if (phasePos >= 1.f) {
-                        phase = ap_holdR;
+                        phase = ep_idle;
                         phasePos = 0.f;
                         outTrig[EOR].trigger();
                     }
@@ -459,13 +459,13 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
 
             // Generate envelope (always, so interrupts map from the current voltage
             // even when Env/!Env are unpatched — same rule as ADSDR Envelope).
-            if (phase == ap_sustain)
+            if (phase == ep_sustain)
                 envelope = attackLevel;
-            else if (phase == ap_holdR)
+            else if (phase == ep_idle)
                 envelope = releaseLevel;
-            else if (phase == ap_attack)
+            else if (phase == ep_attack)
                 envelope = releaseLevel + (attackLevel - releaseLevel) * attackShapeLut(phasePos);
-            else if (phase == ap_release)
+            else if (phase == ep_release)
                 envelope = attackLevel + (releaseLevel - attackLevel) * releaseShapeLut(phasePos);
 
             if (haveEnvelopeOutput) {

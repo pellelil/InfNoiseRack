@@ -142,7 +142,7 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		return rightExpander.module == from;
 	}
 
-	void receiveHostState(Module* from, InfNoiseEnvelopeModule::adrPhase phase,
+	void receiveHostState(Module* from, InfNoiseEnvelopeModule::envPhase phase,
 		InfNoiseEnvelopeModule::envMotionType motion)
 	{
 		if (!acceptsHost(from))

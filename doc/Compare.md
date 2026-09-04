@@ -51,7 +51,7 @@ The LCMP6x2 module consists of six independent compare sections, each with two i
 
 The **LCMP6x2** also pairs well with the [Turing Machine](TuringMachine.md#turing-machine) module. The Turing Machine provides 16 outputs: the first 8 represent the lower 8 bits of its internal sequence pattern, while the next 8 outputs combine pairs of those bits (for example, output 9 is **Bit 1 AND Bit 2**). If you want to combine bit outputs in other ways — such as **Bit 1 OR Bit 4** — the **LCMP6x2** is a great tool. It offers 6 sections with 2 inputs each, and thanks to its normalization (or by using patch cables), you can chain multiple sections together to create more complex combinations.
 
-**Example**: Let’s say you have four signals (A, B, C, and D) and want to compute the logical operation: "(A OR B) AND (C OR D)". To achieve this, you would:
+**Example**: Let’s say you have four signals (A, B, C, and D) and want to compute the logical operation: "**(A OR B) AND (C OR D)**". To achieve this, you would:
 
 + Feed A and B into section 1, setting the logic operation to OR.
 + Feed C and D into section 2, also setting the logic operation to OR.
@@ -114,5 +114,7 @@ Multiplication and especially division **can result in extremely large values**,
 **TIP**: The NtZ (Nearest to Zero) output can be useful in quantization scenarios where you want to favor notes closer to a defined reference point (e.g., a specific root note). For example, if you feed random values between -1V and +1V into A and B, the NtZ output will tend to produce values closer to 0V more frequently than those further away. By passing this output through a Tweak module, you can scale and offset it to align with your desired root note and range. Once processed, the signal can be sent into a quantizer, ensuring that only musical notes within the defined range are selected. The result is a randomized note selection, but with a higher probability of picking notes near the central reference point.
 
 A similar effect can be achieved by using the C + D (addition) output and reducing its scale to 0.5x (which can also be done using a Tweak module). This approach ensures the output follows a triangular distribution, increasing the likelihood of values clustering around 0V, rather than equally distributing them across the full range of -1V to +1V.
+
+**TIP**: If you need to perform any of the 6 compare operations in the top (Min, Max, NtZ, FfZ, Abs(Df) or AVG) on more than two signals at the same time, I suggest you take a look at [Poly-Value Compare](PolyTools.md#poly-value-compare). First you need to combine all of your signals into a single polyphonic signal (e.g. using a [Poly-Merge](PolyTools.md#poly-merge)). This combined/polyphonic signal should then be fed into the "Poly" input of the Poly-Value Compare module (where it can combare up to 16 values at the same time). It have outputs for: Min, Max, NtZ, FfZ, AVG and R/S. The R/S output can be configured via its context menu, to either output **Range** or **Sum**, where "Range" is the same as the "Abs(Df)" (bascially the difference/range between Min and Max). *The Poly-Value Compare module can also monitor channels over time (e.g. monitor )
 
 [Go back to modules overview](manual.md#modules)

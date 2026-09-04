@@ -274,7 +274,7 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
         else {
             phasePos = phasePosFromEnvelope(releaseLevel, attackLevel, attackShapeInvLut);
         }
-        phase = ap_attack;
+        phase = ep_attack;
         outTrig[BOA].trigger();
         attackChaosFactor = rateChaosFactor(attackChaosAmount);
         if (attackTime == 0.f || phasePos >= 1.f) {
@@ -284,13 +284,13 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
     }
 
     void beginDecay() {
-        phasePos = phasePosFromEnvelope(attackLevel, sustainLevel, decayShapeInvLut);
-        phase = ap_decay;
+        phasePos = 0;  // Always start from where Attack ended (full decay, unless interrupted by release)
+        phase = ep_decay;
         outTrig[EOA].trigger();
         decayChaosFactor = rateChaosFactor(decayChaosAmount);
-        if (decayTime == 0.f || phasePos >= 1.f) {
+        if (decayTime == 0.f) {
             envelope = sustainLevel;
-            phase = ap_sustain;
+            phase = ep_sustain;
             phasePos = 1.f;
             outTrig[BOS].trigger();
         }
@@ -302,12 +302,12 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
         rampFrom = envelope;
         rampTo = releaseLevel;
         phasePos = 0.f;
-        phase = ap_release;
+        phase = ep_release;
         outTrig[BOR].trigger();
         releaseChaosFactor = rateChaosFactor(releaseChaosAmount);
         if (releaseTime == 0.f || std::fabs(rampTo - rampFrom) < 1e-6f) {
             envelope = releaseLevel;
-            phase = ap_holdR;
+            phase = ep_idle;
             outTrig[EOR].trigger();
         }
     }
@@ -458,7 +458,7 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
 
             // Handle Phase input
             // Dedicated A.trig / DR.trig take priority; Phase fills unpatched sides.
-            bool phaseIsAttack = phase == ap_attack || phase == ap_decay || phase == ap_sustain;
+            bool phaseIsAttack = phase == ep_attack || phase == ep_decay || phase == ep_sustain;
             if (havePhaseInput) {
                 bool phaseTrigToAttack = !phaseIsAttack;
                 float phaseVolt = inputs[PHASE_INPUT].getVoltage();
@@ -511,10 +511,10 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
             if (attTriggered) {
                 beginAttack();
             } else if (relTriggered) {
-                if (phase == ap_sustain)
+                if (phase == ep_sustain)
                     outTrig[EOS].trigger();
                 if (delayTime > 0.f) {
-                    phase = ap_delay;
+                    phase = ep_delay;
                     phasePos = 0.f;
                     delayChaosFactor = rateChaosFactor(delayChaosAmount);
                 }
@@ -523,31 +523,31 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
                 }
             }
             else { // Handle transition/delay/hold
-                if (phase == ap_attack) {
+                if (phase == ep_attack) {
                     phasePos += attackStep * attackChaosFactor;
                     if (phasePos >= 1.f) {
                         envelope = attackLevel;
                         beginDecay();
                     }
                 }
-                else if (phase == ap_decay) {
+                else if (phase == ep_decay) {
                     phasePos += decayStep * decayChaosFactor;
                     if (phasePos >= 1.f) {
-                        phase = ap_sustain;
+                        phase = ep_sustain;
                         phasePos = 1.f;
                         outTrig[BOS].trigger();
                     }
                 }
-                else if (phase == ap_delay) {
+                else if (phase == ep_delay) {
                     phasePos += delayStep * delayChaosFactor;
                     if (phasePos >= 1.f) {
                         beginRelease();
                     }
                 }
-                else if (phase == ap_release) {
+                else if (phase == ep_release) {
                     phasePos += releaseStep * releaseChaosFactor;
                     if (phasePos >= 1.f) {
-                        phase = ap_holdR;
+                        phase = ep_idle;
                         phasePos = 0.f;
                         outTrig[EOR].trigger();
                     }
@@ -563,15 +563,15 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
             }
 
             // Generate envelope (always, so interrupts map from the current voltage)
-            if (phase == ap_sustain)
+            if (phase == ep_sustain)
                 envelope = sustainLevel;
-            else if (phase == ap_holdR)
+            else if (phase == ep_idle)
                 envelope = releaseLevel;
-            else if (phase == ap_attack)
+            else if (phase == ep_attack)
                 envelope = rampFrom + (rampTo - rampFrom) * attackShapeLut(phasePos);
-            else if (phase == ap_decay)
+            else if (phase == ep_decay)
                 envelope = rampFrom + (rampTo - rampFrom) * decayShapeLut(phasePos);
-            else if (phase == ap_release)
+            else if (phase == ep_release)
                 envelope = rampFrom + (rampTo - rampFrom) * releaseShapeLut(phasePos);
 
             if (haveEnvelopeOutput) {

@@ -165,7 +165,7 @@ void inSaveSettings() { // Save Infinite-Noise settings (panel theme, port prefi
 		json_t* rootJ = json_object();
 
 		gSettingsJsonVersion = gSettingsCurrentJson; // Always saved as current version
-		json_object_set_new(rootJ, "jsonVersion", json_integer(gSettingsCurrentJson));
+		json_object_set_new(rootJ, "jsonVersion", json_integer(gSettingsJsonVersion));
 
 		json_object_set_new(rootJ, "panelTheme", json_integer((int)gPanelTheme));
 		json_object_set_new(rootJ, "showPortPrefix", json_boolean(gShowPortPrefix));

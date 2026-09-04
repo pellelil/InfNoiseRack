@@ -1,5 +1,6 @@
 # 2.0.4 (In development)
 - Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. A few other modules were re-ordered as well for a more "logic" order. *Going forward, order should not change unless for new modules.*
+- Various changes/fixes to the documentations (e.g. added a few illustrations to the documentation of the Envelope modules).
 - In multiple modules, overlay(s) were added on top of controls (e.g. knobs/ports) when these are rendered "not in use" due to certain configurations set via switches (see **Updated modules** below).
 - In multiple modules, latchable/pressed buttons remained pressed when set to momentary (see **Fixed modules** below).
 

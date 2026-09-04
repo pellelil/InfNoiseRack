@@ -9,17 +9,17 @@
 
 /// Shared base for ADR Envelope and ADSDR Envelope (not a Rack Model).
 struct InfNoiseEnvelopeModule : InfNoiseModule {
-	// Attack/Decay/Release are ramps; Sustain/Delay/HoldR are holds.
-	// ADR never enters ap_decay; ADR sustain is hold at A.level.
-	// Default is ap_holdR (idle at R.level, waiting for attack).
-	enum adrPhase {
-		ap_attack,   // ramping to A.level
-		ap_decay,    // ramping to Sustain (ADSDR only)
-		ap_sustain,  // held at Sustain / A.level
-		ap_delay,    // delay hold
-		ap_release,  // ramping to R.level
-		ap_holdR,    // held at R.level (Idle)
-		ap_len
+	// Attack/Decay/Release are ramps; Sustain/Delay/Idle are holds.
+	// ADR never enters ep_decay; ADR sustain is hold at A.level.
+	// Default is ep_idle (idle at R.level, waiting for attack).
+	enum envPhase {
+		ep_attack,   // ramping to A.level
+		ep_decay,    // ramping to Sustain (ADSDR only)
+		ep_sustain,  // held at Sustain (ADSDR) / A.level (ADR)
+		ep_delay,    // delay hold
+		ep_release,  // ramping to R.level
+		ep_idle,     // held at R.level
+		ep_len
 	};
 
 	enum envMotionType {
@@ -28,22 +28,22 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		em_fall
 	};
 
-	adrPhase phase = ap_holdR;
+	envPhase phase = ep_idle;
 	float phasePos = 0.f;
 	float envelope = 0.f;
 	float prevEnvelope = 0.f;
 	envMotionType envMotion = em_steady;
 	static const int envMotionSteadyHold = 3;
 	int envMotionSteadyCount = 0;
-	// GreenRed phase lights (ADSDR). ADR never enters ap_decay, so those entries stay unused.
-	float attackLightGreen[ap_len] = { 1.f, 1.f, 0.f, 0.f, 0.f, 0.f };
-	float attackLightRed[ap_len]   = { 0.f, 1.f, 1.f, 0.f, 0.f, 0.f };
-	float releaseLightGreen[ap_len] = { 0.f, 0.f, 0.f, 1.f, 1.f, 0.f };
-	float releaseLightRed[ap_len]   = { 0.f, 0.f, 0.f, 1.f, 0.f, 1.f };
+	// GreenRed phase lights (ADSDR). ADR never enters ep_decay, so those entries stay unused.
+	float attackLightGreen[ep_len] = { 1.f, 1.f, 0.f, 0.f, 0.f, 0.f };
+	float attackLightRed[ep_len]   = { 0.f, 1.f, 1.f, 0.f, 0.f, 0.f };
+	float releaseLightGreen[ep_len] = { 0.f, 0.f, 0.f, 1.f, 1.f, 0.f };
+	float releaseLightRed[ep_len]   = { 0.f, 0.f, 0.f, 1.f, 0.f, 1.f };
 
 	void onReset(const ResetEvent& e) override {
 		InfNoiseModule::onReset(e);
-		phase = ap_holdR;
+		phase = ep_idle;
 		phasePos = 0.f;
 		envMotion = em_steady;
 		envMotionSteadyCount = 0;
@@ -51,8 +51,8 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 
 	void dataFromJson(json_t* rootJ) override {
 		InfNoiseModule::dataFromJson(rootJ);
-		int p = getJsonInt(rootJ, "phase", (int)ap_holdR);
-		phase = (adrPhase)clamp(p, (int)ap_attack, (int)ap_holdR);
+		int p = getJsonInt(rootJ, "phase", (int)ep_idle);
+		phase = (envPhase)clamp(p, (int)ep_attack, (int)ep_idle);
 		phasePos = getJsonFloat(rootJ, "phasePos", 0.f);
 		envelope = getJsonFloat(rootJ, "envelope", 0.f);
 		prevEnvelope = envelope;
