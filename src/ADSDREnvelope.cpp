@@ -285,6 +285,8 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
 
     void beginDecay() {
         phasePos = 0;  // Always start from where Attack ended (full decay, unless interrupted by release)
+        rampFrom = attackLevel;
+        rampTo = sustainLevel;
         phase = ep_decay;
         outTrig[EOA].trigger();
         decayChaosFactor = rateChaosFactor(decayChaosAmount);
