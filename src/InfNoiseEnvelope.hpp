@@ -22,19 +22,9 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		ep_len
 	};
 
-	enum envMotionType {
-		em_steady,
-		em_rise,
-		em_fall
-	};
-
 	envPhase phase = ep_idle;
 	float phasePos = 0.f;
 	float envelope = 0.f;
-	float prevEnvelope = 0.f;
-	envMotionType envMotion = em_steady;
-	static const int envMotionSteadyHold = 3;
-	int envMotionSteadyCount = 0;
 	// GreenRed phase lights (ADSDR). ADR never enters ep_decay, so those entries stay unused.
 	float attackLightGreen[ep_len] = { 1.f, 1.f, 0.f, 0.f, 0.f, 0.f };
 	float attackLightRed[ep_len]   = { 0.f, 1.f, 1.f, 0.f, 0.f, 0.f };
@@ -45,8 +35,6 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		InfNoiseModule::onReset(e);
 		phase = ep_idle;
 		phasePos = 0.f;
-		envMotion = em_steady;
-		envMotionSteadyCount = 0;
 	}
 
 	void dataFromJson(json_t* rootJ) override {
@@ -55,9 +43,6 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		phase = (envPhase)clamp(p, (int)ep_attack, (int)ep_idle);
 		phasePos = getJsonFloat(rootJ, "phasePos", 0.f);
 		envelope = getJsonFloat(rootJ, "envelope", 0.f);
-		prevEnvelope = envelope;
-		envMotion = em_steady;
-		envMotionSteadyCount = 0;
 	}
 
 	void dataToJson(json_t* rootJ) override {
@@ -66,22 +51,7 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		json_object_set_new(rootJ, "envelope", json_real(envelope));
 	}
 
-	void updateEnvMotion() {
-		float delta = envelope - prevEnvelope;
-		if (std::fabs(delta) < 1e-10f) {
-			if (envMotion != em_steady) {
-				envMotionSteadyCount++;
-				if (envMotionSteadyCount >= envMotionSteadyHold)
-					envMotion = em_steady;
-			}
-		}
-		else {
-			envMotionSteadyCount = 0;
-			envMotion = (delta > 0.f) ? em_rise : em_fall;
-		}
-	}
-
-	/// Push phase/motion to adjacent Envelope Phase Expander modules (defined in EnvelopePhaseExpander.cpp).
+	/// Push phase and envelope voltage to adjacent Envelope Phase Expander modules (defined in EnvelopePhaseExpander.cpp).
 	void pushToExpanders();
 
 	float readTimeParam(int paramId, float sampleTime) {

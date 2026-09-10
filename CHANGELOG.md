@@ -1,4 +1,5 @@
 # 2.0.4 (In development)
+- Modules with trigger output can now specify output trigger length/duration (using their context menu). By default an output trigger is forced to be **high for 1 ms, then low for 1 ms** (hence each trigger output can max generate 500 triggers per second). However modules (with trigger outputs) can now specify trigger length as **number of ms** (1, 2, 5, 10, 50, 100, 200, 500, or 1000) or **number of cycles** (1, 2, 4, 8, 16, 32, 64, 128 or 256). *Chossing a low cycle count you will be able to generate more than 500 trigger per second (if needed), however be sure to not pick a too low value as some modules might not look for/process triggers every cycle. Likewise you can instead choose a high ms count, where output ports that can otherwise only genrate triggers, can be used as fixed length gates (longer than 1 ms) - directly without needing another utility module.*
 - Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. A few other modules were re-ordered as well for a more "logic" order. *Going forward, order should not change unless for new modules.*
 - Various changes/fixes to the documentations (e.g. added a few illustrations to the documentation of the Envelope modules).
 - In multiple modules, overlay(s) were added on top of controls (e.g. knobs/ports) when these are rendered "not in use" due to certain configurations set via switches (see **Updated modules** below).
@@ -6,8 +7,8 @@
 
 
 ## New modules
-- **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
-- **[EnvelopePhaseExpander](doc/Envelope.md#envelope-phase-expander)**: Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for movement (Rise, Steady and Fall). 
+- **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
+- **[EnvelopePhaseExpander](doc/Envelope.md#envelope-phase-expander)**: Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for envelope movement (Rise, Steady and Fall). 
 
 ## Updated modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Added inverted Envelope-output. Added a Delay time link button (D.time can follow A.time). Fixed issue where the high/low outputs of BOA, EOA, BOR and EOR whould use gate-threshold values in stead of trigger-threshold values (only an issue if you changed output levels via the context menu). Also removed context menu-items to set gate-output levels, as the module don't have gate-outputs.

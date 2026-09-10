@@ -75,24 +75,7 @@ struct LFO1Module : InfNoiseModule {
         dsp::SchmittTrigger(),
         dsp::SchmittTrigger()
     };
-    infNoiseOutTrigger syncOutTrigger[PORT_MAX_CHANNELS] = { 
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f)
-    };
+    infNoiseOutTrigger syncOutTrigger[PORT_MAX_CHANNELS];
     actReqValue<bool> invWaveforms = actReqValue<bool>(false);
     actReqValue<bool> phaseLights = actReqValue<bool>(true);
     enum calcPhaseMode { ppm_allWaveforms, ppm_onlySquare };
@@ -166,6 +149,11 @@ struct LFO1Module : InfNoiseModule {
         autoProcQuality.setBoth(true);
         ensureFiveSineExpLogLuts();
 	}
+
+    void onTrigLengthChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            syncOutTrigger[c].setCycles(trigOnOffCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -629,7 +617,7 @@ struct LFO1Module : InfNoiseModule {
 
                 // Always write this channel's sync-out (1 ms pulse). When n-shot is
                 // idle, only let an in-flight pulse finish — do not start a new one.
-                if (!syncOutTrigger[c].process(procSampleTime) && syncOut && !nShotIdle)
+                if (!syncOutTrigger[c].process(procCycles) && syncOut && !nShotIdle)
                     syncOutTrigger[c].trigger();
                 outputs[SYNC_OUTPUT].setVoltage(syncOutTrigger[c].isHigh()
                     ? voltValues[trigOutHigh.act]
@@ -642,7 +630,7 @@ struct LFO1Module : InfNoiseModule {
             if (syncChannels < 1)
                 syncChannels = 1;
             for (int c = 0; c < syncChannels; c++) {
-                syncOutTrigger[c].process(args.sampleTime);
+                syncOutTrigger[c].process(1);
                 outputs[SYNC_OUTPUT].setVoltage(syncOutTrigger[c].isHigh()
                     ? voltValues[trigOutHigh.act]
                     : voltValues[trigOutLow.act], c);

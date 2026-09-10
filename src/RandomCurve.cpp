@@ -97,7 +97,7 @@ struct RandomCurveModule : InfNoiseModule {
     float rndValue[2] = {0.f, 0.f}; // Random values [0=Curr] and [1=Next]
     float minValue[2] = {0.f, 0.f}; // Min values [0=Curr] and [1=Next]
     float maxValue[2] = {0.f, 0.f}; // Max values [0=Curr] and [1=Next
-    infNoiseOutTrigger cycleTrigger = infNoiseOutTrigger(1e-3f, 1e-3f);
+    infNoiseOutTrigger cycleTrigger;
 
 	RandomCurveModule() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -156,6 +156,10 @@ struct RandomCurveModule : InfNoiseModule {
 
         ensureNormExpLogLuts();
 	}
+
+    void onTrigLengthChanged() override {
+        cycleTrigger.setCycles(trigOnOffCycles);
+    }
 
     static bool resolveUserCurveUseLog(userCurveModeType mode, float deltaRnd) {
         switch (mode) {
@@ -425,7 +429,7 @@ struct RandomCurveModule : InfNoiseModule {
             }
 
             if (outputs[TRIG_OUTPUT].isConnected()) {
-                if (!cycleTrigger.process(procSampleTime) && fireTrigger) {
+                if (!cycleTrigger.process(procCycles) && fireTrigger) {
                     cycleTrigger.trigger();
                 }
                 outputs[TRIG_OUTPUT].setVoltage(cycleTrigger.isHigh()

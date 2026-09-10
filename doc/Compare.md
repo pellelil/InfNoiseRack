@@ -27,7 +27,8 @@ When the count is changed from its default value of 1, a small red indicator lig
 
 <a name="logic-comparator-2p"></a>
 ## Logic Comparator-2
-![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Switch-Yes-green.svg?style=flat-square)<br>
 Similar to the TinyLCMP2 module, the LCMP2 consists of two sections, but instead of having four inputs per section, each section has two inputs. Rather than selecting a single logic operation, each section features dedicated outputs for all six Boolean operations: AND, OR, XOR, NAND, NOR, and XNOR. Each of the four inputs (A, B, C, and D) can be individually inverted using the small push-buttons next to them. If no cable is inserted into the C-input (lower section), it normalizes to the OR output of the upper section. Likewise, if the D-input is left unconnected, it normalizes to the AND output of the upper section. *Some general info regarding the Compare-modules are listed in the top.*
 
 Like the TinyLCMP2, the module outputs 10V when a logical operation evaluates as True and 0V when it evaluates as False. These default output levels can be customized via the context menu. However, the LCMP2 has an additional feature that significantly expands its functionality. At the top of the module, there are **two extra inputs labeled "True" and "False"**. If signals are supplied to these inputs, the logical outputs no longer produce fixed voltage levels (e.g., 10V for True and 0V for False). Instead, they output the corresponding True or False signal. Any logical output that evaluates as True will output the True-signal, while those evaluating as False will output the False-signal.
@@ -61,7 +62,8 @@ Since the first input of section 3 is normalized to the output of section 2 (as 
 
 <a name="value-comparator-1p"></a>
 ## Value Comparator-1
-![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Switch-Yes-green.svg?style=flat-square)<br>
 The Value Comparator 1 module (VCMP1) features a single comparison section with two inputs labeled "A" and "B". Below each input, an offset knob allows you to apply a manual offset to the incoming signal. If no input signal is connected, the inputs default to 0V, allowing the offset knobs to set a fixed manual value instead (e.g. to compare A to a fixed value of 3V, simply set the B-offset knob to 3V). *Some general info regarding the Compare-modules are listed in the top.*
 
 Beneath the offset knobs, a tolerance adjustment knob, CV-input and trim determines the comparison sensitivity. This tolerance defines the range within which two values are considered equal. By default, the knob is set to **1/24** of a volt (~0.0416V), but it can be adjusted anywhere from 0V to 10V for broader tolerance. The tolerance-input both accepts monophonic- and polyphonic signals, hence both allow a single- and individual tolerance for each channel.
@@ -82,7 +84,8 @@ If the A signal is currently at 2V, it is detected as being greater than B. As a
 
 <a name="value-comparator-2-mk-ip"></a>
 ## Value Comparator-2 Mk I
-![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Switch-Yes-green.svg?style=flat-square)<br>
 This module is very similar to the Value Comparator 1 (VCMP1) module, with a few key differences. Instead of a single section, this module features two independent sections, each containing all six comparison outputs. However, it does not include an A/B-cross trigger output nor the clamp-output. Additionally, there are no offset knobs for setting manual input values when inputs are unconnected, and the **comparison tolerance** must be adjusted via the context menu, though it still defaults to 1/24 of a volt (~0.0416V). *Some general info regarding the Compare-modules are listed in the top.*
 
 As indicated by the arrows on the panel, if no cables are connected to the C and D inputs in the lower section, these inputs will automatically normalize to the signals fed into the A and B inputs in the upper section. E.g. if you only connects cables to the A-, B- and D-inputs (so C will normalize to the A-input) you can use the module to both compare A with B, and A(C) with D.

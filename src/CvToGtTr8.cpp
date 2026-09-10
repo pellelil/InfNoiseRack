@@ -108,6 +108,11 @@ struct CvToGtTr8Module : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
+    void onTrigLengthChanged() override {
+        for (int i = 0; i < 8; i++)
+            outputTrigger[i].setCycles(trigOnOffCycles);
+    }
+
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
 
@@ -251,7 +256,7 @@ struct CvToGtTr8Module : InfNoiseModule {
                         }
 
                         // If trigger not running, check for new trigger
-                        if (!outputTrigger[i].process(procSampleTime)) {
+                        if (!outputTrigger[i].process(procCycles)) {
                             float virtualTrigger = inRange ? 10.0f : 0.0f;
                             if (inputTrigger[i].process(virtualTrigger,
                                 trueDetectValues[td_triggerLow], trueDetectValues[td_triggerHigh])) {

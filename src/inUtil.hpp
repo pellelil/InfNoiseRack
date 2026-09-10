@@ -1187,70 +1187,100 @@ inline float quantizeToMode(float value, quantizeMode qMode) {
 
 
 //-----------------------------------------------------------------------------
+// Trigger output length (on/off, same value)
+//-----------------------------------------------------------------------------
+enum trigLengthType {
+	tl_1ms, tl_2ms, tl_5ms, tl_10ms, tl_50ms, tl_100ms, tl_200ms, tl_500ms, tl_1000ms,
+	tl_1cyc, tl_2cyc, tl_4cyc, tl_8cyc, tl_16cyc, tl_32cyc, tl_64cyc, tl_128cyc, tl_256cyc
+};
+const int trigLengthCount = (int)tl_256cyc + 1;
+const int trigLengthFirstCycle = (int)tl_1cyc;
+const int trigLengthMs[] = { 1, 2, 5, 10, 50, 100, 200, 500, 1000 };
+const int trigLengthCycleCounts[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256 };
+const std::string trigLengthNames[] = {
+	"1 ms (default)", "2 ms", "5 ms", "10 ms", "50 ms", "100 ms", "200 ms", "500 ms", "1000 ms",
+	"1 cycle", "2 cycles", "4 cycles", "8 cycles", "16 cycles", "32 cycles", "64 cycles", "128 cycles", "256 cycles"
+};
+
+inline std::vector<std::string> getTrigLengthNames() {
+	std::vector<std::string> names;
+	for (int i = 0; i < trigLengthCount; i++)
+		names.push_back(trigLengthNames[i]);
+	return names;
+}
+
+/// @brief Convert a trigger-length setting to on/off engine-sample counts.
+/// @param len Menu selection (ms or cycles).
+/// @param sampleRate Engine sample rate (fallback 44.1 kHz if invalid).
+/// @return Engine-sample count for one on or off phase (at least 1).
+inline int trigLengthToCycles(trigLengthType len, float sampleRate) {
+	int idx = (int)len;
+	if (idx < 0 || idx >= trigLengthCount)
+		idx = (int)tl_1ms;
+	if (idx >= trigLengthFirstCycle)
+		return trigLengthCycleCounts[idx - trigLengthFirstCycle];
+	sampleRate = sampleRate > 0.f ? sampleRate : 44100.f;
+	int cycles = (int)std::roundf((float)trigLengthMs[idx] * 0.001f * sampleRate);
+	return (cycles < 1) ? 1 : cycles;
+}
+
+
+//-----------------------------------------------------------------------------
 // infNoiseOutTrigger
 //-----------------------------------------------------------------------------
-/// @brief Ensures that a trigger cannot fire before the previous trigger 
-/// have finished, or was reset (by default the trigger have 1 ms ON-stage 
-/// and 1 ms OFF-stage).
+/// @brief Ensures that a trigger cannot fire before the previous trigger
+/// have finished, or was reset (by default ~1 ms ON and 1 ms OFF at 48 kHz).
 struct infNoiseOutTrigger {
-	dsp::PulseGenerator pulse;  // Both ON- and OFF-part of the trigger
-	float onDurationSec = 1e-3f;
-	float offDurationSec = 1e-3f;
+	int onCycles = 44; // ~1 ms @ 44 kHz until InfNoiseModule applies trigLength
+	int offCycles = 44;
+	int remaining = 0;
 
-	/// @brief Sets the duration of the On-pulse and Off-pulse.
-	/// @param onDurationSec duration in seconds of On-pulse (defaults to 1 ms).
-	/// @param offDurationSec duration in seconds of Off-pulse (defaults to 1 ms).
-	infNoiseOutTrigger(float onDurationSec = 1e-3f, float offDurationSec = 1e-3f) {
-		this->onDurationSec = onDurationSec;
-		this->offDurationSec = offDurationSec;
+	/// @brief Set on/off to the same engine-sample count and reset remaining.
+	inline void setCycles(int onOff) {
+		onCycles = onOff;
+		offCycles = onOff;
+		reset();
 	}
 
 	/// @brief Should be called AFTER process is called.
 	/// @return true if able to (re)fire the trigger, otherwise false.
 	bool trigger() {
-		if (pulse.remaining > 0.f)
+		if (remaining > 0)
 			return false;
-		
-		pulse.trigger(onDurationSec + offDurationSec);
+		remaining = onCycles + offCycles;
 		return true;
 	}
 
 	/// @brief Returns true if the trigger is currently active (ON/OFF-stage active).
-	/// @return true if the trigger is currently active (ON/OFF-stage active).
 	inline bool running() {
-		return pulse.remaining > 0.f;
+		return remaining > 0;
 	}
 
-	/// @brief Resets the remaining-time of the trigger 
-	/// (resets internal pulse used to track time).
+	/// @brief Clears remaining so the next trigger() can fire immediately.
 	inline void reset() {
-		pulse.reset();
+		remaining = 0;
 	}
 
-	/// @brief Should be called in every module-process loop to 
-	/// update remaining time of the trigger.
-	/// @param sampleTime Delta-time since lass process call (typically args.SampleTime).
-	/// @return true if trigger is currently active (ON/OFF-stage active).
-	inline bool process(float sampleTime) {
-		return pulse.process(sampleTime);
+	/// @brief Advance the trigger by engine-sample stride (typically procCycles).
+	/// @param cycles Engine samples since last process call.
+	/// @return true if the trigger was still running at the start of this call.
+	inline bool process(int cycles) {
+		if (remaining <= 0)
+			return false;
+		remaining -= cycles;
+		if (remaining < 0)
+			remaining = 0;
+		return true;
 	}
 
 	/// @brief Returns true if the trigger is currently "high" (ON-stage active).
-	/// @return true if the trigger is currently "high" (ON-stage active).
 	inline bool isHigh() {
-		return pulse.remaining > offDurationSec;
-	}
-
-	/// @brief Returns 10V when the trigger is "high" (ON-stage active), 0V otherwise.
-	/// @return 10V when the trigger is "high" (ON-stage active), 0V otherwise.
-	inline float getVoltage() {
-		return (pulse.remaining > offDurationSec) ? 10.f : 0.f;
+		return remaining > offCycles;
 	}
 
 	/// @brief Returns 1 when the trigger is "high" (ON-stage active), 0 otherwise.
-	/// @return 1 when the trigger is "high" (ON-stage active), 0 otherwise.
 	inline float getLight() {
-		return (pulse.remaining > offDurationSec) ? 1.f : 0.f;
+		return (remaining > offCycles) ? 1.f : 0.f;
 	}
 };
 

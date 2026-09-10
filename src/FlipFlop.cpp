@@ -98,6 +98,11 @@ struct FlipFlopModule : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
+    void onTrigLengthChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            qChangedTrigger[c].setCycles(trigOnOffCycles);
+    }
+
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
         
@@ -323,7 +328,7 @@ struct FlipFlopModule : InfNoiseModule {
                             : voltValues[gateOutLow.act], c);
                     }
 
-                    if (!qChangedTrigger[c].process(procSampleTime) && prevQHigh != qHigh[c]) {
+                    if (!qChangedTrigger[c].process(procCycles) && prevQHigh != qHigh[c]) {
                         qChangedTrigger[c].trigger();
                     }
                     outputs[CHQ_OUTPUT].setVoltage(qChangedTrigger[c].isHigh()

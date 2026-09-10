@@ -16,7 +16,8 @@ For musical applications, the Merge module includes an optional quantization fea
 
 <a name="mult2x4p"></a>
 ## Mult2x4
-![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
 This 2 HP module have 2 sections, each with an input and 4 outputs, where the 4 outputs clones the inputs. If you don't input a signal into the input-port of the lower section, it will normalize to the input of the upper section. Hence the module easily doubles as mult with 1 input and 8 outputs. If the input is polyphonic (up to 16 channels), all outputs will preserve that polyphony. By default, all outputs are clipped to -12V/+12V to prevent excessive signal levels. However, this clipping can be adjusted or disabled via the context menu.
 
 ![Screenshot of Mult-2x4](module/Mult2x4.png) 

@@ -72,24 +72,7 @@ struct SampleAndUpdateModule : InfNoiseModule {
         dsp::SchmittTrigger(), 
         dsp::SchmittTrigger() 
     };
-    infNoiseOutTrigger outCountTrigger[PORT_MAX_CHANNELS] = { 
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f)
-    };
+    infNoiseOutTrigger outCountTrigger[PORT_MAX_CHANNELS];
     float samples[PORT_MAX_CHANNELS] = { 0.f };
     float countBrightness = 0.f;
     
@@ -124,6 +107,11 @@ struct SampleAndUpdateModule : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = true;
 	}
+
+    void onTrigLengthChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            outCountTrigger[c].setCycles(trigOnOffCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -281,7 +269,7 @@ struct SampleAndUpdateModule : InfNoiseModule {
                         }
                     }
 
-                    bool procOutTrigger = outCountTrigger[c].process(procSampleTime);
+                    bool procOutTrigger = outCountTrigger[c].process(procCycles);
                     if (doReset && countResetMode.act != cr_updateOnly) {
                         trigCount[c] = 0;
                         outCountTrigger[c].reset();

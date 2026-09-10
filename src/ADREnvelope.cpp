@@ -107,7 +107,6 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
         configLight(CLIP_RANGE_LIGHT, getClipRangeLightName(outClipRange.act));
 
         envelope = releaseLevel;
-        prevEnvelope = envelope;
         configInput(PHASE_INPUT, "Phase (Gate/Trigger)");
         configSwitch(PHASE_GATE_TRIG_PARAM, 0.f, 1.f, 1.f, "Phase-mode", {"Trigger", "Gate"});
         configInput(A_TRIG_INPUT, "Attack Trigger");
@@ -158,6 +157,11 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
         ensureNormExpLogLuts();
 	}
 
+    void onTrigLengthChanged() override {
+        for (int i = 0; i < 4; i++)
+            outTrig[i].setCycles(trigOnOffCycles);
+    }
+
     void onReset(const ResetEvent& e) override {
         InfNoiseEnvelopeModule::onReset(e);
 
@@ -175,8 +179,6 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
             outTrig[i].reset();
         phaseTrigMode = false;
         envelope = releaseLevel;
-        prevEnvelope = envelope;
-        envMotion = em_steady;
         oldAttackShape = 2.f;
         oldReleaseShape = 2.f;
     }
@@ -345,8 +347,6 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
             ((cycle256 & processQualityPatterns[procQuality.act]) == processQualityPatterns[procQuality.act]));
 
         if (doProcess) {
-            prevEnvelope = envelope;
-
             // Handle direct A.trig
             float attVolt = haveAttTrigInput ? inputs[A_TRIG_INPUT].getVoltage() : 0.f;
             if (params[A_TRIG_BTN_PARAM].getValue() > 0.5f)
@@ -405,10 +405,10 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
             }
 
             // Process trigger outputs
-            outTrig[BOA].process(procSampleTime);
-            outTrig[EOA].process(procSampleTime);
-            outTrig[BOR].process(procSampleTime);
-            outTrig[EOR].process(procSampleTime);
+            outTrig[BOA].process(procCycles);
+            outTrig[EOA].process(procCycles);
+            outTrig[BOR].process(procCycles);
+            outTrig[EOR].process(procCycles);
     
             // Handle triggered phase change/retrig or transition/delay/hold
             if (attTriggered) {
@@ -472,7 +472,6 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
                 outputs[ENVELOPE_OUTPUT].setVoltage(envelope);
                 outputs[INV_ENVELOPE_OUTPUT].setVoltage(attackLevel + releaseLevel - envelope);
             }
-            updateEnvMotion();
             pushToExpanders();
         }
 

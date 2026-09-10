@@ -169,6 +169,11 @@ struct SlopeDetector2Module : InfNoiseModule {
         ensureFiveSineExpLogLuts();
     }
 
+    void onTrigLengthChanged() override {
+        for (int i = 0; i < 6; i++)
+            outTrig[i].setCycles(trigOnOffCycles);
+    }
+
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
 
@@ -400,7 +405,7 @@ struct SlopeDetector2Module : InfNoiseModule {
                                 int triggerIdx = i * 3 + j;
                                 if (phaseBegun[j])
                                     outTrig[triggerIdx].trigger();
-                                outTrig[triggerIdx].process(procSampleTime);
+                                outTrig[triggerIdx].process(procCycles);
                                 voltage = outTrig[triggerIdx].isHigh()
                                     ? voltValues[trigOutHigh.act]
                                     : voltValues[trigOutLow.act];

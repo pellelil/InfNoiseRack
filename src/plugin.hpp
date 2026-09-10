@@ -112,6 +112,7 @@ struct InfNoiseModule : Module {
     bool mustProcessParams = true; // Params MUST be processed at first/next cycle (e.g. after create, load, reset, sample-rate change or randomize)
     bool wasJustReset = false;  // Set true in InfNoiseModule.onReset, cleared in postProcessParams
     bool wasJustLoaded = false;  // Set true in InfNoiseModule.dataFromJson, cleared in postProcessParams
+    bool sampleRateChanged = true; // True at create and when sample rate changes; cleared in postProcessParams
     const int currentJson = 3;  // Manually incremented for "breaking changes" to json-format
     int jsonVersion = currentJson; // Used to detect if the module has been saved with a previous json-version of the plugin
     processQuality prevProcessQuality = pq_audioRate;  // Used to detect if process-quality has changed
@@ -123,6 +124,7 @@ struct InfNoiseModule : Module {
     actReqValue<voltRange> outClipRange = actReqValue<voltRange>(vr_mp12); // -12V to 12V
     actReqValue<quantizeMode> outQuantize = actReqValue<quantizeMode>(qm_off); // Quantize off
     float procSampleTime = 1.f / 48000.f; // args.sampleTime multiplied by processQualityCycles[procQuality] (updated by preProcessParams/postProcessParams)
+    int procCycles = 1; // processQualityCycles[procQuality.act] as int (updated with procSampleTime)
 
     // Gate-detect and gate-high/low
     actReqValue<trueDetectValue> gateDetHigh = actReqValue<trueDetectValue>(td_gateHigh); // Detect gate high
@@ -134,6 +136,8 @@ struct InfNoiseModule : Module {
     actReqValue<trueDetectValue> trigDetLow = actReqValue<trueDetectValue>(td_triggerLow); // Detect trigger low
     actReqValue<voltValue> trigOutHigh = actReqValue<voltValue>(v_TriggerHigh); // Volt-output for trigger high
     actReqValue<voltValue> trigOutLow = actReqValue<voltValue>(v_TriggerLow); // Volt-output for trigger low
+    actReqValue<trigLengthType> trigLength = actReqValue<trigLengthType>(tl_1ms); // On/off trigger length
+    int trigOnOffCycles = 44; // Engine samples for one on or off phase (from trigLength)
 
     // Features (decendants should set/overwrite these in their constructor)
     bool haveProcQuality = false;  // Adds menu to specify process-quality
@@ -170,6 +174,11 @@ struct InfNoiseModule : Module {
 
     void onSampleRateChange() override {
         mustProcessParams = true;  // Ensure processParams is called by process
+        sampleRateChanged = true;
+    }
+
+    virtual void onTrigLengthChanged() {
+        // Override in modules that output triggers (haveTrigHighLow)
     }
 
     void onReset(const ResetEvent& e) override {
@@ -194,6 +203,7 @@ struct InfNoiseModule : Module {
         trigDetLow.setBoth(td_triggerLow);
         trigOutHigh.setBoth(v_TriggerHigh);
         trigOutLow.setBoth(v_TriggerLow);
+        trigLength.setBoth(tl_1ms);
     }
 
     void onRandomize(const RandomizeEvent& e) override {
@@ -235,6 +245,7 @@ struct InfNoiseModule : Module {
         if (haveTrigHighLow){
             json_object_set_new(rootJ, "trigOutHigh", json_integer((int)trigOutHigh.req));
             json_object_set_new(rootJ, "trigOutLow", json_integer((int)trigOutLow.req));
+            json_object_set_new(rootJ, "trigLength", json_integer((int)trigLength.req));
         }
 
         dataToJson(rootJ);
@@ -267,6 +278,7 @@ struct InfNoiseModule : Module {
         trigDetLow.setBoth((trueDetectValue)getJsonInt(rootJ, "trigDetLow", (int)td_triggerLow));
         trigOutHigh.setBoth((voltValue)getJsonInt(rootJ, "trigOutHigh", (int)v_TriggerHigh));
         trigOutLow.setBoth((voltValue)getJsonInt(rootJ, "trigOutLow", (int)v_TriggerLow));
+        trigLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigLength", (int)tl_1ms));
     }
 
     /// @brief Decendants should call this in BEGINNING of their processParams method.
@@ -280,6 +292,7 @@ struct InfNoiseModule : Module {
         outQuantize.updateActual();
         outClipRange.updateActual();
         float sampleRate = args.sampleRate > 0.f ? args.sampleRate : 44100;  // fallback to 44.1 kHz
+        procCycles = (int)processQualityCycles[procQuality.act];
         procSampleTime = processQualityCycles[procQuality.act] / sampleRate;
 
         // Gate-detect and gate-high/low
@@ -292,6 +305,11 @@ struct InfNoiseModule : Module {
         trigDetLow.updateActual();
         trigOutHigh.updateActual();
         trigOutLow.updateActual();
+        if (haveTrigHighLow && (sampleRateChanged || trigLength.needsUpdate())) {
+            trigLength.updateActual();
+            trigOnOffCycles = trigLengthToCycles(trigLength.act, sampleRate);
+            onTrigLengthChanged();
+        }
     }
 
     /// @brief Decendants should call this in END of their processParams method.
@@ -306,6 +324,7 @@ struct InfNoiseModule : Module {
         mustProcessParams = args.sampleRate < 1.f; // force extra call if sample-rate is invalid
         wasJustLoaded = false;
         wasJustReset = false;
+        sampleRateChanged = false;
         cycle256 &= 0xff;
 
         // Number of times processParams has been called.
@@ -317,6 +336,7 @@ struct InfNoiseModule : Module {
         // If using auto-process-quality, process-quality might have changed
         if (haveAutoProcQuality && autoProcQuality.act) {
             float sampleRate = args.sampleRate > 0.f ? args.sampleRate : 44100;  // fallback to 44.1 kHz
+            procCycles = (int)processQualityCycles[procQuality.act];
             procSampleTime = processQualityCycles[procQuality.act] / sampleRate;
         }
     }
@@ -798,6 +818,8 @@ struct InfNoiseModuleWidget : ModuleWidget {
                                 &module->trigOutHigh.req));
                             menu->addChild(createIndexPtrSubmenuItem("Trigger-low output-level", voltNames,
                                 &module->trigOutLow.req));
+                            menu->addChild(createIndexPtrSubmenuItem("Trigger length", getTrigLengthNames(),
+                                &module->trigLength.req));
                         }
                     }
                 ));

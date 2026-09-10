@@ -5,6 +5,12 @@
 #include "inComponents.hpp"
 #include "InfNoiseEnvelope.hpp"
 
+namespace {
+const int steadyHoldCycles[] = { 1, 2, 3, 4, 6, 8, 12, 16, 32, 64, 128, 256 };
+const int steadyHoldCount = 12;
+const int steadyHoldDefaultIndex = 2; // 3 cycles
+}
+
 struct EnvelopePhaseExpanderModule : InfNoiseModule {
 	enum ParamId {
 		PARAMS_LEN
@@ -38,9 +44,20 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		emode_right
 	};
 	actReqValue<expanderModeType> expanderMode = actReqValue<expanderModeType>(emode_auto);
+	actReqValue<int> steadyHoldIndex = actReqValue<int>(steadyHoldDefaultIndex);
 
 	/// -1 = none, 0 = left host, 1 = right host
 	int connectedSide = -1;
+
+	enum envMotionType {
+		em_steady,
+		em_rise,
+		em_fall
+	};
+	envMotionType envMotion = em_steady;
+	float prevEnvelope = 0.f;
+	bool havePrevEnvelope = false;
+	int envMotionSteadyCount = 0;
 
 	EnvelopePhaseExpanderModule() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -78,6 +95,13 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		float lo = voltValues[gateOutLow.act];
 		for (int i = 0; i < OUTPUTS_LEN; i++)
 			outputs[i].setVoltage(lo);
+	}
+
+	void resetMotionTracker() {
+		havePrevEnvelope = false;
+		prevEnvelope = 0.f;
+		envMotion = em_steady;
+		envMotionSteadyCount = 0;
 	}
 
 	void updateConnectionState() {
@@ -137,13 +161,14 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 	bool acceptsHost(Module* from) const {
 		if (!from || connectedSide < 0)
 			return false;
+		
 		if (connectedSide == 0)
 			return leftExpander.module == from;
 		return rightExpander.module == from;
 	}
 
 	void receiveHostState(Module* from, InfNoiseEnvelopeModule::envPhase phase,
-		InfNoiseEnvelopeModule::envMotionType motion)
+		float envelope)
 	{
 		if (!acceptsHost(from))
 			return;
@@ -152,21 +177,44 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		float lo = voltValues[gateOutLow.act];
 		for (int i = 0; i < 6; i++)
 			outputs[ATTACK_OUTPUT + i].setVoltage((int)phase == i ? hi : lo);
-		outputs[RISE_OUTPUT].setVoltage(motion == InfNoiseEnvelopeModule::em_rise ? hi : lo);
-		outputs[FALL_OUTPUT].setVoltage(motion == InfNoiseEnvelopeModule::em_fall ? hi : lo);
-		outputs[STDY_OUTPUT].setVoltage(motion == InfNoiseEnvelopeModule::em_steady ? hi : lo);
+
+		if (!havePrevEnvelope) {
+			prevEnvelope = envelope;
+			havePrevEnvelope = true;
+			envMotion = em_steady;
+			envMotionSteadyCount = 0;
+		}
+		else {
+			float delta = envelope - prevEnvelope;
+			if (std::fabs(delta) > 1e-10f) {
+				envMotionSteadyCount = 0;
+				envMotion = (delta > 0.f) ? em_rise : em_fall;
+			}
+			else if (envMotion != em_steady) {
+				envMotionSteadyCount++;
+				int holdIdx = steadyHoldIndex.act;
+				if (holdIdx < 0 || holdIdx >= steadyHoldCount)
+					holdIdx = steadyHoldDefaultIndex;
+				if (envMotionSteadyCount >= steadyHoldCycles[holdIdx])
+					envMotion = em_steady;
+			}
+			prevEnvelope = envelope;
+		}
+
+		outputs[RISE_OUTPUT].setVoltage(envMotion == em_rise ? hi : lo);
+		outputs[FALL_OUTPUT].setVoltage(envMotion == em_fall ? hi : lo);
+		outputs[STDY_OUTPUT].setVoltage(envMotion == em_steady ? hi : lo);
 	}
 
 	void onExpanderChange(const ExpanderChangeEvent& e) override {
-		updateConnectionState();
-		updateExpandLights();
+		mustProcessParams = true;  // Connection state and lights updated in processParams
 	}
 
 	void onReset(const ResetEvent& e) override {
 		InfNoiseModule::onReset(e);
 		expanderMode.setBoth(emode_auto);
-		updateConnectionState();
-		updateExpandLights();
+		steadyHoldIndex.setBoth(steadyHoldDefaultIndex);
+		resetMotionTracker();
 	}
 
 	void dataFromJson(json_t* rootJ) override {
@@ -174,22 +222,32 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		expanderMode.setBoth((expanderModeType)clamp(
 			getJsonInt(rootJ, "expanderMode", (int)emode_auto),
 			(int)emode_auto, (int)emode_right));
-		updateConnectionState();
-		updateExpandLights();
+		int holdIdx = getJsonInt(rootJ, "steadyHoldIndex", steadyHoldDefaultIndex);
+		if (holdIdx < 0)
+			holdIdx = 0;
+		if (holdIdx >= steadyHoldCount)
+			holdIdx = steadyHoldCount - 1;
+		steadyHoldIndex.setBoth(holdIdx);
+		resetMotionTracker();
 	}
 
 	void dataToJson(json_t* rootJ) override {
 		json_object_set_new(rootJ, "expanderMode", json_integer((int)expanderMode.req));
+		json_object_set_new(rootJ, "steadyHoldIndex", json_integer(steadyHoldIndex.req));
 	}
 
 	void processParams(const ProcessArgs& args) {
 		preProcessParams(args);
 		//--------------------
 
-		expanderMode.updateActual();	
+		expanderMode.updateActual();
+		steadyHoldIndex.updateActual();
+		int prevSide = connectedSide;
 		updateConnectionState();
 		updateExpandLights();
-		
+
+		if (connectedSide != prevSide)
+			resetMotionTracker();
 		if (connectedSide < 0)
 			clearOutputs();
 
@@ -201,7 +259,7 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		bool doProcessParams = mustProcessParams ||
 			((cycle256 & patternProcessParams) == patternProcessParams);
 		if (doProcessParams)
-			processParams(args);
+			processParams(args); 
 
 		// Outputs generated in receiveHostState (called from pushToExpanders, called from EnvelopeModule)
 
@@ -212,11 +270,11 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 void InfNoiseEnvelopeModule::pushToExpanders() {  // Called from ADR/ADSDR Envelope
 	Module* left = getLeftExpander().module;
 	if (left && left->model == modelEnvelopePhaseExpander) {
-		static_cast<EnvelopePhaseExpanderModule*>(left)->receiveHostState(this, phase, envMotion);
+		static_cast<EnvelopePhaseExpanderModule*>(left)->receiveHostState(this, phase, envelope);
 	}
 	Module* right = getRightExpander().module;
 	if (right && right->model == modelEnvelopePhaseExpander) {
-		static_cast<EnvelopePhaseExpanderModule*>(right)->receiveHostState(this, phase, envMotion);
+		static_cast<EnvelopePhaseExpanderModule*>(right)->receiveHostState(this, phase, envelope);
 	}
 }
 
@@ -251,6 +309,20 @@ struct EnvelopePhaseExpanderModuleWidget : InfNoiseModuleWidget {
 
 		menu->addChild(createIndexPtrSubmenuItem("Expander-mode", {"Auto", "Forced Left", "Forced Right"},
 			&module->expanderMode.req));
+		menu->addChild(createIndexPtrSubmenuItem("Steady hold", {
+			"Immediate (1 cycle)",
+			"2 cycles",
+			"3 cycles (default)",
+			"4 cycles",
+			"6 cycles",
+			"8 cycles",
+			"12 cycles",
+			"16 cycles",
+			"32 cycles",
+			"64 cycles",
+			"128 cycles",
+			"256 cycles"
+		}, &module->steadyHoldIndex.req));
 			
 		appendInfNoiseMenuItems(menu);
 	}

@@ -709,7 +709,7 @@
     {
       "slug": "ADSDREnvelope",
       "name": "ADSDR Envelope",
-      "description": "Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Decay, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).",
+      "description": "Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Envelope.md#adsdr-envelope",
       "tags":  [
         "Envelope generator",
@@ -719,7 +719,7 @@
     {
       "slug": "EnvelopePhaseExpander",
       "name": "Envelope Phase Expander",
-      "description": "Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for movement (Rise, Steady and Fall).",
+      "description": "Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for envelope movement (Rise, Steady and Fall).",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Envelope.md#envelope-phase-expander",
       "tags":  [
         "Envelope generator",

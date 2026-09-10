@@ -90,7 +90,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 ### Envelope
 + ADREnvelope: -
 + ADSDREnvelope: New module **Needs testing**
-+ EnvelopePhaseExpander: -
++ EnvelopePhaseExpander: Changed Stdy detection. Lights to only update in processParams **Needs testing**
 
 ### Misc
 + Sign: -

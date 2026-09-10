@@ -92,10 +92,14 @@ struct VCMP1Module : InfNoiseModule {
         haveGateHighLow = false;
 
         for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
-            crossTrigger[c] = infNoiseOutTrigger(1e-3f, 1e-3f);
             lastCrossState[c] = cds_Equal;
         }
 	}
+
+    void onTrigLengthChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            crossTrigger[c].setCycles(trigOnOffCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -265,7 +269,7 @@ struct VCMP1Module : InfNoiseModule {
 
                 // A/B-crossing
                 if (outputs[AB_CROSS_OUTPUT].isConnected()) {
-                    crossTrigger[c].process(procSampleTime);    
+                    crossTrigger[c].process(procCycles);    
                     if (!inTol) {
                         CrossDetectState crossState = gt ? cds_aAboveB : cds_aBelowB;
                         if (crossState != lastCrossState[c]) {

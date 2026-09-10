@@ -37,7 +37,7 @@ struct ManTrGtCvModule : InfNoiseModule {
     bool haveTrigger = false;
     bool haveGate = false;
     bool haveCv = false;
-    infNoiseOutTrigger outputTrigger = infNoiseOutTrigger();  // Timing of trigger (1 ms high, 1 ms low)
+    infNoiseOutTrigger outputTrigger;  // Timing of trigger
     dsp::SchmittTrigger btnTrigger; // Prevents multiple triger-fires
     actReqValue<polyphonyMode> trigPoly = actReqValue<polyphonyMode>(mono_1);
     actReqValue<polyphonyMode> gatePoly = actReqValue<polyphonyMode>(mono_1);
@@ -73,6 +73,10 @@ struct ManTrGtCvModule : InfNoiseModule {
 		haveTrigHighLow = true;
         procQuality.setBoth(pq_balancedRate); // Ballanced rate (every 16th cycle)
 	}
+
+    void onTrigLengthChanged() override {
+        outputTrigger.setCycles(trigOnOffCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -139,7 +143,7 @@ struct ManTrGtCvModule : InfNoiseModule {
 
         if (doProcess) {
             if (haveTrigger) {
-                outputTrigger.process(procSampleTime);  
+                outputTrigger.process(procCycles);  
                 float trigValue = params[TRIG_PARAM].getValue();
                 if (btnTrigger.process(trigValue,
                     trueDetectValues[td_triggerLow], trueDetectValues[td_triggerHigh])) {

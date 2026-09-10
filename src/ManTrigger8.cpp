@@ -72,6 +72,11 @@ struct ManTrigger8Module : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
+    void onTrigLengthChanged() override {
+        for (int i = 0; i < 8; i++)
+            outputTrigger[i].setCycles(trigOnOffCycles);
+    }
+
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
         
@@ -138,7 +143,7 @@ struct ManTrigger8Module : InfNoiseModule {
             // Handle individual trigger buttons
             for (int i = 0; i < 8; i++) {
                 float trigValue = params[TRIGGER1_PARAM + i].getValue();
-                outputTrigger[i].process(procSampleTime);
+                outputTrigger[i].process(procCycles);
                 if (inTrigger[i].process(trigValue,
                     trueDetectValues[td_triggerLow], trueDetectValues[td_triggerHigh])) {
                     outputTrigger[i].trigger();

@@ -84,6 +84,13 @@ struct ManPush2Module : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
+    void onTrigLengthChanged() override {
+        for (int i = 0; i < 2; i++) {
+            highTrigger[i].setCycles(trigOnOffCycles);
+            lowTrigger[i].setCycles(trigOnOffCycles);
+        }
+    }
+
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
 
@@ -200,7 +207,7 @@ struct ManPush2Module : InfNoiseModule {
 
                 // High-Trigger output
                 if (outputs[TRIGGER_HG1_OUTPUT + i].isConnected()) {
-                    if (!highTrigger[i].process(procSampleTime) && 
+                    if (!highTrigger[i].process(procCycles) && 
                         edgeDetect && edgeHigh) {
                         highTrigger[i].trigger();
                     }
@@ -214,7 +221,7 @@ struct ManPush2Module : InfNoiseModule {
 
                 // Low-Trigger output
                 if (outputs[TRIGGER_LW1_OUTPUT + i].isConnected()) {
-                    if (!lowTrigger[i].process(procSampleTime) && 
+                    if (!lowTrigger[i].process(procCycles) && 
                         edgeDetect && !edgeHigh) {
                         lowTrigger[i].trigger();
                     }

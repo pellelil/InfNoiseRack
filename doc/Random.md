@@ -78,16 +78,16 @@ Between the Range and Mn/Cn/Mx controls, there is a Delay button. By default, th
 
 At the bottom of the module, six outputs each generate a different type of "curve", all based on the same generted random values but with unique transition characteristics. The last two outputs ("User1" and "User2") each support the same four curve types selectable via the context menu (Log, Exp, Top rounded/bottom sharp, Bottom rounded/top sharp). User1 defaults to Log; User2 defaults to Top rounded/bottom sharp. An RGB indicator next to each user output is always lit to show the active mode: green = Log, red = Exp, blue = Top, orange = Bottom. Here a short description of the outputs:
 
-+ Lin: Linear transitions between random values.
-+ Step: Abrupt switches at the midpoint between values, mimicking a Sample & Hold signal.
-+ Curv: Smooth S-curve transitions for a fluid motion.
-+ Spiky: Reversed S-curves with sharp, spiky peaks and dips.
-+ User1: User-configurable curve (default: Log).
-+ User2: User-configurable curve (default: Top rounded/bottom sharp).
++ **Lin**: Linear transitions between random values.
++ **Step**: Abrupt switches at the midpoint between values, mimicking a Sample & Hold signal.
++ **Curv**: Smooth S-curve transitions for a fluid motion.
++ **Spiky**: Reversed S-curves with sharp, spiky peaks and dips.
++ **User1**: User-configurable curve (default: **Log**).
++ **User2**: User-configurable curve (default: **Top rounded/bottom sharp**).
 
 By default, the "Step" output will "step" (change between the previous/next random value) mid-phase (marked by a **dim light** next to the "Step" output). However, via the context menu, you can change the **step mode** so that it instead steps at the beginning of the phase (marked by a **red light** next to the "Step" output). This mode can be beneficial if you need the waveform to "step" at the same time as the Trigger outputs fire a trigger.
 
-The screenshot belows shows the exact same progression of random values, displayed using 6 different curve-outputs. All curves begins and ends at exactly the same value (at exactly the same time), however the transition between those "points" is different for each curve-type. In the example a uniform distribution with forced polarity was used:
+The screenshot belows shows the exact same progression of random values, displayed using 6 different curve-outputs. All curves begins and ends at exactly the same value (at exactly the same time), however the transition between those "points" is different for each curve-type. In the example a uniform distribution was used:
 
 ![Screenshot of Random curve examples](img/RandomCurveExamples.png) 
 

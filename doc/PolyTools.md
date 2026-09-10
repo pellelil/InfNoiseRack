@@ -12,7 +12,7 @@ Typically, a polyphonic splitter divides a polyphonic signal into multiple monop
 <a name="poly-mergep"></a>
 ## Poly-Merge
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
-The Poly-Merge module is designed to be flexible enough to merge both monophonic and polyphonic signals into a single polyphonic output. It can merge up to 16 monophonic signals. The lights next to the ports will illumuniate to indicate the number of channels that have been selected using the channels-knob (1-16). This light will be **green** when an input-signal for that port is available, and **red** when its not (meaning the output will be set as 0V). *Some general info regarding the Poly-tools are listed in the top.*
+The Poly-Merge module is designed to be flexible enough to merge both monophonic and polyphonic signals into a single polyphonic output. It can merge up to 16 monophonic signals. The lights next to the ports will illumuniate to indicate the number of channels that have been selected using the channels-knob (1-16). These lights will be **green** when an input-signal for that port is available, and **red** when its not (meaning the output will be set as 0V). *Some general info regarding the Poly-tools are listed in the top.*
 
 The module defaults to **Mono** input-mode, where all inputs are treated as single-channel monophonic signals (if a polyphonic signal is connected, only its first channel is used). Input ports without a connected cable will normalize to 0V. Hence dialing in a channel count of 4, and only inputting a signal into port 1 and 3, port 2 and 4 will normalize to 0V.
 
@@ -67,7 +67,7 @@ The 4 outputs in the bottom section (E, F, G and H) will output the first 4 chan
 
 ## MAN-TR, MAN-GT, & MAN-CV8I/II
 ![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)<br>
-All 3 of these modules are described elsewhere ([Manual Controllers](ManCV.md)) but I want to mention them in this section of the documentation as well, as they can be used to construct Polyphonic signals. All 3 of these modules have 8 separate sections with buttons or knobs that allows you to generate 8 district/monophonic signals each with either a fixed CV-signal (set by knobs in the range -10V to +10V), a gate or a trigger. However beside these 8 individual/monophonic outputs, these modules also feature a single **Poly** output in the top of the module. By default this polyphonic output will be an 8 channel signal, where each channel correspond to each of the 8 individual/monophonic outputs. However using the context menu, the number of channels can be reduced (e.g. only include the first 4 sections as a 4 channel polyphonic signal).
+All 4 of these modules are described elsewhere ([Manual Controllers](ManCV.md)) but I want to mention them in this section of the documentation as well, as they can be used to construct Polyphonic signals. All 4 of these modules have 8 separate sections with buttons or knobs that allows you to generate 8 district/monophonic signals each with either a fixed CV-signal (set by knobs in the range -10V to +10V), a gate or a trigger. However beside these 8 individual/monophonic outputs, these modules also feature a single **Poly** output in the top of the module. By default this polyphonic output will be an 8 channel signal, where each channel correspond to each of the 8 individual/monophonic outputs. However using the context menu, the number of channels can be reduced (e.g. only include the first 4 sections as a 4 channel polyphonic signal).
 
 ![Screenshot of MAN-CV/Trigger/Gate](img/ManCvTrGtAsPolyGenerator.png) 
 
@@ -85,7 +85,7 @@ At the top of the module, you’ll see 16 indicator lights—one for each possib
 ### Channel count
 By default, the **channel mode** button above the channel knob is **pressed (green)**, indicating **Automatic mode**. In this mode, the channel knob automatically follows the number of channels in the input signal. As a result, the module outputs the same number of channels as the input (or a single channel if no input is connected).
 
-When the channel mode button is toggled to its **released (dim)** state, the module switches to **Manual mode**. In this mode, you can freely set the number of output channels using the knob. If you select a lower channel count than the input, the last channels are removed (for example, reducing an 8-channel signal to 4 channels by removing channels 5–8). If you instead select a higher channel count than the input, additional channels are added to the output. For example, if you input a 4-channel signal and set the output to 8 channels, channels 1–4 will match the input, while channels 5–8 will be generated.
+When the channel mode button is toggled to its **released (dim)** state, the module switches to **Manual mode**. In this mode, you can freely set the number of output channels using the knob (1-16). If you select a lower channel count than the input, the last channels are removed (for example, reducing an 8-channel signal to 4 channels by removing channels 5–8). If you instead select a higher channel count than the input, additional channels are added to the output. For example, if you input a 4-channel signal and set the output to 8 channels, channels 1–4 will match the input, while channels 5–8 will be generated.
 
 When increasing the channel count, the module defaults to **Value mode**, where added channels take the value set by the value knob (default is 0 V). Pressing the small button next to the **Vl/Rp** (Value/Repeat) indicator-light switches to **Repeat mode**. In Repeat mode, the input channels are repeated (cloned) as needed. For example, with a 4-channel input and 8-channel output, channel 1 and 5 will both output input channel 1, channel 2 and 6 will output input channel 2, and so on. If a monophonic signal is used in Repeat mode, it will simply be repeated across all output channels. *If no input signal is provided, all output channels will take the value dialed-in by the value-knob, no matter if value mode or repeat mode is selected.*
 
@@ -152,29 +152,29 @@ Next is the **Disable section**, which works similarly. A polyphonic gate input 
 
 **TIP**: When the **Disable mode** is set to **Value** and the **Disable value** knob is set to 0V, the module effectively acts as a gate-controlled mute module. High gates will "mute" individual channels—or all channels at once if a monophonic disable signal is used.
 
-**TIP**:  While the [ON/OFF Switch](Switch.md#onoff-switch) can accept- and output polyphonic signals, its switch operatation is monophonic (all channels switch in unison between the ON- and OFF-stages). The Poly-Tweak Mk II can however function as a polyphonic version of the ON/OFF Switch where individual channels can be "switched". To do this, first input the signal you consider the **ON stage** into the **Poly** input in the top, and then input the signal you consider the **OFF stage** into the **Dis. Value** input near the bottom. You can now input a polyphoinc gate signal into the **Disable**, and you are able to switch individual channels between the "Poly" (ON) and "Dis.Value" (OFF) signals.
+**TIP**:  While the [ON/OFF Switch](Switch.md#onoff-switch) can accept- and output polyphonic signals, its switch operatation is monophonic (all channels switch in unison between the ON- and OFF-stages). The Poly-Tweak Mk II can however function as a polyphonic version of the ON/OFF Switch where individual channels can be "switched". To do this, first input the signal you consider the **ON stage** into the **Poly** input in the top, and then input the signal you consider the **OFF stage** into the **Dis. Value** input near the bottom. You can now input a polyphoinc gate signal into the **Disable** port, and you are able to switch individual channels between the "Poly" (ON) and "Dis.Value" (OFF) signals.
 
-**TIP**: Similar to the tip above the Poly-Tweak Mk II can be used to combine two polyphonic signals (taking some channels from one polyphonic signal and the other channels from the other polyphonic signal). For example, if you input an 8-channel polyphonic signal into the "Poly" input and another 8-channel input into the "Dis. value" input, then each channel-output will either be taken from the "Poly" input (when the channel is not disabled) or the "Dis. value" input (when the channel is disabled). E.g. with 8 channels, if you disable channels 1, 5 and 8, then channel 1, 5 and 8 of the output will take their values (channel 1, 5 and 8) from the disable value-input, whereas channel 2, 3, 4, 6 and 7 of the output will take their values from (channel 2, 3, 4, 6 and 7) from the Poly-input. If the disable value-input is monophonic the same value would be used for channel 1, 5 and 8.
+**TIP**: Similar to the tip above the Poly-Tweak Mk II can be used to **combine two polyphonic signals** (taking some channels from one polyphonic signal and the other channels from the other polyphonic signal). For example, if you input an 8-channel polyphonic signal into the "Poly" input and another 8-channel input into the "Dis. value" input, then each channel-output will either be taken from the "Poly" input (when the channel is not disabled) or the "Dis. value" input (when the channel is disabled). E.g. with 8 channels, if you disable channels 1, 5 and 8, then channel 1, 5 and 8 of the output will take their values (channel 1, 5 and 8) from the disable value-input, whereas channel 2, 3, 4, 6 and 7 of the output will take their values from (channel 2, 3, 4, 6 and 7) from the Poly-input. 
 
-*To generate the polyphoinc Disable input you can use a **Poly-Tweak Mk I**. Use its context menu to dial in a fixed polyphony (e.g. 8 chanenls), and set its **invert-mode to Gate**. In this configuration all it's inverted channels will output as a high-gates, and non-inverted channels will output as low-gates.*
+*To generate the polyphoinc Disable input you can use a **Poly-Tweak Mk I**. Use its context menu to dial in a fixed polyphony (e.g. 8 chanenls), and set its **invert-mode to Gate**. In this configuration all it's inverted channels will output as a high-gates (10V), and non-inverted channels will output as low-gates (0V).*
 
 <a name="poly-logical-comparep"></a>
 ## Poly-Logical Compare
 ![Features](https://img.shields.io/badge/Polyphonic-Input-orange.svg?style=flat-square)<br>
 Unlike the "standard" [Logical compare modules](Compare.md), which compare channels between multiple inputs, the Poly-Logical Compare module compares all channels within the same/single polyphonic signal. If you input a polyphonic signal with up to 16 channels, this module evaluates logical conditions across all active channels. For example, if a 4-channel polyphonic signal is provided, the outputs behave as follows:
 
-+ AND Output: High only if all 4 channels are detected as high-gates.
-+ OR Output: High if at least one channel is high.
-+ XOR Output: High only if exactly one channel is high.
-+ NAND Output: High when all inputs are "not high at the same time".
-+ NOR Output: High if no input are high (all low).
-+ XNOR: Output: High when none, or more than 1 input is high.
++ **AND** Output: High only if all 4 channels are detected as high-gates.
++ **OR** Output: High if at least one channel is high.
++ **XOR** Output: High only if exactly one channel is high.
++ **NAND** Output: High when all inputs are "not high at the same time".
++ **NOR** Output: High if no input are high (all low).
++ **XNOR**: Output: High when none, or more than 1 input is high.
 
 At the top of the module, 16 indicator lights display the status of each channel. A green light indicates a high-gate detection, while a red light means the channel is low-gate. By default, a channel is detected as high when its voltage is ≥1V, but this threshold can be adjusted via the context menu. Likewise, output voltages default to 10V for high and 0V for low, but these values can also be customized. *Some general info regarding the Poly-tools are listed in the top.*
 
 ![Screenshot of Polyphonic logical-compare](module/PolyLCMP.png) 
 
-By default, the OR output activates when one or more channels are high, and XOR activates when exactly one channel is high. However, these conditions can be customized using the context menu.
+By default, the **OR** output activates when one or more channels are high, and **XOR** activates when exactly one channel is high. However, these conditions can be customized using the context menu.
 
 + The OR output can be set to trigger only when a specific number of channels (1-16) are high (e.g., if at least 3 channels are high).
 + The XOR output can be configured to activate when exactly a specified number of channels are high (e.g., precisely 3 channels - no less, no more).

@@ -134,24 +134,7 @@ struct TuringMachineModule : InfNoiseModule {
         dsp::SchmittTrigger(),
         dsp::SchmittTrigger()
     };
-    infNoiseOutTrigger pulseOutTrigger[16] = {
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f),
-        infNoiseOutTrigger(1e-3f, 1e-3f)
-    };
+    infNoiseOutTrigger pulseOutTrigger[16];
 
 	TuringMachineModule() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -280,6 +263,11 @@ struct TuringMachineModule : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = true;
 	}
+
+    void onTrigLengthChanged() override {
+        for (int i = 0; i < 16; i++)
+            pulseOutTrigger[i].setCycles(trigOnOffCycles);
+    }
 
     void resetBit32(float resetSwitchParam) { // 0=random, 1=all 1's, 2=all 0's
 		bit32 = 0;
@@ -422,7 +410,7 @@ struct TuringMachineModule : InfNoiseModule {
         if (outputs[BIT1_OUTPUT + pulseIdx].isConnected()) {
             // Monophonic puls-Trigger
             if (params[BIT1_TRIG_GATE_PARAM + pulseIdx].getValue() < 0.5f) {
-                bool outTrigProc = pulseOutTrigger[pulseIdx].process(procSampleTime);
+                bool outTrigProc = pulseOutTrigger[pulseIdx].process(procCycles);
                 if (pulseInTrigger[pulseIdx].process(onPulse ? 10.f : 0.f, 0.1f, 1.f)) {
                     if (!outTrigProc && onPulse) {
                         pulseOutTrigger[pulseIdx].trigger();
