@@ -171,7 +171,7 @@ struct SlopeDetector2Module : InfNoiseModule {
 
     void onTrigLengthChanged() override {
         for (int i = 0; i < 6; i++)
-            outTrig[i].setCycles(trigOnOffCycles);
+            outTrig[i].setCycles(trigOnCycles, trigOffCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -403,9 +403,10 @@ struct SlopeDetector2Module : InfNoiseModule {
                             float voltage = 0.f;
                             if (params[RISE_MODE1_PARAM + prmOutIdx].getValue() < 0.5) { // trigger
                                 int triggerIdx = i * 3 + j;
+                                // process() before trigger() so a 1-cycle pulse is still high this sample
+                                outTrig[triggerIdx].process(procCycles);
                                 if (phaseBegun[j])
                                     outTrig[triggerIdx].trigger();
-                                outTrig[triggerIdx].process(procCycles);
                                 voltage = outTrig[triggerIdx].isHigh()
                                     ? voltValues[trigOutHigh.act]
                                     : voltValues[trigOutLow.act];

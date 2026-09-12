@@ -110,7 +110,7 @@ struct CvToGtTr8Module : InfNoiseModule {
 
     void onTrigLengthChanged() override {
         for (int i = 0; i < 8; i++)
-            outputTrigger[i].setCycles(trigOnOffCycles);
+            outputTrigger[i].setCycles(trigOnCycles, trigOffCycles);
     }
 
     void onReset(const ResetEvent& e) override {

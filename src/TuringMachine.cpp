@@ -266,7 +266,7 @@ struct TuringMachineModule : InfNoiseModule {
 
     void onTrigLengthChanged() override {
         for (int i = 0; i < 16; i++)
-            pulseOutTrigger[i].setCycles(trigOnOffCycles);
+            pulseOutTrigger[i].setCycles(trigOnCycles, trigOffCycles);
     }
 
     void resetBit32(float resetSwitchParam) { // 0=random, 1=all 1's, 2=all 0's

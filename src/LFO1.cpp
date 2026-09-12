@@ -152,7 +152,7 @@ struct LFO1Module : InfNoiseModule {
 
     void onTrigLengthChanged() override {
         for (int c = 0; c < PORT_MAX_CHANNELS; c++)
-            syncOutTrigger[c].setCycles(trigOnOffCycles);
+            syncOutTrigger[c].setCycles(trigOnCycles, trigOffCycles);
     }
 
     void onReset(const ResetEvent& e) override {

@@ -158,7 +158,7 @@ struct RandomCurveModule : InfNoiseModule {
 	}
 
     void onTrigLengthChanged() override {
-        cycleTrigger.setCycles(trigOnOffCycles);
+        cycleTrigger.setCycles(trigOnCycles, trigOffCycles);
     }
 
     static bool resolveUserCurveUseLog(userCurveModeType mode, float deltaRnd) {

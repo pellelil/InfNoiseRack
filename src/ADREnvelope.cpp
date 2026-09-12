@@ -159,7 +159,7 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
 
     void onTrigLengthChanged() override {
         for (int i = 0; i < 4; i++)
-            outTrig[i].setCycles(trigOnOffCycles);
+            outTrig[i].setCycles(trigOnCycles, trigOffCycles);
     }
 
     void onReset(const ResetEvent& e) override {

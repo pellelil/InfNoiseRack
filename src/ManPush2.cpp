@@ -86,8 +86,8 @@ struct ManPush2Module : InfNoiseModule {
 
     void onTrigLengthChanged() override {
         for (int i = 0; i < 2; i++) {
-            highTrigger[i].setCycles(trigOnOffCycles);
-            lowTrigger[i].setCycles(trigOnOffCycles);
+            highTrigger[i].setCycles(trigOnCycles, trigOffCycles);
+            lowTrigger[i].setCycles(trigOnCycles, trigOffCycles);
         }
     }
 

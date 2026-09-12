@@ -136,8 +136,10 @@ struct InfNoiseModule : Module {
     actReqValue<trueDetectValue> trigDetLow = actReqValue<trueDetectValue>(td_triggerLow); // Detect trigger low
     actReqValue<voltValue> trigOutHigh = actReqValue<voltValue>(v_TriggerHigh); // Volt-output for trigger high
     actReqValue<voltValue> trigOutLow = actReqValue<voltValue>(v_TriggerLow); // Volt-output for trigger low
-    actReqValue<trigLengthType> trigLength = actReqValue<trigLengthType>(tl_1ms); // On/off trigger length
-    int trigOnOffCycles = 44; // Engine samples for one on or off phase (from trigLength)
+    actReqValue<trigLengthType> trigOnLength = actReqValue<trigLengthType>(tl_1ms); // On/high trigger length
+    actReqValue<trigLengthType> trigOffLength = actReqValue<trigLengthType>(tl_1ms); // Off/low trigger length
+    int trigOnCycles = 44; // Engine samples for the on/high phase (from trigOnLength)
+    int trigOffCycles = 44; // Engine samples for the off/low phase (from trigOffLength)
 
     // Features (decendants should set/overwrite these in their constructor)
     bool haveProcQuality = false;  // Adds menu to specify process-quality
@@ -203,7 +205,8 @@ struct InfNoiseModule : Module {
         trigDetLow.setBoth(td_triggerLow);
         trigOutHigh.setBoth(v_TriggerHigh);
         trigOutLow.setBoth(v_TriggerLow);
-        trigLength.setBoth(tl_1ms);
+        trigOnLength.setBoth(tl_1ms);
+        trigOffLength.setBoth(tl_1ms);
     }
 
     void onRandomize(const RandomizeEvent& e) override {
@@ -245,7 +248,8 @@ struct InfNoiseModule : Module {
         if (haveTrigHighLow){
             json_object_set_new(rootJ, "trigOutHigh", json_integer((int)trigOutHigh.req));
             json_object_set_new(rootJ, "trigOutLow", json_integer((int)trigOutLow.req));
-            json_object_set_new(rootJ, "trigLength", json_integer((int)trigLength.req));
+            json_object_set_new(rootJ, "trigOnLength", json_integer((int)trigOnLength.req));
+            json_object_set_new(rootJ, "trigOffLength", json_integer((int)trigOffLength.req));
         }
 
         dataToJson(rootJ);
@@ -278,7 +282,8 @@ struct InfNoiseModule : Module {
         trigDetLow.setBoth((trueDetectValue)getJsonInt(rootJ, "trigDetLow", (int)td_triggerLow));
         trigOutHigh.setBoth((voltValue)getJsonInt(rootJ, "trigOutHigh", (int)v_TriggerHigh));
         trigOutLow.setBoth((voltValue)getJsonInt(rootJ, "trigOutLow", (int)v_TriggerLow));
-        trigLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigLength", (int)tl_1ms));
+        trigOnLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigOnLength", (int)tl_1ms));
+        trigOffLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigOffLength", (int)tl_1ms));
     }
 
     /// @brief Decendants should call this in BEGINNING of their processParams method.
@@ -305,9 +310,11 @@ struct InfNoiseModule : Module {
         trigDetLow.updateActual();
         trigOutHigh.updateActual();
         trigOutLow.updateActual();
-        if (haveTrigHighLow && (sampleRateChanged || trigLength.needsUpdate())) {
-            trigLength.updateActual();
-            trigOnOffCycles = trigLengthToCycles(trigLength.act, sampleRate);
+        if (haveTrigHighLow && (sampleRateChanged || trigOnLength.needsUpdate() || trigOffLength.needsUpdate())) {
+            trigOnLength.updateActual();
+            trigOffLength.updateActual();
+            trigOnCycles = trigLengthToCycles(trigOnLength.act, sampleRate);
+            trigOffCycles = trigLengthToCycles(trigOffLength.act, sampleRate);
             onTrigLengthChanged();
         }
     }
@@ -818,8 +825,10 @@ struct InfNoiseModuleWidget : ModuleWidget {
                                 &module->trigOutHigh.req));
                             menu->addChild(createIndexPtrSubmenuItem("Trigger-low output-level", voltNames,
                                 &module->trigOutLow.req));
-                            menu->addChild(createIndexPtrSubmenuItem("Trigger length", getTrigLengthNames(),
-                                &module->trigLength.req));
+                            menu->addChild(createIndexPtrSubmenuItem("Trigger-high length", getTrigLengthNames(),
+                                &module->trigOnLength.req));
+                            menu->addChild(createIndexPtrSubmenuItem("Trigger-low length", getTrigLengthNames(),
+                                &module->trigOffLength.req));
                         }
                     }
                 ));

@@ -1187,7 +1187,7 @@ inline float quantizeToMode(float value, quantizeMode qMode) {
 
 
 //-----------------------------------------------------------------------------
-// Trigger output length (on/off, same value)
+// Trigger output length (on/off independently)
 //-----------------------------------------------------------------------------
 enum trigLengthType {
 	tl_1ms, tl_2ms, tl_5ms, tl_10ms, tl_50ms, tl_100ms, tl_200ms, tl_500ms, tl_1000ms,
@@ -1209,10 +1209,10 @@ inline std::vector<std::string> getTrigLengthNames() {
 	return names;
 }
 
-/// @brief Convert a trigger-length setting to on/off engine-sample counts.
+/// @brief Convert a trigger-length setting to engine-sample count.
 /// @param len Menu selection (ms or cycles).
 /// @param sampleRate Engine sample rate (fallback 44.1 kHz if invalid).
-/// @return Engine-sample count for one on or off phase (at least 1).
+/// @return Engine-sample count for one phase (at least 1).
 inline int trigLengthToCycles(trigLengthType len, float sampleRate) {
 	int idx = (int)len;
 	if (idx < 0 || idx >= trigLengthCount)
@@ -1231,27 +1231,30 @@ inline int trigLengthToCycles(trigLengthType len, float sampleRate) {
 /// @brief Ensures that a trigger cannot fire before the previous trigger
 /// have finished, or was reset (by default ~1 ms ON and 1 ms OFF at 48 kHz).
 struct infNoiseOutTrigger {
-	int onCycles = 44; // ~1 ms @ 44 kHz until InfNoiseModule applies trigLength
-	int offCycles = 44;
-	int remaining = 0;
+	int onCycles = 44; // Cycles in ON/High-stage (~1 ms @ 44 kHz)
+	int offCycles = 44; // Cycles in OFF/Low-stage (~1 ms @ 44 kHz)
+	int remaining = 0; // Remaining cycles in ON/High-stage (<=0 when idle)
 
-	/// @brief Set on/off to the same engine-sample count and reset remaining.
-	inline void setCycles(int onOff) {
-		onCycles = onOff;
-		offCycles = onOff;
+	/// @brief Set on/off engine-sample counts and reset remaining.
+	inline void setCycles(int on, int off) {
+		onCycles = on;
+		offCycles = off;
 		reset();
 	}
 
-	/// @brief Should be called AFTER process is called.
+	/// @brief Should be called AFTER process is called, and process returns true.
+	/// @param forced If true, the trigger will fire even if it is already active.
 	/// @return true if able to (re)fire the trigger, otherwise false.
-	bool trigger() {
-		if (remaining > 0)
+	bool trigger(bool forced = false) {
+		if (remaining > 0 && !forced)
 			return false;
+
 		remaining = onCycles + offCycles;
 		return true;
 	}
 
 	/// @brief Returns true if the trigger is currently active (ON/OFF-stage active).
+	/// @return true if the trigger is currently active (High/Low-stage active).
 	inline bool running() {
 		return remaining > 0;
 	}
@@ -1267,6 +1270,7 @@ struct infNoiseOutTrigger {
 	inline bool process(int cycles) {
 		if (remaining <= 0)
 			return false;
+
 		remaining -= cycles;
 		if (remaining < 0)
 			remaining = 0;

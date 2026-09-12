@@ -75,7 +75,7 @@ struct ManTrGtCvModule : InfNoiseModule {
 	}
 
     void onTrigLengthChanged() override {
-        outputTrigger.setCycles(trigOnOffCycles);
+        outputTrigger.setCycles(trigOnCycles, trigOffCycles);
     }
 
     void onReset(const ResetEvent& e) override {

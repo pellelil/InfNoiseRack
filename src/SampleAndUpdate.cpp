@@ -110,7 +110,7 @@ struct SampleAndUpdateModule : InfNoiseModule {
 
     void onTrigLengthChanged() override {
         for (int c = 0; c < PORT_MAX_CHANNELS; c++)
-            outCountTrigger[c].setCycles(trigOnOffCycles);
+            outCountTrigger[c].setCycles(trigOnCycles, trigOffCycles);
     }
 
     void onReset(const ResetEvent& e) override {
