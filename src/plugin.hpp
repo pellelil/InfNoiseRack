@@ -891,8 +891,8 @@ struct InfNoiseModuleWidget : ModuleWidget {
                                 [=]() { setShowLogoStatusLights(value); }
                             ));
                         };
-                        addStatusItem("Show logo status lights", true);
-                        addStatusItem("Hide logo status lights", false);
+                        addStatusItem("Active", true);
+                        addStatusItem("Inactive", false);
                     }
                 ));
             }

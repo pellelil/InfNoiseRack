@@ -1187,7 +1187,7 @@ inline float quantizeToMode(float value, quantizeMode qMode) {
 
 
 //-----------------------------------------------------------------------------
-// Trigger output length (on/off independently)
+// Trigger output length (high/low independently)
 //-----------------------------------------------------------------------------
 enum trigLengthType {
 	tl_1ms, tl_2ms, tl_5ms, tl_10ms, tl_50ms, tl_100ms, tl_200ms, tl_500ms, tl_1000ms,
@@ -1221,7 +1221,7 @@ inline int trigLengthToCycles(trigLengthType len, float sampleRate) {
 		return trigLengthCycleCounts[idx - trigLengthFirstCycle];
 	sampleRate = sampleRate > 0.f ? sampleRate : 44100.f;
 	int cycles = (int)std::roundf((float)trigLengthMs[idx] * 0.001f * sampleRate);
-	return (cycles < 1) ? 1 : cycles;
+	return (cycles < 1) ? 1 : cycles; // At least 1 cycle.
 }
 
 
@@ -1229,32 +1229,33 @@ inline int trigLengthToCycles(trigLengthType len, float sampleRate) {
 // infNoiseOutTrigger
 //-----------------------------------------------------------------------------
 /// @brief Ensures that a trigger cannot fire before the previous trigger
-/// have finished, or was reset (by default ~1 ms ON and 1 ms OFF at 48 kHz).
+/// have finished, or was reset (by default ~1 ms high and 1 ms low at 48 kHz).
+/// A trigger is not "finished" until the low stage has also finished.
 struct infNoiseOutTrigger {
-	int onCycles = 44; // Cycles in ON/High-stage (~1 ms @ 44 kHz)
-	int offCycles = 44; // Cycles in OFF/Low-stage (~1 ms @ 44 kHz)
-	int remaining = 0; // Remaining cycles in ON/High-stage (<=0 when idle)
+	int highCycles = 44; // Cycles in high stage (~1 ms @ 44 kHz, at least 1 cycle)
+	int lowCycles = 44; // Cycles in low stage (~1 ms @ 44 kHz, at least 1 cycle)
+	int remaining = 0; // Remaining cycles of the trigger (high + low). <=0 when idle.
 
-	/// @brief Set on/off engine-sample counts and reset remaining.
-	inline void setCycles(int on, int off) {
-		onCycles = on;
-		offCycles = off;
+	/// @brief Set high/low engine-sample counts and reset remaining.
+	inline void setCycles(int high, int low) {
+		highCycles = high > 0 ? high : 1; 
+		lowCycles = low > 0 ? low : 1;
 		reset();
 	}
 
-	/// @brief Should be called AFTER process is called, and process returns true.
+	/// @brief Should be called AFTER process is called, it process returns true.
 	/// @param forced If true, the trigger will fire even if it is already active.
 	/// @return true if able to (re)fire the trigger, otherwise false.
 	bool trigger(bool forced = false) {
 		if (remaining > 0 && !forced)
 			return false;
 
-		remaining = onCycles + offCycles;
+		remaining = highCycles + lowCycles;
 		return true;
 	}
 
-	/// @brief Returns true if the trigger is currently active (ON/OFF-stage active).
-	/// @return true if the trigger is currently active (High/Low-stage active).
+	/// @brief Returns true if the trigger is currently active (high or low stage), false when idle.
+	/// @return true if the trigger is currently active (high or low stage).
 	inline bool running() {
 		return remaining > 0;
 	}
@@ -1277,14 +1278,14 @@ struct infNoiseOutTrigger {
 		return true;
 	}
 
-	/// @brief Returns true if the trigger is currently "high" (ON-stage active).
+	/// @brief Returns true if the trigger is currently high (false when low or idle)
 	inline bool isHigh() {
-		return remaining > offCycles;
+		return remaining > lowCycles;
 	}
 
-	/// @brief Returns 1 when the trigger is "high" (ON-stage active), 0 otherwise.
+	/// @brief Returns 1 when the trigger is high, 0 otherwise (when low or idle)
 	inline float getLight() {
-		return (remaining > offCycles) ? 1.f : 0.f;
+		return (remaining > lowCycles) ? 1.f : 0.f;
 	}
 };
 
