@@ -52,13 +52,15 @@ All input signals for both sections are normalized to an internal white noise ge
 
 ![Screenshot of SHTH2x4](module/SHTH2x4.png) 
 
+**TIP**: When using the SHTH2x4 with an external clock-source I suggest you begin using the lower section first. This allows you to in stead use the upper section with the internal LFO if needed. If you later decide that the external clock-source should affect both sections, you simpy move the cable from the lower clock-input to the upper clock-input *(since the lower is normalized to the upper)*.
+
 <a name="sample-and-updatepq"></a>
 ## Sample and Update
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
 The **Sample & Update (S&U)** module is not a traditional S&H/T&H/H&T module, although it can be configured to behave similarly. The module provides three sections — **Sample**, **Update**, and **Reset** — each with a manual button and a corresponding CV input. 
 
-Between the large button and the CV input in each section, there is a small toggle button that controls how they behave. By default (**red**), each section operates in **Single mode**. In this mode, the button is momentary, and the CV input is treated as a **trigger**. Pressing the button—or receiving a trigger—causes the section to perform its action (e.g., sample) for a single processing cycle only, regardless of how long the button is held or the input signal remains high. Pressing the small toggle button switches the section to **Continuous mode** (**green**), where the large button becomes latched. In this mode, the section continues performing its action (e.g., sampling) for as long as the button is latched or the CV input remains high.
+Between the large button and the CV input in each section, there is a small toggle button that controls how they behave. By default (**red**), each section operates in **Single mode**. In this mode, the button is momentary, and the CV input is treated as a **trigger**. Pressing the button—or receiving a trigger—causes the section to perform its action (e.g., sample) for a single processing cycle only, regardless of how long the button is held or the input signal remains high. Pressing the small toggle button switches the section to **Continuous mode** (**green**), where the large button becomes latched. In this mode, the section continues performing its action (e.g. sampling) for as long as the button is latched or the CV input remains high.
 
 You can think of this module as a “delayed” sample-and-hold. When you press **Sample** or provide a Sample trigger, the input signal is captured and stored in memory—but the output does not necessarily update immediately. Instead, the output changes only when you press **Update** or provide an Update trigger. To emulate a traditional sample-and-hold, set the **Sample** section to **Single mode** (red), and set the **Update** section to **Continuous mode** (green) with the button latched. In this configuration, the module continuously outputs the last stored value, while new samples are written to memory only when triggered. To emulate a Track & Hold module, you set the sample section into continious mode, so it will continious update as long as the sample-input is high (or button is pressed/latched).
 

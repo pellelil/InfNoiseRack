@@ -74,30 +74,30 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + PolyVCMP: -
 
 ### Switches
-+ CxFade1x2: Added overlay on top of trim-knob when CV-Mode is in Trigger mode **Needs testing**
-+ CxFade4x1: Added overlay on top of trim-knob when CV-Mode is in Trigger mode (Master and sections 1–4 independently) **Needs testing**
-+ CrossFadeSwitch1to4: Added overlay on top of trim-knob when CV-Mode is in Trigger only mode **Needs testing**
-+ CrossFadeSwitch4to1: Added overlay on top of trim-knob when CV-Mode is in Trigger only mode **Needs testing**
++ CxFade1x2: -
++ CxFade4x1: -
++ CrossFadeSwitch1to4: -
++ CrossFadeSwitch4to1: -
 + BernoulliSwitch: -
 + OnOffSwitch: -
-+ Combine: Added overlay on top of Range switch when not in U/L mode **Needs testing**
++ Combine: -
 
 ### Random
 + Random4: -
-+ RandomCurve: Added overlay on top of FP (Forced Polarity) button when distribution is Min/Max **Needs testing**
++ RandomCurve: -
 + Arm3XY: -
 
 ### Envelope
 + ADREnvelope: -
-+ ADSDREnvelope: New module **Needs testing**
-+ EnvelopePhaseExpander: Changed Stdy detection. Lights to only update in processParams **Needs testing**
++ ADSDREnvelope: -
++ EnvelopePhaseExpander: -
 
 ### Misc
 + Sign: -
 + Sign4I: -
 + Sign4II: -
 + Fold: -
-+ WaveShaper2: Added overlay on top of Reset-input when Value-range is not Automatic **Needs testing**
++ WaveShaper2: -
 + RingMod3: -
 + IncDecOffset: -
 + Delta4: -

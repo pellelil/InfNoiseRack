@@ -35,6 +35,7 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		ENUMS(CLIP_RANGE_LIGHT, 2),
 		ENUMS(LEFT_EXPAND_LIGHT, 2),
 		ENUMS(RIGHT_EXPAND_LIGHT, 2),
+		IDLE_MODE_LIGHT,
 		LIGHTS_LEN
 	};
 
@@ -45,6 +46,14 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 	};
 	actReqValue<expanderModeType> expanderMode = actReqValue<expanderModeType>(emode_auto);
 	actReqValue<int> steadyHoldIndex = actReqValue<int>(steadyHoldDefaultIndex);
+
+	enum idleOutputModeType {
+		iom_gate,
+		iom_phasePos
+	};
+	actReqValue<idleOutputModeType> idleOutputMode = actReqValue<idleOutputModeType>(iom_gate);
+	actReqValue<voltValue> sustainPosVolt = actReqValue<voltValue>(v_p10);
+	actReqValue<voltValue> idlePosVolt = actReqValue<voltValue>(v_zero);
 
 	/// -1 = none, 0 = left host, 1 = right host
 	int connectedSide = -1;
@@ -65,6 +74,7 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		configLight(CLIP_RANGE_LIGHT, getClipRangeLightName(outClipRange.act));
 		configLight(LEFT_EXPAND_LIGHT, "Left envelope connection (Green=active, Red=issue)");
 		configLight(RIGHT_EXPAND_LIGHT, "Right envelope connection (Green=active, Red=issue)");
+		configLight(IDLE_MODE_LIGHT, "Idle output is phase position if lit");
 
 		configOutput(ATTACK_OUTPUT, "Attack-phase gate");
 		configOutput(DECAY_OUTPUT, "Decay-phase gate");
@@ -95,6 +105,8 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		float lo = voltValues[gateOutLow.act];
 		for (int i = 0; i < OUTPUTS_LEN; i++)
 			outputs[i].setVoltage(lo);
+		if (idleOutputMode.act == iom_phasePos)
+			outputs[IDLE_OUTPUT].setVoltage(0.f);
 	}
 
 	void resetMotionTracker() {
@@ -168,15 +180,27 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 	}
 
 	void receiveHostState(Module* from, InfNoiseEnvelopeModule::envPhase phase,
-		float envelope)
+		float envelope, float phasePos)
 	{
 		if (!acceptsHost(from))
 			return;
 
 		float hi = voltValues[gateOutHigh.act];
 		float lo = voltValues[gateOutLow.act];
-		for (int i = 0; i < 6; i++)
+		int phaseGateCount = (idleOutputMode.act == iom_phasePos) ? 5 : 6;
+		for (int i = 0; i < phaseGateCount; i++)
 			outputs[ATTACK_OUTPUT + i].setVoltage((int)phase == i ? hi : lo);
+
+		if (idleOutputMode.act == iom_phasePos) {
+			float v;
+			if (phase == InfNoiseEnvelopeModule::ep_sustain)
+				v = voltValues[sustainPosVolt.act];
+			else if (phase == InfNoiseEnvelopeModule::ep_idle)
+				v = voltValues[idlePosVolt.act];
+			else
+				v = phasePos * 10.f;
+			outputs[IDLE_OUTPUT].setVoltage(v);
+		}
 
 		if (!havePrevEnvelope) {
 			prevEnvelope = envelope;
@@ -214,26 +238,28 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		InfNoiseModule::onReset(e);
 		expanderMode.setBoth(emode_auto);
 		steadyHoldIndex.setBoth(steadyHoldDefaultIndex);
+		idleOutputMode.setBoth(iom_gate);
+		sustainPosVolt.setBoth(v_p10);
+		idlePosVolt.setBoth(v_zero);
 		resetMotionTracker();
 	}
 
 	void dataFromJson(json_t* rootJ) override {
 		InfNoiseModule::dataFromJson(rootJ);
-		expanderMode.setBoth((expanderModeType)clamp(
-			getJsonInt(rootJ, "expanderMode", (int)emode_auto),
-			(int)emode_auto, (int)emode_right));
-		int holdIdx = getJsonInt(rootJ, "steadyHoldIndex", steadyHoldDefaultIndex);
-		if (holdIdx < 0)
-			holdIdx = 0;
-		if (holdIdx >= steadyHoldCount)
-			holdIdx = steadyHoldCount - 1;
-		steadyHoldIndex.setBoth(holdIdx);
+		expanderMode.setBoth((expanderModeType)getJsonInt(rootJ, "expanderMode", (int)emode_auto));
+		steadyHoldIndex.setBoth(getJsonInt(rootJ, "steadyHoldIndex", steadyHoldDefaultIndex));
+		idleOutputMode.setBoth((idleOutputModeType)getJsonInt(rootJ, "idleOutputMode", (int)iom_gate));
+		sustainPosVolt.setBoth((voltValue)getJsonInt(rootJ, "sustainPosVolt", (int)v_p10));
+		idlePosVolt.setBoth((voltValue)getJsonInt(rootJ, "idlePosVolt", (int)v_zero));
 		resetMotionTracker();
 	}
 
 	void dataToJson(json_t* rootJ) override {
 		json_object_set_new(rootJ, "expanderMode", json_integer((int)expanderMode.req));
 		json_object_set_new(rootJ, "steadyHoldIndex", json_integer(steadyHoldIndex.req));
+		json_object_set_new(rootJ, "idleOutputMode", json_integer((int)idleOutputMode.req));
+		json_object_set_new(rootJ, "sustainPosVolt", json_integer((int)sustainPosVolt.req));
+		json_object_set_new(rootJ, "idlePosVolt", json_integer((int)idlePosVolt.req));
 	}
 
 	void processParams(const ProcessArgs& args) {
@@ -245,11 +271,23 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		int prevSide = connectedSide;
 		updateConnectionState();
 		updateExpandLights();
-
 		if (connectedSide != prevSide)
 			resetMotionTracker();
 		if (connectedSide < 0)
 			clearOutputs();
+
+		if (idleOutputMode.needsUpdate()) {
+			idleOutputMode.updateActual();
+
+			if (idleOutputMode.act == iom_phasePos)
+				outputInfos[IDLE_OUTPUT]->name = monoPortPrefix() + "Phase position (0V to 10V)";
+			else
+				outputInfos[IDLE_OUTPUT]->name = monoPortPrefix() + "Idle-phase gate";
+
+			lights[IDLE_MODE_LIGHT].setBrightness(idleOutputMode.act == iom_phasePos ? 1.f : 0.f);
+		}
+		sustainPosVolt.updateActual();
+		idlePosVolt.updateActual();
 
 		//--------------------
 		postProcessParams(args);
@@ -270,11 +308,11 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 void InfNoiseEnvelopeModule::pushToExpanders() {  // Called from ADR/ADSDR Envelope
 	Module* left = getLeftExpander().module;
 	if (left && left->model == modelEnvelopePhaseExpander) {
-		static_cast<EnvelopePhaseExpanderModule*>(left)->receiveHostState(this, phase, envelope);
+		static_cast<EnvelopePhaseExpanderModule*>(left)->receiveHostState(this, phase, envelope, phasePos);
 	}
 	Module* right = getRightExpander().module;
 	if (right && right->model == modelEnvelopePhaseExpander) {
-		static_cast<EnvelopePhaseExpanderModule*>(right)->receiveHostState(this, phase, envelope);
+		static_cast<EnvelopePhaseExpanderModule*>(right)->receiveHostState(this, phase, envelope, phasePos);
 	}
 }
 
@@ -293,6 +331,8 @@ struct EnvelopePhaseExpanderModuleWidget : InfNoiseModuleWidget {
 		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 123.855f), module, EnvelopePhaseExpanderModule::SUSTAIN_OUTPUT));
 		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 159.165f), module, EnvelopePhaseExpanderModule::DELAY_OUTPUT));
 		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 194.475f), module, EnvelopePhaseExpanderModule::RELEASE_OUTPUT));
+		addChild(createLightCentered<TinyLight<RedLight>>(Vec(5.164f, 213.083f), module,
+			EnvelopePhaseExpanderModule::IDLE_MODE_LIGHT));
 		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 229.785f), module, EnvelopePhaseExpanderModule::IDLE_OUTPUT));
 
 		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 265.095f), module, EnvelopePhaseExpanderModule::RISE_OUTPUT));
@@ -323,7 +363,30 @@ struct EnvelopePhaseExpanderModuleWidget : InfNoiseModuleWidget {
 			"128 cycles",
 			"256 cycles"
 		}, &module->steadyHoldIndex.req));
-			
+
+		menu->addChild(createIndexPtrSubmenuItem("Idle output-mode", {
+			"Gate (idle phase active)",
+			"Phase position (0V to 10V)"
+		}, &module->idleOutputMode.req));
+		std::vector<std::string> voltNames = getVoltValuesNames();
+		
+		auto idleVoltDisabled = [=]() {
+			return module->idleOutputMode.req != EnvelopePhaseExpanderModule::iom_phasePos;
+		};
+
+		DynamicDisabledMenuItem* sustainVoltItem = createIndexSubmenuItem<DynamicDisabledMenuItem>(
+			"Sustain voltage", voltNames,
+			[=]() { return (size_t)module->sustainPosVolt.req; },
+			[=](size_t index) { module->sustainPosVolt.req = (voltValue)index; });
+		sustainVoltItem->disabledWhen = idleVoltDisabled;
+		menu->addChild(sustainVoltItem);
+		DynamicDisabledMenuItem* idleVoltItem = createIndexSubmenuItem<DynamicDisabledMenuItem>(
+			"Idle voltage", voltNames,
+			[=]() { return (size_t)module->idlePosVolt.req; },
+			[=](size_t index) { module->idlePosVolt.req = (voltValue)index; });
+		idleVoltItem->disabledWhen = idleVoltDisabled;
+		menu->addChild(idleVoltItem);
+
 		appendInfNoiseMenuItems(menu);
 	}
 };

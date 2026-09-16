@@ -1,17 +1,18 @@
 # 2.0.4 (In development)
-- Modules with trigger output can now specify output trigger high- and low-length/duration independently (using their context menu). By default an output trigger is forced to be **high for 1 ms, then low for 1 ms** (hence each trigger output can max generate 500 triggers per second). However modules (with trigger outputs) can now specify **Trigger-high length** and **Trigger-low length** as **number of ms** (1, 2, 5, 10, 50, 100, 200, 500, or 1000) or **number of cycles** (1, 2, 4, 8, 16, 32, 64, 128 or 256). High and low can differ (e.g. 10 ms high then 1 ms low - before the next trigger is allowed to fire). *Chossing a low cycle count you will be able to generate more than 500 trigger per second (if needed), however be sure to not pick a too low value as some modules might not look for/process triggers every cycle. Likewise you can instead choose a high ms count, where output ports that can otherwise only genrate triggers, can be used as fixed length gates (longer than 1 ms) - directly without needing another utility module.*
-- Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. A few other modules were re-ordered as well for a more "logic" order. *Going forward, order should not change unless for new modules.*
-- Various changes/fixes to the documentations (e.g. added a few illustrations to the documentation of the Envelope modules).
+- Modules with trigger output can now specify output trigger high- and low-length/duration independently (using their context menu). By default an output trigger is forced to be **high for 1 ms, then low for 1 ms** (hence each trigger output can max generate 500 triggers per second). However modules (with trigger outputs) can now specify **Trigger-high length** and **Trigger-low length** as **number of ms** (1, 2, 5, 10, 50, 100, 200, 500, or 1000) or **number of cycles** (1, 2, 4, 8, 16, 32, 64, 128 or 256). High and low can differ (e.g. 10 ms high then 1 ms low - before the next trigger is allowed to fire). *Choosing a low cycle count you will be able to generate more than 500 triggers per second (if needed), however be sure to not pick a too low value as some modules might not look for/process triggers every cycle. Likewise you can instead choose a high ms count, where output ports that can otherwise only generate triggers, can be used as fixed length gates (longer than 1 ms) - directly without needing another utility module.*
+- Added a bit more (elaborate) description for each module both in the manifest (shown in the VCV library) and in the module overview of the manual.
+- Changed the order of the modules as they appear in the browser and manual for a few modules, as there is now a "Random" and "Envelope" section in the manual, containing some of the modules that were previously located in the "Misc" section. A few other modules were re-ordered as well for a more "logical" order. *Going forward, order should not change unless for new modules.*
+- Various changes/fixes to the documentation (e.g. added a few illustrations to the documentation of the Envelope modules).
 - In multiple modules, overlay(s) were added on top of controls (e.g. knobs/ports) when these are rendered "not in use" due to certain configurations set via switches (see **Updated modules** below).
 - In multiple modules, latchable/pressed buttons remained pressed when set to momentary (see **Fixed modules** below).
 
 
 ## New modules
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
-- **[EnvelopePhaseExpander](doc/Envelope.md#envelope-phase-expander)**: Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for envelope movement (Rise, Steady and Fall). 
+- **[Envelope Phase Expander](doc/Envelope.md#envelope-phase-expander)**: Expander for ADR/ADSDR Envelope with gate outputs for each phase (Attack, Decay, Sustain, Delay, Release and Idle) plus gate outputs for envelope movement (Rise, Steady and Fall). The Idle output can optionally output phase position (0V to 10V) instead of an idle-phase gate. 
 
 ## Updated modules
-- **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Added inverted Envelope-output. Added a Delay time link button (D.time can follow A.time). Fixed issue where the high/low outputs of BOA, EOA, BOR and EOR whould use gate-threshold values in stead of trigger-threshold values (only an issue if you changed output levels via the context menu). Also removed context menu-items to set gate-output levels, as the module don't have gate-outputs.
+- **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Added inverted Envelope-output. Added a Delay time link button (D.time can follow A.time). Fixed issue where the high/low outputs of BOA, EOA, BOR and EOR would use gate-threshold values instead of trigger-threshold values (only an issue if you changed output levels via the context menu). Also removed context menu-items to set gate-output levels, as the module doesn't have gate-outputs.
 - **[Flip-Flop](doc/FlipFlop.md#flip-flop)**: All input/output (except enable/disable input) were made polyphonic, so there is basically an individual flip-flop for each channel of a polyphonic signal. You can mix polyphonic and monophonic signals (e.g. have a polyphonic Set-input and a monophonic Reset-input), however if using multiple polyphonic inputs they should ideally have the same number of channels.
 - **[Random-4](doc/Random.md#random-4)**: Trig-input now accepts a polyphonic signal, so new random values can be triggered independently per channel. Polyphony defaults to **Auto** (same number of channels as the Trig-input, or 1 if no input is connected); a fixed count can still be selected regardless of the Trig-input (a red light next to the Trig-input is lit when a fixed count is used).
 - **[Random Curve](doc/Random.md#random-curve)**: Added step-mode context menu, so steps can occur either mid-phase (as in previous versions) or at the start of the phase (at the same time as the trigger output fires a trigger). Fixed issue where trigger output would not fire unless one of the six curve outputs was in use (e.g., if you simply used this module with **LFO rate chaos** to generate a series of "chaotic triggers"). Added overlay on top of the FP (Forced Polarity) button when distribution is Min/Max (as Forced Polarity is only used in Center/Edge mode).
@@ -27,14 +28,14 @@
 ## Fixed modules
 - **[LFO1](doc/LFO.md#lfo1)**: Fixed issue storing sync-out mode in json and issue with polyphonic Sync out triggers in n-shot mode.
 - **[Logic Comparator-2](doc/Compare.md#logic-comparator-2)**: Fixed issues: detecting connected outputs, using normalized A/B input when no A/B outputs were connected and outputting polyphonic C/D results.
-- **[Value Comparator-1](doc/Compare.md#value-comparator-1)**: Fixed issue where the A<=B output stayed monophonic while other output could be polyphonic.
+- **[Value Comparator-1](doc/Compare.md#value-comparator-1)**: Fixed issue where the A<=B output stayed monophonic while other outputs could be polyphonic.
 - **[Value Comparator-2 Mk I](doc/Compare.md#value-comparator-2-mk-i)**: Fixed issues detecting connected outputs.
 - **[Value Comparator-2 Mk II](doc/Compare.md#value-comparator-2-mk-ii)**: Fixed issues detecting connected outputs.
-- **Manuel Push 2**, **Manuel Trigger Gate and CV**, **ON/OFF Switch**, **Manuel CV 8 Mk I**, **CV-Toggle 8**, **Turing Machine, Mute 2**, **Manuel Mute 8**, **Manuel Gate 8**, **Manuel CV 8 Mk II**, **Sample and Update** and **Delta-4**: Fixed issue with latchable buttons remaining "pressed" when changed to momentary mode.
+- **Manuel Push 2**, **Manuel Trigger, Gate and CV**, **ON/OFF Switch**, **Manuel CV 8 Mk I**, **CV-Toggle 8**, **Turing Machine**, **Mute 2**, **Manuel Mute 8**, **Manuel Gate 8**, **Manuel CV 8 Mk II**, **Sample and Update** and **Delta-4**: Fixed issue with latchable buttons remaining "pressed" when changed to momentary mode.
 
 
 # 2.0.3
-Ensured all module descriptions in manifest are identical to module descriptions in the manual. Also updated the manifest tags for several modules, e.g. LCMP2, VCMP1 and VCMP2 Mk I, are all able to work as 2-to-1 switches thanks to their "True"/"False" inputs in the top of the modules, but were not tagged as "Switch" in the maninfest. Various minor updates to the manual (e.g. added badges to highlight module features, and changed all module headers). Added support for multi-stage (color) push-buttons (needed one for the ADR Envelope).
+Ensured all module descriptions in manifest are identical to module descriptions in the manual. Also updated the manifest tags for several modules, e.g. LCMP2, VCMP1 and VCMP2 Mk I, are all able to work as 2-to-1 switches thanks to their "True"/"False" inputs in the top of the modules, but were not tagged as "Switch" in the manifest. Various minor updates to the manual (e.g. added badges to highlight module features, and changed all module headers). Added support for multi-stage (color) push-buttons (needed one for the ADR Envelope).
 
 ## New modules
 - **[ADR Envelope](doc/ADREnvelope.md#adr-envelope)**: Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).
@@ -50,21 +51,21 @@ Ensured all module descriptions in manifest are identical to module descriptions
 - **[Fold](doc/Fold.md#fold)**: Output port appeared to be monophonic ("red circle" was missing), but would output polyphonic signals.
 
 # 2.0.2 
-Fixed various warnings based on cppcheck report from VCV. Going forward I now have a local release-check script I can run, which monitors the various issues reported from VCV. So future releases should be less painfull.
+Fixed various warnings based on cppcheck report from VCV. Going forward I now have a local release-check script I can run, which monitors the various issues reported from VCV. So future releases should be less painful.
 
 
-# 2.0.1 (not included in VCV Library due various issues)
+# 2.0.1 (not included in VCV Library due to various issues)
 All panel SVG-files were simplified and reduced in file-size, but appears the same as before (e.g. a hidden layer inside the files were removed).
 
 ## Updated Modules
-- **[Poly-Merge](doc/PolyTools.md#poly-merge)**: Ligths (next to each input port) indicating channel count are now color-coded, whether input is availble (green) or whether it will simply output 0V (red). Ports that are not included in the output still shows as dimmed light. *Might have fixed a bug from 2.0.0, otherwise it was a bug caused by the new code that was fixed. Anyway no known bugs.*
+- **[Poly-Merge](doc/PolyTools.md#poly-merge)**: Lights (next to each input port) indicating channel count are now color-coded, whether input is available (green) or whether it will simply output 0V (red). Ports that are not included in the output still shows as dimmed light. *Might have fixed a bug from 2.0.0, otherwise it was a bug caused by the new code that was fixed. Anyway no known bugs.*
 - **[Poly-Split](doc/PolyTools.md#poly-split)**: Output ports that have available input still shows with a green light (whether cable is connected or not). However lights for output ports without available input will either show as dimmed (when no cable is connected), or red (if a cable is connected). This works both in mono- and poly-mode. E.g. if you in Poly-mode input a 6-channel polyphonic cable, and only insert a cable into output port 8, it will still output a 8 channel signal. The lights for port 1-6 will be green (as input is available), however the lights for ports 7 and 8 will now show as red (as no input is available, and ports 7 and 8 will simply output 0V).
 
 
 # 2.0.0 (First release - not included in VCV Library due to manifest issues)
 
 ## New Modules
-As everying in this very-first release is new, it only consists of "New Modules" (nothing changed/fixed in this version). Here below is a list of all the modules included in this (1st) version.
+As everything in this very-first release is new, it only consists of "New Modules" (nothing changed/fixed in this version). Here below is a list of all the modules included in this (1st) version.
 
 - [Simple LFO4-ss](doc/LFO.md#simple-lfo4-ss)
 - [Simple LFO4-st](doc/LFO.md#simple-lfo4-st)
@@ -87,8 +88,8 @@ As everying in this very-first release is new, it only consists of "New Modules"
 - [Manuel Gate 8](doc/ManCV.md#manuel-gate-8)
 - [Manuel CV 8 Mk I](doc/ManCV.md#manuel-cv-8-mk-i)
 - [Manuel CV 8 Mk II](doc/ManCV.md#manuel-cv-8-mk-ii)
-- [ManMix4 Mk I](doc/ManCV.md#manuel-mix-4-mk-i)
-- [ManMix4 Mk II](doc/ManCV.md#manuel-mix-4-mk-ii)
+- [Manuel Mix 4 Mk I](doc/ManCV.md#manuel-mix-4-mk-i)
+- [Manuel Mix 4 Mk II](doc/ManCV.md#manuel-mix-4-mk-ii)
 - [Manuel Mix 4 Stereo](doc/ManCV.md#manuel-mix-4-stereo)
 - [Mute 2](doc/ManCV.md#mute-2)
 - [Manuel Mute 8](doc/ManCV.md#manuel-mute-8)

@@ -51,7 +51,7 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		json_object_set_new(rootJ, "envelope", json_real(envelope));
 	}
 
-	/// Push phase and envelope voltage to adjacent Envelope Phase Expander modules (defined in EnvelopePhaseExpander.cpp).
+	/// Push phase, phasePos and envelope voltage to adjacent Envelope Phase Expander modules (defined in EnvelopePhaseExpander.cpp).
 	void pushToExpanders();
 
 	float readTimeParam(int paramId, float sampleTime) {

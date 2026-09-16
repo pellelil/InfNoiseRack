@@ -1229,7 +1229,7 @@ inline int trigLengthToCycles(trigLengthType len, float sampleRate) {
 // infNoiseOutTrigger
 //-----------------------------------------------------------------------------
 /// @brief Ensures that a trigger cannot fire before the previous trigger
-/// have finished, or was reset (by default ~1 ms high and 1 ms low at 48 kHz).
+/// have finished, or was reset (by default ~1 ms high and 1 ms low).
 /// A trigger is not "finished" until the low stage has also finished.
 struct infNoiseOutTrigger {
 	int highCycles = 44; // Cycles in high stage (~1 ms @ 44 kHz, at least 1 cycle)
