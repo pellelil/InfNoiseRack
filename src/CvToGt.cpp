@@ -257,7 +257,7 @@ struct CvToGtModuleWidget : InfNoiseModuleWidget {
         const float inclClm = 25.546;
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 52.283f), module, CvToGtModule::CV_INPUT));
 
-        addChild(createLightCentered<SmallLight<GreenRedLight>>(Vec(4.981f, 69.377f), module, CvToGtModule::MIN_MODE_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(4.981f, 69.377f), module, CvToGtModule::MIN_MODE_LIGHT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(inclClm, 72.679f), module, CvToGtModule::MIN_INCL_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 84.723f), module, CvToGtModule::MIN_PARAM));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 111.913f), module, CvToGtModule::MIN_RNG_INPUT));
@@ -267,12 +267,12 @@ struct CvToGtModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 170.886f), module, CvToGtModule::MAX_RNG_INPUT));
 
         addParam(createParamCentered<CKSS>(Vec(8.482f, 194.950f), module, CvToGtModule::GATE_DIFF_PARAM));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(7.345f, 277.191f), module, CvToGtModule::ABOVE_LIGHT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(22.682f, 277.191f), module, CvToGtModule::MAX_LIGHT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(7.345f, 311.186f), module, CvToGtModule::BELOW_LIGHT));
-        addChild(createLightCentered<SmallLight<GreenLight>>(Vec(22.682f, 311.186f), module, CvToGtModule::MIN_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(7.345f, 277.191f), module, CvToGtModule::ABOVE_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(22.682f, 277.191f), module, CvToGtModule::MAX_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(7.345f, 311.186f), module, CvToGtModule::BELOW_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(22.682f, 311.186f), module, CvToGtModule::MIN_LIGHT));
 
-        addChild(createLightCentered<SmallLight<RedLight>>(Vec(5.698f, 247.543f), module, CvToGtModule::ERROR_LIGHT));
+        addChild(createLightCentered<TinyLight<RedLight>>(Vec(5.698f, 247.543f), module, CvToGtModule::ERROR_LIGHT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 227.517f), module, CvToGtModule::RANGE_OUTPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 262.591f), module, CvToGtModule::NOTRANGE_OUTPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 297.664f), module, CvToGtModule::ABOVE_MAXDIFF_OUTPUT));

@@ -7,7 +7,7 @@
 Lut1D<256> fiveSineExpIsh(0.f, 1.f);  // 5-nested bSin convex curve: slow start, fast end (WaveShaper2, LFO1, …)
 Lut1D<256> fiveSineLogIsh(0.f, 1.f);  // 5-nested bSin concave curve: fast start, slow end (same modules)
 Lut1D<256> normExp(0.f, 1.f);         // Normalized exp'ish ramp (convex): slow start, fast end
-Lut1D<256> normLog(0.f, 1.f);         // Normalized log'ish ramp (concave): fast start, slow end
+Lut1D<256> normLog(0.f, 1.f);         // Normalized log'ish ramp (concave): fast start, slow end (inversed normExp)
 Lut1D<256> depthPow2Lut(1.f, 16.f); // Used by RateDephtReducer (2^1-16 bits)
 
 static bool s_fiveSineExpLogLutsInitialized = false;
@@ -81,4 +81,60 @@ void ensureDepthPow2Lut() {
         depthPow2Lut.data[i] = std::pow(2.f, bits);
     }
     s_depthPow2LutInitialized = true;
+}
+
+//-----------------------------------------------------------------------------
+// infNoiseSlew
+//-----------------------------------------------------------------------------
+
+/// @brief Calculate the next value of the slew.
+/// @param in The input value.
+/// @param sampleTime The sample time (elapsed time since last call).
+/// @return The next value of the slew.
+float infNoiseSlew::next(float in, float sampleTime) {
+    // Exit with in, when delta is less than 1e-6V or sampleTime is less than 0.
+    float delta = in - lastOut;
+    if (std::fabs(delta) < 1e-6f || sampleTime <= 0.f) {
+        rampActive = false;
+        lastRemaining = 0.f;
+        return lastOut = in;
+    }
+
+    // Exit with in, when riseSec or fallSec is 0 (or less).
+    float T = (delta > 0.f) ? riseSec : fallSec;
+    if (T <= 0.f) {
+        rampActive = false;
+        lastRemaining = 0.f;
+        return lastOut = in;
+    }
+
+    // Detect new ramp starting: idle, flipped direction, or target jumped (ignore tiny CV hiss)
+    bool dirUp = delta > 0.f;
+    if (!rampActive || dirUp != rampUp || std::fabs(in - rampTo) > 1e-3f) {
+        rampFrom = lastOut;
+        rampTo = in;
+        rampUp = dirUp;
+        phasePos = 0.f;
+        rampActive = true;
+    }
+
+    float span = std::fabs(rampTo - rampFrom);
+    float duration = (mode == sm_constantTime) ? T : T * (span / rangeVolts);
+    if (duration <= 0.f) {
+        rampActive = false;
+        lastRemaining = 0.f;
+        return lastOut = in;
+    }
+
+    phasePos += sampleTime / duration;
+    if (phasePos >= 1.f) {
+        rampActive = false;
+        lastRemaining = 0.f;
+        return lastOut = in;
+    }
+
+    float shape = dirUp ? riseShape : fallShape;
+    lastOut = rampFrom + (rampTo - rampFrom) * applyNormExpLogShape(phasePos, shape, linearMode);
+    lastRemaining = in - lastOut;
+    return lastOut;
 }

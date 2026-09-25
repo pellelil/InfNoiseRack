@@ -25,6 +25,7 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 	envPhase phase = ep_idle;
 	float phasePos = 0.f;
 	float envelope = 0.f;
+	actReqValue<infNoiseTimeScale> timeScale = actReqValue<infNoiseTimeScale>(ts_1x); // 0.1x/1x/10x for all time knobs
 	// GreenRed phase lights (ADSDR). ADR never enters ep_decay, so those entries stay unused.
 	float attackLightGreen[ep_len] = { 1.f, 1.f, 0.f, 0.f, 0.f, 0.f };
 	float attackLightRed[ep_len]   = { 0.f, 1.f, 1.f, 0.f, 0.f, 0.f };
@@ -35,6 +36,7 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		InfNoiseModule::onReset(e);
 		phase = ep_idle;
 		phasePos = 0.f;
+		timeScale.setBoth(ts_1x);
 	}
 
 	void dataFromJson(json_t* rootJ) override {
@@ -43,12 +45,14 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		phase = (envPhase)clamp(p, (int)ep_attack, (int)ep_idle);
 		phasePos = getJsonFloat(rootJ, "phasePos", 0.f);
 		envelope = getJsonFloat(rootJ, "envelope", 0.f);
+		timeScale.setBoth((infNoiseTimeScale)getJsonInt(rootJ, "timeScale", (int)ts_1x));
 	}
 
 	void dataToJson(json_t* rootJ) override {
 		json_object_set_new(rootJ, "phase", json_integer((int)phase));
 		json_object_set_new(rootJ, "phasePos", json_real(phasePos));
 		json_object_set_new(rootJ, "envelope", json_real(envelope));
+		json_object_set_new(rootJ, "timeScale", json_integer((int)timeScale.req));
 	}
 
 	/// Push phase, phasePos and envelope voltage to adjacent Envelope Phase Expander modules (defined in EnvelopePhaseExpander.cpp).
@@ -59,13 +63,26 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		return (t < sampleTime) ? 0.f : t;
 	}
 
+	void applyTimeScaleParam(int paramId, const char* baseName, int lightId) {
+		applyInfNoiseSqTimeQntScale(paramQuantities[paramId], baseName, timeScale.act);
+		setInfNoiseTimeScaleLights(this, lightId, timeScale.act);
+	}
+
+	/// jsonVersion < 4: exponential displayBase time knob -> infNoiseSqTimeQnt (keep seconds).
+	void migrateExpTimeParamToSq(int paramId) {
+		ParamQuantity* q = getParamQuantity(paramId);
+		if (!q)
+			return;
+		const float timeBase = 10000.f;
+		const float timeMult = 10.f / (timeBase - 1.f);
+		float k = q->getValue();
+		float t = (std::pow(timeBase, k) - 1.f) * timeMult;
+		q->setDisplayValue(t);
+	}
+
 	// Mix linear with normExp (shape < 0) or normLog (shape > 0). Fill-time only.
 	static float applyShape(float x, float shape) {
-		if (shape < 0.f)
-			return x + (-shape) * (normExp(x) - x);
-		if (shape > 0.f)
-			return x + shape * (normLog(x) - x);
-		return x;
+		return applyNormExpLogShape(x, shape);
 	}
 
 	// Forward LUT: shaped 0→1 vs phasePos. Inverse: phasePos vs shaped (interrupt).

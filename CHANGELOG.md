@@ -1,3 +1,25 @@
+# 2.0.5 (In development)
+- In all of the Tweak-modules the Scale-range/Offset-mode lights were replaced by multi-stage/color push buttons (see **Updated Modules** below). This means Scale-range/Offset-mode can be changed directly from the panel, whereas these had to be changed using the context-menu in previous versions (old context menu items were removed). *When loading a patch made with a previous version, the old context-menu selections are automatically "converted" into stages for the new buttons*.
+
+## New modules
+- **[Slew 2](doc/Slew.md#slew-2)**: 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Catch (gate/trigger), shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
+- **[Slew 4](doc/Slew.md#slew-4)**: 2HP quad polyphoinc constant rate/time slew with knobs based rise/fall times/shape settings. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
+
+## Updated modules
+- **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Introduced new scaling of the 0-10 seconds time-knobs. Knob positions saved in old patches are converted on load, so the dialed-in time remains the same. Added context-menu Time scale (0.1× / 1× / 10×; green / off / red) with indicator lights on the time knobs.
+- **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Introduced new scaling of the 0-10 seconds time-knobs. Knob positions saved in old patches are converted on load, so the dialed-in time remains the same. Added context-menu Time scale (0.1× / 1× / 10×; green / off / red) with indicator lights on the time knobs.
+- **[Tweak-2 Mk I](doc/Tweak.md#tweak-2-mk-i)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
+- **[Tweak-2 Mk II](doc/Tweak.md#tweak-2-mk-ii)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons. Previous version had a single scale-range/offset-mode used for both sections (A and B). Now both sections have their own/individual buttons, hence they can be configured individually.
+- **[Tweak-4 Mk I](doc/Tweak.md#tweak-4-mk-i)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
+- **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
+- **[Tweak-8](doc/Tweak.md#tweak-8)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
+- **[CV to Gate](doc/CvToGt.md#cv-to-gate)**: changed lights to tiny-lights.
+
+## Fixed modules
+- **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Fixed trigger outputs (by default high for 2 ms - high for both high and low phases).
+- **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Fixed trigger outputs (by default high for 2 ms - high for both high and low phases).
+
+
 # 2.0.4
 - Modules with trigger output can now specify output trigger high- and low-length/duration independently (using their context menu). By default an output trigger is forced to be **high for 1 ms, then low for 1 ms** (hence each trigger output can max generate 500 triggers per second). However modules (with trigger outputs) can now specify **Trigger-high length** and **Trigger-low length** as **number of ms** (1, 2, 5, 10, 50, 100, 200, 500, or 1000) or **number of cycles** (1, 2, 4, 8, 16, 32, 64, 128 or 256). High and low can differ (e.g. 10 ms high then 1 ms low - before the next trigger is allowed to fire). *Choosing a low cycle count you will be able to generate more than 500 triggers per second (if needed), however be sure to not pick a too low value as some modules might not look for/process triggers every cycle. Likewise you can instead choose a high ms count, where output ports that can otherwise only generate triggers, can be used as fixed length gates (longer than 1 ms) - directly without needing another utility module.*
 - Added a bit more (elaborate) description for each module both in the manifest (shown in the VCV library) and in the module overview of the manual.
@@ -38,7 +60,7 @@
 Ensured all module descriptions in manifest are identical to module descriptions in the manual. Also updated the manifest tags for several modules, e.g. LCMP2, VCMP1 and VCMP2 Mk I, are all able to work as 2-to-1 switches thanks to their "True"/"False" inputs in the top of the modules, but were not tagged as "Switch" in the manifest. Various minor updates to the manual (e.g. added badges to highlight module features, and changed all module headers). Added support for multi-stage (color) push-buttons (needed one for the ADR Envelope).
 
 ## New modules
-- **[ADR Envelope](doc/ADREnvelope.md#adr-envelope)**: Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).
+- **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Attack-Delay-Release Envelope with attack/release time and shape (technically it is an Attack-Sustain-Delay-Release Envelope).
 
 ## Updated modules
 - **[Manuel Push 2](doc/ManCV.md#manuel-push-2)**: In previous release this module was not able to react to trigger-inputs as the manual otherwise stated. There is now a gate/trigger-mode switch next to the input that lets you select whether the input should be detected as a gate or a trigger (defaults to gate as previous version).

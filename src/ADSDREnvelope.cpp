@@ -54,6 +54,10 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
         ENUMS(CLIP_RANGE_LIGHT, 2),
         ENUMS(ATTACK_LIGHT, 2),
         ENUMS(RELEASE_LIGHT, 2),
+        ENUMS(A_TIME_SCALE_LIGHT, 2),
+        ENUMS(DC_TIME_SCALE_LIGHT, 2),
+        ENUMS(DL_TIME_SCALE_LIGHT, 2),
+        ENUMS(R_TIME_SCALE_LIGHT, 2),
         LIGHTS_LEN
     };
 
@@ -147,17 +151,14 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
         configSwitch(A_RETRIG_PARAM, 0.f, 1.f, 0.f, "Attack retrig", {"Disabled", "Enabled"});
         configSwitch(DL_RETRIG_PARAM, 0.f, 1.f, 0.f, "Delay retrig", {"Disabled", "Enabled"});
 
-        const float timeBase = 10000.f;
-        const float timeMax = 10.f;
-        const float timeMult = timeMax / (timeBase - 1.f);
-        configParam(A_TIME_PARAM, 0.f, 1.f, 0.f, "Attack time (0 to 10 s)", " s",
-            timeBase, timeMult, -timeMult);
-        configParam(DC_TIME_PARAM, 0.f, 1.f, 0.f, "Decay time (0 to 10 s)", " s",
-                timeBase, timeMult, -timeMult);
-        configParam(DL_TIME_PARAM, 0.f, 1.f, 0.f, "Delay time (0 to 10 s)", " s",
-            timeBase, timeMult, -timeMult);
-        configParam(R_TIME_PARAM, 0.f, 1.f, 0.f, "Release time (0 to 10 s)", " s",
-            timeBase, timeMult, -timeMult);
+        configParam<infNoiseSqTimeQnt>(A_TIME_PARAM, 0.f, 1.f, 0.f, "Attack time (0 to 10 s)", " s");
+        configParam<infNoiseSqTimeQnt>(DC_TIME_PARAM, 0.f, 1.f, 0.f, "Decay time (0 to 10 s)", " s");
+        configParam<infNoiseSqTimeQnt>(DL_TIME_PARAM, 0.f, 1.f, 0.f, "Delay time (0 to 10 s)", " s");
+        configParam<infNoiseSqTimeQnt>(R_TIME_PARAM, 0.f, 1.f, 0.f, "Release time (0 to 10 s)", " s");
+        configLight(A_TIME_SCALE_LIGHT, "Attack time scale (green=0.1x, off=1x, red=10x)");
+        configLight(DC_TIME_SCALE_LIGHT, "Decay time scale (green=0.1x, off=1x, red=10x)");
+        configLight(DL_TIME_SCALE_LIGHT, "Delay time scale (green=0.1x, off=1x, red=10x)");
+        configLight(R_TIME_SCALE_LIGHT, "Release time scale (green=0.1x, off=1x, red=10x)");
         configParam(A_SHAPE_PARAM, -1.f, 1.f, 0.f, "Attack shape (Exp/Lin/Log)");
         configParam(DC_SHAPE_PARAM, -1.f, 1.f, 0.f, "Decay shape (Exp/Lin/Log)");
         configParam(R_SHAPE_PARAM, -1.f, 1.f, 0.f, "Release shape (Exp/Lin/Log)");
@@ -226,6 +227,13 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseEnvelopeModule::dataFromJson(rootJ);
+
+        if (jsonVersion < 4) {
+            migrateExpTimeParamToSq(A_TIME_PARAM);
+            migrateExpTimeParamToSq(DC_TIME_PARAM);
+            migrateExpTimeParamToSq(DL_TIME_PARAM);
+            migrateExpTimeParamToSq(R_TIME_PARAM);
+        }
 
         attackRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "attackRateChaos", (int)rc_default));
         decayRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "decayRateChaos", (int)rc_default));
@@ -328,6 +336,14 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
         delayChaosAmount = rateChaosValues[delayRateChaos.act];
         releaseRateChaos.updateActual();
         releaseChaosAmount = rateChaosValues[releaseRateChaos.act];
+
+        if (timeScale.needsUpdate() || mustProcessParams) {
+            timeScale.updateActual();
+            applyTimeScaleParam(A_TIME_PARAM, "Attack time", A_TIME_SCALE_LIGHT);
+            applyTimeScaleParam(DC_TIME_PARAM, "Decay time", DC_TIME_SCALE_LIGHT);
+            applyTimeScaleParam(DL_TIME_PARAM, "Delay time", DL_TIME_SCALE_LIGHT);
+            applyTimeScaleParam(R_TIME_PARAM, "Release time", R_TIME_SCALE_LIGHT);
+        }
 
         // Attack, Delay and Release times
         attackTime = readTimeParam(A_TIME_PARAM, args.sampleTime);
@@ -559,7 +575,7 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
             // Generate trigger outputs
             if (haveTriggerOutputs) {
                 for (int i = 0; i < 6; i++) {
-                    outputs[BOA_OUTPUT + i].setVoltage(outTrig[i].running() 
+                    outputs[BOA_OUTPUT + i].setVoltage(outTrig[i].isHigh() 
                         ? voltValues[trigOutHigh.act] : voltValues[trigOutLow.act]);
                 }
             }
@@ -625,11 +641,16 @@ struct ADSDREnvelopeModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(6.133f, 114.109f), module, ADSDREnvelopeModule::A_RETRIG_PARAM));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(6.133f, 123.334f), module, ADSDREnvelopeModule::DL_RETRIG_PARAM));
 
+        const float timeScaleLgtOfs = 10.f;
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rightClm, 121.126f), module, ADSDREnvelopeModule::DL_TIME_PARAM));
+        addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(rightClm + timeScaleLgtOfs, 121.126f - timeScaleLgtOfs), module, ADSDREnvelopeModule::DL_TIME_SCALE_LIGHT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(centerRightClm, 106.091f), module, ADSDREnvelopeModule::DL_TIME_LINK_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(leftClm, 154.524f), module, ADSDREnvelopeModule::A_TIME_PARAM));
+        addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(leftClm + timeScaleLgtOfs, 154.524f - timeScaleLgtOfs), module, ADSDREnvelopeModule::A_TIME_SCALE_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerClm, 154.524f), module, ADSDREnvelopeModule::DC_TIME_PARAM));
+        addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(centerClm + timeScaleLgtOfs, 154.524f - timeScaleLgtOfs), module, ADSDREnvelopeModule::DC_TIME_SCALE_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rightClm, 154.524f), module, ADSDREnvelopeModule::R_TIME_PARAM));
+        addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(rightClm + timeScaleLgtOfs, 154.524f - timeScaleLgtOfs), module, ADSDREnvelopeModule::R_TIME_SCALE_LIGHT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(centerLeftClm, 139.489f), module, ADSDREnvelopeModule::DC_TIME_LINK_PARAM));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, false>>(Vec(centerRightClm, 139.489f), module, ADSDREnvelopeModule::R_TIME_LINK_PARAM));
         
@@ -726,6 +747,7 @@ struct ADSDREnvelopeModuleWidget : InfNoiseModuleWidget {
         assert(module);
 
         menu->addChild(new MenuSeparator);
+        menu->addChild(createIndexPtrSubmenuItem("Time scale", infNoiseTimeScaleMenuNames(), &module->timeScale.req));
 
         std::vector<std::string> rateChaosNames = getRateChaosNames();
         menu->addChild(createIndexPtrSubmenuItem("Attack rate chaos", rateChaosNames,

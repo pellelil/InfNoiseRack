@@ -416,6 +416,167 @@ inline std::vector<std::string> getRateChaosNames() {
 
 
 //-----------------------------------------------------------------------------
+// Fixed slew times (optional Adaptive as last item)
+//-----------------------------------------------------------------------------
+enum fixedSlewTimes {
+	fst_0,
+	fst_0_0001, fst_0_0002, fst_0_0005,
+	fst_0_001, fst_0_002, fst_0_005,
+	fst_0_01, fst_0_02, fst_0_05,
+	fst_0_1, fst_0_2, fst_0_5,
+	fst_1, fst_2, fst_5, fst_10,
+	fst_Adaptive
+};
+const int fixedSlewTimesCount = fixedSlewTimes::fst_Adaptive + 1;
+const fixedSlewTimes fst_default = fst_0;  // Slew time = 0 (no slew)
+// Seconds per setting. fst_Adaptive is a sentinel (not a duration).
+const float fixedSlewTimesValues[]{
+	0.f,
+	0.0001f, 0.0002f, 0.0005f,
+	0.001f, 0.002f, 0.005f,
+	0.01f, 0.02f, 0.05f,
+	0.1f, 0.2f, 0.5f,
+	1.f, 2.f, 5.f, 10.f,
+	-1.f
+};
+// RGB for RedGreenBlueLight: dim at 0, green→red from 0.0001 to 10 s, blue = Adaptive.
+const float fixedSlewTimesLightR[]{
+	0.f,
+	0.f / 15.f, 1.f / 15.f, 2.f / 15.f, 3.f / 15.f, 4.f / 15.f, 5.f / 15.f,
+	6.f / 15.f, 7.f / 15.f, 8.f / 15.f, 9.f / 15.f, 10.f / 15.f, 11.f / 15.f,
+	12.f / 15.f, 13.f / 15.f, 14.f / 15.f, 15.f / 15.f,
+	0.f
+};
+const float fixedSlewTimesLightG[]{
+	0.f,
+	15.f / 15.f, 14.f / 15.f, 13.f / 15.f, 12.f / 15.f, 11.f / 15.f, 10.f / 15.f,
+	9.f / 15.f, 8.f / 15.f, 7.f / 15.f, 6.f / 15.f, 5.f / 15.f, 4.f / 15.f,
+	3.f / 15.f, 2.f / 15.f, 1.f / 15.f, 0.f / 15.f,
+	0.f
+};
+const float fixedSlewTimesLightB[]{
+	0.f,
+	0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
+	0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
+	0.f, 0.f, 0.f, 0.f,
+	1.f
+};
+
+/// @brief Set the lights for a fixed slew time.
+/// @param module The module to set the lights for.
+/// @param lightId The ID of the light to set.
+/// @param t The fixed slew time to set the lights for.
+/// @param haveBlue If true, set the blue light.
+inline void setFixedSlewTimesLight(Module* module, int lightId, fixedSlewTimes t, bool haveBlue = true) {
+	int i = (int)t;
+	if (i < 0 || i >= fixedSlewTimesCount)
+		i = (int)fst_default;
+	module->lights[lightId].setBrightness(fixedSlewTimesLightR[i]);
+	module->lights[lightId + 1].setBrightness(fixedSlewTimesLightG[i]);
+	if (haveBlue)
+		module->lights[lightId + 2].setBrightness(fixedSlewTimesLightB[i]);
+}
+
+inline std::string getFixedSlewTimesName(fixedSlewTimes t) {
+	if (t == fst_0)
+		return "0 (default)";
+	if (t == fst_Adaptive)
+		return "Adaptive";
+	float s = fixedSlewTimesValues[(int)t];
+	if (s >= 1.f && s == std::floor(s))
+		return string::f("%d s", (int)s);
+	if (s >= 0.1f)
+		return string::f("%.1f s", s);
+	if (s >= 0.01f)
+		return string::f("%.2f s", s);
+	if (s >= 0.001f)
+		return string::f("%.3f s", s);
+	return string::f("%.4f s", s);
+}
+
+/// @brief Fixed slew-time names for a popup menu.
+/// @param inclAdaptive if true, include "Adaptive" as the last item.
+inline std::vector<std::string> getFixedSlewTimesNames(bool inclAdaptive) {
+	std::vector<std::string> names;
+	int count = inclAdaptive ? fixedSlewTimesCount : fixedSlewTimesCount - 1;
+	for (int i = 0; i < count; i++)
+		names.push_back(getFixedSlewTimesName((fixedSlewTimes)i));
+	return names;
+}
+
+
+//-----------------------------------------------------------------------------
+// Period helpers (trigger interval measurement + adaptive period tracking)
+//-----------------------------------------------------------------------------
+/// @brief Measures period (seconds) between successive events (e.g. triggers). 
+/// Call process() every sample; call onEvent() when an event occurs.
+struct infNoiseEventTracker {
+	float elapsed = 0.f;   // time since last event (e.g. trigger)
+	float period = 0.f;    // last measured interval (valid if havePeriod)
+	bool havePeriod = false;
+	bool seenFirst = false;
+
+	inline void reset() {
+		elapsed = 0.f;
+		period = 0.f;
+		havePeriod = false;
+		seenFirst = false;
+	}
+
+	/// @brief Accumulate elapsed time (call every process cycle).
+	inline void process(float sampleTime) {
+		elapsed += sampleTime;
+	}
+
+	/// @brief Record a trigger. Returns true if period was updated (2nd+ trigger).
+	inline bool onEvent() {
+		if (!seenFirst) {
+			seenFirst = true;
+			elapsed = 0.f;
+			return false;
+		}
+		period = elapsed;
+		elapsed = 0.f;
+		havePeriod = true;
+		return true;
+	}
+};
+
+/// @brief Tracks a period (seconds) via snap (known cycle, e.g. LFO) or blend
+/// (measured interval, e.g. triggers). Does not own a trigger tracker —
+/// module holds both. Callers may clamp get() if needed.
+struct infNoisePeriodTracker {
+	float period = 0.1f;     // current period seconds; default until first update
+	float trigBlend = 0.75f; // weight of new measurement (0..1); mutable
+
+	/// @brief Resets period only; leaves trigBlend unchanged.
+	inline void reset(float initial = 0.1f) {
+		period = initial;
+	}
+
+	/// @brief LFO path: replace with exact cycle period.
+	inline void snapTo(float periodSec) {
+		if (!(periodSec > 0.f))
+			return;
+		period = periodSec;
+	}
+
+	/// @brief Trig path: mix toward measured period using trigBlend.
+	inline void blendToward(float periodSec) {
+		if (!(periodSec > 0.f))
+			return;
+		float b = rack::math::clamp(trigBlend, 0.f, 1.f);
+		period = period * (1.f - b) + periodSec * b;
+	}
+
+	/// @brief Current period in seconds (unclamped).
+	inline float get() const {
+		return period;
+	}
+};
+
+
+//-----------------------------------------------------------------------------
 // Volt interval-values (note intervals in 1/12 V steps: -11 to +11 semitones)
 //-----------------------------------------------------------------------------
 enum voltIntervalValue {
@@ -1680,6 +1841,82 @@ struct infNoiseLfoFreqQnt : ParamQuantity {
 		return ParamQuantity::getDisplayValue();
 	}
 };
+
+
+//-----------------------------------------------------------------------------
+// infNoiseSqTimeQnt
+//-----------------------------------------------------------------------------
+/// @brief Time knob with quadratic (k²) scaling. Physical range is 0 to 1;
+/// displayed/engine seconds are k*k*maxSeconds (default 0 to 10 s).
+/// Default physical 0 is pass-through.
+struct infNoiseSqTimeQnt : ParamQuantity {
+	float maxSeconds = 10.f;
+
+	infNoiseSqTimeQnt() {
+		unit = " s";
+		displayMultiplier = 1.f;
+		minValue = 0.f;
+		maxValue = 1.f;
+		defaultValue = 0.f;
+	}
+
+	float getDisplayValue() override {
+		float k = getValue();
+		if (k <= 0.f)
+			return 0.f;
+		return k * k * maxSeconds;
+	}
+
+	void setDisplayValue(float displayValue) override {
+		if (displayValue <= 0.f || maxSeconds <= 0.f) {
+			setValue(0.f);
+			return;
+		}
+		setValue(std::sqrt(displayValue / maxSeconds));
+	}
+};
+
+enum infNoiseTimeScale {
+	ts_0_1x, // green, 0 to 1 s
+	ts_1x,   // off/black (default), 0 to 10 s
+	ts_10x,  // red, 0 to 100 s
+	ts_len
+};
+
+inline void setInfNoiseTimeScaleLights(Module* module, int lightId, infNoiseTimeScale scale) {
+	const float gr[ts_len][2] = {
+		{ 1.f, 0.f }, // green = 0.1x
+		{ 0.f, 0.f }, // off = 1x
+		{ 0.f, 1.f }  // red = 10x
+	};
+	int idx = (int)scale;
+	if (idx < 0 || idx >= (int)ts_len)
+		idx = (int)ts_1x;
+	module->lights[lightId].setBrightness(gr[idx][0]);
+	module->lights[lightId + 1].setBrightness(gr[idx][1]);
+}
+
+inline void applyInfNoiseSqTimeQntScale(ParamQuantity* q, const char* baseName, infNoiseTimeScale scale) {
+	infNoiseSqTimeQnt* tq = dynamic_cast<infNoiseSqTimeQnt*>(q);
+	if (!tq)
+		return;
+	const float factors[ts_len] = { 0.1f, 1.f, 10.f };
+	int idx = (int)scale;
+	if (idx < 0 || idx >= (int)ts_len)
+		idx = (int)ts_1x;
+	float maxSec = 10.f * factors[idx];
+	tq->maxSeconds = maxSec;
+	tq->name = string::f("%s (0 to %g s)", baseName, maxSec);
+}
+
+inline const std::vector<std::string>& infNoiseTimeScaleMenuNames() {
+	static const std::vector<std::string> k{
+		"0.1x (0 to 1 s)",
+		"1x (0 to 10 s)",
+		"10x (0 to 100 s)"
+	};
+	return k;
+}
 
 
 //-----------------------------------------------------------------------------

@@ -17,7 +17,7 @@ using namespace ::rack;
 //-----------------------------------------------------------------------------
 
 enum buttonColor {
-    bc_black, bc_red, bc_green, bc_blue
+    bc_black, bc_red, bc_green, bc_blue, bc_orange, bc_yellow
 };
 
 /// Face color -> button SVG.
@@ -29,6 +29,10 @@ inline const char* infNoiseLtSmallButtonSvgPath(buttonColor color) {
         return "res/components/InfNoiseLtSmallGreenButton.svg";
     case bc_blue:
         return "res/components/InfNoiseLtSmallBlueButton.svg";
+    case bc_orange:
+        return "res/components/InfNoiseLtSmallOrangeButton.svg";
+    case bc_yellow:
+        return "res/components/InfNoiseLtSmallYellowButton.svg";
     case bc_black:
     default:
         return "res/components/InfNoiseLtSmallBlackButton.svg";
@@ -43,6 +47,10 @@ inline const char* infNoiseSmallButtonSvgPath(buttonColor color) {
         return "res/components/InfNoiseSmallGreenButton.svg";
     case bc_blue:
         return "res/components/InfNoiseSmallBlueButton.svg";
+    case bc_orange:
+        return "res/components/InfNoiseSmallOrangeButton.svg";
+    case bc_yellow:
+        return "res/components/InfNoiseSmallYellowButton.svg";
     case bc_black:
     default:
         return "res/components/InfNoiseSmallBlackButton.svg";

@@ -1,16 +1,16 @@
 # Tweak modules (VCA and others below)
-All Tweak modules share a common set of features, making them an essential part (at least in my own racks). These modules allow for **scaling** (attenuverting between -1x and +1x, or up to -10x/+10x selectable via context menu), **offsetting** (-10V to +10V), **clipping**, **quantization**, and **mixing** signals (except for Tweak-2I, and Tweak4I which cannot mix). When first added to a rack, each module is initialized with default settings: scaling set to 1x, scaling mode set to linear, offset set to 0V, and perform scaling before offset. This means the output will initially be identical to the input signal. 
+All Tweak modules share a common set of features, making them an essential part (at least in my own racks). These modules allow for **scaling** (attenuverting between -1x and +1x, or up to -10x/+10x using the Scale-range button), **offsetting** (-10V to +10V), **clipping**, **quantization**, and **mixing** signals (except for Tweak-2I, and Tweak4I which cannot mix). When first added to a rack, each module is initialized with default settings: scaling set to 1x, scaling mode set to linear, offset set to 0V, and perform scaling before offset. This means the output will initially be identical to the input signal. 
 
 To keep the panel uncluttered, clipping and quantization settings are only accessible through the context menu. By default, all outputs are hard-clipped at -12V to +12V, but this range can be adjusted or disabled. Quantization is off by default but can be enabled via the context menu. Available quantization options include 1/12V (for semitones/notes), multiple semitone steps, whole octaves (1V), or multiple octaves.
 
-The scale knobs allow for attenuverting between -1x and +1x by default, but this can be expanded using the **Scale Range Mode** in the context menu. Options include 1x, 2x, 5x, and 10x scaling. The label on the physical panel always shows "-1x" to "+1x", but a color-coded indicator light to the left of the Scale label reflects the active mode:
+The scale knobs allow for attenuverting between -1x and +1x by default, but this can be expanded using the **Scale-range** button to the left of the Scale label. Click the button to cycle through 1x, 2x, 5x, and 10x. The label on the physical panel always shows "-1x" to "+1x", but the button color reflects the active range:
 
-+ **1x** Mode (default) → No light
-+ **2x** Mode → Green
-+ **5x** Mode → Yellow
-+ **10x** Mode → Red
++ **1x** Black/dim (default)
++ **2x** → Green
++ **5x** → Yellow
++ **10x** → Red
 
-Without needing to open the context menu, these colors provide a quick reference for the active scale range. In 1x mode, the scale knob adjusts from -1x (-100%) to +1x (+100%), while in 10x mode, it spans -10x (-1000%) to +10x (+1000%). If you plan to output signals beyond ±12V, **ensure that clipping is disabled** in the context menu, otherwise with the default settings the signal will be clipped to the range -12V to +12V.
+In 1x mode, the scale knob adjusts from -1x (-100%) to +1x (+100%), while in 10x mode, it spans -10x (-1000%) to +10x (+1000%). If you plan to output signals beyond ±12V, **ensure that clipping is disabled** in the context menu, otherwise with the default settings the signal will be clipped to the range -12V to +12V.
 
 Most Tweak modules include a CV input for controlling the scale parameter. The CV input value is added to the manual scale setting, but the total scaling remains clamped within the selected Scale Range Mode. By default, the scaling is linear, but it can be adjusted via the context menu to Exp (green) or Log (red). This light is dimmed when using default linear scaling.
 
@@ -22,7 +22,7 @@ Tweak-2I offer CV-input for both Scale and offset. This input both support monop
 
 ![Screenshot of Tweak modules](img/tweakModules.png) 
 
-As seen in the previous screenshot, the Tweak modules come in multiple versions, each differing in the number of sections, whether scale and offset settings are applied individually per section or shared across multiple sections, and whether adjustments can be made using CV inputs or only through knobs. All modules allow for scaling (attenuverting/amplifying) and offsetting the input signal. By default, the **scale operation is performed before the offset operation**, but this **order can be changed** via the context menu. If set to "Offset → Scale", a blue light next to the Offset label will illuminate, indicating that offsetting occurs before scaling. When this light is off, the default "Scale → Offset" order is active.
+As seen in the previous screenshot, the Tweak modules come in multiple versions, each differing in the number of sections, whether scale and offset settings are applied individually per section or shared across multiple sections, and whether adjustments can be made using CV inputs or only through knobs. All modules allow for scaling (attenuverting/amplifying) and offsetting the input signal. By default, the **scale operation is performed before the offset operation**, but this **order can be changed** using the **Order** button to the left of the Offset label. When the button is unlit, the default "Scale → Offset" order is active. Click it to switch to "Offset → Scale" (blue), so offsetting occurs before scaling.
 
 Among the Tweak modules, Tweak-2I, and Tweak-4I are the only one that does not support mixing signals. The other modules, such as Tweak-2II, Tweak-4II and Tweak-8, allow for mixing. Tweak-2II has two sections labeled A and B, and if no cable is inserted into the A-output, the B-output will contain a normalized mix of both sections—effectively averaging their signals. 
 
@@ -50,7 +50,7 @@ Below are 3 examples to better illustrate how the mix of signals are functioning
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Mix-No-red.svg?style=flat-square)<br>
-The Tweak-2 Mk I module is a compact 2HP utility with two inputs and two outputs which uses the same knob/CV-input to scale/offset both inputs. Since the same knobs/CV-inputs are used for scaling and offset both the A- and the B-signal, this module is ideal if/when you need to tweak a **stereo audio signal** (e.g. needs to anneuvert it). The scale knob allows adjustment from -1x (inverting and amplifying to -100%) to +1x (amplifying to 100%). The offset knob ranges from -10V to +10V, and when no input signal is connected, it can be used to generate a fixed output voltage using the offset-knob. In addition to manual control via the knobs, both scale and offset can be modified dynamically using CV inputs. The context menu provides further customization, allowing you to reverse the order of the scale and offset operations, disable the default -12V to +12V clipping, or modify the clipping range. Tweak-2I supports polyphonic signals, making it a flexible tool for both monophonic and multi-channel CV processing. *Some general info regarding the Tweak-modules are listed in the top.*
+The Tweak-2 Mk I module is a compact 2HP utility with two inputs and two outputs which uses the same knob/CV-input to scale/offset both inputs. Since the same knobs/CV-inputs are used for scaling and offset both the A- and the B-signal, this module is ideal if/when you need to tweak a **stereo audio signal** (e.g. needs to anneuvert it). The scale knob allows adjustment from -1x (inverting and amplifying to -100%) to +1x (amplifying to 100%). The offset knob ranges from -10V to +10V, and when no input signal is connected, it can be used to generate a fixed output voltage using the offset-knob. In addition to manual control via the knobs, both scale and offset can be modified dynamically using CV inputs. The context menu provides further customization, allowing you to disable the default -12V to +12V clipping, or modify the clipping range. Tweak-2I supports polyphonic signals, making it a flexible tool for both monophonic and multi-channel CV processing. *Some general info regarding the Tweak-modules are listed in the top.*
 
 ![Screenshot of Tweak-2I](module/Tweak2I.png)
 

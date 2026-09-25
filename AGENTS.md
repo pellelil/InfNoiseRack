@@ -11,3 +11,5 @@ This GitHub repo is the public plugin; git/PRs are appropriate here. Items below
 - `plugin.json` must be UTF-8 without BOM (file starts with `{`). Prefer `StrReplace`. Do not require `scripts/` (not in this tree).
 - C++: tabs in `src/`, VCV-style names, no C++14/17-only APIs, no blank line between every statement. Do not put `///` above a one-line member; use a trailing `//` when a note is needed.
 - When assigning `inputInfos` / `outputInfos` names later, prepend `monoPortPrefix()` / `polyPortPrefix()`.
+- Prefer **port** over **jack** in comments, docs, and discussion (inputs/outputs are ports).
+- Keep `extern Model*` in `plugin.hpp` and `addModel` in `plugin.cpp` alphabetically by model name. Do not reorder `plugin.json` for that; put new module entries next to related modules as requested.

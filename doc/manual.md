@@ -73,9 +73,9 @@ In addition to clipping output to a selected range (e.g., -12V to +12V) as previ
 ![Quantize menu](img/quantizeMenu.png)
 
 ### Rate Chaos
-Several Infinite-Noise modules contain an internal LFO or "rate" that determines how fast something happens: the waveforms of the [LFO modules](LFO.md), how often the [Sample & Hold modules](Shth.md) samples a new value, or how often the [Random modules](Random.md) generate new values. By default this internal rate is perfectly steady: once you dial in a frequency/rate, every cycle takes exactly the same amount of time as the previous one. The **Rate Chaos** setting (available in the context menu) lets you break up that regularity by making each cycle run at a slightly - or wildly - different speed than the one before it.
+Several Infinite-Noise modules contain an internal LFO or "rate" that determines how fast something happens: the waveforms of the [LFO modules](LFO.md), how often the [Sample & Hold modules](Shth.md) samples a new value, or how often the [Random modules](Random.md) generate new values. By default this internal rate is perfectly steady: once you dial in a frequency/rate, every cycle takes exactly the same amount of time as the previous one. The **Rate Chaos** setting (available in the context menu) lets you break up that regularity by making each cycle run at a slightly - or wildly - different speed than the one before it. *Using low settings can introduce "a light Wobble" in various modules which can make you patch "less digital", and high settings can really add some chaos (hence the name).*
 
-The setting ranges from **0% (default, off)** up to **100%** in 5% steps. At 0% the module behaves exactly as before. With Rate Chaos enabled, every time a cycle completes a new random "speed factor" is picked for the next cycle, so successive cycles become a little (or a lot) shorter or longer. The rate stays constant *within* each cycle and only changes at the cycle boundary, so for an LFO the waveform itself is never distorted - only its period drifts from one cycle to the next (e.g. "a slow" full sine waveform-cycle, may be followed by "a fast" full sine waveform-cycle).
+The setting ranges from **0% (default, off)** up to **100%** in 5% steps. At 0% the module behaves exactly as before. With Rate Chaos enabled, every time a cycle completes a new random "speed factor" is picked for the next cycle, so successive cycles become a little (or a lot) shorter or longer. The rate stays constant "within" each cycle and only changes at the cycle boundary, so for an LFO the waveform itself is never distorted - only its period drifts from one cycle to the next (e.g. "a slow" full sine waveform-cycle, may be followed by "a fast" full sine waveform-cycle).
 
 The rate chaos amount controls both how far the rate can stray and how the random speeds are distributed:
 
@@ -200,7 +200,7 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Mute 2](ManCV.md#mute-2)(p): 2HP dual mute: per-section latchable button and gate/trigger CV, plus Both.
 + [CV-Toggle 8](ManCV.md#cv-toggle-8)(pq): 8HP 8-section On/Off switch: CV or knob values, gate/trigger per section, All, and attenuate.
 + [CV to Gate](CvToGt.md#cv-to-gate)(p): Fire a gate if CV is within a specified min/max range. Also above, below, inverted-range, and Diff.
-+ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8)(p): Fire a gate or trigger if CV is within a specified min/max range. 8 sections, Cross, and a polyphonic output.
++ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8)(p): 8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.
 
 ## Merge/Mult
 + [Mult2x4](MergeMult.md#mult2x4)(p): 2HP dual mult: two inputs with four copies each, or 1-to-8 if the lower input is unused.
@@ -208,17 +208,17 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Merge/Mult-4](MergeMult.md#mergemult-4)(pq): 2HP merge/mult: 4-to-1 sum or averaging mix, plus a 1-to-4 copy. Mult defaults to the merge.
 
 ## Logic/Value-compare
-+ [Tiny Logic Comparator-2](Compare.md#tiny-logic-comparator-2)(p): 2HP dual logic: 4 inputs per section, AND/OR/XOR with invert (NAND/NOR/XNOR).
-+ [Logic Comparator-2](Compare.md#logic-comparator-2)(p): 4HP dual logic: all six Boolean outputs per section, plus True/False switch inputs.
-+ [Logic Comparator-6x2](Compare.md#logic-comparator-6x2)(p): 6HP 6-section logic: 2 inputs each, AND/OR/XOR with invert (NAND/NOR/XNOR). Chainable.
++ [Tiny Logic Comparator-2](Compare.md#tiny-logic-comparator-2)(p): 2HP dual logic: 4 inputs per section, AND/OR/XOR with invert (NAND/NOR/XNOR). Inputs can be inverted individually via context menu.
++ [Logic Comparator-2](Compare.md#logic-comparator-2)(p): 4HP dual logic: all six Boolean outputs per section, plus True/False switch inputs. Buttons next to each input can invert the input individually.
++ [Logic Comparator-6x2](Compare.md#logic-comparator-6x2)(p): 6HP 6-section logic: 2 inputs each, AND/OR/XOR with invert (NAND/NOR/XNOR). Chainable. Inputs can be inverted individually via context menu.
 + [Value Comparator-1](Compare.md#value-comparator-1)(p): 4HP value compare: A=B, A!=B, A>=B, A>B, A<=B, A<B, with tolerance, A/B-cross trigger, and clamp. True/False switch.
 + [Value Comparator-2 Mk I](Compare.md#value-comparator-2-mk-i)(p): 4HP dual value compare: two sections of A=B, A!=B, A>=B, A>B, A<=B, A<B, with True/False switch inputs.
-+ [Value Comparator-2 Mk II](Compare.md#value-comparator-2-mk-ii)(p): 4HP value compare and math: Min, Max, NtZ, FfZ, Abs-diff, and Avg of A/B, plus Int/Frac of C and Plus, Minus, Mul, Div of C/D.
++ [Value Comparator-2 Mk II](Compare.md#value-comparator-2-mk-ii)(p): 4HP value compare and math: Min, Max, NtZ, FfZ, Abs-diff, and Avg of A/B, and Int/Frac of C and Plus, Minus, Mul, Div of C/D.
 
 ## S&H, T&H, H&T
 + [S&H/T&H-2](Shth.md#shth-2)(paq): 2HP dual S&H/T&H/H&T: one in/out per section, clock in or internal LFO, Rate Chaos. Internal noise if unpatched.
 + [S&H/T&H-2x4](Shth.md#shth-2x4)(paq): 4HP dual S&H/T&H/H&T: four in/out per section, clock in or internal LFO, Rate Chaos. Internal noise if unpatched. A clock normalizes to B.
-+ [Sample and Update](Shth.md#sample-and-update)(paq): 2HP sample-and-update: Sample, Reset, and Update via button/CV. Can also count triggers and fire one when the desired count is reached.
++ [Sample and Update](Shth.md#sample-and-update)(paq): 2HP sample-and-update: Sample, Update, and Reset via button/CV. Can also count triggers and fire one when the desired count is reached.
 
 ## Polyphonic-tools
 + [Poly-Merge](PolyTools.md#poly-merge)(p): 6HP merge: up to 16 monophonic signals (or multiple polyphonic signals) into one polyphonic output. Channel count, Mono/Poly mode.
@@ -243,14 +243,18 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Combine](Switch.md#combine)(p): 2HP combine (switch) 2 inputs: Upper/Lower, A greater than B, or Rise/Fall. Knob/CV param, gate out.
 
 ## Random
-+ [Random-4](Random.md#random-4)(paq): 2HP generates 4 random values with min/max and distribution at each trigger or internal LFO. Rate Chaos.
-+ [Random Curve](Random.md#random-curve)(aq): 4HP generates 6 shaped random curves with min/max and distribution. Internal LFO, Rate Chaos, quantize.
-+ [Arm 3 XY](Arm3XY.md#arm-3-xy)(a): 8HP length and rotation of 3 arms (basically 3 polar vectors) generate a semi-random X/Y curve, plus XY mix. Rate Chaos.
++ [Random-4](Random.md#random-4)(paq): 2HP generates 4 random (polyphonic) values within specified range with center/edge or min/max distribution at each trigger or internal LFO. Rate Chaos.
++ [Random Curve](Random.md#random-curve)(aq): 4HP generates 6 shaped random curves within specified range with center/edge or min/max distribution. Internal LFO, Rate Chaos, quantize.
++ [Arm 3 XY](Arm3XY.md#arm-3-xy)(a): 8HP length and rotation of 3 arms (basically 3 polar vectors) generate a semi-random X/Y curve, plus XY mix. Individual Rate Chaos can be applied to length and/or rotational velocity of each arm.
 
 ## Envelope
-+ [ADR Envelope](Envelope.md#adr-envelope): 4HP Attack-Delay-Release envelope with attack/release time and shape (technically Attack-Sustain-Delay-Release). Rate Chaos.
-+ [ADSDR Envelope](Envelope.md#adsdr-envelope): 6HP Attack-Decay-Sustain-Delay-Release envelope with attack/decay/release time and shape, and levels for Attack, Sustain and Release. Rate Chaos.
++ [ADR Envelope](Envelope.md#adr-envelope): 4HP Attack-Delay-Release envelope with attack/release time and shape (technically Attack-Sustain-Delay-Release). Rate Chaos can affect each time-setting, changed at each cycle.
++ [ADSDR Envelope](Envelope.md#adsdr-envelope): 6HP Attack-Decay-Sustain-Delay-Release envelope with attack/decay/release time and shape, and levels for Attack, Sustain and Release. Rate Chaos can affect each time-setting, changed at each cycle.
 + [Envelope Phase Expander](Envelope.md#envelope-phase-expander): 2HP expander for ADR/ADSDR: phase gates (Attack, Decay, Sustain, Delay, Release, Idle) plus Rise, Steady, Fall. Idle can output phase position (0V to 10V).
+
+## Slew
++ [Slew 2](Slew.md#slew-2)(p): 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snat (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
++ [Slew 4](Slew.md#slew-4)(p): 2HP quad polyphoinc constant rate/time slew with knobs based rise/fall times/shape settings. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
 
 ## Misc
 + [Sign](Sign.md#sign)(pq): 4HP outputs 9 signed versions of the input: Cut-, Cut+, Abs, ×-1, !R, +5, -5, Gate, !Gate.
@@ -261,9 +265,9 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Ring Modulator 3](RingMod3.md#ring-modulator-3)(pq): 2HP 3-section ring modulator (A×B). Unpatched sections chain; B defaults to /10.
 + [Increment/Decrement Offset](IncDecOffset.md#incrementdecrement-offset)(p): 2HP increment or decrement an offset on the input via button/trigger. Knob/CV step, reset.
 + [Delta-4](Delta4.md#delta-4)(p): 2HP four sections measuring difference between current input and a captured reference. Signed, inverted, or absolute.
-+ [Flip-Flop](FlipFlop.md#flip-flop)(p): 2HP D-, T-, or SR-Flip-Flop. Outputs for Q, !Q, and change trigger.
++ [Flip-Flop](FlipFlop.md#flip-flop)(p): 2HP Polyphonic D-, T-, or SR-Flip-Flop. Outputs for Q, !Q, and change trigger.
 + [Slope Detector 2](SlopeDetector2.md#slope-detector-2): 2HP 2 sections of threshold slope detection (rise/steady/fall), latched phases, configurable Steady hold. Gate or trigger per output.
 + [Patch](Patch.md#patch)(p): 4HP mutable patch with 8 in/out pairs. Typically used as a pair to patch between them.
 + [Turing Machine](TuringMachine.md#turing-machine)(q): 10HP Turing machine for random sequences of 3-32 steps. 16 gate/trigger (also poly) and 2 value outputs. Lock, quantize.
 + [Bits-to-Value](Bits.md#bits-to-value): 8HP converts 8 bits (individual gates and/or poly) into a CV value based on weights and range.
-+ [Value-to-Bits](Bits.md#value-to-bits)(p): 4HP converts a CV input (clamped to range) into 8 mono gates plus one poly (up to 16 channels).
++ [Value-to-Bits](Bits.md#value-to-bits)(p): 4HP converts a CV input (clamped to range) into 8 mono gates plus one poly (up to 16 bits/channels).

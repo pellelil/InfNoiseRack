@@ -316,6 +316,123 @@ inline float highPassFilter(float in, float coeff, float* prevOut) {
     return in - *prevOut;
 }
 
+enum infNoiseSlewMode {
+	sm_constantRate, // seconds = time to move 10 V
+	sm_constantTime, // seconds = time for any jump
+	sm_len
+};
+
+inline const std::vector<std::string>& infNoiseSlewModeMenuNames() {
+	static const std::vector<std::string> k{
+		"Constant rate",
+		"Constant time"
+	};
+	return k;
+}
+
+enum infNoiseLinearMode {
+	lm_linear, // shape 0 = linear
+	lm_sCurve, // shape 0 = S-curve (RandomCurve CURVE)
+	lm_sCurveRev, // shape 0 = reversed S-curve (RandomCurve SPIKY)
+	lm_len
+};
+
+inline const std::vector<std::string>& infNoiseLinearModeMenuNames() {
+	static const std::vector<std::string> k{
+		"Linear",
+		"S-curve",
+		"Reversed S-curve"
+	};
+	return k;
+}
+
+/// @brief Mix middle with normExp (shape < 0) or normLog (shape > 0).
+/// middle is linear, sCurve, or sCurveRev. Call ensureNormExpLogLuts() first.
+inline float applyNormExpLogShape(float x, float shape, infNoiseLinearMode linearMode = lm_linear) {
+	float middle = x;
+	if (linearMode == lm_sCurve)
+		middle = sCurve(x);
+	else if (linearMode == lm_sCurveRev)
+		middle = sCurveRev(x);
+	if (shape < 0.f)
+		return middle + (-shape) * (normExp(x) - middle);
+	if (shape > 0.f)
+		return middle + shape * (normLog(x) - middle);
+	return middle;
+}
+
+/// @brief Rise/fall slew limiter. constantRate: seconds to move 10 V.
+/// constantTime: seconds for any jump. Shape -1 Exp .. 0 Lin/S .. +1 Log uses the
+/// same normExp/normLog time LUT as ADR/ADSDR (phase 0→1 over the move).
+/// linearMode selects the centre curve (linear / S / reversed S). Call ensureNormExpLogLuts() first.
+struct infNoiseSlew {
+    static constexpr float rangeVolts = 10.f; // constantRate: seconds = time to move 10 V
+
+    void reset(float value = 0.f) {
+        lastOut = value;
+        lastRemaining = 0.f;
+        riseSec = 0.f;
+        fallSec = 0.f;
+        riseShape = 0.f;
+        fallShape = 0.f;
+        rampActive = false;
+        rampFrom = value;
+        rampTo = value;
+        phasePos = 0.f;
+        mode = sm_constantRate;
+    }
+    void snap(float value) { // snap output; keeps times/shapes
+        lastOut = value;
+        lastRemaining = 0.f;
+        rampActive = false;
+        rampFrom = value;
+        rampTo = value;
+        phasePos = 0.f;
+    }
+    void setTimes(float riseSec, float fallSec) { // 0 = pass-through
+        this->riseSec = (riseSec > 0.f) ? riseSec : 0.f;
+        this->fallSec = (fallSec > 0.f) ? fallSec : 0.f;
+    }
+    void setShapes(float riseShape, float fallShape) { // -1 Exp .. 0 Lin/S .. +1 Log
+        this->riseShape = rack::math::clamp(riseShape, -1.f, 1.f);
+        this->fallShape = rack::math::clamp(fallShape, -1.f, 1.f);
+    }
+    void setMode(infNoiseSlewMode mode) { // shared for rise and fall; not cleared by reset/snap
+        if ((int)mode < 0 || (int)mode >= (int)sm_len)
+            mode = sm_constantRate;
+        this->mode = mode;
+    }
+    void setLinearMode(infNoiseLinearMode linearMode) { // shape 0 curve; not cleared by reset/snap
+        if ((int)linearMode < 0 || (int)linearMode >= (int)lm_len)
+            linearMode = lm_linear;
+        this->linearMode = linearMode;
+    }
+    float next(float in, float sampleTime);
+    float last() const {
+        return lastOut;
+    }
+    float remaining() const { // last() + remaining() == last next() input
+        return lastRemaining;
+    }
+    bool within(float threshold = 0.001f) const { // |remaining| <= threshold (default 1 mV)
+        return fabs(lastRemaining) <= threshold;
+    }
+
+private:
+    float lastOut = 0.f;
+    float lastRemaining = 0.f; // in - lastOut after last next()/snap/reset
+    float riseSec = 0.f;
+    float fallSec = 0.f;
+    float riseShape = 0.f;
+    float fallShape = 0.f;
+    infNoiseSlewMode mode = sm_constantRate;
+    infNoiseLinearMode linearMode = lm_linear;
+    bool rampActive = false;
+    bool rampUp = true;
+    float rampFrom = 0.f;
+    float rampTo = 0.f;
+    float phasePos = 0.f;
+};
 
 //-----------------------------------------------------------------------------
 // Snippets

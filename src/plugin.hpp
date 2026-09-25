@@ -14,11 +14,11 @@ extern Plugin* pluginInstance;
 
 extern Model* modelADREnvelope;
 extern Model* modelADSDREnvelope;
-extern Model* modelEnvelopePhaseExpander;
 extern Model* modelArm3XY;
 extern Model* modelAutoScale4;
 extern Model* modelBernoulliSwitch;
 extern Model* modelBitsToValue;
+extern Model* modelChaos;
 extern Model* modelClamp4;
 extern Model* modelCombine;
 extern Model* modelCrossFadeSwitch1to4;
@@ -29,12 +29,13 @@ extern Model* modelCvToGtTr8;
 extern Model* modelCxFade1x2;
 extern Model* modelCxFade4x1;
 extern Model* modelDelta4;
+extern Model* modelEnvelopePhaseExpander;
 extern Model* modelFlipFlop;
 extern Model* modelFold;
 extern Model* modelIncDecOffset;
-extern Model* modelVCMP1;
 extern Model* modelLCMP2;
 extern Model* modelLCMP6x2;
+extern Model* modelLFO1;
 extern Model* modelManCV8I;
 extern Model* modelManCV8II;
 extern Model* modelManGate8;
@@ -51,6 +52,7 @@ extern Model* modelMult2x4;
 extern Model* modelMute2;
 extern Model* modelOnOffSwitch;
 extern Model* modelPatch;
+extern Model* modelPhaseDrivenLFO;
 extern Model* modelPolyLCMP;
 extern Model* modelPolyMerge;
 extern Model* modelPolyOffset;
@@ -62,7 +64,6 @@ extern Model* modelPolyStereo;
 extern Model* modelPolyTweakI;
 extern Model* modelPolyTweakII;
 extern Model* modelPolyVCMP;
-extern Model* modelPhaseDrivenLFO;
 extern Model* modelRandom4;
 extern Model* modelRandomCurve;
 extern Model* modelRingMod3;
@@ -72,7 +73,8 @@ extern Model* modelSHTH2x4;
 extern Model* modelSign;
 extern Model* modelSign4I;
 extern Model* modelSign4II;
-extern Model* modelLFO1;
+extern Model* modelSlew2;
+extern Model* modelSlew4;
 extern Model* modelSLFO4ss;
 extern Model* modelSLFO4st;
 extern Model* modelSlopeDetector2;
@@ -88,6 +90,7 @@ extern Model* modelValueToBits;
 extern Model* modelVCA2;
 extern Model* modelVCA4I;
 extern Model* modelVCA4II;
+extern Model* modelVCMP1;
 extern Model* modelVCMP2I;
 extern Model* modelVCMP2II;
 extern Model* modelWaveShaper2;
@@ -113,7 +116,7 @@ struct InfNoiseModule : Module {
     bool wasJustReset = false;  // Set true in InfNoiseModule.onReset, cleared in postProcessParams
     bool wasJustLoaded = false;  // Set true in InfNoiseModule.dataFromJson, cleared in postProcessParams
     bool sampleRateChanged = true; // True at create and when sample rate changes; cleared in postProcessParams
-    const int currentJson = 3;  // Manually incremented for "breaking changes" to json-format
+    const int currentJson = 4;  // Manually incremented for "breaking changes" to json-format
     int jsonVersion = currentJson; // Used to detect if the module has been saved with a previous json-version of the plugin
     processQuality prevProcessQuality = pq_audioRate;  // Used to detect if process-quality has changed
     voltRange prevOutClipRange = vr_mp12;              // Used to detect if clipping-range has changed

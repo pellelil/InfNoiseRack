@@ -164,11 +164,11 @@ Next is the **Disable section**, which works similarly. A polyphonic gate input 
 Unlike the "standard" [Logical compare modules](Compare.md), which compare channels between multiple inputs, the Poly-Logical Compare module compares all channels within the same/single polyphonic signal. If you input a polyphonic signal with up to 16 channels, this module evaluates logical conditions across all active channels. For example, if a 4-channel polyphonic signal is provided, the outputs behave as follows:
 
 + **AND** Output: High only if all 4 channels are detected as high-gates.
-+ **OR** Output: High if at least one channel is high.
-+ **XOR** Output: High only if exactly one channel is high.
-+ **NAND** Output: High when all inputs are "not high at the same time".
-+ **NOR** Output: High if no input are high (all low).
-+ **XNOR**: Output: High when none, or more than 1 input is high.
++ **OR** Output: High if at least 1 channel is high (1 or more are high).
++ **XOR** Output: High only if exactly 1 channel is high.
++ **NAND** Output: High when less than 4 channels are high.
++ **NOR** Output: High if all 4 channels are low (0 channels are high).
++ **XNOR**: Output: High when 0, or more than 1 channel is high.
 
 At the top of the module, 16 indicator lights display the status of each channel. A green light indicates a high-gate detection, while a red light means the channel is low-gate. By default, a channel is detected as high when its voltage is ≥1V, but this threshold can be adjusted via the context menu. Likewise, output voltages default to 10V for high and 0V for low, but these values can also be customized. *Some general info regarding the Poly-tools are listed in the top.*
 

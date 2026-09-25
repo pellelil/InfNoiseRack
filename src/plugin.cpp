@@ -235,11 +235,11 @@ void init(Plugin *p) {
 	// Add modules here
 	p->addModel(modelADREnvelope);
 	p->addModel(modelADSDREnvelope);
-	p->addModel(modelEnvelopePhaseExpander);
 	p->addModel(modelArm3XY);
 	p->addModel(modelAutoScale4);
 	p->addModel(modelBernoulliSwitch);
 	p->addModel(modelBitsToValue);
+	p->addModel(modelChaos);
 	p->addModel(modelClamp4);
 	p->addModel(modelCombine);
 	p->addModel(modelCrossFadeSwitch1to4);
@@ -250,12 +250,13 @@ void init(Plugin *p) {
 	p->addModel(modelCxFade1x2);
 	p->addModel(modelCxFade4x1);
 	p->addModel(modelDelta4);
+	p->addModel(modelEnvelopePhaseExpander);
 	p->addModel(modelFlipFlop);
 	p->addModel(modelFold);
 	p->addModel(modelIncDecOffset);
-	p->addModel(modelVCMP1);
 	p->addModel(modelLCMP2);
 	p->addModel(modelLCMP6x2);
+	p->addModel(modelLFO1);
 	p->addModel(modelManCV8I);
 	p->addModel(modelManCV8II);
 	p->addModel(modelManGate8);
@@ -272,6 +273,7 @@ void init(Plugin *p) {
 	p->addModel(modelMute2);
 	p->addModel(modelOnOffSwitch);
 	p->addModel(modelPatch);
+	p->addModel(modelPhaseDrivenLFO);
 	p->addModel(modelPolyLCMP);
 	p->addModel(modelPolyMerge);
 	p->addModel(modelPolyOffset);
@@ -283,7 +285,6 @@ void init(Plugin *p) {
 	p->addModel(modelPolyTweakI);
 	p->addModel(modelPolyTweakII);
 	p->addModel(modelPolyVCMP);
-	p->addModel(modelPhaseDrivenLFO);
 	p->addModel(modelRandom4);
 	p->addModel(modelRandomCurve);
 	p->addModel(modelRingMod3);
@@ -293,7 +294,8 @@ void init(Plugin *p) {
 	p->addModel(modelSign);
 	p->addModel(modelSign4I);
 	p->addModel(modelSign4II);
-	p->addModel(modelLFO1);
+	p->addModel(modelSlew2);
+	p->addModel(modelSlew4);
 	p->addModel(modelSLFO4ss);
 	p->addModel(modelSLFO4st);
 	p->addModel(modelSlopeDetector2);
@@ -309,6 +311,7 @@ void init(Plugin *p) {
 	p->addModel(modelVCA2);
 	p->addModel(modelVCA4I);
 	p->addModel(modelVCA4II);
+	p->addModel(modelVCMP1);
 	p->addModel(modelVCMP2I);
 	p->addModel(modelVCMP2II);
 	p->addModel(modelWaveShaper2);

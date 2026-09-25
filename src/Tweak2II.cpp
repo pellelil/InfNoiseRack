@@ -11,6 +11,8 @@ struct Tweak2IIModule : InfNoiseModule {
         B_SCALE_PARAM,
         A_OFFSET_PARAM,
         B_OFFSET_PARAM,
+        ENUMS(ATT_RNG_PARAM, 2),
+        ENUMS(ORDER_PARAM, 2),
         PARAMS_LEN
     };
     enum InputsId {
@@ -26,23 +28,21 @@ struct Tweak2IIModule : InfNoiseModule {
     enum LightId {
         ENUMS(PROCQUAL_LIGHT,2),
         ENUMS(CLIP_RANGE_LIGHT,2),
-        ENUMS(A_SCALE_LIGHT,3),
-        ENUMS(B_SCALE_LIGHT,3),
         ENUMS(A_EXP_SCALE_LIGHT, 2),
         ENUMS(B_EXP_SCALE_LIGHT, 2),
-        A_OFFSET_LIGHT,
-        B_OFFSET_LIGHT,
         B_MIX_LIGHT,
         B_LINKED_LIGHT,
         LIGHTS_LEN
     };
 
     actReqValue<scaleCurve> scaleMode = actReqValue<scaleCurve>(sc_linear);
-    actReqValue<infNoiseAttRngQnt::attRange> attRng =
-        actReqValue<infNoiseAttRngQnt::attRange>(infNoiseAttRngQnt::attRange::ar_1x);
-    float attRngFactor = 1.f;
+    infNoiseAttRngQnt::attRange attRng[2] = {
+        infNoiseAttRngQnt::attRange::ar_1x,
+        infNoiseAttRngQnt::attRange::ar_1x
+    };
+    float attRngFactor[2] = { 1.f, 1.f };
     enum order { scaleOffset, offsetScale };
-    actReqValue<order> orderMode = actReqValue<order>(scaleOffset);
+    order orderMode[2] = { scaleOffset, scaleOffset };
     bool mixMode = true; // Mix unplugged outputs if true
     int outputCount = 0;  // set in processParams, used in process
     int channels[2] = { 1, 1 }; // channels for A and B
@@ -60,6 +60,10 @@ struct Tweak2IIModule : InfNoiseModule {
         configParam(A_OFFSET_PARAM, -10.0f, 10.0f, 0.0f, "A-Offset (-10V to +10V)", " V");
         configParam<infNoiseAttRngQnt>(B_SCALE_PARAM, -1.f, 1.f, 1.f, "B-Scale (-1x to +1x)", "x", 0, 1);
         configParam(B_OFFSET_PARAM, -10.0f, 10.0f, 0.0f, "B-Offset (-10V to +10V)", " V");
+        configSwitch(ATT_RNG_PARAM + 0, 0.f, 3.f, 0.f, "A-Scale-range", { "1x", "2x", "5x", "10x" });
+        configSwitch(ATT_RNG_PARAM + 1, 0.f, 3.f, 0.f, "B-Scale-range", { "1x", "2x", "5x", "10x" });
+        configSwitch(ORDER_PARAM + 0, 0.f, 1.f, 0.f, "A-Order", { "Scale->Offset", "Offset->Scale" });
+        configSwitch(ORDER_PARAM + 1, 0.f, 1.f, 0.f, "B-Order", { "Scale->Offset", "Offset->Scale" });
 
         configInput(A_INPUT, "A");
         configInput(B_INPUT, "B (normalized to A)");
@@ -68,12 +72,8 @@ struct Tweak2IIModule : InfNoiseModule {
         configOutput(A_OUTPUT, "A (can be mixed with B, if not connected)");
         configOutput(B_OUTPUT, "B (can be mixed with A, if A-output is not connected)");
 
-        configLight(A_SCALE_LIGHT, "Scale-range (unlit=1x, green=2x, yellow=5x, red=10x)");
         configLight(A_EXP_SCALE_LIGHT, "Scale-mode (unlit=Linear, green=Exp, red=Log)");
-        configLight(A_OFFSET_LIGHT, "A-Order: Scale->Offset if unlit, else Offset->Scale");
-        configLight(B_SCALE_LIGHT, "Scale-range (unlit=1x, green=2x, yellow=5x, red=10x)");
         configLight(B_EXP_SCALE_LIGHT, "Scale-mode (unlit=Linear, green=Exp, red=Log)");
-        configLight(B_OFFSET_LIGHT, "B-Order: Scale->Offset if unlit, else Offset->Scale");
         configLight(B_MIX_LIGHT, "B-Mix (if lit, mix of A/B)");
 
         configBypass(A_INPUT, A_OUTPUT);
@@ -93,9 +93,9 @@ struct Tweak2IIModule : InfNoiseModule {
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
 
-        attRng.setBoth(infNoiseAttRngQnt::attRange::ar_1x);
+        attRng[0] = attRng[1] = infNoiseAttRngQnt::attRange::ar_1x;
         scaleMode.setBoth(sc_linear);
-        orderMode.setBoth(scaleOffset);
+        orderMode[0] = orderMode[1] = scaleOffset;
         bSectionMode.setBoth(bsm_Individual);
         mixMode = true;
 
@@ -107,17 +107,21 @@ struct Tweak2IIModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
-        attRng.setBoth((infNoiseAttRngQnt::attRange)getJsonInt(rootJ, "attRng", (int)infNoiseAttRngQnt::attRange::ar_1x));
+        if (jsonVersion < 4) { // previous versions used context-menu items for Scale-range and Order-mode
+            float rng = (float)getJsonInt(rootJ, "attRng", (int)infNoiseAttRngQnt::attRange::ar_1x);
+            float ord = (float)getJsonInt(rootJ, "orderMode", (int)order::scaleOffset);
+            params[ATT_RNG_PARAM + 0].setValue(rng);
+            params[ATT_RNG_PARAM + 1].setValue(rng);
+            params[ORDER_PARAM + 0].setValue(ord);
+            params[ORDER_PARAM + 1].setValue(ord);
+        }
         scaleMode.setBoth((scaleCurve)getJsonInt(rootJ, "scaleMode", (int)sc_linear));
-        orderMode.setBoth((order)getJsonInt(rootJ, "orderMode", (int)order::scaleOffset));
         bSectionMode.setBoth((bSectionModeType)getJsonInt(rootJ, "bSectionMode", (int)bSectionModeType::bsm_Individual));
         mixMode = getJsonInt(rootJ, "mixMode", 1) == 1;
     }
 
     void dataToJson(json_t* rootJ) override {
-        json_object_set_new(rootJ, "attRng", json_integer((int)attRng.req));
         json_object_set_new(rootJ, "scaleMode", json_integer((int)scaleMode.req));
-        json_object_set_new(rootJ, "orderMode", json_integer((int)orderMode.req));
         json_object_set_new(rootJ, "bSectionMode", json_integer((int)bSectionMode.req));
         json_object_set_new(rootJ, "mixMode", json_integer(mixMode ? 1 : 0));
     }
@@ -142,17 +146,23 @@ struct Tweak2IIModule : InfNoiseModule {
             setScaleModeLight(this, B_EXP_SCALE_LIGHT, scaleMode.act);
         }
 
-        if (attRng.needsUpdate()) {
-            attRng.updateActual();
-            const float rangeFactor[4] = { 1.f, 2.f, 5.f, 10.f };
-            attRngFactor = rangeFactor[attRng.act];
-
-            const std::string letters[]{ "A", "B"};
-            for (int i = 0; i < 2; i++) {
+        const float rangeFactor[4] = { 1.f, 2.f, 5.f, 10.f };
+        const std::string letters[]{ "A", "B" };
+        for (int i = 0; i < 2; i++) {
+            int rngIdx = (int)(params[ATT_RNG_PARAM + i].getValue() + 0.5f);
+            if (rngIdx < 0)
+                rngIdx = 0;
+            if (rngIdx > 3)
+                rngIdx = 3;
+            infNoiseAttRngQnt::attRange newRng = (infNoiseAttRngQnt::attRange)rngIdx;
+            if (newRng != attRng[i] || mustProcessParams) {
+                attRng[i] = newRng;
+                attRngFactor[i] = rangeFactor[(int)attRng[i]];
                 infNoiseAttRngQnt* attQty = dynamic_cast<infNoiseAttRngQnt*>(paramQuantities[A_SCALE_PARAM + i]);
-                attQty->setRange(attRng.act, letters[i] + "-Scale");
-                attQty->setRangeLights(this, A_SCALE_LIGHT + i * 3);
+                if (attQty)
+                    attQty->setRange(attRng[i], letters[i] + "-Scale");
             }
+            orderMode[i] = (params[ORDER_PARAM + i].getValue() > 0.5f) ? offsetScale : scaleOffset;
         }
 
         outputCount = 0;       
@@ -180,11 +190,6 @@ struct Tweak2IIModule : InfNoiseModule {
             outputs[B_OUTPUT].setChannels(maxChannels);
         }
 
-        // Update order-lights (indicating scale/offset order)
-        orderMode.updateActual();
-        lights[A_OFFSET_LIGHT].setBrightness((orderMode.act == offsetScale) ? 1.0f : 0.f);
-        lights[B_OFFSET_LIGHT].setBrightness((orderMode.act == offsetScale) ? 1.0f : 0.f);
-
         //--------------------
         postProcessParams(args);
     }
@@ -208,14 +213,14 @@ struct Tweak2IIModule : InfNoiseModule {
                 float scale = params[A_SCALE_PARAM + i].getValue();
 
                 scale = applyScaleCurveSigned(scale, scaleMode.act);
-                scale *= attRngFactor;
+                scale *= attRngFactor[i];
                 float offset = params[A_OFFSET_PARAM + i].getValue();
 
                 for (int c = 0; c < channels[i]; c++) {
                     if (haveInput)
                         input[c] = inputs[A_INPUT + i].getPolyVoltage(c);
 
-                    outputSum[c] += (orderMode.act == scaleOffset)
+                    outputSum[c] += (orderMode[i] == scaleOffset)
                         ? input[c] * scale + offset
                         : (input[c] + offset) * scale;
                     outputCount[c]++;
@@ -264,12 +269,16 @@ struct Tweak2IIModuleWidget : InfNoiseModuleWidget {
             module, Tweak2IIModule::B_MIX_LIGHT));
 
         const float lightCol = 5.588f;
-        addChild(createLightCentered<SmallLight<RedGreenBlueLight>>(Vec(lightCol, 38.993f), module, Tweak2IIModule::A_SCALE_LIGHT));
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_black, bc_green, bc_yellow, bc_red>>(
+            Vec(lightCol, 38.993f), module, Tweak2IIModule::ATT_RNG_PARAM + 0));
         addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(26.668f, 38.993f), module, Tweak2IIModule::A_EXP_SCALE_LIGHT));
-        addChild(createLightCentered<SmallLight<BlueLight>>(Vec(lightCol, 83.835f), module, Tweak2IIModule::A_OFFSET_LIGHT));
-        addChild(createLightCentered<SmallLight<RedGreenBlueLight>>(Vec(lightCol, 197.679f), module, Tweak2IIModule::B_SCALE_LIGHT));
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_black, bc_blue>>(
+            Vec(lightCol, 83.835f), module, Tweak2IIModule::ORDER_PARAM + 0));
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_black, bc_green, bc_yellow, bc_red>>(
+            Vec(lightCol, 197.679f), module, Tweak2IIModule::ATT_RNG_PARAM + 1));
         addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(26.668f, 197.679f), module, Tweak2IIModule::B_EXP_SCALE_LIGHT));
-        addChild(createLightCentered<SmallLight<BlueLight>>(Vec(lightCol, 241.520f), module, Tweak2IIModule::B_OFFSET_LIGHT));
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_black, bc_blue>>(
+            Vec(lightCol, 241.520f), module, Tweak2IIModule::ORDER_PARAM + 1));
 
         InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
         linkBOverlayGroup = overlayManager.addGroup("B-section linked to A");
@@ -300,11 +309,6 @@ struct Tweak2IIModuleWidget : InfNoiseModuleWidget {
 
         menu->addChild(new MenuSeparator);
 
-        std::vector<std::string> scaleRangeNames = { "1x (-100\% to +100\%)",
-            "2x (-200\% to +200\%)", "5x (-500\% to +500\%)", "10x (-1000\% to +1000\%)" };
-        menu->addChild(createIndexPtrSubmenuItem("Scale-range mode", scaleRangeNames,
-            &module->attRng.req));
-
         menu->addChild(createIndexPtrSubmenuItem("Scale-mode", getScaleCurveMenuNames(),
             &module->scaleMode.req));
 
@@ -326,11 +330,6 @@ struct Tweak2IIModuleWidget : InfNoiseModuleWidget {
                 }));
             }
         }));
-
-        menu->addChild(createIndexPtrSubmenuItem("Operation-order",
-		 	{"Scale->Offset", "Offset->Scale"},
-		 	&module->orderMode.req
-        ));
 
         std::vector<std::string> bSectionModeNames = { "Individual", "Linked to A-section" };
         menu->addChild(createIndexPtrSubmenuItem("B-section mode", bSectionModeNames,
