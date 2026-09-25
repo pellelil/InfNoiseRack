@@ -51,4 +51,8 @@ Compared to a Slew 4 the Slew 2 module only have a single knob to control shape.
 
 *As the Slew 4 is less complex than the Slew 2, it is slightly more efficient (uses a bit less CPU bandwidth), so for your bread-and-butter slew requirements it might be "a better choise" than the Slew 2 (even when you only need to slew a single or 2 signals). Having said this, it's still not a bad slew, and via the context menu it can either be configured for **Constant rate** (default) or **Constant time**. Likewise the context menu also lets you change the linear-shape to **S-Curve** or **Reversed S-Curve** (defaults to linear).*
 
+**TIP**: Thanks to its 4 input/output pairs, Slew 4 can be used to smooth the same signal multiple times for an even "smoother" signal. In the screenshot below, the Slew 2 module is used as an envelope follower (the red signal is audio from a sampler). Due to its fast attack (rise time) and slow release (fall time), the blue signal (envelope follower) can be a bit "jagged". To smooth the signal further, I passed it through a Slew 4 multiple times. The blue signal (envelope follower) goes into input A, then from output A to input B (green), from output B to input C (orange), and from output C to input D (magenta). Finally, the "smoothed" signal is patched from output D into the scope (yellow).
+
+![Slew 2 used to smooth enveloped follower signal from Slew 2](img/SlewAsEnvelopeFollower.png)
+
 [Go back to modules overview](manual.md#modules)
