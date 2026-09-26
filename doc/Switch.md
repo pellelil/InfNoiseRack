@@ -26,7 +26,6 @@ The switch/cross-fade CV-input is monophonic, meaning all polyphonic channels sw
 
 **TIP**: Using the cross-fade-switches in fade operation you might want to use an [ADR Envelope](Envelope.md#adr-envelope) to generate the fade input. Feeding a single trigger into its Phase input in trigger mode, will either trigger an Attack or a Release, where the Envelope output with either transions from R.level to A.level or from A.level to R.level. Its A./R.time and A./R.shape knobs determine how fast- and how the fade will occure. *Using the phase-input of the Envelope in gate-mode will work equally well, where a high gate will begin the attack and a low-gate will begin the release.*
 
-<a name="cross-fade-switch-4to1p"></a>
 ## Cross-fade switch 4to1
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 This module allows you to switch or cross-fade between (up to) 4 input signals, with the selected signal being sent to a single output. When the cross-fade button (next to the switch knob) is activated (green), the module smoothly transitions between inputs, blending them together. When deactivated, the module functions as a simple switch, selecting only one input at a time without blending. *Some general info regarding the Cross-fade switches are listed in the top.*
@@ -39,7 +38,6 @@ Inputs are not even required if you want to switch between fixed voltage levels.
 
 **TIP**: For example, you can take four different outputs from an LFO module or four different curve outputs from the Random-Curve module and feed them into the Cross-Fade Switch 4to1 module. When configured for cross-fading, the switch/cross-fade knob and/or CV input can be used to dynamically transition between the four signals. Alternatively, you might want to cross-fade between inputs from different LFOs or random modules, each running at different frequencies or using different waveforms. This allows for more complex and evolving modulation, especially when using random modules with varying output ranges and/or distributions.
 
-<a name="cross-fade-switch-1to4p"></a>
 ## Cross-fade switch 1to4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 This module allows you to switch or cross-fade a single input signal across up to four outputs. When the cross-fade button (next to the switch knob) is activated (green), the module smoothly transitions between outputs. When deactivated, it functions as a simple switch, selecting only one output at a time without blending. *Some general info regarding the Cross-fade switches are listed in the top.*
@@ -53,7 +51,6 @@ An input cable is not required if you want to route a fixed voltage. By default 
 # Other switches
 The following section provides descriptions of other switch modules available in the Infinite-Noise plugin. However, as mentioned earlier, the plugin includes additional devices that also offer switching functionality. While the modules listed here are dedicated switches, they are not the only options for performing switching operations.
 
-<a name="bernoulli-switchp"></a>
 ## Bernoulli Switch
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Rate--Chaos-Yes-green.svg?style=flat-square)<br>
@@ -83,7 +80,6 @@ E.g. if you want to route a clock signal to one of **three** destinations with a
 
 **TIP**: The Bernoulli Switch can also function as a **probability-driven mute module**. Simply route the signal you want to control into the **A input**, and use the AB output. Each time the module receives a trigger, it will either pass the A signal through or switch to the B input. Since the B input is left unconnected (and therefore outputs 0V), the result is that your signal is effectively “muted” at random, based on the selected probability. If in stead you set the mode to Switch, and dial in a probability of 100%, each clock input will simply switch between "muted/un-muted".
 
-<a name="onoff-switchp"></a>
 ## ON/OFF Switch
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The On/Off-Switch module is a simplified version of the [Manual CV 8 Mk. II and CV Toggle](ManCV.md#manuel-cv-8-mk-ii), featuring a single switching section instead of multiple. At its core, it functions as a **2-to-1 switch**, selecting between an ON and OFF state based on either manual controlled values or external gate/trigger-input. At the top of the module, a large push-button manually toggles the module between the ON and OFF states, with a small green light indicating the active state. Adjacent to this button is a latching switch (red when enabled). Below these controls, a CV input is available to toggle the module’s state externally. By default, this input operates in gate mode (green), meaning a high gate signal switches the module to ON, and a low gate switches it to OFF. However, pressing the small button next to this input toggles it to trigger mode (red), where each received trigger alternates the module between ON and OFF. When the large manual button is actively pressed or latched ON, the module remains in the ON state regardless of gate/trigger-input.
@@ -102,7 +98,6 @@ The module’s output contains as many channels as the ON/OFF-input with the hig
 
 *The ON/OFF gate/trigger-input in the top of the module (to toggle between the ON- and OFF-stages) is monophonic-only, so the ON/OFF Switch will switch all channels of a polyphonic signal at the same time. Hence the ON/OFF Switch is not able to switch individual channels between their ON/OFF stages. However [Poly-Tweak Mk II](PolyTools.md#poly-tweak-mk-ii) is able to do this using its "disable" section (described as a tip for the Poly-Tweak Mk II).*
 
-<a name="combinep"></a>
 ## Combine
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 This module “combines” two inputs by switching between them based on three different algorithms (for example, using the upper half of one input and switching to the other when the first is no longer in that range). Each algorithm has a single parameter, controlled by the knob and CV input at the top of the module. The parameter CV input supports both monophonic and polyphonic signals, allowing you to use the same parameter value across all channels or different values per channel. When changing mode, the tooltips for the param-knob, -trim and -CV input will update to remind you how the param is used for that mode.

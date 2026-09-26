@@ -48,7 +48,6 @@ When the distribution mode is set to **Center/Edge**, you have the option to ena
 
 **Note**: Forced Polarity is ignored when the distribution mode is set to "Min/Max".
 
-<a name="random-4paq"></a>
 ## Random-4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
@@ -64,7 +63,6 @@ By default, **Polyphony** is **Auto**: each of the four outputs matches the numb
 
 **TIP**: If you want to create smooth transitions rather than abrupt jumps, you can process the module’s output through [Slew 4](Slew.md#slew-4), generating curves instead of fixed values. Since the range and distribution can only be adjusted manually via knobs, the [Random-Curve](Random.md#random-curve) module is a better choice if you need CV control over these parameters. 
 
-<a name="random-curveaq"></a>
 ## Random Curve
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
@@ -106,7 +104,7 @@ The central idea of the Chaos module is to bring the [**Chaos rate**](manual.md#
 
 *In essence, the Chaos module is similar to the Random Curve module. The key differences are how the distribution is handled and the fact that it has an input port, allowing the generated values to be "added" to the input without having to use an additional module. On the other hand, the Random Curve module has CV inputs for controlling Range and Distribution.*
 
-Below the Trig input/Frequency knob, you find the **Chaos knob** and its CV-input. The previously mentioned Chaos rate (context menu) lets you specify chaos in 5% steps from 0% to 100%. However, the Chaos knob of the Chaos module lets you freely specify the Chaos setting anywhere in the range from 0% to 100%. The **Chaos CV-input** (0-10V) is added to the knob, and the result is then clamped to the 0%-100% range, allowing you to modulate the chaos. At low Chaos settings, the output will tend to stay near the center (see distribution below), so to utilize the full range, you will need to dial in a higher Chaos setting, which will also affect the distribution. *For a more in-depth description of Rate Chaos, please consult the [main manual](*manual.md#rate-chaos*).*
+Below the Trig input/Frequency knob, you find the **Chaos knob** and its CV-input. The previously mentioned Chaos rate (context menu) lets you specify chaos in 5% steps from 0% to 100%. However, the Chaos knob of the Chaos module lets you freely specify the Chaos setting anywhere in the range from 0% to 100%. The **Chaos CV-input** (0-10V) is added to the knob, and the result is then clamped to the 0%-100% range, allowing you to modulate the chaos. At low Chaos settings, the output will tend to stay near the center (see distribution below), so to utilize the full range, you will need to dial in a higher Chaos setting, which will also affect the distribution. *For a more in-depth description of Rate Chaos, please consult the [main manual](manual.md#rate-chaos).*
 
 The Min/Max knobs define the range of the generated random values, while the small link button between them lets you link the Max knob inversely to the Min knob, making it easier to dial in a symmetrical bipolar range. *Internally the module will automatic swap the values dialed in by the mix/max knobs if you dial in a minimum which is higher than the maximum.*
 

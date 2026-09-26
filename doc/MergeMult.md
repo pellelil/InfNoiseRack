@@ -14,7 +14,6 @@ The merge-sections have a small button that lets you toggle **merge-mode**. By d
 
 For musical applications, the Merge module includes an optional quantization feature (enabled via the context menu) that snaps output values to the nearest note (1/12V per semitone). This can be used to generate random note sequences centered around a fixed root note (set via an external offset voltage). However, if you need the output to conform to a specific musical scale/key, you still need to pass it through a dedicated quantizer module, where you can select scale/key.
 
-<a name="mult2x4p"></a>
 ## Mult2x4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
@@ -24,7 +23,6 @@ This 2 HP module have 2 sections, each with an input and 4 outputs, where the 4 
 
 **TIP**: Typical in VCV when a module sets its outputs, other modules (connected via cables) wont see this signal until they are processed at the next cycle, hence while not its designed purpose, a Mult can also be used as a 1 cycle delay (in few/edge cases this might be exactly what you need).
 
-<a name="merge2x4pq"></a>
 ## Merge2x4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
@@ -34,7 +32,6 @@ In terms of polyphony, the module determines the number of output channels based
 
 ![Screenshot of Merge2x4](module/Merge2x4.png) 
 
-<a name="mergemult-4pq"></a>
 ## Merge/Mult-4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>

@@ -1,4 +1,3 @@
-<a name="arm-3-xya"></a>
 # Arm 3 XY
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)

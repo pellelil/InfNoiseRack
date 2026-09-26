@@ -44,7 +44,6 @@ Below are 3 examples to better illustrate how the mix of signals are functioning
 
 **TIP**: Similarly, a tweak module can be used to refine the output of a random signal generator, limiting its range to a specific voltage window before passing it on. Additionally, the module’s quantization feature can be used to convert a smooth random signal into quantized note values, making it suitable for melodic sequencing before being sent to an oscillator—potentially via a Sample-and-Hold module. The quantization function is not limited to pitch control; any continuously varying signal can be transformed into a "stepped waveform" with fixed interval steps. By enabling quantization, the output signal will adopt a stair-stepped pattern with 12 steps per volt (or other selected increments), which can be adjusted via the context menu.
 
-<a name="tweak-2-mk-ipq"></a>
 ## Tweak-2 Mk I
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
@@ -56,7 +55,6 @@ The Tweak-2 Mk I module is a compact 2HP utility with two inputs and two outputs
 
 *As mentioned previously the Tweak2I can accept- and generated polyphonic (multi-channel) input/output. Also it's CV-input for both Scale and Offset also accept polyphonic-signals, allowing you to scale/offset each channel individual. If/when you only apply a monophonic CV-input for Scale and/or Offset, all channels will be scaled/offset by the same amount*.
 
-<a name="tweak-2-mk-iipq"></a>
 ## Tweak-2 Mk II
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
@@ -70,7 +68,6 @@ By default, Tweak-2 II allows independent scaling and offset settings for each s
 
 ![Screenshot of Tweak-2II](module/Tweak2II.png)
 
-<a name="tweak-4-mk-ipq"></a>
 ## Tweak-4 Mk I
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
@@ -86,7 +83,6 @@ Each section (A through D) is processed independently, meaning they will output 
 
 **TIP**: Since Tweak-4 Mk I only provides knob-based scaling, you can pair it with a VCA-4 for CV-controlled scaling (amplification) while using Tweak-4 primarily for offset control. Depending on your setup, you might want to process the signal through the VCA-4 first, then offset it with the Tweak-4, or apply scaling first using Tweak-4 before routing it to VCA-4 for further modulation via CV. 
 
-<a name="tweak-4-mk-iiq"></a>
 ## Tweak-4 Mk II
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
@@ -102,7 +98,6 @@ In both the Scale- and Offset parts of the panel you find a latchable "Link to A
 
 **TIP**: Similar to the tip above, you can also use a Tweak-4II to transpose notes by octaves, simply by offsetting by whole volts (e.g. offset by +1V to transpose notes by 1 octave). This way you can feed 1V/Oct notes from a sequencer into input-A, and then dial in up to 4 differents transpose (offsets) to your melodi/note-sequence. You will however need another module to pick "which transposed version" (outputs A-D) to use. E.g. a [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1) do exactly this.
 
-<a name="tweak-8q"></a>
 ## Tweak-8
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
@@ -125,7 +120,6 @@ By default, the amplification scaling (0% to 100%) is set to linear mode. Howeve
 
 When **polyphonic** signals are fed into the VCA module, the output will contain the same number of channels. Additionally, you can input a polyphonic amplify signal, allowing each output channel to be amplified by a different amount. If the amplify input is monophonic however, all channels will be amplified by the same amount.
 
-<a name="vca-2p"></a>
 ## VCA-2
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Attenuate-1x-green.svg?style=flat-square)<br>
@@ -137,7 +131,6 @@ At the top of the **B section**, you’ll find a small toggle button that contro
 
 ![Screenshot of VCA-2](module/VCA2.png)
 
-<a name="vca-4-mk-ip"></a>
 ## VCA-4 Mk I
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Attenuate-1x-green.svg?style=flat-square)<br>
@@ -147,7 +140,6 @@ The amplification knob allows for manual adjustment within a 0% to 100% range, w
 
 ![Screenshot of VCA-4I](module/VCA4I.png)
 
-<a name="vca-4-mk-iip"></a>
 ## VCA-4 Mk II
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Attenuate-1x-green.svg?style=flat-square)<br>
@@ -162,7 +154,6 @@ The **C input** is normalized to the **A input**, and the **D input** is normali
 # Other amplification/mixer modules
 The previous sections covered the Tweak modules first, followed by the VCA modules. This section introduces additional modules that, while not part of either the Tweak or VCA families, are still designed for amplification purpose. Amoung the Controlers/Converter-part of the manual you'll also find a few dedicated [Manuel Mix modules](ManCV.md#manuel-mix-4-mk-i).
 
-<a name="clamp-4po"></a>
 ## Clamp 4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Oversample-2x-green.svg?style=flat-square)<br>
@@ -181,7 +172,6 @@ The module has three operational modes:
     
 ![Screenshot of Clamp 4](module/Clamp4.png)
 
-<a name="auto-scale-4p"></a>
 ## Auto-Scale 4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The Auto-Scale 4 module closely resembles the Clamp 4 module, featuring Min and Max knobs, four inputs, and four outputs. However, instead of a three-way mode switch, it includes a Reset (both a CV input and a small push-button). Unlike the Clamp 4, which restricts signals within a defined range, the Auto-Scale 4 automatically scales and offsets input signals to fit within the range specified by the Min/Max knobs.

@@ -1,4 +1,3 @@
-<a name="turing-machineq"></a>
 # Turing Machine
 ![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>

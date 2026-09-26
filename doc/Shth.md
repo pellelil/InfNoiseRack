@@ -20,7 +20,6 @@ By default, the built-in noise source generates bipolar random values (**white n
 
 **TIP**: For probabilistic tracking or holding, route the Clock signal through a [Bernoulli Switch](Switch.md#bernoulli-switch) module. By connecting the signal to the Clock input of the Bernoulli Switch, and then routing either the "A" or "B" output (from the "→A/B" section) into the Clock input of the SHTH module, you can introduce randomness into whether the module tracks or holds (producing longer/shorter track/hold-times).
 
-<a name="shth-2paq"></a>
 ## S&H/T&H-2
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
@@ -36,7 +35,6 @@ If no external input signal is supplied, the module generates random values usin
 
 **TIP**: You can set different sample-and-hold frequencies in the **A** and **B** sections, then route the **A** and **B** outputs into a single [Bernoulli Switch](Switch.md#bernoulli-switch). In this setup, the Bernoulli Switch determines whether the output comes from the “fast” or the “slow” sample-and-hold path. This allows you to create a signal that "randomly" alternates between frequently changing and Infrequently changing values, with the probability controlled by the Bernoulli Switch.
 
-<a name="shth-2x4paq"></a>
 ## S&H/T&H-2x4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Process--Quality-Auto-green.svg?style=flat-square)
@@ -54,7 +52,6 @@ All input signals for both sections are normalized to an internal white noise ge
 
 **TIP**: When using the SHTH2x4 with an external clock-source I suggest you begin using the lower section first. This allows you to in stead use the upper section with the internal LFO if needed. If you later decide that the external clock-source should affect both sections, you simpy move the cable from the lower clock-input to the upper clock-input *(since the lower is normalized to the upper)*.
 
-<a name="sample-and-updatepq"></a>
 ## Sample and Update
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>

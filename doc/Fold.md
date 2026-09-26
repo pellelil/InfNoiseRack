@@ -1,4 +1,3 @@
-<a name="foldpoq"></a>
 # Fold
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)

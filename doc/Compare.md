@@ -9,7 +9,6 @@ When comparing two continuous voltage values (e.g., checking if "A = B"), it is 
 
 For best results, when comparing multiple **polyphonic signals** they should ideally have the same number of channels. If one input signal has 8 channels and the other has 4 channels, the module will output 8 channels, but the last 4 channels of the larger input-count will be compared against a default value of 0V (since the smaller input-count lacks those last channels). However, **comparing a polyphonic signal against a monophonic signal works seamlessly**, every channel of the polyphonic input will be compared individually against the same monophonic value. Within the Poly-Tools modules, you’ll find dedicated comparison modules that analyze all channels within the same/single polyphonic signal. *These Poly-Tools modules can perform operations like logical AND across all channels (e.g., checking if all channels in a 4-channel polyphonic signal are True) or output the lowest value across all channels in an 8-channel signal.* If you are using the "True/False" inputs in a polyphonic comparison, it is recommended that these inputs have at least the same number of channels as the signals being compared. Otherwise, they should be monophonic, ensuring a consistent value is applied across all channels.
 
-<a name="tiny-logic-comparator-2p"></a>
 ## Tiny Logic Comparator-2
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 This compact 2 HP module consists of two identical sections, each featuring four inputs and a single output. At the top of each section, a three-way switch allows you to select between the three most common logic operations: AND, OR, or XOR. Adjacent to this switch is a small button that toggles between normal and inverted logic. When this button is lit red, inverted logic is enabled, effectively transforming AND into NAND, OR into NOR, and XOR into XNOR. Below the three-way switch, there are four input ports, each of which can be individually inverted via the context menu. When an input is inverted, a small red light next to the corresponding input port will illuminate. However, if an input is not connected, it is simply ignored, meaning inverting a non-connected input has no effect. At the bottom of each section, a single output port produces a high gate (default 10V) when the logical operation evaluates as true or a low gate (default 0V) when false. These output voltage levels can be adjusted in the context menu. *Some general info regarding the Compare-modules are listed in the top.*
@@ -25,7 +24,6 @@ When the count is changed from its default value of 1, a small red indicator lig
 
 **TIP**: Since the number of high inputs is counted, the logical operation is applied based on the selected count. When set to OR mode, the module outputs high when the number of high inputs is equal to or greater than the selected count. In XOR mode, the module only outputs high if the number of high inputs exactly matches the selected count. Enabling inverted logic (NOR mode) while using OR reverses this behavior—the module will only output high when fewer than the specified number of inputs are high. For example, if the count is set to 3 in NOR-mode, the module will output high only when fewer than three of the inputs are high.
 
-<a name="logic-comparator-2p"></a>
 ## Logic Comparator-2
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Switch-Yes-green.svg?style=flat-square)<br>
@@ -37,7 +35,6 @@ Like the TinyLCMP2, the module outputs 10V when a logical operation evaluates as
 
 **TIP**: Because the LCMP2 allows you to assign custom signals for True and False, it can **function as a switching module**. For example, if you send a gate signal (by default, ≥ 1V) into input A, the OR output will pass the True signal while the gate is high. When the gate drops below 1V, the OR output will switch to the False signal. To apply this behavior to the lower section, make sure to pass the gate signal into input C. Otherwise, C will default to the OR output of the upper section (A OR B). If only supplying a True-input and leave the False-input un-connected, the OR-output in the top section will output the True signal while the A input is high, and 0V when it's low, basically functioning as a **mute-device**.
 
-<a name="logic-comparator-6x2p"></a>
 ## Logic Comparator-6x2
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The LCMP6x2 module consists of six independent compare sections, each with two inputs. Each section includes a three-way switch that allows you to choose between AND, OR, or XOR operations. Additionally, a toggle button lets you invert the operation, converting AND into NAND, OR into NOR, and XOR into XNOR. By default, the first input in each section is normalized to the output of the previous section, allowing for sequential logical operations without requiring additional patching. The module fully supports polyphonic signals and will output as many channels as the input with the highest number of channels. Through the context menu, all inputs can be individually inverted, flipping high values to low and vice versa. If an input is inverted, a small red light next to the corresponding input port will illuminate. *Some general info regarding the Compare-modules are listed in the top.*
@@ -60,7 +57,6 @@ The **LCMP6x2** also pairs well with the [Turing Machine](TuringMachine.md#turin
 
 Since the first input of section 3 is normalized to the output of section 2 (as indicated by the arrows on the panel), you only need to manually patch the output of section 1 into the second input of section 3 and set its three-way toggle switch to AND. This effectively creates the desired logical chain: "(A OR B) AND (C OR D)".
 
-<a name="value-comparator-1p"></a>
 ## Value Comparator-1
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Switch-Yes-green.svg?style=flat-square)<br>
@@ -82,7 +78,6 @@ Similar to the LCMP2 module, the VCMP1 includes **True/False inputs** at the top
 
 If the A signal is currently at 2V, it is detected as being greater than B. As a result, the "A > B" output will produce a high gate. For the A/B-cross trigger to activate, the A signal must drop below -0.5V (A must cross B, and be "outside" of the tolerance). At this point, it crosses the B value (0V) while exceeding the tolerance, triggering the A/B-cross output (a 10V pulse lasting 1ms). Now, since A is below B and outside the tolerance, the "A < B" output will activate instead. The next A/B-cross trigger will only fire when the A signal rises above 0.5V, crossing B and "outside" of the tolerance again in the opposite direction.
 
-<a name="value-comparator-2-mk-ip"></a>
 ## Value Comparator-2 Mk I
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Switch-Yes-green.svg?style=flat-square)<br>
@@ -94,7 +89,6 @@ Like the VCMP1, this module also includes True/False inputs at the top. If these
 
 ![Screenshot of Value-Compare-2 Mk.I](module/VCMP2I.png)
 
-<a name="value-comparator-2-mk-iip"></a>
 ## Value Comparator-2 Mk II
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
 The VCMP2II module consists of two sections, with distinct functionalities. The top section performs comparisons, while the bottom section carries out mathematical operations on the input signals. *Some general info regarding the Compare-modules are listed in the top.* In the top section, the module provides the following outputs based on the comparison of input signals A and B:
