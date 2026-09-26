@@ -56,7 +56,7 @@ The context menu also provides various options to adjust default values, such as
 ### Polyphony
 Most Infinite-Noise modules can accept, process, and generate polyphonic signals (with 2 to 16 channels), though a few modules do not support polyphony. As previously mentioned, input and output ports that support or generate polyphonic signals are **marked with a thin red circle** and by default the port tool-tip is either prefixed by "**(m)**" (monophonic) or "**(p)**" (polyphonic). However, this does not mean that you must input a polyphonic signal, nor does it guarantee that the module will always output polyphonic signals. In most cases, monophonic signals can be used as inputs, and output ports are capable of generating both monophonic and polyphonic signals, depending on how the module is used. However when a port does not show the "red circle" and the tool-tip shows the "(m)" prefix, you can be certain that only channel-1 of an input signal is used (if fed a polyphonic signal), and as output it can only generate monophonic signals.
 
-In the module list below, a "**p**" in the parentheses next to a module's name indicates that it supports and/or generates polyphonic signals. Some modules, like the [Tiny LFO](LFO.md#tiny-lfo), uses a primary input (such as frequency-CV) to determine the number of output channels. For example, if you feed its frequency input a 4-channel polyphonic signal, each waveform output will also generate 4-channel polyphonic signals. Some modules do not have a dedicated polyphonic input, but polyphony can still be enabled via knobs or the context menu. For instance, the outputs of the [Manuel Push 2](ManCV.md#manuel-push-2) module are monophonic by default, but the context menu allows you to set the number of output channels. Other modules, such as [Merge/Mult-4](MergeMult.md#mergemult-4), determine the number of output channels based on the input with the highest channel count. If you send a 4-channel polyphonic signal to the first input in the merge section and an 8-channel polyphonic signal to the second input, the merged output will have 8 polyphonic channels. Any missing channels from a lower-channel input are automatically normalized to 0V, so in this example the 4 last channels of the 2nd signal (with 8 channels) will be merged with 0V (as the first signal only had 4 channels).
+Some modules, like the [Tiny LFO](LFO.md#tiny-lfo), uses a primary input (such as frequency-CV) to determine the number of output channels. For example, if you feed its frequency input a 4-channel polyphonic signal, each waveform output will also generate 4-channel polyphonic signals. Some modules do not have a dedicated polyphonic input, but polyphony can still be enabled via knobs or the context menu. For instance, the outputs of the [Manuel Push 2](ManCV.md#manuel-push-2) module are monophonic by default, but the context menu allows you to set the number of output channels. Other modules, such as [Merge/Mult-4](MergeMult.md#mergemult-4), determine the number of output channels based on the input with the highest channel count. If you send a 4-channel polyphonic signal to the first input in the merge section and an 8-channel polyphonic signal to the second input, the merged output will have 8 polyphonic channels. Any missing channels from a lower-channel input are automatically normalized to 0V, so in this example the 4 last channels of the 2nd signal (with 8 channels) will be merged with 0V (as the first signal only had 4 channels).
 
 When a module, such as a merge module, has multiple inputs which you want to process multiple polyphonic signals, these inputs should ideally have the same number of channels. **Monophonic signals are handled in a special way**, so you can merge a monophonic signal with a polyphonic signal. When doing so all channels of the polyphonic signal will be merged with the same monophonic signal.
 
@@ -159,93 +159,87 @@ Choosing a low cycle count you will be able to generate more than 500 triggers p
 **Warning**: Do not pick a trigger length that is too short: some modules do not look for (or process) triggers every cycle, so a pulse that is high for only a few cycles can be missed. Also be aware of **process quality** on both the receiving and the generating module. Infinite-Noise lets you choose how often a module runs. For example, if a trigger is only high/low for 4 cycles, but the receiving module only checks for triggers every 64th cycle, it can miss many triggers. Likewise, if you set the generating module’s process quality so it "only runs" every 64th cycle, it cannot produce a high or low phase shorter than 64 cycles—even if Trigger-high or Trigger-low length is set shorter than that. *E.g. if the module "only runs" every 64th cycle, both the high- and low phases of the generated trigger will at least last 64 cycles (128 cycles in total).*
 
 # Modules
-The sections above covered features that are common to all Infinite-Noise modules. Below, you'll find links to each module, where you can read about individual modules or families of similar modules. Many modules include a number in their name (e.g., "Manuel Trigger 8" or "Auto-Scale 4"). This number typically indicates how many "sections" the module has, which determines how many different signals can be processed simultaneously. Typically a single module which can process multiple sections (thereby multiple signals) at the same time, is more efficient than using multiple modules which each only process a single signal. A few of the modules comes in Mk I and Mk II versions, where these modules are similar, but still different (e.g. one might only have knobs, whereas the other both support knobs and CV-input) and/or one might have a single set of knob/cv-controls affecting all sections, and the other might have individual knob/cv-controls for each section).
-
-A large number of Infinite-Noise modules can accept and generate polyphonic signals (ranging from 2 to 16 channels). In the list below, a "**p**" in the parentheses next to a module's name indicates that it supports and/or generates polyphonic signals. For example, the Tweak-2I, -2II, and -4I modules support polyphonic signals, whereas the larger Tweak modules (Tweak-4II and Tweak-8) with more sections only process monophonic signals. If a polyphonic signal is fed into one of these monophonic-only versions, only channel 1 will be processed, while the rest of the channels are ignored, and the module will output a monophonic signal.
-
-Beside the "p" in the parentheses next to the module name (as mentioned above), you might also see an "**a**" for modules which can automatically change its process quality (e.g. based on an internal LFO frequency), or a "**q**" for the modules which can quantize its output (e.g. to quantize to nearest note). Regarding modules supporting "automatic" process-quality, it will be enabled by default, whereas those that support quantize ("rounding of output") it will be disabled by default. In both cases it can be enabled/disabled using the context-menu for those modules.
-
-Most Infinite-Noise modules are primarily designed for processing control signals. For this reason, you can often reduce CPU usage by lowering the process quality (for example, by executing the internal algorithm only every 4th or 16th cycle). However, when used for audio processing, modules should typically run at **Audio rate** (executing every cycle). Some modules are however more likely to be used with audio signals as well, and therefore provide an optional 2x oversampling (disabled by default). In the list below, modules marked with an "**o**" (shown in parentheses next to the module name) support input oversampling, which you can enable in the context menu if using these modules to process audio-signals.
+The sections above covered features that are common to all Infinite-Noise modules. Below, you'll find links to each module, where you can read about individual modules or families of similar modules. Many modules include a number in their name (e.g., "Manuel Trigger 8" or "Auto-Scale 4"). This number typically indicates how many "sections" the module has, which determines how many different signals can be processed simultaneously. Typically a single module which can process multiple sections (thereby multiple signals) at the same time, is more efficient than using multiple modules which each only process a single signal. A few of the modules comes in Mk I and Mk II versions, where these modules are similar, but still different (e.g. one might only have knobs, whereas the other both support knobs and CV-input) and/or one might have a single set of knob/cv-controls affecting all sections, and the other might have individual knob/cv-controls for each section.
 
 ## LFOs
-+ [Simple LFO4-ss](LFO.md#simple-lfo4-ss)(a): 4HP quad LFO: four independent knob-set rates, Saw and Sine per LFO, internal hard/soft sync, Rate Chaos, and uni/bipolar range.
-+ [Simple LFO4-st](LFO.md#simple-lfo4-st)(a): 4HP quad LFO: four independent knob-set rates, Square and Triangle per LFO, internal hard/soft sync, Rate Chaos, and uni/bipolar range.
-+ [Tiny LFO](LFO.md#tiny-lfo)(pa): Tiny 2HP LFO with knob/CV rate, PWM, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
-+ [LFO1](LFO.md#lfo1)(pa): 4HP LFO with knob/CV rate, PWM, MOD, external sync in/out, n-shot, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic). Square+MOD acts as a wavetable (Triangle <-> Square <-> Saw).
-+ [Phase-Driven LFO](LFO.md#phase-driven-lfo)(p): Phase-driven LFO: incoming phase CV sets the waveform (no internal oscillator). PWM, MOD, wrap, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
++ [Simple LFO4-ss](LFO.md#simple-lfo4-ss): 4HP quad LFO: four independent knob-set rates, Saw and Sine per LFO, internal hard/soft sync, Rate Chaos, and uni/bipolar range.
++ [Simple LFO4-st](LFO.md#simple-lfo4-st): 4HP quad LFO: four independent knob-set rates, Square and Triangle per LFO, internal hard/soft sync, Rate Chaos, and uni/bipolar range.
++ [Tiny LFO](LFO.md#tiny-lfo): Tiny 2HP LFO with knob/CV rate, PWM, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
++ [LFO1](LFO.md#lfo1): 4HP LFO with knob/CV rate, PWM, MOD, external sync in/out, n-shot, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic). Square+MOD acts as a wavetable (Triangle <-> Square <-> Saw).
++ [Phase-Driven LFO](LFO.md#phase-driven-lfo): Phase-driven LFO: incoming phase CV sets the waveform (no internal oscillator). PWM, MOD, wrap, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
 
 ## Tweak (attenuate/amplify, offset and mix)
-+ [Tweak-2 Mk I](Tweak.md#tweak-2-mk-i)(pq): 2HP dual attenuverter: shared knob/CV scale (1x, 2x, 5x, 10x) and offset. Polyphonic, quantize, stereo-friendly. No mix.
-+ [Tweak-2 Mk II](Tweak.md#tweak-2-mk-ii)(pq): 2HP dual attenuverter: individual knob scale (1x, 2x, 5x, 10x) and offset, plus averaging mix. Polyphonic, quantize. Optional A/B link.
-+ [Tweak-4 Mk I](Tweak.md#tweak-4-mk-i)(pq): 2HP quad attenuverter: shared knob scale (1x, 2x, 5x, 10x) and offset across four signals. Polyphonic, quantize. No mix.
-+ [Tweak-4 Mk II](Tweak.md#tweak-4-mk-ii)(q): 7HP quad attenuverter: individual knob/CV scale (1x, 2x, 5x, 10x) and offset, plus averaging mix. Quantize, optional link-to-A.
-+ [Tweak-8](Tweak.md#tweak-8)(q): 14HP 8-section attenuverter: individual knob/CV scale (1x, 2x, 5x, 10x) and offset, plus averaging mix. Quantize, optional link-to-A.
-+ [VCA-2](Tweak.md#vca-2)(p): 2HP dual VCA: independent knob/CV gain (0-100%) per section. Polyphonic, lin/exp/log, optional A/B link.
-+ [VCA-4 Mk I](Tweak.md#vca-4-mk-i)(p): 2HP quad VCA: shared knob/CV gain (0-100%) across four signals. Polyphonic, lin/exp/log.
-+ [VCA-4 Mk II](Tweak.md#vca-4-mk-ii)(p): 4HP quad VCA: independent knob/CV gain (0-100%) per section. Polyphonic, lin/exp/log, optional A/B, B/C and/or C/D link.
-+ [Clamp 4](Tweak.md#clamp-4)(po): 2HP quad clamp: min/max range with invert, plus Diff and Gate modes. Polyphonic, optional 2x oversampling, min/max link.
-+ [Auto-Scale 4](Tweak.md#auto-scale-4)(p): 2HP quad auto-scale: fits each input into a min/max range (with invert). Polyphonic, reset, lock, min/max link.
++ [Tweak-2 Mk I](Tweak.md#tweak-2-mk-i): 2HP dual attenuverter: shared knob/CV scale (1x, 2x, 5x, 10x) and offset. Polyphonic, quantize, stereo-friendly. No mix.
++ [Tweak-2 Mk II](Tweak.md#tweak-2-mk-ii): 2HP dual attenuverter: individual knob scale (1x, 2x, 5x, 10x) and offset, plus averaging mix. Polyphonic, quantize. Optional A/B link.
++ [Tweak-4 Mk I](Tweak.md#tweak-4-mk-i): 2HP quad attenuverter: shared knob scale (1x, 2x, 5x, 10x) and offset across four signals. Polyphonic, quantize. No mix.
++ [Tweak-4 Mk II](Tweak.md#tweak-4-mk-ii): 7HP quad attenuverter: individual knob/CV scale (1x, 2x, 5x, 10x) and offset, plus averaging mix. Quantize, optional link-to-A.
++ [Tweak-8](Tweak.md#tweak-8): 14HP 8-section attenuverter: individual knob/CV scale (1x, 2x, 5x, 10x) and offset, plus averaging mix. Quantize, optional link-to-A.
++ [VCA-2](Tweak.md#vca-2): 2HP dual VCA: independent knob/CV gain (0-100%) per section. Polyphonic, lin/exp/log, optional A/B link.
++ [VCA-4 Mk I](Tweak.md#vca-4-mk-i): 2HP quad VCA: shared knob/CV gain (0-100%) across four signals. Polyphonic, lin/exp/log.
++ [VCA-4 Mk II](Tweak.md#vca-4-mk-ii): 4HP quad VCA: independent knob/CV gain (0-100%) per section. Polyphonic, lin/exp/log, optional A/B, B/C and/or C/D link.
++ [Clamp 4](Tweak.md#clamp-4): 2HP quad clamp: min/max range with invert, plus Diff and Gate modes. Polyphonic, optional 2x oversampling, min/max link.
++ [Auto-Scale 4](Tweak.md#auto-scale-4): 2HP quad auto-scale: fits each input into a min/max range (with invert). Polyphonic, reset, lock, min/max link.
 
 ## Controllers/converters
-+ [Manuel Trigger, Gate and CV](ManCV.md#manuel-trigger-gate-and-cv)(pq): 2HP performance controller: 1 trigger, 2 latchable gates, and 2 CV knobs (-10V to +10V). Polyphonic, CV quantize.
-+ [Manuel Push 2](ManCV.md#manuel-push-2)(p): 2HP dual controller: latchable buttons with gate and high/low trigger outputs, plus CV in. Converts gates to triggers (or vice versa).
-+ [Manuel Trigger 8](ManCV.md#manuel-trigger-8)(p): 4HP controller: 8 momentary trigger buttons, All, and a polyphonic output.
-+ [Manuel Gate 8](ManCV.md#manuel-gate-8)(p): 4HP controller: 8 latchable gate buttons, All, and a polyphonic output.
-+ [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-i)(pq): 4HP controller: 8 CV knobs (-10V to +10V), mute, and a polyphonic output. Quantize.
-+ [Manuel CV 8 Mk II](ManCV.md#manuel-cv-8-mk-ii)(pq): 8HP controller: 8 On/Off CV pairs with toggle buttons, All, attenuate, and a polyphonic output. Quantize.
-+ [Manuel Mix 4 Mk I](ManCV.md#manuel-mix-4-mk-i)(p): 2HP mixer: 4 inputs, per-input knobs (0-200%), master, averaging or unity mix.
-+ [Manuel Mix 4 Mk II](ManCV.md#manuel-mix-4-mk-ii)(p): 4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, averaging or unity.
-+ [Manuel Mix 4 Stereo](ManCV.md#manuel-mix-4-stereo)(p): 4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, averaging or unity. Optional mono-to-stereo.
-+ [Manuel Mute 8](ManCV.md#manuel-mute-8)(pq): 6HP 8-channel mute: per-section buttons and CV, All, latch, and a mute-value knob/CV.
-+ [Mute 2](ManCV.md#mute-2)(p): 2HP dual mute: per-section latchable button and gate/trigger CV, plus Both.
-+ [CV-Toggle 8](ManCV.md#cv-toggle-8)(pq): 8HP 8-section On/Off switch: CV or knob values, gate/trigger per section, All, and attenuate.
-+ [CV to Gate](CvToGt.md#cv-to-gate)(p): Fire a gate if CV is within a specified min/max range. Also above, below, inverted-range, and Diff.
-+ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8)(p): 8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.
++ [Manuel Trigger, Gate and CV](ManCV.md#manuel-trigger-gate-and-cv): 2HP performance controller: 1 trigger, 2 latchable gates, and 2 CV knobs (-10V to +10V). Polyphonic, CV quantize.
++ [Manuel Push 2](ManCV.md#manuel-push-2): 2HP dual controller: latchable buttons with gate and high/low trigger outputs, plus CV in. Converts gates to triggers (or vice versa).
++ [Manuel Trigger 8](ManCV.md#manuel-trigger-8): 4HP controller: 8 momentary trigger buttons, All, and a polyphonic output.
++ [Manuel Gate 8](ManCV.md#manuel-gate-8): 4HP controller: 8 latchable gate buttons, All, and a polyphonic output.
++ [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-i): 4HP controller: 8 CV knobs (-10V to +10V), mute, and a polyphonic output. Quantize.
++ [Manuel CV 8 Mk II](ManCV.md#manuel-cv-8-mk-ii): 8HP controller: 8 On/Off CV pairs with toggle buttons, All, attenuate, and a polyphonic output. Quantize.
++ [Manuel Mix 4 Mk I](ManCV.md#manuel-mix-4-mk-i): 2HP mixer: 4 inputs, per-input knobs (0-200%), master, averaging or unity mix.
++ [Manuel Mix 4 Mk II](ManCV.md#manuel-mix-4-mk-ii): 4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, averaging or unity.
++ [Manuel Mix 4 Stereo](ManCV.md#manuel-mix-4-stereo): 4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, averaging or unity. Optional mono-to-stereo.
++ [Manuel Mute 8](ManCV.md#manuel-mute-8): 6HP 8-channel mute: per-section buttons and CV, All, latch, and a mute-value knob/CV.
++ [Mute 2](ManCV.md#mute-2): 2HP dual mute: per-section latchable button and gate/trigger CV, plus Both.
++ [CV-Toggle 8](ManCV.md#cv-toggle-8): 8HP 8-section On/Off switch: CV or knob values, gate/trigger per section, All, and attenuate.
++ [CV to Gate](CvToGt.md#cv-to-gate): Fire a gate if CV is within a specified min/max range. Also above, below, inverted-range, and Diff.
++ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8): 8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.
 
 ## Merge/Mult
-+ [Mult2x4](MergeMult.md#mult2x4)(p): 2HP dual mult: two inputs with four copies each, or 1-to-8 if the lower input is unused.
-+ [Merge2x4](MergeMult.md#merge2x4)(pq): 2HP dual merge: two 4-to-1 sections, sum or averaging mix, with optional negative-value handling.
-+ [Merge/Mult-4](MergeMult.md#mergemult-4)(pq): 2HP merge/mult: 4-to-1 sum or averaging mix, plus a 1-to-4 copy. Mult defaults to the merge.
++ [Mult2x4](MergeMult.md#mult2x4): 2HP dual mult: two inputs with four copies each, or 1-to-8 if the lower input is unused.
++ [Merge2x4](MergeMult.md#merge2x4): 2HP dual merge: two 4-to-1 sections, sum or averaging mix, with optional negative-value handling.
++ [Merge/Mult-4](MergeMult.md#mergemult-4): 2HP merge/mult: 4-to-1 sum or averaging mix, plus a 1-to-4 copy. Mult defaults to the merge.
 
 ## Logic/Value-compare
-+ [Tiny Logic Comparator-2](Compare.md#tiny-logic-comparator-2)(p): 2HP dual logic: 4 inputs per section, AND/OR/XOR with invert (NAND/NOR/XNOR). Inputs can be inverted individually via context menu.
-+ [Logic Comparator-2](Compare.md#logic-comparator-2)(p): 4HP dual logic: all six Boolean outputs per section, plus True/False switch inputs. Buttons next to each input can invert the input individually.
-+ [Logic Comparator-6x2](Compare.md#logic-comparator-6x2)(p): 6HP 6-section logic: 2 inputs each, AND/OR/XOR with invert (NAND/NOR/XNOR). Chainable. Inputs can be inverted individually via context menu.
-+ [Value Comparator-1](Compare.md#value-comparator-1)(p): 4HP value compare: A=B, A!=B, A>=B, A>B, A<=B, A<B, with tolerance, A/B-cross trigger, and clamp. True/False switch.
-+ [Value Comparator-2 Mk I](Compare.md#value-comparator-2-mk-i)(p): 4HP dual value compare: two sections of A=B, A!=B, A>=B, A>B, A<=B, A<B, with True/False switch inputs.
-+ [Value Comparator-2 Mk II](Compare.md#value-comparator-2-mk-ii)(p): 4HP value compare and math: Min, Max, NtZ, FfZ, Abs-diff, and Avg of A/B, and Int/Frac of C and Plus, Minus, Mul, Div of C/D.
++ [Tiny Logic Comparator-2](Compare.md#tiny-logic-comparator-2): 2HP dual logic: 4 inputs per section, AND/OR/XOR with invert (NAND/NOR/XNOR). Inputs can be inverted individually via context menu.
++ [Logic Comparator-2](Compare.md#logic-comparator-2): 4HP dual logic: all six Boolean outputs per section, plus True/False switch inputs. Buttons next to each input can invert the input individually.
++ [Logic Comparator-6x2](Compare.md#logic-comparator-6x2): 6HP 6-section logic: 2 inputs each, AND/OR/XOR with invert (NAND/NOR/XNOR). Chainable. Inputs can be inverted individually via context menu.
++ [Value Comparator-1](Compare.md#value-comparator-1): 4HP value compare: A=B, A!=B, A>=B, A>B, A<=B, A<B, with tolerance, A/B-cross trigger, and clamp. True/False switch.
++ [Value Comparator-2 Mk I](Compare.md#value-comparator-2-mk-i): 4HP dual value compare: two sections of A=B, A!=B, A>=B, A>B, A<=B, A<B, with True/False switch inputs.
++ [Value Comparator-2 Mk II](Compare.md#value-comparator-2-mk-ii): 4HP value compare and math: Min, Max, NtZ, FfZ, Abs-diff, and Avg of A/B, and Int/Frac of C and Plus, Minus, Mul, Div of C/D.
 
 ## S&H, T&H, H&T
-+ [S&H/T&H-2](Shth.md#shth-2)(paq): 2HP dual S&H/T&H/H&T: one in/out per section, clock in or internal LFO, Rate Chaos. Internal noise if unpatched.
-+ [S&H/T&H-2x4](Shth.md#shth-2x4)(paq): 4HP dual S&H/T&H/H&T: four in/out per section, clock in or internal LFO, Rate Chaos. Internal noise if unpatched. A clock normalizes to B.
-+ [Sample and Update](Shth.md#sample-and-update)(paq): 2HP sample-and-update: Sample, Update, and Reset via button/CV. Can also count triggers and fire one when the desired count is reached.
++ [S&H/T&H-2](Shth.md#shth-2): 2HP dual S&H/T&H/H&T: one in/out per section, clock in or internal LFO, Rate Chaos. Internal noise if unpatched.
++ [S&H/T&H-2x4](Shth.md#shth-2x4): 4HP dual S&H/T&H/H&T: four in/out per section, clock in or internal LFO, Rate Chaos. Internal noise if unpatched. A clock normalizes to B.
++ [Sample and Update](Shth.md#sample-and-update): 2HP sample-and-update: Sample, Update, and Reset via button/CV. Can also count triggers and fire one when the desired count is reached.
 
 ## Polyphonic-tools
-+ [Poly-Merge](PolyTools.md#poly-merge)(p): 6HP merge: up to 16 monophonic signals (or multiple polyphonic signals) into one polyphonic output. Channel count, Mono/Poly mode.
-+ [Poly-Split](PolyTools.md#poly-split)(p): 4HP split: a polyphonic signal into up to 16 monophonic signals (or multiple polyphonic signals). Mono/Poly mode.
-+ [Poly-Stereo](PolyTools.md#poly-stereo)(p): 4HP encode/decode: two mono left/right pairs to/from 2-channel polyphonic stereo. If only left is connected, right copies it.
-+ [Poly-Quad](PolyTools.md#poly-quad)(p): 2HP 4-channel merge/split: encode up to 4 mono signals into poly, and decode poly back to 4 mono. Auto packing or fixed count.
-+ [Poly-Shuffle](PolyTools.md#poly-shuffle)(p): 2HP add, repeat, or remove channels of a polyphonic signal. Also next, prev, or shuffle channel order.
-+ [Poly-Tweak Mk I](PolyTools.md#poly-tweak-mk-i)(p): 2HP invert/disable (mute/remove) poly channels via buttons. Can also construct a polyphonic signal with up to 16 gates.
-+ [Poly-Tweak Mk II](PolyTools.md#poly-tweak-mk-ii)(p): 2HP invert/disable (mute/remove) poly channels based on CV-inputs. Can also mix individual channels of two polyphonic signals.
-+ [Poly-Logical Compare](PolyTools.md#poly-logical-compare)(p): 2HP logical compare (AND, OR, XOR, NAND, NOR, XNOR) across all channels of one polyphonic signal.
-+ [Poly-Value Compare](PolyTools.md#poly-value-compare)(p): 2HP value compare (MIN, MAX, NtZ, FfZ, AVG, R/S) across all channels of one polyphonic signal. Can also monitor since last reset, all channels or per channel.
-+ [Poly-Offset](PolyTools.md#poly-offset)(p): 4HP offset individual or group of channels of a polyphonic signal. All offset, incremental offset, and 8 knobs.
-+ [Poly-Scale](PolyTools.md#poly-scale)(p): 4HP scale (attenuvert/amplify) individual or group of channels of a polyphonic signal. All scale, 8 knobs, 1x/2x/5x/10x.
++ [Poly-Merge](PolyTools.md#poly-merge): 6HP merge: up to 16 monophonic signals (or multiple polyphonic signals) into one polyphonic output. Channel count, Mono/Poly mode.
++ [Poly-Split](PolyTools.md#poly-split): 4HP split: a polyphonic signal into up to 16 monophonic signals (or multiple polyphonic signals). Mono/Poly mode.
++ [Poly-Stereo](PolyTools.md#poly-stereo): 4HP encode/decode: two mono left/right pairs to/from 2-channel polyphonic stereo. If only left is connected, right copies it.
++ [Poly-Quad](PolyTools.md#poly-quad): 2HP 4-channel merge/split: encode up to 4 mono signals into poly, and decode poly back to 4 mono. Auto packing or fixed count.
++ [Poly-Shuffle](PolyTools.md#poly-shuffle): 2HP add, repeat, or remove channels of a polyphonic signal. Also next, prev, or shuffle channel order.
++ [Poly-Tweak Mk I](PolyTools.md#poly-tweak-mk-i): 2HP invert/disable (mute/remove) poly channels via buttons. Can also construct a polyphonic signal with up to 16 gates.
++ [Poly-Tweak Mk II](PolyTools.md#poly-tweak-mk-ii): 2HP invert/disable (mute/remove) poly channels based on CV-inputs. Can also mix individual channels of two polyphonic signals.
++ [Poly-Logical Compare](PolyTools.md#poly-logical-compare): 2HP logical compare (AND, OR, XOR, NAND, NOR, XNOR) across all channels of one polyphonic signal.
++ [Poly-Value Compare](PolyTools.md#poly-value-compare): 2HP value compare (MIN, MAX, NtZ, FfZ, AVG, R/S) across all channels of one polyphonic signal. Can also monitor since last reset, all channels or per channel.
++ [Poly-Offset](PolyTools.md#poly-offset): 4HP offset individual or group of channels of a polyphonic signal. All offset, incremental offset, and 8 knobs.
++ [Poly-Scale](PolyTools.md#poly-scale): 4HP scale (attenuvert/amplify) individual or group of channels of a polyphonic signal. All scale, 8 knobs, 1x/2x/5x/10x.
 
 ## Cross-fade and Switch modules
-+ [Cross-fade 1x2](CrossFade.md#cross-fade-1x2)(p): 2HP cross-fade a stereo signal, or two separate mono signals, by knob/CV. A/B toggle, trigger mode.
-+ [Cross-fade 4x1](CrossFade.md#cross-fade-4x1)(p): 8HP cross-fade 4 separate signals by per-section and master knob/CV. A/B toggle, trigger mode, flipped outputs.
-+ [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1)(p): 2HP cross-fade/switch up to 4 inputs into 1 output. Knob/CV, trigger order, 2/3/4 ports.
-+ [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4)(p): 2HP cross-fade/switch 1 input into up to 4 outputs. Knob/CV, trigger order, 2/3/4 ports.
-+ [Bernoulli Switch](Switch.md#bernoulli-switch)(p): 2HP Bernoulli switch with A/B-> (2 in, 1 out) and ->A/B (1 in, 2 out). Probability, clock in or internal LFO, Rate Chaos.
-+ [ON/OFF Switch](Switch.md#onoff-switch)(p): 2HP switch between the ON- or OFF-signal via button, gate, or trigger. Knob/CV per state.
-+ [Combine](Switch.md#combine)(p): 2HP combine (switch) 2 inputs: Upper/Lower, A greater than B, or Rise/Fall. Knob/CV param, gate out.
++ [Cross-fade 1x2](CrossFade.md#cross-fade-1x2): 2HP cross-fade a stereo signal, or two separate mono signals, by knob/CV. A/B toggle, trigger mode.
++ [Cross-fade 4x1](CrossFade.md#cross-fade-4x1): 8HP cross-fade 4 separate signals by per-section and master knob/CV. A/B toggle, trigger mode, flipped outputs.
++ [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1): 2HP cross-fade/switch up to 4 inputs into 1 output. Knob/CV, trigger order, 2/3/4 ports.
++ [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4): 2HP cross-fade/switch 1 input into up to 4 outputs. Knob/CV, trigger order, 2/3/4 ports.
++ [Bernoulli Switch](Switch.md#bernoulli-switch): 2HP Bernoulli switch with A/B-> (2 in, 1 out) and ->A/B (1 in, 2 out). Probability, clock in or internal LFO, Rate Chaos.
++ [ON/OFF Switch](Switch.md#onoff-switch): 2HP switch between the ON- or OFF-signal via button, gate, or trigger. Knob/CV per state.
++ [Combine](Switch.md#combine): 2HP combine (switch) 2 inputs: Upper/Lower, A greater than B, or Rise/Fall. Knob/CV param, gate out.
 
 ## Random
-+ [Random-4](Random.md#random-4)(paq): 2HP generates 4 random (polyphonic) values within specified range with center/edge or min/max distribution at each trigger or internal LFO. Rate Chaos.
-+ [Random Curve](Random.md#random-curve)(aq): 4HP generates 6 shaped random curves within specified range with center/edge or min/max distribution. Internal LFO, Rate Chaos, quantize.
-+ [Arm 3 XY](Arm3XY.md#arm-3-xy)(a): 8HP length and rotation of 3 arms (basically 3 polar vectors) generate a semi-random X/Y curve, plus XY mix. Individual Rate Chaos can be applied to length and/or rotational velocity of each arm.
++ [Random-4](Random.md#random-4): 2HP generates 4 random (polyphonic) values within specified range with center/edge or min/max distribution at each trigger or internal LFO. Rate Chaos.
++ [Random Curve](Random.md#random-curve): 4HP generates 6 shaped random curves within specified range with center/edge or min/max distribution. Internal LFO, Rate Chaos, quantize.
++ [Arm 3 XY](Arm3XY.md#arm-3-xy): 8HP length and rotation of 3 arms (basically 3 polar vectors) generate a semi-random X/Y curve, plus XY mix. Individual Rate Chaos can be applied to length and/or rotational velocity of each arm.
 
 ## Envelope
 + [ADR Envelope](Envelope.md#adr-envelope): 4HP Attack-Delay-Release envelope with attack/release time and shape (technically Attack-Sustain-Delay-Release). Rate Chaos can affect each time-setting, changed at each cycle.
@@ -253,21 +247,21 @@ Most Infinite-Noise modules are primarily designed for processing control signal
 + [Envelope Phase Expander](Envelope.md#envelope-phase-expander): 2HP expander for ADR/ADSDR: phase gates (Attack, Decay, Sustain, Delay, Release, Idle) plus Rise, Steady, Fall. Idle can output phase position (0V to 10V).
 
 ## Slew
-+ [Slew 2](Slew.md#slew-2)(p): 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snat (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
-+ [Slew 4](Slew.md#slew-4)(p): 2HP quad polyphoinc constant rate/time slew with knobs based rise/fall times/shape settings. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
++ [Slew 2](Slew.md#slew-2): 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snat (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
++ [Slew 4](Slew.md#slew-4): 2HP quad polyphoinc constant rate/time slew with knobs based rise/fall times/shape settings. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
 
 ## Misc
-+ [Sign](Sign.md#sign)(pq): 4HP outputs 9 signed versions of the input: Cut-, Cut+, Abs, ×-1, !R, +5, -5, Gate, !Gate.
-+ [Sign4 Mk I](Sign.md#sign4-mk-i)(p): 2HP 4 sections that invert gate, bipolar (×-1), or unipolar (!R) signals.
-+ [Sign4 Mk II](Sign.md#sign4-mk-ii)(p): 2HP 4 sections that output absolute value, cut-negative, or cut-positive.
-+ [Fold](Fold.md#fold)(poq): 2HP fold or wrap with gain and bias. Bipolar/unipolar range, offset or asymmetric gain.
-+ [Wave Shaper 2](WaveShaper2.md#wave-shaper-2)(poq): 2HP 3 wave-shaping algorithms on 2 separate signals: 5Sine, Knee, Clamp/Fold.
-+ [Ring Modulator 3](RingMod3.md#ring-modulator-3)(pq): 2HP 3-section ring modulator (A×B). Unpatched sections chain; B defaults to /10.
-+ [Increment/Decrement Offset](IncDecOffset.md#incrementdecrement-offset)(p): 2HP increment or decrement an offset on the input via button/trigger. Knob/CV step, reset.
-+ [Delta-4](Delta4.md#delta-4)(p): 2HP four sections measuring difference between current input and a captured reference. Signed, inverted, or absolute.
-+ [Flip-Flop](FlipFlop.md#flip-flop)(p): 2HP Polyphonic D-, T-, or SR-Flip-Flop. Outputs for Q, !Q, and change trigger.
++ [Sign](Sign.md#sign): 4HP outputs 9 signed versions of the input: Cut-, Cut+, Abs, ×-1, !R, +5, -5, Gate, !Gate.
++ [Sign4 Mk I](Sign.md#sign4-mk-i): 2HP 4 sections that invert gate, bipolar (×-1), or unipolar (!R) signals.
++ [Sign4 Mk II](Sign.md#sign4-mk-ii): 2HP 4 sections that output absolute value, cut-negative, or cut-positive.
++ [Fold](Fold.md#fold): 2HP fold or wrap with gain and bias. Bipolar/unipolar range, offset or asymmetric gain.
++ [Wave Shaper 2](WaveShaper2.md#wave-shaper-2): 2HP 3 wave-shaping algorithms on 2 separate signals: 5Sine, Knee, Clamp/Fold.
++ [Ring Modulator 3](RingMod3.md#ring-modulator-3): 2HP 3-section ring modulator (A×B). Unpatched sections chain; B defaults to /10.
++ [Increment/Decrement Offset](IncDecOffset.md#incrementdecrement-offset): 2HP increment or decrement an offset on the input via button/trigger. Knob/CV step, reset.
++ [Delta-4](Delta4.md#delta-4): 2HP four sections measuring difference between current input and a captured reference. Signed, inverted, or absolute.
++ [Flip-Flop](FlipFlop.md#flip-flop): 2HP Polyphonic D-, T-, or SR-Flip-Flop. Outputs for Q, !Q, and change trigger.
 + [Slope Detector 2](SlopeDetector2.md#slope-detector-2): 2HP 2 sections of threshold slope detection (rise/steady/fall), latched phases, configurable Steady hold. Gate or trigger per output.
-+ [Patch](Patch.md#patch)(p): 4HP mutable patch with 8 in/out pairs. Typically used as a pair to patch between them.
-+ [Turing Machine](TuringMachine.md#turing-machine)(q): 10HP Turing machine for random sequences of 3-32 steps. 16 gate/trigger (also poly) and 2 value outputs. Lock, quantize.
++ [Patch](Patch.md#patch): 4HP mutable patch with 8 in/out pairs. Typically used as a pair to patch between them.
++ [Turing Machine](TuringMachine.md#turing-machine): 10HP Turing machine for random sequences of 3-32 steps. 16 gate/trigger (also poly) and 2 value outputs. Lock, quantize.
 + [Bits-to-Value](Bits.md#bits-to-value): 8HP converts 8 bits (individual gates and/or poly) into a CV value based on weights and range.
-+ [Value-to-Bits](Bits.md#value-to-bits)(p): 4HP converts a CV input (clamped to range) into 8 mono gates plus one poly (up to 16 bits/channels).
++ [Value-to-Bits](Bits.md#value-to-bits): 4HP converts a CV input (clamped to range) into 8 mono gates plus one poly (up to 16 bits/channels).
