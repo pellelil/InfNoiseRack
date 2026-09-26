@@ -19,6 +19,8 @@ plugin.dll
 
 # Private / working content (in SVN, excluded from public Git)
 /.cursor/
+/AGENTS.md
+/InfNoiseRack.code-workspace
 /obsolete
 /patches
 /pending
