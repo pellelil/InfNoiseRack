@@ -82,6 +82,9 @@ struct Slew2Module : InfNoiseModule {
 	bool fallTimeCvConn = false;
 	bool riseShapeCvConn = false;
 	bool fallShapeCvConn = false;
+	bool timesNeedPerChannel = false; // poly time CV (incl. fall normalized to poly rise)
+	bool shapesNeedPerChannel = false; // poly shape CV (incl. fall normalized to poly rise)
+	int maxLoopChannels = 1;
 	int firstIdx = -1;
 	int lastIdx = -1;
 	bool haveConnections = false;
@@ -177,11 +180,8 @@ struct Slew2Module : InfNoiseModule {
 		getJsonFloatArray(rootJ, "lastOut", lastOut, slewCount, 0.f);
 		for (int i = 0; i < slewCount; i++)
 			slew[i].snap(lastOut[i]);
-		slewMode.setBoth((infNoiseSlewMode)getJsonInt(rootJ, "slewMode", (int)sm_constantRate));
-		int loadedLinear = getJsonInt(rootJ, "linearMode", -1);
-		if (loadedLinear < 0)
-			loadedLinear = getJsonBool(rootJ, "useSCurve", false) ? (int)lm_sCurve : (int)lm_linear;
-		linearMode.setBoth((infNoiseLinearMode)loadedLinear);
+		slewMode.setBoth((infNoiseSlewMode)getJsonInt(rootJ, "slewMode", (int)sm_constantRate, (int)sm_len - 1));
+		linearMode.setBoth((infNoiseLinearMode)getJsonInt(rootJ, "linearMode", (int)lm_linear, (int)lm_len - 1));
 	}
 
 	void dataToJson(json_t* rootJ) override {
@@ -199,6 +199,7 @@ struct Slew2Module : InfNoiseModule {
 
 		voctTimeScaling = params[TIME_VOCT_PARAM].getValue() > 0.5f;
 
+		// Handle scale-range for scale knob
 		int rngIdx = (int)(params[ATT_RNG_PARAM].getValue() + 0.5f);
 		if (rngIdx < 0)
 			rngIdx = 0;
@@ -284,11 +285,17 @@ struct Slew2Module : InfNoiseModule {
 			resetCatchTriggers();
 		}
 
-		// Detect CV connections
+		// Detect CV connections and poly (processParams; voltages still read in process)
 		riseTimeCvConn = inputs[RISE_TIME_INPUT].isConnected();
 		fallTimeCvConn = inputs[FALL_TIME_INPUT].isConnected();
 		riseShapeCvConn = inputs[RISE_SHAPE_INPUT].isConnected();
 		fallShapeCvConn = inputs[FALL_SHAPE_INPUT].isConnected();
+		bool riseTimeCvPoly = riseTimeCvConn && inputs[RISE_TIME_INPUT].getChannels() > 1;
+		bool fallTimeCvPoly = fallTimeCvConn && inputs[FALL_TIME_INPUT].getChannels() > 1;
+		bool riseShapeCvPoly = riseShapeCvConn && inputs[RISE_SHAPE_INPUT].getChannels() > 1;
+		bool fallShapeCvPoly = fallShapeCvConn && inputs[FALL_SHAPE_INPUT].getChannels() > 1;
+		timesNeedPerChannel = riseTimeCvPoly || fallTimeCvPoly;
+		shapesNeedPerChannel = riseShapeCvPoly || fallShapeCvPoly;
 
 		haveConnections = false;
 		firstIdx = -1;
@@ -318,8 +325,72 @@ struct Slew2Module : InfNoiseModule {
 		if (bCatchOutConn)
 			outputs[B_CATCH_OUTPUT].setChannels(channels[1]);
 
+		maxLoopChannels = 1;
+		if (haveConnections) {
+			for (int i = firstIdx; i <= lastIdx; i++) {
+				if (channels[i] > maxLoopChannels)
+					maxLoopChannels = channels[i];
+			}
+		}
+
 		//--------------------
 		postProcessParams(args);
+	}
+
+	void scaleTimes(int c, float& riseSec, float& fallSec) {
+		float riseK = riseTimeKnob;
+		riseSec = riseK * riseK * maxSeconds;
+		float riseTimeCv = 0.f;
+		if (riseTimeCvConn) {
+			riseTimeCv = inputs[RISE_TIME_INPUT].getPolyVoltage(c);
+			if (voctTimeScaling)
+				riseSec *= dsp::exp2_taylor5(-riseTimeTrim * riseTimeCv);
+			else {
+				riseK += riseTimeTrim * riseTimeCv / 10.f;
+				riseK = clamp(riseK, 0.f, 1.f);
+				riseSec = riseK * riseK * maxSeconds;
+			}
+		}
+		if (timeLinked)
+			fallSec = riseSec;
+		else {
+			float fallK = fallTimeKnob;
+			fallSec = fallK * fallK * maxSeconds;
+			if (fallTimeCvConn || riseTimeCvConn) {
+				float fallTimeCv = fallTimeCvConn
+					? inputs[FALL_TIME_INPUT].getPolyVoltage(c)
+					: riseTimeCv;
+				if (voctTimeScaling)
+					fallSec *= dsp::exp2_taylor5(-fallTimeTrim * fallTimeCv);
+				else {
+					fallK += fallTimeTrim * fallTimeCv / 10.f;
+					fallK = clamp(fallK, 0.f, 1.f);
+					fallSec = fallK * fallK * maxSeconds;
+				}
+			}
+		}
+	}
+
+	void scaleShapes(int c, float& riseShape, float& fallShape) {
+		riseShape = riseShapeKnob;
+		float riseShapeCv = 0.f;
+		if (riseShapeCvConn) {
+			riseShapeCv = inputs[RISE_SHAPE_INPUT].getPolyVoltage(c);
+			riseShape += riseShapeTrim * riseShapeCv / 10.f;
+			riseShape = clamp(riseShape, -1.f, 1.f);
+		}
+		if (shapeLinked)
+			fallShape = shapeReversed ? -riseShape : riseShape;
+		else {
+			fallShape = fallShapeKnob;
+			if (fallShapeCvConn || riseShapeCvConn) {
+				float fallShapeCv = fallShapeCvConn
+					? inputs[FALL_SHAPE_INPUT].getPolyVoltage(c)
+					: riseShapeCv;
+				fallShape += fallShapeTrim * fallShapeCv / 10.f;
+				fallShape = clamp(fallShape, -1.f, 1.f);
+			}
+		}
 	}
 
 	void process(const ProcessArgs& args) override {
@@ -332,15 +403,24 @@ struct Slew2Module : InfNoiseModule {
 			((cycle256 & processQualityPatterns[procQuality.act]) == processQualityPatterns[procQuality.act]));
 
 		if (doProcess && haveConnections) {
-			for (int i = firstIdx; i <= lastIdx; i++) {
-				int baseIdx = i * PORT_MAX_CHANNELS;
-				for (int c = 0; c < channels[i]; c++) {
+			float riseSec = 0.f;
+			float fallSec = 0.f;
+			float riseShape = 0.f;
+			float fallShape = 0.f;
+			for (int c = 0; c < maxLoopChannels; c++) {
+				if (c == 0 || timesNeedPerChannel) // once for no/monophonic-CV, each channel for polyphonic-CV
+					scaleTimes(c, riseSec, fallSec);
+				if (c == 0 || shapesNeedPerChannel) // once for no/monophonic-CV, each channel for polyphonic-CV
+					scaleShapes(c, riseShape, fallShape);
+
+				for (int i = firstIdx; i <= lastIdx; i++) {
+					if (c >= channels[i])
+						continue;
+					int inIdx = (i == 0 || !inConn[1]) ? 0 : 1;
 					// Read input voltage (B normalizes to A)
-					float inVolt = 0.f;
-					if (inConn[i])
-						inVolt = inputs[A_INPUT + i].getVoltage(c);
-					else if (i == 1 && inConn[0])
-						inVolt = inputs[A_INPUT].getPolyVoltage(c);
+					float inVolt = inConn[inIdx]
+						? inputs[A_INPUT + inIdx].getVoltage(c)
+						: 0.f;
 					if (followMode[i] == 1)
 						inVolt = std::fabs(inVolt);
 					else if (followMode[i] == 2 && inVolt < 0.f)
@@ -349,61 +429,13 @@ struct Slew2Module : InfNoiseModule {
 						? (inVolt + knobOffset) * knobScale
 						: inVolt * knobScale + knobOffset;
 
-					// Read/scale rise/fall times
-					float riseTimeCv = inputs[RISE_TIME_INPUT].getPolyVoltage(c);
-					float riseK = riseTimeKnob;
-					if (!voctTimeScaling && riseTimeCvConn)
-						riseK += riseTimeTrim * riseTimeCv / 10.f;
-					riseK = clamp(riseK, 0.f, 1.f);
-					float riseSec = riseK * riseK * maxSeconds;
-					if (voctTimeScaling && riseTimeCvConn)
-						riseSec *= dsp::exp2_taylor5(-riseTimeTrim * riseTimeCv);
-
-					float fallSec;
-					if (timeLinked) {
-						fallSec = riseSec;
-					}
-					else {
-						float fallTimeCv = fallTimeCvConn
-							? inputs[FALL_TIME_INPUT].getPolyVoltage(c)
-							: riseTimeCv;
-						float fallK = fallTimeKnob;
-						bool fallCv = fallTimeCvConn || riseTimeCvConn;
-						if (!voctTimeScaling && fallCv)
-							fallK += fallTimeTrim * fallTimeCv / 10.f;
-						fallK = clamp(fallK, 0.f, 1.f);
-						fallSec = fallK * fallK * maxSeconds;
-						if (voctTimeScaling && fallCv)
-							fallSec *= dsp::exp2_taylor5(-fallTimeTrim * fallTimeCv);
-					}
-
-					// Read rise/fall shapes
-					float riseShapeCv = inputs[RISE_SHAPE_INPUT].getPolyVoltage(c);
-					float riseShape = riseShapeKnob;
-					if (riseShapeCvConn)
-						riseShape += riseShapeTrim * riseShapeCv / 10.f;
-					riseShape = clamp(riseShape, -1.f, 1.f);
-
-					float fallShape;
-					if (shapeLinked) {
-						fallShape = shapeReversed ? -riseShape : riseShape;
-					}
-					else {
-						float fallShapeCv = fallShapeCvConn
-							? inputs[FALL_SHAPE_INPUT].getPolyVoltage(c)
-							: riseShapeCv;
-						fallShape = fallShapeKnob;
-						if (fallShapeCvConn || riseShapeCvConn)
-							fallShape += fallShapeTrim * fallShapeCv / 10.f;
-						fallShape = clamp(fallShape, -1.f, 1.f);
-					}
-
-					// Update slew engine (times and shapes)
+					// Update slew-times and -shapes
+					int baseIdx = i * PORT_MAX_CHANNELS;
 					int idx = baseIdx + c;
 					slew[idx].setTimes(riseSec, fallSec);
 					slew[idx].setShapes(riseShape, fallShape);
 
-					// Snap both sections from the shared Snap input
+					// Handle snap trigger
 					if (snapConn) {
 						float snapVolt = inputs[SNAP_INPUT].getPolyVoltage(c);
 						if (trigMode) {
@@ -416,18 +448,18 @@ struct Slew2Module : InfNoiseModule {
 						}
 					}
 
-					// Update slew output
+					// Calculate/output slew voltage
 					float slewVolt = clipToVoltRange(slew[idx].next(inVolt, procSampleTime), outClipRange.act);
 					if (slewOutConn[i])
 						outputs[A_SLEW_OUTPUT + i].setVoltage(slewVolt, c);
 
-					// B-Catch: enter at 1 mV, exit at 10 mV (hysteresis)
-					// (B input, or A if B is unpatched — already used by next())
+					// B-Catch: enter at 1 mV, exit at 10 mV (hysteresis); unclipped remaining
 					if (i == 1 && bCatchOutConn) {
+						float remaining = std::fabs(inVolt - slew[idx].last());
 						if (bCaught[c])
-							bCaught[c] = slew[idx].within(bCatchExit);
+							bCaught[c] = remaining <= bCatchExit;
 						else
-							bCaught[c] = slew[idx].within(bCatchEnter);
+							bCaught[c] = remaining <= bCatchEnter;
 						outputs[B_CATCH_OUTPUT].setVoltage(
 							bCaught[c] ? voltValues[gateOutHigh.act] : voltValues[gateOutLow.act], c);
 					}

@@ -41,7 +41,7 @@ struct FoldModule : InfNoiseModule {
     float rangeCenter = 0.f;
     enum foldModeType { fm_Fold, fm_Wrap };
     foldModeType foldMode = fm_Fold;
-    enum oversampModeType { os_single, os_2x };
+    enum oversampModeType { os_single, os_2x, os_len };
     actReqValue<oversampModeType> oversampMode = actReqValue<oversampModeType>(os_single);
     dsp::Upsampler<2, 8> upsampler[PORT_MAX_CHANNELS];
     dsp::Decimator<2, 8, float> decimator[PORT_MAX_CHANNELS];
@@ -153,7 +153,7 @@ struct FoldModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        oversampMode.setBoth((oversampModeType)getJsonInt(rootJ, "oversampMode", (int)oversampModeType::os_single));
+        oversampMode.setBoth((oversampModeType)getJsonInt(rootJ, "oversampMode", (int)oversampModeType::os_single, (int)os_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

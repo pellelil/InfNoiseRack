@@ -49,9 +49,9 @@ struct CvToGtModule : InfNoiseModule {
     bool inclMin = false;
     bool inclMax = false;
     bool gateMode = true;
-    enum minModeType { mm_minMax, mm_lowHigh };
+    enum minModeType { mm_minMax, mm_lowHigh, mm_len };
     actReqValue<minModeType> minMode = actReqValue<minModeType>(mm_minMax);
-    enum diffModeType { dm_signed, dm_abs };
+    enum diffModeType { dm_signed, dm_abs, dm_len };
     actReqValue<diffModeType> diffMode = actReqValue<diffModeType>(dm_signed);
     float redMinMaxLight[2] = { 1.f, 0.f };
     float greenMinMaxLight[2] = { 0.f, 1.f };
@@ -105,8 +105,8 @@ struct CvToGtModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        minMode.setBoth((minModeType)getJsonInt(rootJ, "minMode", (int)mm_minMax));
-        diffMode.setBoth((diffModeType)getJsonInt(rootJ, "diffMode", (int)dm_signed));
+        minMode.setBoth((minModeType)getJsonInt(rootJ, "minMode", (int)mm_minMax, (int)mm_len - 1));
+        diffMode.setBoth((diffModeType)getJsonInt(rootJ, "diffMode", (int)dm_signed, (int)dm_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

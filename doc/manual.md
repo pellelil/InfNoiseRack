@@ -164,9 +164,9 @@ The sections above covered features that are common to all Infinite-Noise module
 ## LFOs
 + [Simple LFO4-ss](LFO.md#simple-lfo4-ss): 4HP quad LFO: four independent knob-set rates, Saw and Sine per LFO, internal hard/soft sync, Rate Chaos, and uni/bipolar range.
 + [Simple LFO4-st](LFO.md#simple-lfo4-st): 4HP quad LFO: four independent knob-set rates, Square and Triangle per LFO, internal hard/soft sync, Rate Chaos, and uni/bipolar range.
-+ [Tiny LFO](LFO.md#tiny-lfo): Tiny 2HP LFO with knob/CV rate, PWM, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
++ [Tiny LFO](LFO.md#tiny-lfo): 2HP Tiny LFO with knob/CV rate, PWM, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
 + [LFO1](LFO.md#lfo1): 4HP LFO with knob/CV rate, PWM, MOD, external sync in/out, n-shot, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic). Square+MOD acts as a wavetable (Triangle <-> Square <-> Saw).
-+ [Phase-Driven LFO](LFO.md#phase-driven-lfo): Phase-driven LFO: incoming phase CV sets the waveform (no internal oscillator). PWM, MOD, wrap, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
++ [Phase-Driven LFO](LFO.md#phase-driven-lfo): 4HP dhase-driven LFO: incoming phase CV sets the waveform (no internal oscillator). PWM, MOD, wrap, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
 
 ## Tweak (attenuate/amplify, offset and mix)
 + [Tweak-2 Mk I](Tweak.md#tweak-2-mk-i): 2HP dual attenuverter: shared knob/CV scale (1x, 2x, 5x, 10x) and offset. Polyphonic, quantize, stereo-friendly. No mix.
@@ -193,8 +193,8 @@ The sections above covered features that are common to all Infinite-Noise module
 + [Manuel Mute 8](ManCV.md#manuel-mute-8): 6HP 8-channel mute: per-section buttons and CV, All, latch, and a mute-value knob/CV.
 + [Mute 2](ManCV.md#mute-2): 2HP dual mute: per-section latchable button and gate/trigger CV, plus Both.
 + [CV-Toggle 8](ManCV.md#cv-toggle-8): 8HP 8-section On/Off switch: CV or knob values, gate/trigger per section, All, and attenuate.
-+ [CV to Gate](CvToGt.md#cv-to-gate): Fire a gate if CV is within a specified min/max range. Also above, below, inverted-range, and Diff.
-+ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8): 8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.
++ [CV to Gate](CvToGt.md#cv-to-gate): 2HP fire a gate if CV is within a specified min/max range. Also above, below, inverted-range, and Diff.
++ [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8): 8HP 8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.
 
 ## Merge/Mult
 + [Mult2x4](MergeMult.md#mult2x4): 2HP dual mult: two inputs with four copies each, or 1-to-8 if the lower input is unused.
@@ -247,7 +247,7 @@ The sections above covered features that are common to all Infinite-Noise module
 + [Envelope Phase Expander](Envelope.md#envelope-phase-expander): 2HP expander for ADR/ADSDR: phase gates (Attack, Decay, Sustain, Delay, Release, Idle) plus Rise, Steady, Fall. Idle can output phase position (0V to 10V).
 
 ## Slew
-+ [Slew 2](Slew.md#slew-2): 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snat (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
++ [Slew 2](Slew.md#slew-2): 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snap (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
 + [Slew 4](Slew.md#slew-4): 2HP quad polyphoinc constant rate/time slew with knobs based rise/fall times/shape settings. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
 
 ## Misc

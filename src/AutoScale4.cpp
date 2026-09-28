@@ -41,9 +41,9 @@ struct AutoScale4Module : InfNoiseModule {
 
     autoScaleData autoScaleSection[5] = { autoScaleData(), autoScaleData(),
         autoScaleData(), autoScaleData(), autoScaleData() };  // autoScaleSection[4] used for common
-    enum sectionSelectionType { ss_individual, ss_common };
+    enum sectionSelectionType { ss_individual, ss_common, ss_len };
     actReqValue<sectionSelectionType> sectSelection = actReqValue<sectionSelectionType>(ss_individual); 
-    enum updateScaleOffsetType { uso_disabled, uso_enabled };
+    enum updateScaleOffsetType { uso_disabled, uso_enabled, uso_len };
     actReqValue<updateScaleOffsetType> updateScaleOffset = actReqValue<updateScaleOffsetType>(uso_enabled);
     float minRange = 0.0f;
     float maxRange = 0.0f;
@@ -131,8 +131,8 @@ struct AutoScale4Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
-        sectSelection.setBoth((sectionSelectionType)getJsonInt(rootJ, "sectSelection", (int)ss_individual));
-        updateScaleOffset.setBoth((updateScaleOffsetType)getJsonInt(rootJ, "updateScaleOffset", (int)uso_enabled));
+        sectSelection.setBoth((sectionSelectionType)getJsonInt(rootJ, "sectSelection", (int)ss_individual, (int)ss_len - 1));
+        updateScaleOffset.setBoth((updateScaleOffsetType)getJsonInt(rootJ, "updateScaleOffset", (int)uso_enabled, (int)uso_len - 1));
         for (int i = 0; i < 5; i++)
             autoScaleSection[i].Load(rootJ, string::f("sd%d", i));
     }

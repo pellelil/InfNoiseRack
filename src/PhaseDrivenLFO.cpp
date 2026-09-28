@@ -54,7 +54,7 @@ struct PhaseDrivenLFOModule : InfNoiseModule {
     float waveScale = 10.f; // Scale of each LFO (based on range)
     float waveOffset = -5.f;  // Offset of each LFO (based on range)
     actReqValue<bool> invWaveforms = actReqValue<bool>(false);
-    enum calcPhaseMode { ppm_allWaveforms, ppm_onlySquare };
+    enum calcPhaseMode { ppm_allWaveforms, ppm_onlySquare, ppm_len };
     actReqValue<calcPhaseMode> pwmMode = actReqValue<calcPhaseMode>(ppm_allWaveforms);
     actReqValue<infNoisePwmRngQnt::pwmRange> pwmRange = 
         actReqValue<infNoisePwmRngQnt::pwmRange>(infNoisePwmRngQnt::pwmRange::pwm_01_99);
@@ -114,7 +114,7 @@ struct PhaseDrivenLFOModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
-        pwmMode.setBoth((calcPhaseMode)getJsonInt(rootJ, "pwmMode", (int)calcPhaseMode::ppm_allWaveforms));            
+        pwmMode.setBoth((calcPhaseMode)getJsonInt(rootJ, "pwmMode", (int)calcPhaseMode::ppm_allWaveforms, (int)ppm_len - 1));            
         pwmRange.setBoth((infNoisePwmRngQnt::pwmRange)getJsonInt(rootJ, "pwmRange", (int)infNoisePwmRngQnt::pwmRange::pwm_01_99));
         invWaveforms.setBoth(getJsonBool(rootJ, "invWaveforms", false));
     }

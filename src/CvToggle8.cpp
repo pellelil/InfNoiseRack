@@ -80,7 +80,7 @@ struct CvToggle8Module : InfNoiseModule {
     int outChannels[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
     dsp::TSchmittTrigger<float> toggleTrigger[8];
     bool virtualGate[8] = { false };
-    enum attenuateMode { am_both, am_onlyOn, am_onlyOff };
+    enum attenuateMode { am_both, am_onlyOn, am_onlyOff, am_len };
     actReqValue<attenuateMode> attMode = actReqValue<attenuateMode>(am_both);
     
     CvToggle8Module() {
@@ -140,7 +140,7 @@ struct CvToggle8Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         
-        attMode.setBoth((attenuateMode)getJsonInt(rootJ, "attMode", (int)attenuateMode::am_both));
+        attMode.setBoth((attenuateMode)getJsonInt(rootJ, "attMode", (int)attenuateMode::am_both, (int)am_len - 1));
         getJsonBoolArray(rootJ, "virtualGate", virtualGate, 8, false);
         for (int i = 0; i < 8; i++)
             toggleTrigger[i].reset();

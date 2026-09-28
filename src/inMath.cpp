@@ -96,45 +96,58 @@ float infNoiseSlew::next(float in, float sampleTime) {
     float delta = in - lastOut;
     if (std::fabs(delta) < 1e-6f || sampleTime <= 0.f) {
         rampActive = false;
-        lastRemaining = 0.f;
         return lastOut = in;
     }
 
     // Exit with in, when riseSec or fallSec is 0 (or less).
-    float T = (delta > 0.f) ? riseSec : fallSec;
+    bool dirUp = delta > 0.f;
+    float T = dirUp ? riseSec : fallSec;
     if (T <= 0.f) {
         rampActive = false;
-        lastRemaining = 0.f;
+        return lastOut = in;
+    }
+
+    // Constant rate, linear centre, shape 0: fixed V/s toward the live input.
+    float shape = dirUp ? riseShape : fallShape;
+    if (mode == sm_constantRate && shape == 0.f && linearMode == lm_linear) {
+        rampActive = false;
+        phaseReady = false;
+        float maxStep = sampleTime * (dirUp ? riseRate : fallRate);
+        if (delta > maxStep)
+            return lastOut += maxStep;
+        if (delta < -maxStep)
+            return lastOut -= maxStep;
         return lastOut = in;
     }
 
     // Detect new ramp starting: idle, flipped direction, or target jumped (ignore tiny CV hiss)
-    bool dirUp = delta > 0.f;
     if (!rampActive || dirUp != rampUp || std::fabs(in - rampTo) > 1e-3f) {
         rampFrom = lastOut;
         rampTo = in;
+        rampSpan = rampTo - rampFrom;
         rampUp = dirUp;
         phasePos = 0.f;
         rampActive = true;
+        phaseReady = false;
     }
 
-    float span = std::fabs(rampTo - rampFrom);
-    float duration = (mode == sm_constantTime) ? T : T * (span / rangeVolts);
-    if (duration <= 0.f) {
-        rampActive = false;
-        lastRemaining = 0.f;
-        return lastOut = in;
+    if (!phaseReady || sampleTime != rampDt) {
+        float duration = (mode == sm_constantTime) ? T : T * (std::fabs(rampSpan) / rangeVolts);
+        phaseInc = sampleTime / duration;
+        rampDt = sampleTime;
+        phaseReady = true;
     }
 
-    phasePos += sampleTime / duration;
+    phasePos += phaseInc;
     if (phasePos >= 1.f) {
         rampActive = false;
-        lastRemaining = 0.f;
+        phaseReady = false;
         return lastOut = in;
     }
 
-    float shape = dirUp ? riseShape : fallShape;
-    lastOut = rampFrom + (rampTo - rampFrom) * applyNormExpLogShape(phasePos, shape, linearMode);
-    lastRemaining = in - lastOut;
+    if (shape == 0.f && linearMode == lm_linear)
+        lastOut = rampFrom + rampSpan * phasePos;
+    else
+        lastOut = rampFrom + rampSpan * applyNormExpLogShape(phasePos, shape, linearMode);
     return lastOut;
 }

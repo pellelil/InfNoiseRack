@@ -64,7 +64,7 @@ struct Tweak4IIModule : InfNoiseModule {
     actReqValue<scaleCurve> scaleMode = actReqValue<scaleCurve>(sc_linear);
     infNoiseAttRngQnt::attRange attRng = infNoiseAttRngQnt::attRange::ar_1x;
     float attRngFactor = 1.f;
-    enum order { scaleOffset, offsetScale };
+    enum order { scaleOffset, offsetScale, order_len };
     order orderMode = scaleOffset;
     bool mixMode = true; // Mix unplugged outputs if true
     bool haveOutputs = false;
@@ -137,7 +137,7 @@ struct Tweak4IIModule : InfNoiseModule {
 
         if (jsonVersion < 4) { // previous versions used context-menu items for Scale-range and Order-mode
             params[ATT_RNG_PARAM].setValue((float)getJsonInt(rootJ, "attRng", (int)infNoiseAttRngQnt::attRange::ar_1x));
-            params[ORDER_PARAM].setValue((float)getJsonInt(rootJ, "orderMode", (int)order::scaleOffset));
+            params[ORDER_PARAM].setValue((float)getJsonInt(rootJ, "orderMode", (int)order::scaleOffset, (int)order_len - 1));
         }
         scaleMode.setBoth((scaleCurve)getJsonInt(rootJ, "scaleMode", (int)sc_linear));
         mixMode = getJsonInt(rootJ, "mixMode", 1) == 1;
@@ -407,7 +407,7 @@ struct Tweak4IIModuleWidget : InfNoiseModuleWidget {
         std::vector<std::string> intervalNames = getVoltIntervalValuesNames();
         menu->addChild(createSubmenuItem("Set offset", "", [=](Menu* setOffsetMenu) {
             setOffsetMenu->addChild(createSubmenuItem("A (semitone steps)", "", [=](Menu* submenu) {
-                for (int i = 0; i < voltIntervalValueCount; i++) {
+                for (int i = 0; i < (int)v_i_len; i++) {
                     submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                         module->params[Tweak4IIModule::A_OFFSET_PARAM].setValue(
                             voltIntervalValues[(voltIntervalValue)i]);
@@ -415,7 +415,7 @@ struct Tweak4IIModuleWidget : InfNoiseModuleWidget {
                 }
             }));
             setOffsetMenu->addChild(createSubmenuItem("B (semitone steps)", "", [=](Menu* submenu) {
-                for (int i = 0; i < voltIntervalValueCount; i++) {
+                for (int i = 0; i < (int)v_i_len; i++) {
                     submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                         module->params[Tweak4IIModule::B_OFFSET_PARAM].setValue(
                             voltIntervalValues[(voltIntervalValue)i]);
@@ -423,7 +423,7 @@ struct Tweak4IIModuleWidget : InfNoiseModuleWidget {
                 }
             }));
             setOffsetMenu->addChild(createSubmenuItem("C (semitone steps)", "", [=](Menu* submenu) {
-                for (int i = 0; i < voltIntervalValueCount; i++) {
+                for (int i = 0; i < (int)v_i_len; i++) {
                     submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                         module->params[Tweak4IIModule::C_OFFSET_PARAM].setValue(
                             voltIntervalValues[(voltIntervalValue)i]);
@@ -431,7 +431,7 @@ struct Tweak4IIModuleWidget : InfNoiseModuleWidget {
                 }
             }));
             setOffsetMenu->addChild(createSubmenuItem("D (semitone steps)", "", [=](Menu* submenu) {
-                for (int i = 0; i < voltIntervalValueCount; i++) {
+                for (int i = 0; i < (int)v_i_len; i++) {
                     submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                         module->params[Tweak4IIModule::D_OFFSET_PARAM].setValue(
                             voltIntervalValues[(voltIntervalValue)i]);

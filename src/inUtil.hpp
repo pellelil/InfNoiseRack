@@ -37,6 +37,23 @@ inline int getJsonInt(json_t* rootJ, const char* key, const int defaultValue = 0
 		: defaultValue;
 }
 
+/// @brief Get an int clamped to [minValue, maxValue] both inclusive. 
+/// Outside that range, defaultValue is returned.
+/// @param maxValue Inclusive upper bound.
+inline int getJsonInt(json_t* rootJ, const char* key, int defaultValue, int minValue, int maxValue) {
+	int value = getJsonInt(rootJ, key, defaultValue);
+	if (value < minValue || value > maxValue)
+		return defaultValue;
+	return value;
+}
+
+/// @brief Get an int clamped to [0, maxValue] both inclusive. 
+/// Outside that range, defaultValue is returned.
+/// @param maxValue Inclusive upper bound.
+inline int getJsonInt(json_t* rootJ, const char* key, int defaultValue, int maxValue) {
+	return getJsonInt(rootJ, key, defaultValue, 0, maxValue);
+}
+
 /// @brief Get an uint32_t from a JSON object using the specified key.
 /// If key is not found, the default value is returned.
 /// @param rootJ JSON object to get value from.
@@ -115,6 +132,38 @@ inline void getJsonIntArray(json_t* rootJ, const char* key, int* dst, size_t cou
 	for (size_t i = 0; i < count; i++)
 		dst[i] = defaultValues[i];
 	overlayJsonIntArray(rootJ, key, dst, count);
+}
+
+/// @brief Load int array; each element outside [minValue, maxValue] (inclusive)
+/// is replaced with defaultValue.
+inline void getJsonIntArray(json_t* rootJ, const char* key, int* dst, size_t count, int defaultValue, int minValue, int maxValue) {
+	getJsonIntArray(rootJ, key, dst, count, defaultValue);
+	for (size_t i = 0; i < count; i++) {
+		if (dst[i] < minValue || dst[i] > maxValue)
+			dst[i] = defaultValue;
+	}
+}
+
+/// @brief Load int array; each element outside [0, maxValue] (inclusive)
+/// is replaced with defaultValue.
+inline void getJsonIntArray(json_t* rootJ, const char* key, int* dst, size_t count, int defaultValue, int maxValue) {
+	getJsonIntArray(rootJ, key, dst, count, defaultValue, 0, maxValue);
+}
+
+/// @brief Load int array from per-element defaults; each element outside
+/// [minValue, maxValue] (inclusive) is replaced with that element's default.
+inline void getJsonIntArray(json_t* rootJ, const char* key, int* dst, size_t count, const int* defaultValues, int minValue, int maxValue) {
+	getJsonIntArray(rootJ, key, dst, count, defaultValues);
+	for (size_t i = 0; i < count; i++) {
+		if (dst[i] < minValue || dst[i] > maxValue)
+			dst[i] = defaultValues[i];
+	}
+}
+
+/// @brief Load int array from per-element defaults; each element outside
+/// [0, maxValue] (inclusive) is replaced with that element's default.
+inline void getJsonIntArray(json_t* rootJ, const char* key, int* dst, size_t count, const int* defaultValues, int maxValue) {
+	getJsonIntArray(rootJ, key, dst, count, defaultValues, 0, maxValue);
 }
 
 /// @brief Store int array as a JSON array at key.
@@ -310,9 +359,9 @@ struct actReqValue {
 // "m"="minus", "zero"="zero", "p"="plus", "_" decimal point
 enum voltValue {
 	v_m10, v_m8, v_m5, v_m2_5, v_m2, v_m1_5, v_m1, v_m_5, v_m_2, v_m_1,	v_zero, 
-	v_p_1, v_p_2, v_p_5, v_p1, v_p1_5, v_p2, v_p2_5, v_p5, v_p8, v_p10
+	v_p_1, v_p_2, v_p_5, v_p1, v_p1_5, v_p2, v_p2_5, v_p5, v_p8, v_p10,
+	v_len
 };
-const int voltValueCount = voltValue::v_p10 + 1;
 const voltValue v_GateHigh = v_p10; // Output-Gate High: +10V
 const voltValue v_GateLow = v_zero; // Output-Gate Low: 0V
 const voltValue v_TriggerHigh = v_p10; // Output-Trigger High: +10V
@@ -371,7 +420,7 @@ inline std::string getVoltShortName(voltValue voltIdx) {
 
 inline std::vector<std::string> getVoltValuesNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < voltValueCount; i++)
+	for (int i = 0; i < (int)v_len; i++)
 		names.push_back(getVoltName((voltValue)i));
 
 	return names;
@@ -379,7 +428,7 @@ inline std::vector<std::string> getVoltValuesNames() {
 
 inline std::vector<std::string> getVoltValuesShortNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < voltValueCount; i++)
+	for (int i = 0; i < (int)v_len; i++)
 		names.push_back(getVoltShortName((voltValue)i));
 
 	return names;
@@ -392,9 +441,9 @@ inline std::vector<std::string> getVoltValuesShortNames() {
 // 0% = off (factor always 1.0), 100% = factor in [0.1, 10] at a phase wrap.
 enum rateChaos {
 	rc_0, rc_5, rc_10, rc_15, rc_20, rc_25, rc_30, rc_35, rc_40, rc_45, rc_50,
-	rc_55, rc_60, rc_65, rc_70, rc_75, rc_80, rc_85, rc_90, rc_95, rc_100
+	rc_55, rc_60, rc_65, rc_70, rc_75, rc_80, rc_85, rc_90, rc_95, rc_100,
+	rc_len
 };
-const int rateChaosCount = rateChaos::rc_100 + 1;
 const rateChaos rc_default = rc_0;  // default: no chaos
 const float rateChaosValues[]{ 0.f, 0.05f, 0.10f, 0.15f, 0.20f, 0.25f, 0.30f,
 	0.35f, 0.40f, 0.45f, 0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f,
@@ -407,7 +456,7 @@ const float rateChaosMaxFactor[]{ 1.0f, 1.1220f, 1.2589f, 1.4125f, 1.5849f,
 
 inline std::vector<std::string> getRateChaosNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < rateChaosCount; i++)
+	for (int i = 0; i < (int)rc_len; i++)
 		names.push_back(i == 0 ? "0% (default)"
 			: string::f("%d%% (%.3f)", i * 5, rateChaosMaxFactor[i]));
 
@@ -425,11 +474,11 @@ enum fixedSlewTimes {
 	fst_0_01, fst_0_02, fst_0_05,
 	fst_0_1, fst_0_2, fst_0_5,
 	fst_1, fst_2, fst_5, fst_10,
-	fst_Adaptive
+	fst_adaptive,
+	fst_len
 };
-const int fixedSlewTimesCount = fixedSlewTimes::fst_Adaptive + 1;
 const fixedSlewTimes fst_default = fst_0;  // Slew time = 0 (no slew)
-// Seconds per setting. fst_Adaptive is a sentinel (not a duration).
+// Seconds per setting. fst_adaptive is a sentinel (not a duration).
 const float fixedSlewTimesValues[]{
 	0.f,
 	0.0001f, 0.0002f, 0.0005f,
@@ -437,7 +486,7 @@ const float fixedSlewTimesValues[]{
 	0.01f, 0.02f, 0.05f,
 	0.1f, 0.2f, 0.5f,
 	1.f, 2.f, 5.f, 10.f,
-	-1.f
+	1.f // fst_adaptive
 };
 // RGB for RedGreenBlueLight: dim at 0, green→red from 0.0001 to 10 s, blue = Adaptive.
 const float fixedSlewTimesLightR[]{
@@ -469,7 +518,7 @@ const float fixedSlewTimesLightB[]{
 /// @param haveBlue If true, set the blue light.
 inline void setFixedSlewTimesLight(Module* module, int lightId, fixedSlewTimes t, bool haveBlue = true) {
 	int i = (int)t;
-	if (i < 0 || i >= fixedSlewTimesCount)
+	if (i < 0 || i >= (int)fst_len)
 		i = (int)fst_default;
 	module->lights[lightId].setBrightness(fixedSlewTimesLightR[i]);
 	module->lights[lightId + 1].setBrightness(fixedSlewTimesLightG[i]);
@@ -480,7 +529,7 @@ inline void setFixedSlewTimesLight(Module* module, int lightId, fixedSlewTimes t
 inline std::string getFixedSlewTimesName(fixedSlewTimes t) {
 	if (t == fst_0)
 		return "0 (default)";
-	if (t == fst_Adaptive)
+	if (t == fst_adaptive)
 		return "Adaptive";
 	float s = fixedSlewTimesValues[(int)t];
 	if (s >= 1.f && s == std::floor(s))
@@ -498,7 +547,7 @@ inline std::string getFixedSlewTimesName(fixedSlewTimes t) {
 /// @param inclAdaptive if true, include "Adaptive" as the last item.
 inline std::vector<std::string> getFixedSlewTimesNames(bool inclAdaptive) {
 	std::vector<std::string> names;
-	int count = inclAdaptive ? fixedSlewTimesCount : fixedSlewTimesCount - 1;
+	int count = inclAdaptive ? (int)fst_len : (int)fst_len - 1;
 	for (int i = 0; i < count; i++)
 		names.push_back(getFixedSlewTimesName((fixedSlewTimes)i));
 	return names;
@@ -582,9 +631,9 @@ struct infNoisePeriodTracker {
 enum voltIntervalValue {
 	v_i_m11, v_i_m10, v_i_m9, v_i_m8, v_i_m7, v_i_m6, v_i_m5, v_i_m4, v_i_m3, v_i_m2, v_i_m1,
 	v_i_zero,
-	v_i_p1, v_i_p2, v_i_p3, v_i_p4, v_i_p5, v_i_p6, v_i_p7, v_i_p8, v_i_p9, v_i_p10, v_i_p11
+	v_i_p1, v_i_p2, v_i_p3, v_i_p4, v_i_p5, v_i_p6, v_i_p7, v_i_p8, v_i_p9, v_i_p10, v_i_p11,
+	v_i_len
 };
-const int voltIntervalValueCount = voltIntervalValue::v_i_p11 + 1;
 const float voltIntervalValues[]{
 	-11.f / 12.f, -10.f / 12.f, -9.f / 12.f, -8.f / 12.f, -7.f / 12.f, -6.f / 12.f,
 	-5.f / 12.f, -4.f / 12.f, -3.f / 12.f, -2.f / 12.f, -1.f / 12.f,
@@ -613,14 +662,14 @@ inline std::string getVoltIntervalShortName(voltIntervalValue intervalIdx) {
 
 inline std::vector<std::string> getVoltIntervalValuesNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < voltIntervalValueCount; i++)
+	for (int i = 0; i < (int)v_i_len; i++)
 		names.push_back(getVoltIntervalName((voltIntervalValue)i));
 	return names;
 }
 
 inline std::vector<std::string> getVoltIntervalValuesShortNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < voltIntervalValueCount; i++)
+	for (int i = 0; i < (int)v_i_len; i++)
 		names.push_back(getVoltIntervalShortName((voltIntervalValue)i));
 	return names;
 }
@@ -770,9 +819,9 @@ inline void appendScaleChordSetMenuItems(Menu* menu, Module* module, int firstPa
 //-----------------------------------------------------------------------------
 enum voltTolValue {
 	vt_zero, vt_0_0001, vt_0_001, vt_0_01, vt_hnt, vt_nt, v_0_1, vt_2nt, 
-	vt_3nt,	vt_4nt, vt_6nt, vt_1, vt_2, vt_2_5, vt_3_33, vt_5
+	vt_3nt,	vt_4nt, vt_6nt, vt_1, vt_2, vt_2_5, vt_3_33, vt_5,
+	vt_len
 };
-const int voltTolValueCount = voltTolValue::vt_5 + 1;
 const float voltTolValues[]{ 0.00001f, 0.0001f, 0.001f, 0.01f, 1.f / 24.f, 
 	1.f / 12.f, 0.1f, 2.f / 12.f, 3.f / 12.f, 4.f / 12.f, 6.f / 12.f, 1.f, 
 	2.f, 2.5f, 10.f / 3.f, 5.f };
@@ -829,9 +878,9 @@ inline std::vector<std::string> getVoltTolValuesShortNames() {
 // "gt"="greater-than", "ge"="greater-or-equal", "_"="0." (e.g. "ge_1" is ">=0.1")
 enum trueDetectValue {
 	td_gt0, td_ge_1, td_ge_2, td_ge_5, td_ge1, td_ge1_5, td_ge2,
-	td_ge2_5, td_ge3, td_ge4, td_ge5, td_ge8, td_ge10
+	td_ge2_5, td_ge3, td_ge4, td_ge5, td_ge8, td_ge10,
+	td_len
 };
-const int trueDetectValueCount = trueDetectValue::td_ge10 + 1;
 const trueDetectValue td_gateHigh = td_ge1; // Gate high when >= 1V (else low)
 const trueDetectValue td_triggerHigh = td_ge1; // Input-trigger High when >= 1V
 const trueDetectValue td_triggerLow = td_ge_1; // Input-trigger Low when < 0.1V
@@ -893,7 +942,7 @@ inline std::string getFalseDetectVoltShortName(trueDetectValue voltIdx) {
 
 inline std::vector<std::string> getTrueDetectVoltNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < trueDetectValueCount; i++)
+	for (int i = 0; i < (int)td_len; i++)
 		names.push_back(getTrueDetectVoltName((trueDetectValue)i));
 
 	return names;
@@ -901,7 +950,7 @@ inline std::vector<std::string> getTrueDetectVoltNames() {
 
 inline std::vector<std::string> getFalseDetectVoltNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < trueDetectValueCount; i++)
+	for (int i = 0; i < (int)td_len; i++)
 		names.push_back(getFalseDetectVoltName((trueDetectValue)i));
 
 	return names;
@@ -909,7 +958,7 @@ inline std::vector<std::string> getFalseDetectVoltNames() {
 
 inline std::vector<std::string> getTrueDetectVoltShortNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < trueDetectValueCount; i++)
+	for (int i = 0; i < (int)td_len; i++)
 		names.push_back(getTrueDetectVoltName((trueDetectValue)i));
 
 	return names;
@@ -917,7 +966,7 @@ inline std::vector<std::string> getTrueDetectVoltShortNames() {
 
 inline std::vector<std::string> getFalseDetectVoltShortNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < trueDetectValueCount; i++)
+	for (int i = 0; i < (int)td_len; i++)
 		names.push_back(getFalseDetectVoltName((trueDetectValue)i));
 
 	return names;
@@ -931,9 +980,9 @@ inline std::vector<std::string> getFalseDetectVoltShortNames() {
 enum voltRange {
 	vr_off,
 	vr_mp50, vr_mp20, vr_mp12, vr_mp10, vr_mp5, vr_mp2_5, vr_mp2, vr_mp1, vr_mp_0_5,
-	vr_zt50, vr_zt20, vr_zt12, vr_zt10, vr_zt5, vr_zt2_5, vr_zt2, vr_zt1
+	vr_zt50, vr_zt20, vr_zt12, vr_zt10, vr_zt5, vr_zt2_5, vr_zt2, vr_zt1,
+	vr_len
 };
-const int voltRangeCount = voltRange::vr_zt1 + 1;
 const voltRange vr_Bipolar = vr_mp5;  // -5V to +5V
 const voltRange vr_Unipolar = vr_zt10; // 0V to +10V
 // vr_off: span less than2^24 (16777216), min/max ±8388608 — largest range with exact integer rep in float
@@ -1053,7 +1102,7 @@ inline std::string getVoltRangeShortName(voltRange rangeIdx) {
 /// @return List of voltRange-names for a popup menu
 inline std::vector<std::string> getVoltRangesNames(bool inclOff) {
 	std::vector<std::string> names;
-	for (int i = inclOff ? 0 : 1; i < voltRangeCount; i++)
+	for (int i = inclOff ? 0 : 1; i < (int)vr_len; i++)
 		names.push_back(getVoltRangeName((voltRange)i));
 
 	return names;
@@ -1064,7 +1113,7 @@ inline std::vector<std::string> getVoltRangesNames(bool inclOff) {
 /// @return List of short voltRange-names for a popup menu
 inline std::vector<std::string> getVoltRangesShortNames(bool inclOff) {
 	std::vector<std::string> names;
-	for (int i = inclOff ? 0 : 1; i < voltRangeCount; i++)
+	for (int i = inclOff ? 0 : 1; i < (int)vr_len; i++)
 		names.push_back(getVoltRangeShortName((voltRange)i));
 
 	return names;
@@ -1095,8 +1144,7 @@ inline float convertVoltRange(float value, voltRange fromRange, voltRange toRang
 // Default Volt-inversion-ranges (from/to volt-ranges used for inversion)
 //-----------------------------------------------------------------------------
 // mp="minus/plus" (invert bipolar), zt="zero to" (various unipolar)
-enum voltInvRange { vir_mp, vir_zt12, vir_zt10, vir_zt5, vir_zt4, vir_zt3, vir_zt2, vir_zt1 };
-const int voltInvRangeCount = voltInvRange::vir_zt1 + 1;
+enum voltInvRange { vir_mp, vir_zt12, vir_zt10, vir_zt5, vir_zt4, vir_zt3, vir_zt2, vir_zt1, vir_len };
 const float voltInvRangeMax[]{ 1000.f, 12.f, 10.f, 5.f, 4.f, 3.f, 2.f, 1.f };
 
 inline std::string getVoltInvRangeName(voltInvRange rangeIdx) {
@@ -1115,7 +1163,7 @@ inline std::string getVoltInvRangeShortName(voltInvRange rangeIdx) {
 /// @return List of voltRange-names for a popup menu
 inline std::vector<std::string> getVoltInvRangesNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < voltInvRangeCount; i++)
+	for (int i = 0; i < (int)vir_len; i++)
 		names.push_back(getVoltInvRangeName((voltInvRange)i));
 
 	return names;
@@ -1125,7 +1173,7 @@ inline std::vector<std::string> getVoltInvRangesNames() {
 /// @return List of short voltRange-names for a popup menu
 inline std::vector<std::string> getVoltInvRangesShortNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < voltRangeCount; i++)
+	for (int i = 0; i < (int)vir_len; i++)
 		names.push_back(getVoltInvRangeShortName((voltInvRange)i));
 
 	return names;
@@ -1148,9 +1196,9 @@ inline float invertToVoltInvRange(float value, voltInvRange rangeIdx) {
 enum polyphonyMode {
 	mono_1, poly_2, poly_3, poly_4, poly_5, poly_6, poly_7, poly_8,
 	poly_9, poly_10, poly_11, poly_12, poly_13, poly_14, poly_15, poly_16,
-	poly_auto
+	poly_auto,
+	poly_len
 };
-const int polyphonyModeCount = polyphonyMode::poly_auto + 1;
 const int polyphonyModeChannels[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1 };
 
 inline std::string getPolyphonyModeName(polyphonyMode modeIdx) {
@@ -1172,7 +1220,7 @@ inline std::string getPolyphonyModeShortName(polyphonyMode modeIdx) {
 /// @return List of polyphonyMode-names for a popup menu
 inline std::vector<std::string> getPolyphonyModeNames(bool inclAuto = false) {
 	std::vector<std::string> names;
-	int countInUse = inclAuto ? polyphonyModeCount : polyphonyModeCount - 1;
+	int countInUse = inclAuto ? (int)poly_len : (int)poly_len - 1;
 	for (int i = 0; i < countInUse; i++)
 		names.push_back(getPolyphonyModeName((polyphonyMode)i));
 
@@ -1184,7 +1232,7 @@ inline std::vector<std::string> getPolyphonyModeNames(bool inclAuto = false) {
 /// @return List of short polyphonyMode-names for a popup menu
 inline std::vector<std::string> getPolyphonyModeShortNames(bool inclAuto = false) {
 	std::vector<std::string> names;
-	int countInUse = inclAuto ? polyphonyModeCount : polyphonyModeCount - 1;
+	int countInUse = inclAuto ? (int)poly_len : (int)poly_len - 1;
 	for (int i = 0; i < countInUse; i++)
 		names.push_back(getPolyphonyModeShortName((polyphonyMode)i));
 
@@ -1195,17 +1243,16 @@ inline std::vector<std::string> getPolyphonyModeShortNames(bool inclAuto = false
 //-----------------------------------------------------------------------------
 // Process-quality (determines cycles between each process)
 //-----------------------------------------------------------------------------
-enum processQuality { pq_audioRate, pq_highRate, pq_balancedRate, pq_lowRate, pq_veryLowRate };
-const int processQualityCount = processQuality::pq_veryLowRate + 1;
-const uint32_t processQualityPatterns[]{ 0x00, 0x03, 0x0f, 0x3f, 0xff };
-const float processQualityCycles[]{ 1.f, 4.f, 16.f, 64.f, 256.f };
-const float processQualityGreenBrightness[]{ 0.f, 1.0f, 1.f, 0.5f, 0.f };
-const float processQualityRedBrightness[]  { 0.f, 0.0f, 1.f, 1.0f, 1.f };
-const std::string processQualityRateNames[5] = { "PQ: Audio (every cycle)",  "PQ: High (4th cycle)", 
+enum processQuality { pq_audioRate, pq_highRate, pq_balancedRate, pq_lowRate, pq_veryLowRate, pq_len };
+const uint32_t processQualityPatterns[pq_len]{ 0x00, 0x03, 0x0f, 0x3f, 0xff };
+const float processQualityCycles[pq_len]{ 1.f, 4.f, 16.f, 64.f, 256.f };
+const float processQualityGreenBrightness[pq_len]{ 0.f, 1.0f, 1.f, 0.5f, 0.f };
+const float processQualityRedBrightness[pq_len]  { 0.f, 0.0f, 1.f, 1.0f, 1.f };
+const std::string processQualityRateNames[pq_len] = { "PQ: Audio (every cycle)",  "PQ: High (4th cycle)", 
 	"PQ: Balanced (16th cycle)", "PQ: Low (64th cycle)", "PQ: Very low (256th cycle)" };
-const std::string processQualityNames[5] = { "Audio (every cycle)",  "High (4th cycle)", 
+const std::string processQualityNames[pq_len] = { "Audio (every cycle)",  "High (4th cycle)", 
 	"Balanced (16th cycle)", "Low (64th cycle)", "Very low (256th cycle)" };
-const std::string processQualityShortNames[5] = { "Audio",  "High", "Balanced", "Low", "Very low" };
+const std::string processQualityShortNames[pq_len] = { "Audio",  "High", "Balanced", "Low", "Very low" };
 
 inline std::vector<std::string> getProcessQualityNames() { //TODO: Remove as processQualityNames should be able to be used directly
 	std::vector<std::string> names;
@@ -1264,9 +1311,9 @@ inline processQuality getEstimatedLfoProcessQuality(float sampleRate, float freq
 //-----------------------------------------------------------------------------
 enum quantizeMode {
 	qm_off, qm_note, qm_note2nd, qm_note3rd, qm_note4th, qm_note6th,
-	qm_volt1, qm_volt2, qm_volt2_5, qm_volt3_33, qm_volt5
+	qm_volt1, qm_volt2, qm_volt2_5, qm_volt3_33, qm_volt5,
+	qm_len
 };
-const int quantizeModeCount = quantizeMode::qm_volt5 + 1;
 const float quantizeModeDiv[] = { 1000.f, 1.f / 12.f, 1.f / 6.f, 1.f / 4.f, 1.f / 3.f, 1.f / 2.f, 1.f, 2.f, 2.5f, 10.f / 3.f, 5.f };
 const float quantizeModeHalfDiv[] = { 1000.f, 1.f / 24.f, 1.f / 12.f, 1.f / 8.f, 1.f / 6.f, 1.f / 4.f, 0.5f, 1.f, 1.25f, 10.f / 6.f, 2.5f };
 
@@ -1306,7 +1353,7 @@ inline std::string quantizeModeToShortName(quantizeMode mode) {
 /// @return List of quantize-names for a popup menu
 inline std::vector<std::string> getquantizeModeNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < quantizeModeCount; i++)
+	for (int i = 0; i < (int)qm_len; i++)
 		names.push_back(quantizeModeToName((quantizeMode)i));
 
 	return names;
@@ -1316,7 +1363,7 @@ inline std::vector<std::string> getquantizeModeNames() {
 /// @return List of short quantize-names for a popup menu
 inline std::vector<std::string> getquantizeModeShortNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < quantizeModeCount; i++)
+	for (int i = 0; i < (int)qm_len; i++)
 		names.push_back(quantizeModeToShortName((quantizeMode)i));
 
 	return names;
@@ -1352,9 +1399,9 @@ inline float quantizeToMode(float value, quantizeMode qMode) {
 //-----------------------------------------------------------------------------
 enum trigLengthType {
 	tl_1ms, tl_2ms, tl_5ms, tl_10ms, tl_50ms, tl_100ms, tl_200ms, tl_500ms, tl_1000ms,
-	tl_1cyc, tl_2cyc, tl_4cyc, tl_8cyc, tl_16cyc, tl_32cyc, tl_64cyc, tl_128cyc, tl_256cyc
+	tl_1cyc, tl_2cyc, tl_4cyc, tl_8cyc, tl_16cyc, tl_32cyc, tl_64cyc, tl_128cyc, tl_256cyc,
+	tl_len
 };
-const int trigLengthCount = (int)tl_256cyc + 1;
 const int trigLengthFirstCycle = (int)tl_1cyc;
 const int trigLengthMs[] = { 1, 2, 5, 10, 50, 100, 200, 500, 1000 };
 const int trigLengthCycleCounts[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256 };
@@ -1365,7 +1412,7 @@ const std::string trigLengthNames[] = {
 
 inline std::vector<std::string> getTrigLengthNames() {
 	std::vector<std::string> names;
-	for (int i = 0; i < trigLengthCount; i++)
+	for (int i = 0; i < (int)tl_len; i++)
 		names.push_back(trigLengthNames[i]);
 	return names;
 }
@@ -1376,7 +1423,7 @@ inline std::vector<std::string> getTrigLengthNames() {
 /// @return Engine-sample count for one phase (at least 1).
 inline int trigLengthToCycles(trigLengthType len, float sampleRate) {
 	int idx = (int)len;
-	if (idx < 0 || idx >= trigLengthCount)
+	if (idx < 0 || idx >= (int)tl_len)
 		idx = (int)tl_1ms;
 	if (idx >= trigLengthFirstCycle)
 		return trigLengthCycleCounts[idx - trigLengthFirstCycle];
@@ -2115,9 +2162,9 @@ struct autoScaleData {
 enum scaleCurve {
 	sc_exp,
 	sc_linear,
-	sc_log
+	sc_log,
+	sc_len
 };
-const int scaleCurveCount = scaleCurve::sc_log + 1;
 
 /// @brief Map \p x with exponential (x²), linear, or logarithmic (√x) curve (unipolar). Callers should pass x ≥ 0 (e.g. clamped gain).
 inline float applyScaleCurveUnipolar(float x, scaleCurve mode) {

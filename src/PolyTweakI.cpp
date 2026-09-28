@@ -72,11 +72,11 @@ struct PolyTweakIModule : InfNoiseModule {
     float disableValue = 0.f; // value to set to when doSetVal is true
     bool invertChannels[16] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
     bool disableChannels[16] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
-    enum invertAllModeType { iam_off, iam_on, iam_toggle };
+    enum invertAllModeType { iam_off, iam_on, iam_toggle, iam_len };
     actReqValue<invertAllModeType> invertAllMode = actReqValue<invertAllModeType>(iam_toggle);
-    enum disableAllModeType { dam_off, dam_on, dam_toggle };
+    enum disableAllModeType { dam_off, dam_on, dam_toggle, dam_len };
     actReqValue<disableAllModeType> disableAllMode = actReqValue<disableAllModeType>(dam_toggle);
-    enum gateNonInvModeType { gnm_passthrough, gnm_gate };
+    enum gateNonInvModeType { gnm_passthrough, gnm_gate, gnm_len };
     actReqValue<gateNonInvModeType> gateNonInvMode = actReqValue<gateNonInvModeType>(gnm_gate);
     bool doInvertAll = false;
     bool doDisableAll = false;
@@ -143,9 +143,9 @@ struct PolyTweakIModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         polyphony.setBoth((polyphonyMode)getJsonInt(rootJ, "polyphony", (int)poly_auto));
-        invertAllMode.setBoth((invertAllModeType)getJsonInt(rootJ, "invertAllMode", (int)iam_toggle));
-        disableAllMode.setBoth((disableAllModeType)getJsonInt(rootJ, "disableAllMode", (int)dam_toggle));
-        gateNonInvMode.setBoth((gateNonInvModeType)getJsonInt(rootJ, "gateNonInvMode", (int)gnm_gate));
+        invertAllMode.setBoth((invertAllModeType)getJsonInt(rootJ, "invertAllMode", (int)iam_toggle, (int)iam_len - 1));
+        disableAllMode.setBoth((disableAllModeType)getJsonInt(rootJ, "disableAllMode", (int)dam_toggle, (int)dam_len - 1));
+        gateNonInvMode.setBoth((gateNonInvModeType)getJsonInt(rootJ, "gateNonInvMode", (int)gnm_gate, (int)gnm_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

@@ -57,7 +57,7 @@ struct ManMute8Module : InfNoiseModule {
         LIGHTS_LEN
     };
     
-    enum allButtonMode { abm_Off, abm_On, abm_Toggle };
+    enum allButtonMode { abm_Off, abm_On, abm_Toggle, abm_len };
     actReqValue<allButtonMode> allMode = actReqValue<allButtonMode>(abm_Toggle); 
     infNoiseButtonTrigger btAll = infNoiseButtonTrigger();
     bool outputsInUse = false;
@@ -127,7 +127,7 @@ struct ManMute8Module : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        allMode.setBoth((allButtonMode)getJsonInt(rootJ, "allMode", (int)abm_Toggle));
+        allMode.setBoth((allButtonMode)getJsonInt(rootJ, "allMode", (int)abm_Toggle, (int)abm_len - 1));
         bool allPressed = params[MUTE_ALL_PARAM].getValue() > 0.5f;
         btAll.reset(allPressed
             ? infNoiseButtonTrigger::bt_pressed

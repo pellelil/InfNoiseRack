@@ -44,7 +44,7 @@ struct TinyLCMP2Module : InfNoiseModule {
         LIGHTS_LEN
     };
 
-    enum xorCountValueType { xcvt_one, xcvt_two, xcvt_three, xcvt_four };
+    enum xorCountValueType { xcvt_one, xcvt_two, xcvt_three, xcvt_four, xcvt_len };
     actReqValue<xorCountValueType> xorCountValue[2] = {
         actReqValue<xorCountValueType>(xcvt_one),
         actReqValue<xorCountValueType>(xcvt_one)
@@ -120,7 +120,7 @@ struct TinyLCMP2Module : InfNoiseModule {
         InfNoiseModule::dataFromJson(rootJ);
         
         int xorCountTmp[2];
-        getJsonIntArray(rootJ, "xorCount", xorCountTmp, 2, (int)xorCountValueType::xcvt_one);
+        getJsonIntArray(rootJ, "xorCount", xorCountTmp, 2, (int)xorCountValueType::xcvt_one, (int)xcvt_len - 1);
         for (int i = 0; i < 2; i++)
             xorCountValue[i].setBoth((xorCountValueType)xorCountTmp[i]);
 

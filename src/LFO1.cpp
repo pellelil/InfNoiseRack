@@ -78,24 +78,24 @@ struct LFO1Module : InfNoiseModule {
     infNoiseOutTrigger syncOutTrigger[PORT_MAX_CHANNELS];
     actReqValue<bool> invWaveforms = actReqValue<bool>(false);
     actReqValue<bool> phaseLights = actReqValue<bool>(true);
-    enum calcPhaseMode { ppm_allWaveforms, ppm_onlySquare };
+    enum calcPhaseMode { ppm_allWaveforms, ppm_onlySquare, ppm_len };
     actReqValue<calcPhaseMode> pwmMode = actReqValue<calcPhaseMode>(ppm_allWaveforms);
     actReqValue<infNoisePwmRngQnt::pwmRange> pwmRange = 
         actReqValue<infNoisePwmRngQnt::pwmRange>(infNoisePwmRngQnt::pwmRange::pwm_01_99);
     float minPwm = 0.01f;
     float maxPwm = 0.99f;
-    enum syncOutModeType { som_both, som_onlySyncIn, som_onlyPhaseEnd };
+    enum syncOutModeType { som_both, som_onlySyncIn, som_onlyPhaseEnd, som_len };
     actReqValue<syncOutModeType> syncOutMode = actReqValue<syncOutModeType>(som_both);
-    enum syncModeType { sm_hard, sm_soft };
+    enum syncModeType { sm_hard, sm_soft, sm_len };
     actReqValue<syncModeType> syncMode = actReqValue<syncModeType>(sm_hard); // Hard or soft-sync
     float syncSign[PORT_MAX_CHANNELS] = { 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f }; // Sign for soft-sync (1 or -1)
     float chaosFactor[PORT_MAX_CHANNELS] = { 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f }; // Per-channel phase-step factor (new each cycle)
-    enum oneShotValueTypes { osv_Last, osv_Zero, osv_Center, osv_Min, osv_Max };
+    enum oneShotValueTypes { osv_Last, osv_Zero, osv_Center, osv_Min, osv_Max, osv_len };
     actReqValue<oneShotValueTypes> oneShotValue = actReqValue<oneShotValueTypes>(osv_Zero);
     bool prevOneShot = false;
     int oneShotCount[PORT_MAX_CHANNELS] = { 0 };
     enum oneShotCyclesTypes { osc_1, osc_2, osc_3, osc_4, osc_5, osc_6, osc_7, osc_8, 
-        osc_9, osc_10, osc_11, osc_12, osc_13, osc_14, osc_15, osc_16, osc_17, osc_19, osc_23, osc_24, osc_29, osc_32 };
+        osc_9, osc_10, osc_11, osc_12, osc_13, osc_14, osc_15, osc_16, osc_17, osc_19, osc_23, osc_24, osc_29, osc_32, osc_len };
     actReqValue<oneShotCyclesTypes> oneShotCycles = actReqValue<oneShotCyclesTypes>(osc_1);
     const int osCycleCount[22] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 23, 24, 29, 32 };
     actReqValue<rateChaos> lfoRateChaos = actReqValue<rateChaos>(rc_default);
@@ -188,13 +188,13 @@ struct LFO1Module : InfNoiseModule {
         InfNoiseModule::dataFromJson(rootJ);
         
         phaseLights.setBoth(getJsonBool(rootJ, "phaseLights", true));
-        pwmMode.setBoth((calcPhaseMode)getJsonInt(rootJ, "pwmMode", (int)calcPhaseMode::ppm_allWaveforms));            
+        pwmMode.setBoth((calcPhaseMode)getJsonInt(rootJ, "pwmMode", (int)calcPhaseMode::ppm_allWaveforms, (int)ppm_len - 1));            
         pwmRange.setBoth((infNoisePwmRngQnt::pwmRange)getJsonInt(rootJ, "pwmRange", (int)infNoisePwmRngQnt::pwmRange::pwm_01_99));
         invWaveforms.setBoth(getJsonBool(rootJ, "invWaveforms", false));
-        syncMode.setBoth((syncModeType)getJsonInt(rootJ, "syncMode", (int)sm_hard));
-        syncOutMode.setBoth((syncOutModeType)getJsonInt(rootJ, "syncOutMode", (int)som_both));
-        oneShotValue.setBoth((oneShotValueTypes)getJsonInt(rootJ, "oneShotValue", (int)osv_Zero));
-        oneShotCycles.setBoth((oneShotCyclesTypes)getJsonInt(rootJ, "oneShotCycles", (int)osc_1));
+        syncMode.setBoth((syncModeType)getJsonInt(rootJ, "syncMode", (int)sm_hard, (int)sm_len - 1));
+        syncOutMode.setBoth((syncOutModeType)getJsonInt(rootJ, "syncOutMode", (int)som_both, (int)som_len - 1));
+        oneShotValue.setBoth((oneShotValueTypes)getJsonInt(rootJ, "oneShotValue", (int)osv_Zero, (int)osv_len - 1));
+        oneShotCycles.setBoth((oneShotCyclesTypes)getJsonInt(rootJ, "oneShotCycles", (int)osc_1, (int)osc_len - 1));
         lfoRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "lfoRateChaos", (int)rc_default));
         getJsonFloatArray(rootJ, "phase", phase, PORT_MAX_CHANNELS, 0.f);
         getJsonFloatArray(rootJ, "syncSign", syncSign, PORT_MAX_CHANNELS, 1.f);

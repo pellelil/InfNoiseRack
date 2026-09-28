@@ -56,7 +56,7 @@ struct CombineModule : InfNoiseModule {
     float rfPrevVoltage[PORT_MAX_CHANNELS] = { 0.f };
     bool rfUseFirst[PORT_MAX_CHANNELS] = { false };
     bool rangeUnused = false; // processParams; widget overlay (Range unused except U/L)
-    enum highOnModeType { hom_A, hom_B };
+    enum highOnModeType { hom_A, hom_B, hom_len };
     actReqValue<highOnModeType> highOnMode = actReqValue<highOnModeType>(hom_A);
     
 	CombineModule() {
@@ -107,7 +107,7 @@ struct CombineModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        highOnMode.setBoth((highOnModeType)getJsonInt(rootJ, "highOnMode", (int)hom_A));
+        highOnMode.setBoth((highOnModeType)getJsonInt(rootJ, "highOnMode", (int)hom_A, (int)hom_len - 1));
         getJsonFloatArray(rootJ, "rfPrevVoltage", rfPrevVoltage, PORT_MAX_CHANNELS, 0.f);
         getJsonBoolArray(rootJ, "rfUseFirst", rfUseFirst, PORT_MAX_CHANNELS, true);
 

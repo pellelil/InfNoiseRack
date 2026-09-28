@@ -95,7 +95,7 @@ struct Arm3XYModule : InfNoiseModule {
 	};
     const float maxRotSpeed = 50.f; // Max rotation speed in rotations per second
     float cycleRot = 0.f; // Max rotation per cycle (based on process-quality)
-    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max };
+    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max, mcm_len };
     actReqValue<minCntrMaxType> minCntrMax = actReqValue<minCntrMaxType>(minCntrMaxType::mcm_Center);
     std::string minCntrMaxTooltip[3] = { "Minimum", "Center", "Maximum" };
     dsp::SchmittTrigger minCntrMaxBtnPress;
@@ -190,16 +190,16 @@ struct Arm3XYModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center));
+        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center, (int)mcm_len - 1));
         scaleMode.setBoth((scaleCurve)getJsonInt(rootJ, "scaleMode", (int)sc_linear));
         float armAngles[3];
         getJsonFloatArray(rootJ, "armAngles", armAngles, 3, 0.f);
         int armChaosRotTmp[3];
-        getJsonIntArray(rootJ, "armChaosRot", armChaosRotTmp, 3, (int)rc_default);
+        getJsonIntArray(rootJ, "armChaosRot", armChaosRotTmp, 3, (int)rc_default, (int)rc_len - 1);
         float armChaosRotFactor[3];
         getJsonFloatArray(rootJ, "armChaosRotFactor", armChaosRotFactor, 3, 1.f);
         int armChaosLenTmp[3];
-        getJsonIntArray(rootJ, "armChaosLen", armChaosLenTmp, 3, (int)rc_default);
+        getJsonIntArray(rootJ, "armChaosLen", armChaosLenTmp, 3, (int)rc_default, (int)rc_len - 1);
         float armChaosLenFactor[3];
         getJsonFloatArray(rootJ, "armChaosLenFactor", armChaosLenFactor, 3, 1.f);
         for (int i = 0; i < 3; i++) {

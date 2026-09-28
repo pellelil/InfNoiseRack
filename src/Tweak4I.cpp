@@ -37,7 +37,7 @@ struct Tweak4IModule : InfNoiseModule {
     actReqValue<scaleCurve> scaleMode = actReqValue<scaleCurve>(sc_linear);
     infNoiseAttRngQnt::attRange attRng = infNoiseAttRngQnt::attRange::ar_1x;
     float attRngFactor = 1.f;
-    enum order { scaleOffset, offsetScale };
+    enum order { scaleOffset, offsetScale, order_len };
     order orderMode = scaleOffset;
     int outputCount = 0;  // set in processParams, used in process
     int channels[4] = { 1, 1, 1, 1 }; // channels for A, B, C and D
@@ -99,7 +99,7 @@ struct Tweak4IModule : InfNoiseModule {
 
         if (jsonVersion < 4) { // previous versions used context-menu items for Scale-range and Order-mode
             params[ATT_RNG_PARAM].setValue((float)getJsonInt(rootJ, "attRng", (int)infNoiseAttRngQnt::attRange::ar_1x));
-            params[ORDER_PARAM].setValue((float)getJsonInt(rootJ, "orderMode", (int)order::scaleOffset));
+            params[ORDER_PARAM].setValue((float)getJsonInt(rootJ, "orderMode", (int)order::scaleOffset, (int)order_len - 1));
         }
         scaleMode.setBoth((scaleCurve)getJsonInt(rootJ, "scaleMode", (int)sc_linear));
     }
@@ -227,7 +227,7 @@ struct Tweak4IModuleWidget : InfNoiseModuleWidget {
 
         std::vector<std::string> intervalNames = getVoltIntervalValuesNames();
         menu->addChild(createSubmenuItem("Set offset (semitone steps)", "", [=](Menu* submenu) {
-            for (int i = 0; i < voltIntervalValueCount; i++) {
+            for (int i = 0; i < (int)v_i_len; i++) {
                 submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                     module->params[Tweak4IModule::OFFSET_PARAM].setValue(
                         voltIntervalValues[(voltIntervalValue)i]);

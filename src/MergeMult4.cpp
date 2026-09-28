@@ -38,7 +38,7 @@ struct MergeMult4Module : InfNoiseModule {
     int multOutputCount = 0;
     int multChannels = 0;
     bool mixMode = false;
-    enum negModeType { nm_neg, nm_zero, nm_absIn, nm_absOut };
+    enum negModeType { nm_neg, nm_zero, nm_absIn, nm_absOut, nm_len };
     actReqValue<negModeType> negMode = actReqValue<negModeType>(nm_neg);
     float negModeGreen[4] = { 0.f, 1.f, 1.f, 0.f };
     float negModeRed[4] = { 0.f, 0.f, 1.f, 1.f };
@@ -87,7 +87,7 @@ struct MergeMult4Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
-        negMode.setBoth((negModeType)getJsonInt(rootJ, "negMode", nm_neg));
+        negMode.setBoth((negModeType)getJsonInt(rootJ, "negMode", nm_neg, (int)nm_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

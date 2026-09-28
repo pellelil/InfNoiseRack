@@ -63,9 +63,9 @@ struct SLFO4stModule : InfNoiseModule {
     float chaosFactor[4] = { 1.f, 1.f, 1.f, 1.f }; // Current phase-step factor per LFO (new each cycle)
 
     actReqValue<bool> phaseLights = actReqValue<bool>(true);
-    enum lfoSyncMode { slm_off, slm_2to1, slm_4to3, slm_2to1_4to3, slm_234To1, slm_34to12, slm_4to123 };
+    enum lfoSyncMode { slm_off, slm_2to1, slm_4to3, slm_2to1_4to3, slm_234To1, slm_34to12, slm_4to123, slm_len };
     actReqValue<lfoSyncMode> syncLfoMode = actReqValue<lfoSyncMode>(slm_off);
-    enum syncModeType { sm_hard, sm_soft };
+    enum syncModeType { sm_hard, sm_soft, sm_len };
     actReqValue<syncModeType> syncMode = actReqValue<syncModeType>(sm_hard);
     actReqValue<voltRange> lfoRange[4] = {
         actReqValue<voltRange>((voltRange)vr_Bipolar),
@@ -146,16 +146,16 @@ struct SLFO4stModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         
-        syncLfoMode.setBoth((lfoSyncMode) getJsonInt(rootJ, "syncLfoMode", (int)lfoSyncMode::slm_off));
-        syncMode.setBoth((syncModeType)getJsonInt(rootJ, "syncMode", (int)sm_hard));
+        syncLfoMode.setBoth((lfoSyncMode) getJsonInt(rootJ, "syncLfoMode", (int)lfoSyncMode::slm_off, (int)slm_len - 1));
+        syncMode.setBoth((syncModeType)getJsonInt(rootJ, "syncMode", (int)sm_hard, (int)sm_len - 1));
         phaseLights.setBoth(getJsonBool(rootJ, "phaseLights", true));
 
         int lfoRangeTmp[4];
         bool lfoInvertTmp[4];
         int lfoRateChaosTmp[4];
-        getJsonIntArray(rootJ, "lfoRange", lfoRangeTmp, 4, (int)vr_Bipolar);
+        getJsonIntArray(rootJ, "lfoRange", lfoRangeTmp, 4, (int)vr_Bipolar, (int)vr_len - 1);
         getJsonBoolArray(rootJ, "lfoInvert", lfoInvertTmp, 4, false);
-        getJsonIntArray(rootJ, "lfoRateChaos", lfoRateChaosTmp, 4, (int)rc_default);
+        getJsonIntArray(rootJ, "lfoRateChaos", lfoRateChaosTmp, 4, (int)rc_default, (int)rc_len - 1);
         for (int i = 0; i < 4; i++) {
             lfoRange[i].setBoth((voltRange)lfoRangeTmp[i]);
             lfoInvert[i].setBoth(lfoInvertTmp[i]);
@@ -325,6 +325,8 @@ struct SLFO4stModule : InfNoiseModule {
                     lfoInUse[0] = lfoInUse[0] || lfoInUse[3];
                     lfoInUse[1] = lfoInUse[1] || lfoInUse[3];
                     lfoInUse[2] = lfoInUse[2] || lfoInUse[3];
+                    break;
+                default:
                     break;
             }
         }

@@ -67,9 +67,9 @@ struct ManCV8IIModule : InfNoiseModule {
         LIGHTS_LEN
     };
 
-    enum attenuateMode { am_both, am_onlyOn, am_onlyOff };
+    enum attenuateMode { am_both, am_onlyOn, am_onlyOff, am_len };
     actReqValue<attenuateMode> attMode = actReqValue<attenuateMode>(am_both);
-    enum allButtonMode { abm_Off, abm_On, abm_Toggle };
+    enum allButtonMode { abm_Off, abm_On, abm_Toggle, abm_len };
     actReqValue<allButtonMode> allMode = actReqValue<allButtonMode>(abm_Toggle);
     bool haveOutput = false;
     int firstIdx = -1;
@@ -127,8 +127,8 @@ struct ManCV8IIModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
-        allMode.setBoth((allButtonMode)getJsonInt(rootJ, "allButtonMode", (int)allButtonMode::abm_Toggle));
-        attMode.setBoth((attenuateMode)getJsonInt(rootJ, "attMode", (int)attenuateMode::am_both));
+        allMode.setBoth((allButtonMode)getJsonInt(rootJ, "allButtonMode", (int)allButtonMode::abm_Toggle, (int)abm_len - 1));
+        attMode.setBoth((attenuateMode)getJsonInt(rootJ, "attMode", (int)attenuateMode::am_both, (int)am_len - 1));
         polyOutput.setBoth((polyphonyMode)getJsonInt(rootJ, "polyOutput", (int)polyphonyMode::poly_8));
     }
 

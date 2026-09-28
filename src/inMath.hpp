@@ -370,12 +370,14 @@ struct infNoiseSlew {
 
     void reset(float value = 0.f) {
         lastOut = value;
-        lastRemaining = 0.f;
         riseSec = 0.f;
         fallSec = 0.f;
+        riseRate = 0.f;
+        fallRate = 0.f;
         riseShape = 0.f;
         fallShape = 0.f;
         rampActive = false;
+        phaseReady = false;
         rampFrom = value;
         rampTo = value;
         phasePos = 0.f;
@@ -383,24 +385,32 @@ struct infNoiseSlew {
     }
     void snap(float value) { // snap output; keeps times/shapes
         lastOut = value;
-        lastRemaining = 0.f;
         rampActive = false;
+        phaseReady = false;
         rampFrom = value;
         rampTo = value;
         phasePos = 0.f;
     }
     void setTimes(float riseSec, float fallSec) { // 0 = pass-through
-        this->riseSec = (riseSec > 0.f) ? riseSec : 0.f;
-        this->fallSec = (fallSec > 0.f) ? fallSec : 0.f;
+        riseSec = (riseSec > 0.f) ? riseSec : 0.f;
+        fallSec = (fallSec > 0.f) ? fallSec : 0.f;
+        if (riseSec == this->riseSec && fallSec == this->fallSec)
+            return;
+        this->riseSec = riseSec;
+        this->fallSec = fallSec;
+        riseRate = (riseSec > 0.f) ? rangeVolts / riseSec : 0.f;
+        fallRate = (fallSec > 0.f) ? rangeVolts / fallSec : 0.f;
+        phaseReady = false; // duration depends on the active seconds
     }
     void setShapes(float riseShape, float fallShape) { // -1 Exp .. 0 Lin/S .. +1 Log
         this->riseShape = rack::math::clamp(riseShape, -1.f, 1.f);
         this->fallShape = rack::math::clamp(fallShape, -1.f, 1.f);
     }
     void setMode(infNoiseSlewMode mode) { // shared for rise and fall; not cleared by reset/snap
-        if ((int)mode < 0 || (int)mode >= (int)sm_len)
-            mode = sm_constantRate;
+        if (mode == this->mode)
+            return;
         this->mode = mode;
+        phaseReady = false; // rate vs time uses a different duration
     }
     void setLinearMode(infNoiseLinearMode linearMode) { // shape 0 curve; not cleared by reset/snap
         if ((int)linearMode < 0 || (int)linearMode >= (int)lm_len)
@@ -411,27 +421,26 @@ struct infNoiseSlew {
     float last() const {
         return lastOut;
     }
-    float remaining() const { // last() + remaining() == last next() input
-        return lastRemaining;
-    }
-    bool within(float threshold = 0.001f) const { // |remaining| <= threshold (default 1 mV)
-        return fabs(lastRemaining) <= threshold;
-    }
 
 private:
     float lastOut = 0.f;
-    float lastRemaining = 0.f; // in - lastOut after last next()/snap/reset
     float riseSec = 0.f;
     float fallSec = 0.f;
+    float riseRate = 0.f; // V/s (rangeVolts / riseSec); 0 when riseSec is 0
+    float fallRate = 0.f; // V/s (rangeVolts / fallSec); 0 when fallSec is 0
     float riseShape = 0.f;
     float fallShape = 0.f;
     infNoiseSlewMode mode = sm_constantRate;
     infNoiseLinearMode linearMode = lm_linear;
     bool rampActive = false;
     bool rampUp = true;
+    bool phaseReady = false; // phaseInc matches the current ramp, seconds, and sampleTime
     float rampFrom = 0.f;
     float rampTo = 0.f;
+    float rampSpan = 0.f; // rampTo - rampFrom
     float phasePos = 0.f;
+    float phaseInc = 0.f;
+    float rampDt = 0.f; // sampleTime used to build phaseInc
 };
 
 //-----------------------------------------------------------------------------

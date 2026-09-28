@@ -42,7 +42,7 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
     float fadeRange = 2.f;
     int channels = 1;
     bool haveOutputs = false;
-    enum triggerOrderMode { tom_Next, tom_Prev, tom_PingPong, tom_Rnd, tom_RndDiff };
+    enum triggerOrderMode { tom_Next, tom_Prev, tom_PingPong, tom_Rnd, tom_RndDiff, tom_len };
     actReqValue<triggerOrderMode> trigOrder = actReqValue<triggerOrderMode>(tom_Next);
     actReqValue<voltValue> normCvInVolt[4] = {
         actReqValue<voltValue>(v_zero),
@@ -50,7 +50,7 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
         actReqValue<voltValue>(v_zero),
         actReqValue<voltValue>(v_zero)
     };
-    enum triggerDirection { td_Up, td_Down };
+    enum triggerDirection { td_Up, td_Down, tdir_len };
     triggerDirection pingPongDir = td_Down;
     dsp::SchmittTrigger selectTrig;
     dsp::SchmittTrigger resetTrig;
@@ -109,10 +109,10 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         
-        trigOrder.setBoth((triggerOrderMode)getJsonInt(rootJ, "trigOrder", (int)tom_Next));
-        pingPongDir = (triggerDirection)getJsonInt(rootJ, "pingPongDir", (int)td_Down);
+        trigOrder.setBoth((triggerOrderMode)getJsonInt(rootJ, "trigOrder", (int)tom_Next, (int)tom_len - 1));
+        pingPongDir = (triggerDirection)getJsonInt(rootJ, "pingPongDir", (int)td_Down, (int)tdir_len - 1);
         int normCvTmp[4];
-        getJsonIntArray(rootJ, "normCvInVolt", normCvTmp, 4, (int)v_zero);
+        getJsonIntArray(rootJ, "normCvInVolt", normCvTmp, 4, (int)v_zero, (int)v_len - 1);
         for (int i = 0; i < 4; i++)
             normCvInVolt[i].setBoth((voltValue)normCvTmp[i]);
     }
@@ -266,12 +266,15 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
                         params[SELECT_PARAM].setValue(random::uniform());
                         getSelection(slctLw, slctHi, factLw, factHi);
                         break;
-                    case tom_RndDiff:
+                    case tom_RndDiff: {
                         int currSel = slctLw;
                         while (currSel == slctLw) {
                             params[SELECT_PARAM].setValue(random::uniform());
                             getSelection(slctLw, slctHi, factLw, factHi);
                         }
+                        break;
+                    }
+                    default:
                         break;
                 }
             }

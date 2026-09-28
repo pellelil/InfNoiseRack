@@ -31,7 +31,7 @@ struct CxFade1x2Module : InfNoiseModule {
         LIGHTS_LEN
     };
     
-    enum fadeKnobMode { fm_log, fm_linear, fm_exp  };
+    enum fadeKnobMode { fm_log, fm_linear, fm_exp, fm_len };
     actReqValue<fadeKnobMode> fadeMode = actReqValue<fadeKnobMode>(fm_linear);
     int channels[2] = { 1, 1 };  // [0] = left, [1] = right
     dsp::SchmittTrigger toggleTrig;
@@ -80,7 +80,7 @@ struct CxFade1x2Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         
-        fadeMode.setBoth((fadeKnobMode)getJsonInt(rootJ, "fadeMode", (int)fadeKnobMode::fm_linear));
+        fadeMode.setBoth((fadeKnobMode)getJsonInt(rootJ, "fadeMode", (int)fadeKnobMode::fm_linear, (int)fm_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

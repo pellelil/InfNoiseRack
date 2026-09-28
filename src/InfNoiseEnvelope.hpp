@@ -45,7 +45,7 @@ struct InfNoiseEnvelopeModule : InfNoiseModule {
 		phase = (envPhase)clamp(p, (int)ep_attack, (int)ep_idle);
 		phasePos = getJsonFloat(rootJ, "phasePos", 0.f);
 		envelope = getJsonFloat(rootJ, "envelope", 0.f);
-		timeScale.setBoth((infNoiseTimeScale)getJsonInt(rootJ, "timeScale", (int)ts_1x));
+		timeScale.setBoth((infNoiseTimeScale)getJsonInt(rootJ, "timeScale", (int)ts_1x, (int)ts_len - 1));
 	}
 
 	void dataToJson(json_t* rootJ) override {

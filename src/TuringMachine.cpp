@@ -98,10 +98,10 @@ struct TuringMachineModule : InfNoiseModule {
     };
 
     actReqValue<bool> locked = actReqValue<bool>(false);
-    enum lockModeType { lm_Both, lm_Change, lm_Rotate };
+    enum lockModeType { lm_Both, lm_Change, lm_Rotate, lm_len };
     actReqValue<lockModeType> lockMode = actReqValue<lockModeType>(lm_Change);
     actReqValue<bool> lockPreventsReset = actReqValue<bool>(false);
-    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max };
+    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max, mcm_len };
     actReqValue<minCntrMaxType> minCntrMax = actReqValue<minCntrMaxType>(minCntrMaxType::mcm_Center);
     bool havePulse18 = false; // True if any pulse output 1 - 8 are used (single bit pulses)
     bool havePulse916 = false; // True if any pulse output 9 - 16 are used (anded bit pulses)
@@ -384,9 +384,9 @@ struct TuringMachineModule : InfNoiseModule {
         prevLength = -1;
 
         locked.setBoth(getJsonInt(rootJ, "locked", 0) == 1);
-        lockMode.setBoth((lockModeType)getJsonInt(rootJ, "lockMode", (int)lm_Both));
+        lockMode.setBoth((lockModeType)getJsonInt(rootJ, "lockMode", (int)lm_Both, (int)lm_len - 1));
         lockPreventsReset.setBoth(getJsonInt(rootJ, "lockPreventsReset", 0) == 1);
-        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center));
+        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center, (int)mcm_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

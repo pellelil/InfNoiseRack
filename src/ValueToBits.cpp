@@ -47,7 +47,7 @@ struct ValueToBitsModule : InfNoiseModule {
     int lastIdx = -1;
     bool haveOutputs = false;
     dsp::SchmittTrigger minCntrMaxTrigger;
-    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max };
+    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max, mcm_len };
     actReqValue<minCntrMaxType> minCntrMax = actReqValue<minCntrMaxType>(minCntrMaxType::mcm_Center);
     bool bitsConnected = false;
     bool bitConnected[8] = { false, false, false, false, false, false, false, false };
@@ -105,7 +105,7 @@ struct ValueToBitsModule : InfNoiseModule {
         InfNoiseModule::dataFromJson(rootJ);
         
         bitsInUse.setBoth(getJsonInt(rootJ, "bitsInUse", 8));
-        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center));
+        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center, (int)mcm_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

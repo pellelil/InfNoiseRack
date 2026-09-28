@@ -41,9 +41,9 @@ struct Clamp4Module : InfNoiseModule {
 
     enum clampModeType { cm_clamp, cm_diff, cm_gate };
     clampModeType clampMode = cm_clamp;
-    enum diffModeType { dm_relDiff, dm_absDiff };
+    enum diffModeType { dm_relDiff, dm_absDiff, dm_len };
     actReqValue<diffModeType> diffMode = actReqValue<diffModeType>(dm_relDiff);
-    enum gateModeType { gm_outOfRange, gm_inRange };
+    enum gateModeType { gm_outOfRange, gm_inRange, gm_len };
     actReqValue<gateModeType> gateMode = actReqValue<gateModeType>(gm_outOfRange);
     float minRange = 0.0f;
     float maxRange = 0.0f;
@@ -60,7 +60,7 @@ struct Clamp4Module : InfNoiseModule {
         infNoiseDecayValue(15.f, 60.f),
         infNoiseDecayValue(15.f, 60.f)
     };
-    enum oversampModeType { os_single, os_2x };
+    enum oversampModeType { os_single, os_2x, os_len };
     actReqValue<oversampModeType> oversampMode = actReqValue<oversampModeType>(os_single);
     static constexpr int maxChannels = PORT_MAX_CHANNELS;
     dsp::Upsampler<2, 8> upsampler[4][maxChannels];
@@ -202,9 +202,9 @@ struct Clamp4Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         
-        diffMode.setBoth((diffModeType)getJsonInt(rootJ, "diffMode", (int)diffModeType::dm_relDiff));
-        gateMode.setBoth((gateModeType)getJsonInt(rootJ, "gateMode", (int)gateModeType::gm_outOfRange));
-        oversampMode.setBoth((oversampModeType)getJsonInt(rootJ, "oversampMode", (int)os_single));
+        diffMode.setBoth((diffModeType)getJsonInt(rootJ, "diffMode", (int)diffModeType::dm_relDiff, (int)dm_len - 1));
+        gateMode.setBoth((gateModeType)getJsonInt(rootJ, "gateMode", (int)gateModeType::gm_outOfRange, (int)gm_len - 1));
+        oversampMode.setBoth((oversampModeType)getJsonInt(rootJ, "oversampMode", (int)os_single, (int)os_len - 1));
     }
 
     void

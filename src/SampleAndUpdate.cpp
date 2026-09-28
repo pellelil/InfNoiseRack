@@ -35,12 +35,12 @@ struct SampleAndUpdateModule : InfNoiseModule {
         LIGHTS_LEN
     };
 
-    enum resetModeType { rm_reset, rm_resetAndUpdate };
+    enum resetModeType { rm_reset, rm_resetAndUpdate, rm_len };
     actReqValue<resetModeType> resetMode = actReqValue<resetModeType>(rm_resetAndUpdate);
-    enum countResetModeType { cr_resetOnly, cr_updateOnly, cr_resetAndUpdate };
+    enum countResetModeType { cr_resetOnly, cr_updateOnly, cr_resetAndUpdate, cr_len };
     actReqValue<countResetModeType> countResetMode = actReqValue<countResetModeType>(cr_resetAndUpdate);
     enum triggerCountModeType { tcm_1, tcm_2, tcm_3, tcm_4, tcm_5, tcm_6, tcm_7, tcm_8, 
-        tcm_9, tcm_10, tcm_11, tcm_12, tcm_13, tcm_14, tcm_15, tcm_16 };
+        tcm_9, tcm_10, tcm_11, tcm_12, tcm_13, tcm_14, tcm_15, tcm_16, tcm_len };
     actReqValue<triggerCountModeType> triggerCountMode = actReqValue<triggerCountModeType>(tcm_1);
     int minTrigCount[16] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
     actReqValue<voltValue> resetValue = actReqValue<voltValue>(v_zero);
@@ -138,9 +138,9 @@ struct SampleAndUpdateModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
-        resetMode.setBoth((resetModeType)getJsonInt(rootJ, "resetMode", (int)rm_resetAndUpdate));
-        countResetMode.setBoth((countResetModeType)getJsonInt(rootJ, "countResetMode", (int)cr_resetAndUpdate));
-        triggerCountMode.setBoth((triggerCountModeType)getJsonInt(rootJ, "triggerCountMode", (int)tcm_1));
+        resetMode.setBoth((resetModeType)getJsonInt(rootJ, "resetMode", (int)rm_resetAndUpdate, (int)rm_len - 1));
+        countResetMode.setBoth((countResetModeType)getJsonInt(rootJ, "countResetMode", (int)cr_resetAndUpdate, (int)cr_len - 1));
+        triggerCountMode.setBoth((triggerCountModeType)getJsonInt(rootJ, "triggerCountMode", (int)tcm_1, (int)tcm_len - 1));
         resetValue.setBoth((voltValue)getJsonInt(rootJ, "resetValue", (int)v_zero));
         getJsonFloatArray(rootJ, "samples", samples, PORT_MAX_CHANNELS, 0.f);
         getJsonIntArray(rootJ, "trigCount", trigCount, PORT_MAX_CHANNELS, 0);

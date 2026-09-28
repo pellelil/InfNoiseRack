@@ -30,13 +30,14 @@ struct ChaosModule : InfNoiseModule {
 	enum LightId {
 		ENUMS(PROCQUAL_LIGHT, 2),
 		ENUMS(CLIP_RANGE_LIGHT, 2),
-		ENUMS(FREQ_LIGHT, 2),
+		FREQ_LIGHT,
 		ENUMS(SLEW_TIME_LIGHT, 3),
 		LIGHTS_LEN
 	};
 
 	enum chaosSlewShape {
-		css_linear, css_sCurve, css_exp, css_log
+		css_linear, css_sCurve, css_exp, css_log,
+		css_len
 	};
 
 	actReqValue<rateChaos> lfoRateChaos = actReqValue<rateChaos>(rc_default);
@@ -44,6 +45,28 @@ struct ChaosModule : InfNoiseModule {
 	actReqValue<chaosSlewShape> slewShape = actReqValue<chaosSlewShape>(css_linear);
 	bool maxLinkedToMin = false;
 	bool distExpMode = false;
+	float slewTimeSecs = 1.f;
+	bool useAdaptiveSlewTime = false;
+	infNoiseSlew slew[PORT_MAX_CHANNELS];
+	float rngMin = 0.f;
+	float rngMax = 0.f;
+	float rngCntr = 0.f;
+	float rngSpan = 0.f;
+	float rngSpan_2 = 0.f;
+	dsp::SchmittTrigger trigger;
+	infNoiseEventTracker trigEvents;
+	infNoisePeriodTracker periodTracker;
+	bool inConn = false;
+	bool outConn = false;
+	int channels = 1;
+	bool useLFO = false;
+	float lfoFreq = 2.f;
+	float lfoPhase = 0.f;
+	float lfoPhaseInc = 0.f;
+	float chaosAmount = 0.f; // Chaos rate set via context-menu
+	float chaosFactor = 1.f; // Current rate-chaos factor (new each cycle)
+	float chaosKnob = 0.f; // Cached rate-chaos amount (0-1)
+	float chaosValue = 0.f; // Current chaos value (applied to all channels)
 
 	static std::vector<std::string> getSlewShapeNames() {
 		return { "Linear (default)", "S-curve", "Exponential", "Logarithmic" };
@@ -57,7 +80,7 @@ struct ChaosModule : InfNoiseModule {
 		configInput(TRIG_INPUT, "Trigger (normalized to Trigger-LFO)");
 		configParam<infNoiseLfoFreqQnt>(FREQ_PARAM, -8.f, 10.f, 1.f, "Trigger-LFO frequency", " Hz", 2, 1);
 		configLight(FREQ_LIGHT, "LFO phase");
-		configLight(SLEW_TIME_LIGHT, "Slew time (dim=0, green-to-red=0.0001-10s, blue=adaptive)");
+		configLight(SLEW_TIME_LIGHT, "Slew time: " + getFixedSlewTimesName(fst_default));
 
 		configParam(CHAOS_PARAM, 0.f, 1.f, 0.5f, "Chaos", " %", 0, 100);
 		configInput(CHAOS_CV_INPUT, "Chaos CV (0-10V added to Chaos)");
@@ -79,7 +102,7 @@ struct ChaosModule : InfNoiseModule {
 		haveOutClipRange = true;
 		haveGateDetect = false;
 		haveGateHighLow = false;
-		haveTrigDetect = false;
+		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
 
@@ -90,13 +113,29 @@ struct ChaosModule : InfNoiseModule {
 		slewShape.setBoth(css_linear);
 		maxLinkedToMin = false;
 		distExpMode = false;
+		for(int i=0; i<PORT_MAX_CHANNELS; i++) {
+			slew[i].reset();
+			slew[i].setMode(sm_constantTime);
+		}
+		trigger.reset();
+		trigEvents.reset();
+		periodTracker.reset();
+		chaosValue = 0.f;
+		chaosFactor = 1.f;
+	}
+
+	void applySlewTimes() {
+		for (int i = 0; i < PORT_MAX_CHANNELS; i++) {
+			slew[i].setTimes(slewTimeSecs, slewTimeSecs);
+			slew[i].setMode(sm_constantTime);
+		}
 	}
 
 	void dataFromJson(json_t* rootJ) override {
 		InfNoiseModule::dataFromJson(rootJ);
 		lfoRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "lfoRateChaos", (int)rc_default));
 		slewTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "slewTime", (int)fst_default));
-		slewShape.setBoth((chaosSlewShape)getJsonInt(rootJ, "slewShape", (int)css_linear));
+		slewShape.setBoth((chaosSlewShape)getJsonInt(rootJ, "slewShape", (int)css_linear, (int)css_len - 1));
 	}
 
 	void dataToJson(json_t* rootJ) override {
@@ -109,16 +148,92 @@ struct ChaosModule : InfNoiseModule {
 		preProcessParams(args);
 
 		lfoRateChaos.updateActual();
-		slewShape.updateActual();
+		chaosAmount = rateChaosValues[lfoRateChaos.act];
+		chaosKnob = params[CHAOS_PARAM].getValue();
+		
 		if (slewTime.needsUpdate()) {
 			slewTime.updateActual();
+			useAdaptiveSlewTime = slewTime.act == fst_adaptive;
+			if (useAdaptiveSlewTime)
+				trigEvents.reset();
+			else {
+				slewTimeSecs = fixedSlewTimesValues[(int)slewTime.act];
+				applySlewTimes();
+			}
 			setFixedSlewTimesLight(this, SLEW_TIME_LIGHT, slewTime.act);
+			if ((int)lightInfos.size() > SLEW_TIME_LIGHT && lightInfos[SLEW_TIME_LIGHT])
+				lightInfos[SLEW_TIME_LIGHT]->name = "Slew time: " + getFixedSlewTimesName(slewTime.act);
+		}
+
+		if (slewShape.needsUpdate()) {
+			slewShape.updateActual();
+			float shape = 0.f;
+			infNoiseLinearMode linearMode = lm_linear;
+			switch (slewShape.act) {
+				case css_linear:
+					shape = 0.f;
+					linearMode = lm_linear;
+					break;
+				case css_sCurve:
+					shape = 0.f;
+					linearMode = lm_sCurve;
+					break;
+				case css_exp:
+					shape = -1.f;
+					linearMode = lm_linear;
+					break;
+				case css_log:
+					shape = 1.f;
+					linearMode = lm_linear;
+					break;
+				default:
+					break;
+			}
+			for(int i=0; i<PORT_MAX_CHANNELS; i++) {
+				slew[i].setShapes(shape, shape);
+				slew[i].setLinearMode(linearMode);
+			}
 		}
 
 		maxLinkedToMin = params[LINK_PARAM].getValue() > 0.5f;
+		rngMin = std::min(params[MIN_PARAM].getValue(), params[MAX_PARAM].getValue());
+		rngMax = std::max(params[MIN_PARAM].getValue(), params[MAX_PARAM].getValue());
+		if (maxLinkedToMin) {
+			rngMax = -rngMin;
+			params[MAX_PARAM].setValue(rngMax);
+		}
+		rngSpan = (rngMax - rngMin);
+		rngSpan_2 = rngSpan / 2.f;
+		rngCntr = rngMin + rngSpan_2;
+
 		distExpMode = params[DIST_MODE_PARAM].getValue() > 0.5f;
 		if (distExpMode)
 			params[DIST_PARAM].setValue(0.f);
+
+		inConn = inputs[IN_INPUT].isConnected();
+		channels = inConn ? std::max(inputs[IN_INPUT].getChannels(), 1) : 1;
+		outputs[OUT_OUTPUT].setChannels(channels);
+		outConn = outputs[OUT_OUTPUT].isConnected();
+
+		bool wasLfo = useLFO;
+		useLFO = !inputs[TRIG_INPUT].isConnected();
+		if (wasLfo != useLFO)
+			trigEvents.reset();
+		float sampleRate = safeSampleRate(args.sampleRate);
+		if (useLFO) {
+			lfoFreq = 2.f; // 2 Hz at pitch 1
+			float pitch = params[FREQ_PARAM].getValue();
+			lfoFreq = lfoFreq / 2.f * dsp::exp2_taylor5(pitch);
+			float cycleStep = processQualityCycles[procQuality.act];
+			lfoPhaseInc = (lfoFreq * cycleStep) / sampleRate;
+		}
+
+		if (!(inConn || outConn) || !useLFO) {
+			lights[FREQ_LIGHT].setBrightness(0.f);
+		}
+		else {
+			lights[FREQ_LIGHT].setBrightness(getFreqPhaseBrightness(lfoFreq, lfoPhase));
+		}
 
 		postProcessParams(args);
 	}
@@ -128,6 +243,59 @@ struct ChaosModule : InfNoiseModule {
 			((cycle256 & patternProcessParams) == patternProcessParams);
 		if (doProcessParams)
 			processParams(args);
+
+		bool doProcess = (doProcessParams ||
+				((cycle256 & processQualityPatterns[procQuality.act]) == processQualityPatterns[procQuality.act]));
+		if (doProcess && (inConn || outConn)) {
+			// Handle LFO or trigger (detect new chaos value)
+			bool calcChaos = false;
+			if (useLFO) {
+				lfoPhase += lfoPhaseInc * chaosFactor;
+				if (lfoPhase >= 1.f) {
+					lfoPhase -= std::truncf(lfoPhase); // robust if a fast cycle overshoots past 1.0
+					chaosFactor = rateChaosFactor(chaosAmount);
+					calcChaos = true;
+				}
+			}
+			else {
+				trigEvents.process(procSampleTime);
+				if (trigger.process(inputs[TRIG_INPUT].getVoltage(0),
+					trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+						calcChaos = true;
+				}
+			}
+
+			// Generate new chaos value and calculate adaptive slew time (if applicable)
+			if (calcChaos) {
+				chaosValue = rngMin + rngSpan * randomNorm();  // Placeholder ... need to calc actual chaos value
+				if (useAdaptiveSlewTime) {
+					if (useLFO) {
+						float stepHz = lfoFreq * chaosFactor;
+						if (stepHz > 0.f) {
+							periodTracker.snapTo((1.f - lfoPhase) / stepHz);
+							slewTimeSecs = periodTracker.get();
+						}
+					}
+					else if (trigEvents.onEvent()) {
+						periodTracker.blendToward(trigEvents.period);
+						slewTimeSecs = rack::math::clamp(periodTracker.get(), 0.00001f, 10.f);
+					}
+				}
+			}
+
+			// Process chaos value and output
+			for(int i=0; i<channels; i++) {
+				float input = inConn ? inputs[IN_INPUT].getVoltage(i) : 0.f;
+				float output = input + chaosValue;
+
+				if (calcChaos && useAdaptiveSlewTime)
+					slew[i].setTimes(slewTimeSecs, slewTimeSecs);
+				if (slewTimeSecs > 0.f)
+					output = slew[i].next(output, procSampleTime);
+
+				outputs[OUT_OUTPUT].setVoltage(output, i);
+			}
+		}
 
 		cycle256++;
 	}
@@ -145,7 +313,7 @@ struct ChaosModuleWidget : InfNoiseModuleWidget {
 		const float cntrClm = 15.f;
 		addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 50.27f), module, ChaosModule::TRIG_INPUT));
 		addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 79.72f), module, ChaosModule::FREQ_PARAM));
-		addChild(createLightCentered<SmallLight<GreenRedLight>>(Vec(6.91f, 65.42f), module, ChaosModule::FREQ_LIGHT));
+		addChild(createLightCentered<SmallLight<GreenLight>>(Vec(6.91f, 65.42f), module, ChaosModule::FREQ_LIGHT));
 		addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(24.57f, 65.42f), module, ChaosModule::SLEW_TIME_LIGHT));
 
 		addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 115.95f), module, ChaosModule::CHAOS_PARAM));

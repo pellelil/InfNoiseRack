@@ -270,23 +270,23 @@ struct InfNoiseModule : Module {
         wasJustLoaded = true;
 
         // Quality, quantize and clip-range (sets default values if not found)
-        procQuality.setBoth((processQuality)getJsonInt(rootJ, "procQuality", (int)processQuality::pq_audioRate));
+        procQuality.setBoth((processQuality)getJsonInt(rootJ, "procQuality", (int)pq_audioRate, (int)pq_len - 1));
     	autoProcQuality.setBoth(getJsonBool(rootJ, "autoProcQuality", haveAutoProcQuality));
-        outQuantize.setBoth((quantizeMode)getJsonInt(rootJ, "outQuantize", (int)quantizeMode::qm_off));
-        outClipRange.setBoth((voltRange)getJsonInt(rootJ, "outClipRange", (int)voltRange::vr_mp12));
+        outQuantize.setBoth((quantizeMode)getJsonInt(rootJ, "outQuantize", (int)qm_off, (int)qm_len - 1));
+        outClipRange.setBoth((voltRange)getJsonInt(rootJ, "outClipRange", (int)vr_mp12, (int)vr_len - 1));
         
         // Gate-detect and gate-high/low (sets default values if not found)
-        gateDetHigh.setBoth((trueDetectValue)getJsonInt(rootJ, "gateDetHigh", (int)td_gateHigh));
-        gateOutHigh.setBoth((voltValue)getJsonInt(rootJ, "gateOutHigh", (int)v_GateHigh));
-        gateOutLow.setBoth((voltValue)getJsonInt(rootJ, "gateOutLow", (int)v_GateLow));
+        gateDetHigh.setBoth((trueDetectValue)getJsonInt(rootJ, "gateDetHigh", (int)td_gateHigh, (int)td_len - 1));
+        gateOutHigh.setBoth((voltValue)getJsonInt(rootJ, "gateOutHigh", (int)v_GateHigh, (int)v_len - 1));
+        gateOutLow.setBoth((voltValue)getJsonInt(rootJ, "gateOutLow", (int)v_GateLow, (int)v_len - 1));
 
         // Trigger-detect and trigger-high/low (sets default values if not found)
-        trigDetHigh.setBoth((trueDetectValue)getJsonInt(rootJ, "trigDetHigh", (int)td_triggerHigh));
-        trigDetLow.setBoth((trueDetectValue)getJsonInt(rootJ, "trigDetLow", (int)td_triggerLow));
-        trigOutHigh.setBoth((voltValue)getJsonInt(rootJ, "trigOutHigh", (int)v_TriggerHigh));
-        trigOutLow.setBoth((voltValue)getJsonInt(rootJ, "trigOutLow", (int)v_TriggerLow));
-        trigOnLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigOnLength", (int)tl_1ms));
-        trigOffLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigOffLength", (int)tl_1ms));
+        trigDetHigh.setBoth((trueDetectValue)getJsonInt(rootJ, "trigDetHigh", (int)td_triggerHigh, (int)td_len - 1));
+        trigDetLow.setBoth((trueDetectValue)getJsonInt(rootJ, "trigDetLow", (int)td_triggerLow, (int)td_len - 1));
+        trigOutHigh.setBoth((voltValue)getJsonInt(rootJ, "trigOutHigh", (int)v_TriggerHigh, (int)v_len - 1));
+        trigOutLow.setBoth((voltValue)getJsonInt(rootJ, "trigOutLow", (int)v_TriggerLow, (int)v_len - 1));
+        trigOnLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigOnLength", (int)tl_1ms, (int)tl_len - 1));
+        trigOffLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigOffLength", (int)tl_1ms, (int)tl_len - 1));
     }
 
     /// @brief Decendants should call this in BEGINNING of their processParams method.

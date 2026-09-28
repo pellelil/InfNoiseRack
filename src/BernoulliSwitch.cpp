@@ -47,7 +47,7 @@ struct BernoulliSwitchModule : InfNoiseModule {
     actReqValue<voltValue> normBInVolt = actReqValue<voltValue>(v_zero);  // Normalized input voltage for B
     actReqValue<voltValue> nonSlctOutVolt = actReqValue<voltValue>(v_zero);  // Voltage for non-selected output
     actReqValue<bool> useLastNonSlctOut = actReqValue<bool>(false);  // If true, non-selected output uses last A/B-output
-    enum sectionModeType { sm_Same, sm_Individual };
+    enum sectionModeType { sm_Same, sm_Individual, sm_len };
     actReqValue<sectionModeType> sectionMode = actReqValue<sectionModeType>(sm_Same);  // Same selection for both sections or individual
     bool probModeSwitch = false;
     dsp::SchmittTrigger propTrigger;
@@ -123,7 +123,7 @@ struct BernoulliSwitchModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         
-        sectionMode.setBoth((sectionModeType)getJsonInt(rootJ, "sectionMode", (int)sectionModeType::sm_Same));
+        sectionMode.setBoth((sectionModeType)getJsonInt(rootJ, "sectionMode", (int)sectionModeType::sm_Same, (int)sm_len - 1));
         normAInVolt.setBoth((voltValue)getJsonInt(rootJ, "normAInVolt", (int)v_p10));
         normBInVolt.setBoth((voltValue)getJsonInt(rootJ, "normBInVolt", (int)v_zero));
         nonSlctOutVolt.setBoth((voltValue)getJsonInt(rootJ, "nonSlctOutVolt", (int)v_zero));

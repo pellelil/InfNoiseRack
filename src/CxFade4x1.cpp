@@ -61,7 +61,7 @@ struct CxFade4x1Module : InfNoiseModule {
         LIGHTS_LEN
     };
 
-    enum fadeKnobMode { fm_log, fm_linear, fm_exp };
+    enum fadeKnobMode { fm_log, fm_linear, fm_exp, fm_len };
     actReqValue<fadeKnobMode> fadeMode = actReqValue<fadeKnobMode>(fm_linear);
     bool haveOutput[4] = { false, false, false, false };
     bool haveAnyOutput = false;
@@ -129,7 +129,7 @@ struct CxFade4x1Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
-        fadeMode.setBoth((fadeKnobMode)getJsonInt(rootJ, "fadeMode", (int)fadeKnobMode::fm_linear));
+        fadeMode.setBoth((fadeKnobMode)getJsonInt(rootJ, "fadeMode", (int)fadeKnobMode::fm_linear, (int)fm_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

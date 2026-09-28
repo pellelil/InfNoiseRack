@@ -48,7 +48,7 @@ struct PolyLCMPModule : InfNoiseModule {
 
     bool haveOutputs = false;
     enum countValueType { cv_one, cv_two, cv_three, cv_four, cv_five, cv_six, cv_seven, cv_eight, 
-        cv_nine, cv_ten, cv_eleven, cv_twelve, cv_thirteen, cv_fourteen, cv_fifteen, cv_sixteen };
+        cv_nine, cv_ten, cv_eleven, cv_twelve, cv_thirteen, cv_fourteen, cv_fifteen, cv_sixteen, cv_len };
     actReqValue<countValueType> orCountValue = actReqValue<countValueType>(cv_one);
     actReqValue<countValueType> xorCountValue = actReqValue<countValueType>(cv_one);
     
@@ -93,8 +93,8 @@ struct PolyLCMPModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        orCountValue.setBoth((countValueType)getJsonInt(rootJ, "orCount", (int)countValueType::cv_one));
-        xorCountValue.setBoth((countValueType)getJsonInt(rootJ, "xorCount", (int)countValueType::cv_one));
+        orCountValue.setBoth((countValueType)getJsonInt(rootJ, "orCount", (int)countValueType::cv_one, (int)cv_len - 1));
+        xorCountValue.setBoth((countValueType)getJsonInt(rootJ, "xorCount", (int)countValueType::cv_one, (int)cv_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

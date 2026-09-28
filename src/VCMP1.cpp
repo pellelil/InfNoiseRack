@@ -41,7 +41,8 @@ struct VCMP1Module : InfNoiseModule {
     enum CrossDetectState {
 		cds_Equal,
 		cds_aAboveB,
-		cds_aBelowB
+		cds_aBelowB,
+		cds_len
 	};
     CrossDetectState lastCrossState[PORT_MAX_CHANNELS];
     infNoiseOutTrigger crossTrigger[PORT_MAX_CHANNELS];
@@ -121,7 +122,7 @@ struct VCMP1Module : InfNoiseModule {
         trueOutput.setBoth((voltValue)getJsonInt(rootJ, "trueOutput", (int)v_GateHigh));
         falseOutput.setBoth((voltValue)getJsonInt(rootJ, "falseOutput", (int)v_GateLow));
         int crossStates[PORT_MAX_CHANNELS] = {};
-        getJsonIntArray(rootJ, "lastCrossState", crossStates, PORT_MAX_CHANNELS, (int)cds_Equal);
+        getJsonIntArray(rootJ, "lastCrossState", crossStates, PORT_MAX_CHANNELS, (int)cds_Equal, (int)cds_len - 1);
         for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
             lastCrossState[c] = (CrossDetectState)crossStates[c];
             crossTrigger[c].reset();
@@ -349,7 +350,7 @@ struct VCMP1ModuleWidget : InfNoiseModuleWidget {
         
         std::vector<std::string> voltTolNames = getVoltTolValuesNames();
         menu->addChild(createSubmenuItem("Set tolerance", "", [=](Menu* menu) {
-            for (int i = 0; i < voltTolValueCount; i++) {
+            for (int i = 0; i < (int)vt_len; i++) {
                 voltTolValue vtv = (voltTolValue)i;
                 float voltage = i == 0 ? 0.f : voltTolValues[vtv];
                 menu->addChild(createMenuItem(voltTolNames[i], "", [=]() {

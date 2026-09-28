@@ -42,14 +42,16 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 	enum expanderModeType {
 		emode_auto,
 		emode_left,
-		emode_right
+		emode_right,
+		emode_len
 	};
 	actReqValue<expanderModeType> expanderMode = actReqValue<expanderModeType>(emode_auto);
 	actReqValue<int> steadyHoldIndex = actReqValue<int>(steadyHoldDefaultIndex);
 
 	enum idleOutputModeType {
 		iom_gate,
-		iom_phasePos
+		iom_phasePos,
+		iom_len
 	};
 	actReqValue<idleOutputModeType> idleOutputMode = actReqValue<idleOutputModeType>(iom_gate);
 	actReqValue<voltValue> sustainPosVolt = actReqValue<voltValue>(v_p10);
@@ -246,9 +248,9 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 
 	void dataFromJson(json_t* rootJ) override {
 		InfNoiseModule::dataFromJson(rootJ);
-		expanderMode.setBoth((expanderModeType)getJsonInt(rootJ, "expanderMode", (int)emode_auto));
+		expanderMode.setBoth((expanderModeType)getJsonInt(rootJ, "expanderMode", (int)emode_auto, (int)emode_len - 1));
 		steadyHoldIndex.setBoth(getJsonInt(rootJ, "steadyHoldIndex", steadyHoldDefaultIndex));
-		idleOutputMode.setBoth((idleOutputModeType)getJsonInt(rootJ, "idleOutputMode", (int)iom_gate));
+		idleOutputMode.setBoth((idleOutputModeType)getJsonInt(rootJ, "idleOutputMode", (int)iom_gate, (int)iom_len - 1));
 		sustainPosVolt.setBoth((voltValue)getJsonInt(rootJ, "sustainPosVolt", (int)v_p10));
 		idlePosVolt.setBoth((voltValue)getJsonInt(rootJ, "idlePosVolt", (int)v_zero));
 		resetMotionTracker();

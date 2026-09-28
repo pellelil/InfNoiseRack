@@ -117,12 +117,9 @@ struct Slew4Module : InfNoiseModule {
         getJsonFloatArray(rootJ, "lastOut", lastOut, 64, 0.f);
         for (int i = 0; i < 64; i++)
             slew[i].snap(lastOut[i]);
-        timeScale.setBoth((infNoiseTimeScale)getJsonInt(rootJ, "timeScale", (int)ts_1x));
-        slewMode.setBoth((infNoiseSlewMode)getJsonInt(rootJ, "slewMode", (int)sm_constantRate));
-        int loadedLinear = getJsonInt(rootJ, "linearMode", -1);
-        if (loadedLinear < 0)
-            loadedLinear = getJsonBool(rootJ, "useSCurve", false) ? (int)lm_sCurve : (int)lm_linear;
-        linearMode.setBoth((infNoiseLinearMode)loadedLinear);
+        timeScale.setBoth((infNoiseTimeScale)getJsonInt(rootJ, "timeScale", (int)ts_1x, (int)ts_len - 1));
+        slewMode.setBoth((infNoiseSlewMode)getJsonInt(rootJ, "slewMode", (int)sm_constantRate, (int)sm_len - 1));
+        linearMode.setBoth((infNoiseLinearMode)getJsonInt(rootJ, "linearMode", (int)lm_linear, (int)lm_len - 1));
         prevRiseTime = -999.f;
         prevFallTime = -999.f;
         prevRiseShape = -999.f;

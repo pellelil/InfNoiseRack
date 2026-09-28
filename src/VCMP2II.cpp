@@ -44,7 +44,8 @@ struct VCMP2IIModule : InfNoiseModule {
 
     enum divByZeroModeType {
         dbzKeep,
-        dbzZero
+        dbzZero,
+        dbz_len
     };
     actReqValue<divByZeroModeType> divByZeroMode = actReqValue<divByZeroModeType>(divByZeroModeType::dbzKeep);
     bool abOutputsConnected = false;
@@ -105,7 +106,7 @@ struct VCMP2IIModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        divByZeroMode.setBoth((divByZeroModeType)getJsonInt(rootJ, "divByZeroMode", (int)divByZeroModeType::dbzKeep));
+        divByZeroMode.setBoth((divByZeroModeType)getJsonInt(rootJ, "divByZeroMode", (int)divByZeroModeType::dbzKeep, (int)dbz_len - 1));
 
         getJsonFloatArray(rootJ, "lastCdivD", lastCdivD, PORT_MAX_CHANNELS, 0.f);
         getJsonFloatArray(rootJ, "lastDdivC", lastDdivC, PORT_MAX_CHANNELS, 0.f);

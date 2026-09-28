@@ -43,9 +43,9 @@ struct FlipFlopModule : InfNoiseModule {
     bool haveOutputs = false;
     bool undefOpr = false;  // True if "undefined operation" detected in SR-mode (any channel)
     float lastMode = -1.f;  // Only update mode lights if mode has changed
-    enum enDisGateModeType { edgm_Disable, edgm_Enable };
+    enum enDisGateModeType { edgm_Disable, edgm_Enable, edgm_len };
     actReqValue<enDisGateModeType> enDisGateMode = actReqValue<enDisGateModeType>(enDisGateModeType::edgm_Disable);
-    enum undefOprOutputType { uoo_unchanged, uoo_low_low, uoo_low_high, uoo_high_low, uoo_high_high };
+    enum undefOprOutputType { uoo_unchanged, uoo_low_low, uoo_low_high, uoo_high_low, uoo_high_high, uoo_len };
     actReqValue<undefOprOutputType> undefOprOutput = actReqValue<undefOprOutputType>(undefOprOutputType::uoo_unchanged);
     dsp::SchmittTrigger clockTrigger[PORT_MAX_CHANNELS];
     dsp::SchmittTrigger disableTrigger;
@@ -120,8 +120,8 @@ struct FlipFlopModule : InfNoiseModule {
         InfNoiseModule::dataFromJson(rootJ);
 
         lastMode = -1.f; // force update of mode lights
-        enDisGateMode.setBoth((enDisGateModeType)getJsonInt(rootJ, "enDisGateMode", (int)enDisGateModeType::edgm_Disable));
-        undefOprOutput.setBoth((undefOprOutputType)getJsonInt(rootJ, "undefOprOutput", (int)undefOprOutputType::uoo_unchanged));
+        enDisGateMode.setBoth((enDisGateModeType)getJsonInt(rootJ, "enDisGateMode", (int)enDisGateModeType::edgm_Disable, (int)edgm_len - 1));
+        undefOprOutput.setBoth((undefOprOutputType)getJsonInt(rootJ, "undefOprOutput", (int)undefOprOutputType::uoo_unchanged, (int)uoo_len - 1));
         if (jsonVersion < 2) {
             for (int c = 0; c < PORT_MAX_CHANNELS; c++)
                 qHigh[c] = false;

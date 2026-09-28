@@ -45,7 +45,7 @@ struct Mute2Module : InfNoiseModule {
     dsp::SchmittTrigger bothTrigger;
     bool triggerMuted[2] = { false, false };  // A/B-section muted or not
     dsp::SchmittTrigger muteTrigger[2] = { dsp::SchmittTrigger(), dsp::SchmittTrigger() };
-    enum gateMuteModeType { gmm_highGate, gmm_lowGate };
+    enum gateMuteModeType { gmm_highGate, gmm_lowGate, gmm_len };
     actReqValue<gateMuteModeType> gateMuteMode = actReqValue<gateMuteModeType>(gmm_highGate);
 
 	Mute2Module() {
@@ -107,7 +107,7 @@ struct Mute2Module : InfNoiseModule {
         InfNoiseModule::dataFromJson(rootJ);
         
         muteVoltage.setBoth((voltValue)getJsonInt(rootJ, "muteVoltage", (int)v_zero));
-        gateMuteMode.setBoth((gateMuteModeType)getJsonInt(rootJ, "gateMuteMode", (int)gmm_highGate));
+        gateMuteMode.setBoth((gateMuteModeType)getJsonInt(rootJ, "gateMuteMode", (int)gmm_highGate, (int)gmm_len - 1));
         bothMuted = getJsonBool(rootJ, "bothMuted", false);
         getJsonBoolArray(rootJ, "triggerMuted", triggerMuted, 2, false);
     }

@@ -41,12 +41,12 @@ struct Tweak2IIModule : InfNoiseModule {
         infNoiseAttRngQnt::attRange::ar_1x
     };
     float attRngFactor[2] = { 1.f, 1.f };
-    enum order { scaleOffset, offsetScale };
+    enum order { scaleOffset, offsetScale, order_len };
     order orderMode[2] = { scaleOffset, scaleOffset };
     bool mixMode = true; // Mix unplugged outputs if true
     int outputCount = 0;  // set in processParams, used in process
     int channels[2] = { 1, 1 }; // channels for A and B
-    enum bSectionModeType { bsm_Individual, bsm_LinkedToA };
+    enum bSectionModeType { bsm_Individual, bsm_LinkedToA, bsm_len };
     actReqValue<bSectionModeType> bSectionMode = actReqValue<bSectionModeType>(bsm_Individual);
     /// Set in processParams; used by widget overlay (B knobs follow A when linked).
     bool bSectionLinkedToA = false;
@@ -109,14 +109,14 @@ struct Tweak2IIModule : InfNoiseModule {
 
         if (jsonVersion < 4) { // previous versions used context-menu items for Scale-range and Order-mode
             float rng = (float)getJsonInt(rootJ, "attRng", (int)infNoiseAttRngQnt::attRange::ar_1x);
-            float ord = (float)getJsonInt(rootJ, "orderMode", (int)order::scaleOffset);
+            float ord = (float)getJsonInt(rootJ, "orderMode", (int)order::scaleOffset, (int)order_len - 1);
             params[ATT_RNG_PARAM + 0].setValue(rng);
             params[ATT_RNG_PARAM + 1].setValue(rng);
             params[ORDER_PARAM + 0].setValue(ord);
             params[ORDER_PARAM + 1].setValue(ord);
         }
         scaleMode.setBoth((scaleCurve)getJsonInt(rootJ, "scaleMode", (int)sc_linear));
-        bSectionMode.setBoth((bSectionModeType)getJsonInt(rootJ, "bSectionMode", (int)bSectionModeType::bsm_Individual));
+        bSectionMode.setBoth((bSectionModeType)getJsonInt(rootJ, "bSectionMode", (int)bSectionModeType::bsm_Individual, (int)bsm_len - 1));
         mixMode = getJsonInt(rootJ, "mixMode", 1) == 1;
     }
 
@@ -314,7 +314,7 @@ struct Tweak2IIModuleWidget : InfNoiseModuleWidget {
 
         std::vector<std::string> intervalNames = getVoltIntervalValuesNames();
         menu->addChild(createSubmenuItem("Set A-offset (semitone steps)", "", [=](Menu* submenu) {
-            for (int i = 0; i < voltIntervalValueCount; i++) {
+            for (int i = 0; i < (int)v_i_len; i++) {
                 submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                     module->params[Tweak2IIModule::A_OFFSET_PARAM].setValue(
                         voltIntervalValues[(voltIntervalValue)i]);
@@ -323,7 +323,7 @@ struct Tweak2IIModuleWidget : InfNoiseModuleWidget {
         }));
 
         menu->addChild(createSubmenuItem("Set B-offset (semitone steps)", "", [=](Menu* submenu) {
-            for (int i = 0; i < voltIntervalValueCount; i++) {
+            for (int i = 0; i < (int)v_i_len; i++) {
                 submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                     module->params[Tweak2IIModule::B_OFFSET_PARAM].setValue(
                         voltIntervalValues[(voltIntervalValue)i]);

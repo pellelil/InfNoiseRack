@@ -48,7 +48,7 @@ struct RingMod3Module : InfNoiseModule {
     int firstIdx = -1;
     int lastIdx = -1;
     int channels[3] = { 1, 1, 1 }; // Number of output-channels (AB1, AB2, AB3)
-    enum scaleModeType { sm_1x, sm_d5, sm_d10 };
+    enum scaleModeType { sm_1x, sm_d5, sm_d10, sm_len };
     const float scaleModeFactors[3] = { 1.f, 0.2f, 0.1f };
     float scaleModeRed[3] = { 0.f, 1.f, 0.f };
     float scaleModeGreen[3] = { 0.f, 1.f, 1.f };
@@ -65,7 +65,7 @@ struct RingMod3Module : InfNoiseModule {
         actReqValue<scaleModeType>(sm_d10), 
         actReqValue<scaleModeType>(sm_d10) 
     };
-    enum negModeType { nm_sign, nm_abs, nm_cut };
+    enum negModeType { nm_sign, nm_abs, nm_cut, nm_len };
     actReqValue<negModeType> aNegMode[3] = { 
         actReqValue<negModeType>(nm_sign), 
         actReqValue<negModeType>(nm_sign), 
@@ -134,10 +134,10 @@ struct RingMod3Module : InfNoiseModule {
         int bScaleTmp[3];
         int aNegTmp[3];
         int bNegTmp[3];
-        getJsonIntArray(rootJ, "aScaleMode", aScaleTmp, 3, (int)sm_1x);
-        getJsonIntArray(rootJ, "bScaleMode", bScaleTmp, 3, (int)sm_d10);
-        getJsonIntArray(rootJ, "aNegMode", aNegTmp, 3, (int)nm_sign);
-        getJsonIntArray(rootJ, "bNegMode", bNegTmp, 3, (int)nm_sign);
+        getJsonIntArray(rootJ, "aScaleMode", aScaleTmp, 3, (int)sm_1x, (int)sm_len - 1);
+        getJsonIntArray(rootJ, "bScaleMode", bScaleTmp, 3, (int)sm_d10, (int)sm_len - 1);
+        getJsonIntArray(rootJ, "aNegMode", aNegTmp, 3, (int)nm_sign, (int)nm_len - 1);
+        getJsonIntArray(rootJ, "bNegMode", bNegTmp, 3, (int)nm_sign, (int)nm_len - 1);
         for (int i = 0; i < 3; i++) {
             aScaleMode[i].setBoth((scaleModeType)aScaleTmp[i]);
             bScaleMode[i].setBoth((scaleModeType)bScaleTmp[i]);

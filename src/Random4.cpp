@@ -40,15 +40,15 @@ struct Random4Module : InfNoiseModule {
         LIGHTS_LEN
     };
 
-    enum distRangeType { dr_pct60, dr_pct65, dr_pct70, dr_pct75, dr_pct80, dr_pct85, dr_pct90, dr_pct95, dr_pct100 };
+    enum distRangeType { dr_pct60, dr_pct65, dr_pct70, dr_pct75, dr_pct80, dr_pct85, dr_pct90, dr_pct95, dr_pct100, dr_len };
     actReqValue<distRangeType> distRange = actReqValue<distRangeType>(distRangeType::dr_pct100);
     float distRangeFactor = 1.f;
     float dstRngFactors[9] = { 0.6f, 0.65f, 0.7f, 0.75f, 0.8f, 0.85f, 0.9f, 0.95f, 1.f };
-    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max };
+    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max, mcm_len };
     actReqValue<minCntrMaxType> minCntrMax = actReqValue<minCntrMaxType>(minCntrMaxType::mcm_Center);
     std::string minCntrMaxTooltip[3] = { "Minimum (-10V to 10V)", "Center (-10V to 10V)", "Maximum (-10V to 10V)" };
     actReqValue<bool> forcedPolarity = actReqValue<bool>(false);
-    enum distModeType { dm_CntrEdge, dm_MinMax };
+    enum distModeType { dm_CntrEdge, dm_MinMax, dm_len };
     actReqValue<distModeType> distMode = actReqValue<distModeType>(distModeType::dm_CntrEdge);
     actReqValue<polyphonyMode> polyphony = actReqValue<polyphonyMode>(poly_auto);
     int channels = 1;
@@ -155,10 +155,10 @@ struct Random4Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
-        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center));
+        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center, (int)mcm_len - 1));
         forcedPolarity.setBoth(getJsonBool(rootJ, "forcedPolarity", false));
-        distMode.setBoth((distModeType)getJsonInt(rootJ, "distMode", (int)distModeType::dm_CntrEdge));
-        distRange.setBoth((distRangeType)getJsonInt(rootJ, "distRange", (int)distRangeType::dr_pct100));
+        distMode.setBoth((distModeType)getJsonInt(rootJ, "distMode", (int)distModeType::dm_CntrEdge, (int)dm_len - 1));
+        distRange.setBoth((distRangeType)getJsonInt(rootJ, "distRange", (int)distRangeType::dr_pct100, (int)dr_len - 1));
         polyphony.setBoth((polyphonyMode)getJsonInt(rootJ, "polyphony", (int)polyphonyMode::poly_auto));
         lfoRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "lfoRateChaos", (int)rc_default));
         getJsonFloatArray(rootJ, "held", &heldValue[0][0], 4 * PORT_MAX_CHANNELS, 0.f);
@@ -269,7 +269,6 @@ struct Random4Module : InfNoiseModule {
         if (haveOutputs) {
             dist = params[DIST_PARAM].getValue() * distRangeFactor;
         }
-
 
         // Handle phase-light
         if (!haveOutputs) {

@@ -46,7 +46,7 @@ struct PolyTweakIIModule : InfNoiseModule {
     float disableValue = 0.f; // value to set to when doSetVal is true (knob only)
     bool invertChannels[16] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
     bool disableChannels[16] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
-    enum gateNonInvModeType { gnm_passthrough, gnm_gate };
+    enum gateNonInvModeType { gnm_passthrough, gnm_gate, gnm_len };
     actReqValue<gateNonInvModeType> gateNonInvMode = actReqValue<gateNonInvModeType>(gnm_gate);
 
     PolyTweakIIModule() {
@@ -93,7 +93,7 @@ struct PolyTweakIIModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        gateNonInvMode.setBoth((gateNonInvModeType)getJsonInt(rootJ, "gateNonInvMode", (int)gnm_gate));
+        gateNonInvMode.setBoth((gateNonInvModeType)getJsonInt(rootJ, "gateNonInvMode", (int)gnm_gate, (int)gnm_len - 1));
     }
 
     void dataToJson(json_t* rootJ) override {

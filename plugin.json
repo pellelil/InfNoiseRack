@@ -37,7 +37,7 @@
     {
       "slug": "TLFO",
       "name": "Tiny LFO",
-      "description": "Tiny 2HP LFO with knob/CV rate, PWM, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).",
+      "description": "2HP Tiny LFO with knob/CV rate, PWM, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#tiny-lfo",
       "tags":  [
         "LFO",
@@ -57,7 +57,7 @@
     {
       "slug": "PhaseDrivenLFO",
       "name": "Phase-Driven LFO",
-      "description": "Phase-driven LFO: incoming phase CV sets the waveform (no internal oscillator). PWM, MOD, wrap, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).",
+      "description": "4HP phase-driven LFO: incoming phase CV sets the waveform (no internal oscillator). PWM, MOD, wrap, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/LFO.md#phase-driven-lfo",
       "tags":  [
         "LFO",
@@ -321,7 +321,7 @@
     {
       "slug": "CvToGt",
       "name": "CV to Gate",
-      "description": "Fire a gate if CV is within a specified min/max range. Also above, below, inverted-range, and Diff.",
+      "description": "2HP fire a gate if CV is within a specified min/max range. Also above, below, inverted-range, and Diff.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/CvToGt.md#cv-to-gate",
       "tags":  [
         "Polyphonic",
@@ -331,7 +331,7 @@
     {
       "slug": "CvToGtTr8",
       "name": "CV to Gate/Trigger 8",
-      "description": "8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.",
+      "description": "8HP 8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/CvToGtTr8.md#cv-to-gatetrigger-8",
       "tags":  [
         "Polyphonic",
@@ -740,7 +740,7 @@
     {
       "slug": "Slew2",
       "name": "Slew 2",
-      "description": "4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snat (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.",
+      "description": "4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snap (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Slew.md#slew-2",
       "tags":  [
         "Slew limiter",

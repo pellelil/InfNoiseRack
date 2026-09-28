@@ -49,7 +49,7 @@ struct SHTH2Module : InfNoiseModule {
         actReqValue<polyphonyMode>(mono_1),
         actReqValue<polyphonyMode>(mono_1)
     };
-    enum lfoRatioModeType { lrm_1090, lrm_2080, lrm_3070, lrm_4060, lrm_5050, lrm_6040, lrm_7030, lrm_8020, lrm_9010 };
+    enum lfoRatioModeType { lrm_1090, lrm_2080, lrm_3070, lrm_4060, lrm_5050, lrm_6040, lrm_7030, lrm_8020, lrm_9010, lrm_len };
     actReqValue<lfoRatioModeType> lfoRatioMode[2] = {
         actReqValue<lfoRatioModeType>(lrm_5050),
         actReqValue<lfoRatioModeType>(lrm_5050)
@@ -143,10 +143,10 @@ struct SHTH2Module : InfNoiseModule {
         int noisePolyTmp[2];
         int lfoRatioModeTmp[2];
         int lfoRateChaosTmp[2];
-        getJsonIntArray(rootJ, "noiseRange", noiseRangeTmp, 2, (int)vr_Bipolar);
-        getJsonIntArray(rootJ, "noisePoly", noisePolyTmp, 2, (int)polyphonyMode::mono_1);
-        getJsonIntArray(rootJ, "lfoRatioMode", lfoRatioModeTmp, 2, (int)lfoRatioModeType::lrm_5050);
-        getJsonIntArray(rootJ, "lfoRateChaos", lfoRateChaosTmp, 2, (int)rc_default);
+        getJsonIntArray(rootJ, "noiseRange", noiseRangeTmp, 2, (int)vr_Bipolar, (int)vr_len - 1);
+        getJsonIntArray(rootJ, "noisePoly", noisePolyTmp, 2, (int)polyphonyMode::mono_1, (int)poly_len - 1);
+        getJsonIntArray(rootJ, "lfoRatioMode", lfoRatioModeTmp, 2, (int)lfoRatioModeType::lrm_5050, (int)lrm_len - 1);
+        getJsonIntArray(rootJ, "lfoRateChaos", lfoRateChaosTmp, 2, (int)rc_default, (int)rc_len - 1);
         for (int i = 0; i < 2; i++) {
             noiseRange[i].setBoth((voltRange)noiseRangeTmp[i]);
             noisePolyphony[i].setBoth((polyphonyMode)noisePolyTmp[i]);

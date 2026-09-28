@@ -47,8 +47,8 @@ struct ManMix4IIModule : InfNoiseModule {
         LIGHTS_LEN
     };
 
-    enum mixModeType { mm_averaging, mm_unity };
-    enum mixKnobInvert { mki_normal, mki_inverted };
+    enum mixModeType { mm_averaging, mm_unity, mm_len };
+    enum mixKnobInvert { mki_normal, mki_inverted, mki_len };
     actReqValue<mixModeType> mixMode = actReqValue<mixModeType>(mm_averaging);
     actReqValue<mixKnobInvert> mixInv[4] = {
         actReqValue<mixKnobInvert>(mki_normal),
@@ -133,9 +133,9 @@ struct ManMix4IIModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        mixMode.setBoth((mixModeType)getJsonInt(rootJ, "mixMode", (int)mm_averaging));
+        mixMode.setBoth((mixModeType)getJsonInt(rootJ, "mixMode", (int)mm_averaging, (int)mm_len - 1));
         int mixInvTmp[4];
-        getJsonIntArray(rootJ, "mixInv", mixInvTmp, 4, (int)mki_normal);
+        getJsonIntArray(rootJ, "mixInv", mixInvTmp, 4, (int)mki_normal, (int)mki_len - 1);
         for (int i = 0; i < 4; i++)
             mixInv[i].setBoth((mixKnobInvert)mixInvTmp[i]);
     }

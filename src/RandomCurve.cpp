@@ -61,7 +61,7 @@ struct RandomCurveModule : InfNoiseModule {
     const int PREV_RND = 0;
     const int NEXT_RND = 1;
     
-    enum userCurveModeType { ucm_Log, ucm_Exp, ucm_Top, ucm_Bottom };
+    enum userCurveModeType { ucm_Log, ucm_Exp, ucm_Top, ucm_Bottom, ucm_len };
     actReqValue<userCurveModeType> user1Mode = actReqValue<userCurveModeType>(ucm_Log);
     actReqValue<userCurveModeType> user2Mode = actReqValue<userCurveModeType>(ucm_Top);
     std::string userCurveModeTooltip[4] = {
@@ -73,14 +73,14 @@ struct RandomCurveModule : InfNoiseModule {
     bool user1UseLog = true;
     bool user2UseLog = true;
 
-    enum stepModeType { sm_midPhase, sm_phaseStart };
+    enum stepModeType { sm_midPhase, sm_phaseStart, sm_len };
     actReqValue<stepModeType> stepMode = actReqValue<stepModeType>(sm_midPhase);
 
-    enum distRangeType { dr_pct60, dr_pct65, dr_pct70, dr_pct75, dr_pct80, dr_pct85, dr_pct90, dr_pct95, dr_pct100 };
+    enum distRangeType { dr_pct60, dr_pct65, dr_pct70, dr_pct75, dr_pct80, dr_pct85, dr_pct90, dr_pct95, dr_pct100, dr_len };
     actReqValue<distRangeType> distRange = actReqValue<distRangeType>(distRangeType::dr_pct100);
     float distRangeFactor = 1.f;
     float dstRngFactors[9] = { 0.6f, 0.65f, 0.7f, 0.75f, 0.8f, 0.85f, 0.9f, 0.95f, 1.f };
-    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max };
+    enum minCntrMaxType { mcm_Min, mcm_Center, mcm_Max, mcm_len };
     actReqValue<minCntrMaxType> minCntrMax = actReqValue<minCntrMaxType>(minCntrMaxType::mcm_Center);
     std::string minCntrMaxTooltip[3] = { "Minimum", "Center", "Maximum" };
     dsp::SchmittTrigger minCntrMaxBtnPress;
@@ -167,8 +167,8 @@ struct RandomCurveModule : InfNoiseModule {
             case ucm_Exp:    return false;
             case ucm_Top:    return deltaRnd >= 0.f;
             case ucm_Bottom: return deltaRnd < 0.f;
+            default:         return true;
         }
-        return true;
     }
 
     void applyUserModeLight(int lightId, userCurveModeType mode) {
@@ -217,8 +217,8 @@ struct RandomCurveModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         
-        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center));
-        distRange.setBoth((distRangeType)getJsonInt(rootJ, "distRange", (int)distRangeType::dr_pct100));
+        minCntrMax.setBoth((minCntrMaxType)getJsonInt(rootJ, "minCntrMax", (int)minCntrMaxType::mcm_Center, (int)mcm_len - 1));
+        distRange.setBoth((distRangeType)getJsonInt(rootJ, "distRange", (int)distRangeType::dr_pct100, (int)dr_len - 1));
         lfoRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "lfoRateChaos", (int)rc_default));
         phase = getJsonFloat(rootJ, "phase", 0.f);
         if (phase >= 1.f)
@@ -231,9 +231,9 @@ struct RandomCurveModule : InfNoiseModule {
         maxValue[NEXT_RND] = getJsonFloat(rootJ, "maxNext", -5.f);
         prevSign = getJsonFloat(rootJ, "prevSign", -1.f);
         chaosFactor = getJsonFloat(rootJ, "chaosFactor", 1.f);
-        user1Mode.setBoth((userCurveModeType)getJsonInt(rootJ, "user1Mode", (int)ucm_Log));
-        user2Mode.setBoth((userCurveModeType)getJsonInt(rootJ, "user2Mode", (int)ucm_Top));
-        stepMode.setBoth((stepModeType)getJsonInt(rootJ, "stepMode", (int)sm_midPhase));
+        user1Mode.setBoth((userCurveModeType)getJsonInt(rootJ, "user1Mode", (int)ucm_Log, (int)ucm_len - 1));
+        user2Mode.setBoth((userCurveModeType)getJsonInt(rootJ, "user2Mode", (int)ucm_Top, (int)ucm_len - 1));
+        stepMode.setBoth((stepModeType)getJsonInt(rootJ, "stepMode", (int)sm_midPhase, (int)sm_len - 1));
         applyUserModeLight(USER1_MODE_LIGHT, user1Mode.act);
         applyUserModeLight(USER2_MODE_LIGHT, user2Mode.act);
         outputInfos[USER1_OUTPUT]->name = monoPortPrefix() + userCurveModeTooltip[(int)user1Mode.act];
@@ -633,7 +633,7 @@ struct RandomCurveModuleWidget : InfNoiseModuleWidget {
         const int vrOfs = 2; // vr[0] (vr_off), vr[1] (vr_mp12) excluded from menu
         menu->addChild(createSubmenuItem("Set min/max-range", "",
 		    	[=](Menu* menu) {
-                    for (int i=0; i<voltRangeCount-vrOfs; i++) {
+                    for (int i=0; i<(int)vr_len-vrOfs; i++) {
                         menu->addChild(createMenuItem(getVoltRangeName((voltRange)(i + vrOfs)), "", [=]() {
                            module->params[RandomCurveModule::MIN_CNTR_MAX_PARAM].setValue(voltRangeMin[i + vrOfs]);
                            module->params[RandomCurveModule::RANGE_PARAM].setValue(voltRangeMax[i + vrOfs]);

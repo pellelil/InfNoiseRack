@@ -56,7 +56,7 @@ struct TLFOModule : InfNoiseModule {
         actReqValue<bool>(false)
     };
     actReqValue<bool> phaseLights = actReqValue<bool>(true);
-    enum calcPhaseMode { ppm_allWaveforms, ppm_onlySquare };
+    enum calcPhaseMode { ppm_allWaveforms, ppm_onlySquare, ppm_len };
     actReqValue<calcPhaseMode> pwmMode = actReqValue<calcPhaseMode>(ppm_allWaveforms);
     actReqValue<infNoisePwmRngQnt::pwmRange> pwmRange = actReqValue<infNoisePwmRngQnt::pwmRange>(infNoisePwmRngQnt::pwmRange::pwm_01_99);
     float minPwm = 0.01f;
@@ -125,7 +125,7 @@ struct TLFOModule : InfNoiseModule {
         InfNoiseModule::dataFromJson(rootJ);
         
         phaseLights.setBoth(getJsonBool(rootJ, "phaseLights", true));
-        pwmMode.setBoth((calcPhaseMode)getJsonInt(rootJ, "pwmMode", (int)calcPhaseMode::ppm_allWaveforms));
+        pwmMode.setBoth((calcPhaseMode)getJsonInt(rootJ, "pwmMode", (int)calcPhaseMode::ppm_allWaveforms, (int)ppm_len - 1));
         pwmRange.setBoth((infNoisePwmRngQnt::pwmRange)getJsonInt(rootJ, "pwmRange", (int)infNoisePwmRngQnt::pwmRange::pwm_01_99));
         bool invTmp[4];
         getJsonBoolArray(rootJ, "invWaveforms", invTmp, 4, false);

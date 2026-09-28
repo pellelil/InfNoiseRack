@@ -267,14 +267,14 @@ struct PolyOffsetModuleWidget : InfNoiseModuleWidget {
         std::vector<std::string> voltNames = getVoltValuesNames();
         menu->addChild(createSubmenuItem("Set: All offset", "", [=](Menu* setAllMenu) {
             setAllMenu->addChild(createSubmenuItem("Interval", "", [=](Menu* submenu) {
-                for (int i = 0; i < voltIntervalValueCount; i++) {
+                for (int i = 0; i < (int)v_i_len; i++) {
                     submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                         module->setParamKnobToVoltInterval(module->ALL_OFFSET_PARAM, (voltIntervalValue)i);
                     }));
                 }
             }));
             setAllMenu->addChild(createSubmenuItem("Volt level", "", [=](Menu* submenu) {
-                for (int i = 0; i < voltValueCount; i++) {
+                for (int i = 0; i < (int)v_len; i++) {
                     submenu->addChild(createMenuItem(voltNames[i], "", [=]() {
                         module->setParamKnobToVolt(module->ALL_OFFSET_PARAM, (voltValue)i);
                     }));
@@ -284,14 +284,14 @@ struct PolyOffsetModuleWidget : InfNoiseModuleWidget {
 
         menu->addChild(createSubmenuItem("Set: Incremental offset", "", [=](Menu* setIncMenu) {
             setIncMenu->addChild(createSubmenuItem("Interval", "", [=](Menu* submenu) {
-                for (int i = 0; i < voltIntervalValueCount; i++) {
+                for (int i = 0; i < (int)v_i_len; i++) {
                     submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                         module->setParamKnobToVoltInterval(module->INC_OFFSET_PARAM, (voltIntervalValue)i);
                     }));
                 }
             }));
             setIncMenu->addChild(createSubmenuItem("Volt level", "", [=](Menu* submenu) {
-                for (int i = 0; i < voltValueCount; i++) {
+                for (int i = 0; i < (int)v_len; i++) {
                     submenu->addChild(createMenuItem(voltNames[i], "", [=]() {
                         module->setParamKnobToVolt(module->INC_OFFSET_PARAM, (voltValue)i);
                     }));
@@ -306,14 +306,14 @@ struct PolyOffsetModuleWidget : InfNoiseModuleWidget {
         for (int k = 0; k < 8; k++) {
             menu->addChild(createSubmenuItem(string::f("Set: Offset %d", k + 1), "", [=](Menu* setKMenu) {
                 setKMenu->addChild(createSubmenuItem("Interval", "", [=](Menu* submenu) {
-                    for (int i = 0; i < voltIntervalValueCount; i++) {
+                    for (int i = 0; i < (int)v_i_len; i++) {
                         submenu->addChild(createMenuItem(intervalNames[i], "", [=]() {
                             module->setParamKnobToVoltInterval(module->OFFSET1_PARAM + k, (voltIntervalValue)i);
                         }));
                     }
                 }));
                 setKMenu->addChild(createSubmenuItem("Volt level", "", [=](Menu* submenu) {
-                    for (int i = 0; i < voltValueCount; i++) {
+                    for (int i = 0; i < (int)v_len; i++) {
                         submenu->addChild(createMenuItem(voltNames[i], "", [=]() {
                             module->setParamKnobToVolt(module->OFFSET1_PARAM + k, (voltValue)i);
                         }));

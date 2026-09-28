@@ -57,7 +57,7 @@ struct PolyShuffleModule : InfNoiseModule {
     int outChannels = 1;  // Number of output channels (1..16)
     int lastOutChannels = -1;  // Used to detect when output channels have changed
     int channelOrder[16] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-    enum valueModeType { vm_value, vm_repeat };
+    enum valueModeType { vm_value, vm_repeat, vm_len };
     actReqValue<valueModeType> valueMode = actReqValue<valueModeType>(vm_value);
     float valueKnob = 0.f;  // Value set by knob
     dsp::SchmittTrigger modeTrigger = dsp::SchmittTrigger();
@@ -209,7 +209,7 @@ struct PolyShuffleModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         haveInput = getJsonBool(rootJ, "haveInput", false);
-        valueMode.setBoth((valueModeType)getJsonInt(rootJ, "valueMode", (int)valueModeType::vm_value));
+        valueMode.setBoth((valueModeType)getJsonInt(rootJ, "valueMode", (int)valueModeType::vm_value, (int)vm_len - 1));
         lastOutChannels = getJsonInt(rootJ, "lastOutChannels", -1);
         static const int defaultChannelOrder[16] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
         getJsonIntArray(rootJ, "channelOrder", channelOrder, 16, defaultChannelOrder);

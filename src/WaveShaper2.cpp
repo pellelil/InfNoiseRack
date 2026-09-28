@@ -37,12 +37,12 @@ struct WaveShaper2Module : InfNoiseModule {
     valueRangeType valRange = valueRangeType::vr_auto;
     enum shaperModeType { sm_fiveSine, sm_knee, sm_clmpFld };
     shaperModeType shaperMode = sm_fiveSine;
-    enum oversampModeType { os_single, os_2x };
+    enum oversampModeType { os_single, os_2x, os_len };
     actReqValue<oversampModeType> oversampMode = actReqValue<oversampModeType>(os_single);
     bool haveOutput = false;
     int channels[2] = { 0, 0 };
     autoScaleData scaleData[3] = { autoScaleData(), autoScaleData(), autoScaleData() }; // scaleData[2] used for common, 0 and 1 for A and B
-    enum sectionSelectionType { ss_individual, ss_common };
+    enum sectionSelectionType { ss_individual, ss_common, ss_len };
     actReqValue<sectionSelectionType> sectSelection = actReqValue<sectionSelectionType>(ss_individual);
     dsp::TSchmittTrigger<float> resetTrigger;
     bool resetUnused = false; // processParams; widget overlay (Reset unused except Automatic range)
@@ -160,8 +160,8 @@ struct WaveShaper2Module : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        sectSelection.setBoth((sectionSelectionType)getJsonInt(rootJ, "sectSelection", (int)ss_individual));
-        oversampMode.setBoth((oversampModeType)getJsonInt(rootJ, "oversampMode", (int)os_single));
+        sectSelection.setBoth((sectionSelectionType)getJsonInt(rootJ, "sectSelection", (int)ss_individual, (int)ss_len - 1));
+        oversampMode.setBoth((oversampModeType)getJsonInt(rootJ, "oversampMode", (int)os_single, (int)os_len - 1));
         scaleData[0].Load(rootJ, "scaleA");
         scaleData[1].Load(rootJ, "scaleB");
         scaleData[2].Load(rootJ, "scaleC");

@@ -41,7 +41,7 @@ struct Delta4Module : InfNoiseModule {
     enum referenceModeType { rm_individual, rm_aOnly };
     referenceModeType referenceMode = rm_individual;
     dsp::SchmittTrigger outModePress;
-    enum outputModeType { om_signed, om_inverted, om_absolute };
+    enum outputModeType { om_signed, om_inverted, om_absolute, om_len };
     actReqValue<outputModeType> outputMode = actReqValue<outputModeType>(om_signed);
     float outModeSign = 1.f;
     bool outModeAbs = false;
@@ -117,7 +117,7 @@ struct Delta4Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         getJsonFloatArray(rootJ, "refVal", refVal, refCount, 0.f);
-        outputMode.setBoth((outputModeType)getJsonInt(rootJ, "outputMode", (int)om_signed));
+        outputMode.setBoth((outputModeType)getJsonInt(rootJ, "outputMode", (int)om_signed, (int)om_len - 1));
 
         outModePress.reset();
     }
@@ -327,7 +327,7 @@ struct Delta4ModuleWidget : InfNoiseModuleWidget {
         auto addUpdateRefMenu = [=](const std::string& label, int section) {
             // section < 0 updates all sections; otherwise only that section (0=A .. 3=D)
             menu->addChild(createSubmenuItem(label, "", [=](Menu* submenu) {
-                for (int i = 0; i < voltValueCount; i++) {
+                for (int i = 0; i < (int)v_len; i++) {
                     submenu->addChild(createMenuItem(voltNames[i], "", [=]() {
                         float v = voltValues[i];
                         if (section < 0) {

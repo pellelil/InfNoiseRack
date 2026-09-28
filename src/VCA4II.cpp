@@ -123,7 +123,7 @@ struct VCA4IIModule : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         int scalingModeTmp[4];
-        getJsonIntArray(rootJ, "scalingMode", scalingModeTmp, 4, (int)sc_linear);
+        getJsonIntArray(rootJ, "scalingMode", scalingModeTmp, 4, (int)sc_linear, (int)sc_len - 1);
         for (int i = 0; i < 4; i++)
             scalingMode[i].setBoth((scaleCurve)scalingModeTmp[i]);
     }

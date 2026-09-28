@@ -45,7 +45,7 @@ struct PolyVCMPModule : InfNoiseModule {
     bool lastpolyOutputMode = true; // Last polyphonic output mode, used to detect changes
     int inputChannels = 0; // Current number of input channels
     int lastInputChannels = 0; // Last number of input channels, used to detect changes
-    enum rsOutputModeType { rs_Range, rs_Sum };
+    enum rsOutputModeType { rs_Range, rs_Sum, rs_len };
     actReqValue<rsOutputModeType> rsOutputMode = actReqValue<rsOutputModeType>(rsOutputModeType::rs_Range);
 
     void writeOutputs(int c, int outIdx) {
@@ -134,7 +134,7 @@ struct PolyVCMPModule : InfNoiseModule {
         getJsonFloatArray(rootJ, "ffzVal", ffzVal, PORT_MAX_CHANNELS, 0.f);
         getJsonFloatArray(rootJ, "sumVal", sumVal, PORT_MAX_CHANNELS, 0.f);
         getJsonFloatArray(rootJ, "count", count, PORT_MAX_CHANNELS, 0.f);
-        rsOutputMode.setBoth((rsOutputModeType)getJsonInt(rootJ, "rsOutputMode", (int)rsOutputModeType::rs_Range));
+        rsOutputMode.setBoth((rsOutputModeType)getJsonInt(rootJ, "rsOutputMode", (int)rsOutputModeType::rs_Range, (int)rs_len - 1));
         lastInputChannels = getJsonInt(rootJ, "lastInputChannels", 0);
         lastpolyOutputMode = getJsonInt(rootJ, "lastPolyOutputMode", 0) == 1;
         justResetCounters = false;
