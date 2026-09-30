@@ -15,11 +15,11 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + PhaseDrivenLFO: -
 
 ### Tweak (attenuate/amplify, offset and mix)
-+ Tweak2I: Scale-range and Order-mode now set with buttons on pannel **Needs testing**
-+ Tweak2II: Scale-range and Order-mode now set with buttons on pannel **Needs testing**
-+ Tweak4I: Scale-range and Order-mode now set with buttons on pannel **Needs testing**
-+ Tweak4II: Scale-range and Order-mode now set with buttons on pannel **Needs testing**
-+ Tweak8: Scale-range and Order-mode now set with buttons on pannel **Needs testing**
++ Tweak2I: -
++ Tweak2II: -
++ Tweak4I: -
++ Tweak4II: -
++ Tweak8: -
 + VCA2: -
 + VCA4I: -
 + VCA4II: -
@@ -85,7 +85,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 ### Random
 + Random4: -
 + RandomCurve: -
-+ Chaos: New module (WIP) **In Development**
++ Chaos: New module **Needs testing**
 + Arm3XY: -
 
 ### Envelope
@@ -94,8 +94,8 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + EnvelopePhaseExpander: -
 
 ### Slew
-+ Slew2: New module **Needs testing**
-+ Slew4: New module **Needs testing**
++ Slew2: -
++ Slew4: -
 
 ### Misc
 + Sign: -

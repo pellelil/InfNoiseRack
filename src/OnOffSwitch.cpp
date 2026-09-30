@@ -38,6 +38,12 @@ struct OnOffSwitchModule : InfNoiseModule {
     int channels = 0;
     actReqValue<bool> onStage = actReqValue<bool>(false);
     dsp::SchmittTrigger onOffTrigger;
+    actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
+    actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
+    infNoiseUnitFade fade;
+    bool doFade = false;
+    bool haveOnIn = false;
+    bool haveOffIn = false;
 
 	OnOffSwitchModule() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -79,34 +85,66 @@ struct OnOffSwitchModule : InfNoiseModule {
         InfNoiseModule::onReset(e);
         onStage.setBoth(false);
         onOffTrigger.reset();
+        fadeTime.setBoth(fst_0);
+        fadeSCurve.setBoth(false);
+        doFade = false;
+        fade.reset(0.f);
     }
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         
         onStage.setBoth(getJsonInt(rootJ, "onStage", 0) == 1);
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_10));
+        fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
     }
 
     void dataToJson(json_t* rootJ) override {
         json_object_set_new(rootJ, "onStage", json_integer(onStage.req ? 1 : 0));
+        json_object_set_new(rootJ, "fadeTime", json_integer((int)fadeTime.req));
+        json_object_set_new(rootJ, "fadeSCurve", json_boolean(fadeSCurve.req));
     }
 
     void processParams(const ProcessArgs& args) {
         preProcessParams(args);
         //--------------------
 
-        // Update ON/OFF-stage lights
-        if (onStage.needsUpdate()) {
+        bool stageLights = onStage.needsUpdate() || wasJustLoaded;
+        if (stageLights)
 			onStage.updateActual();
+
+        if (fadeSCurve.needsUpdate() || wasJustLoaded) {
+            fadeSCurve.updateActual();
+            fade.setUseSCurve(fadeSCurve.act);
+        }
+        if (fadeTime.needsUpdate() || wasJustLoaded) {
+            bool wasOn = doFade;
+            fadeTime.updateActual();
+            doFade = fadeTime.act != fst_0;
+            fade.setTime(doFade ? fixedSlewTimesValues[(int)fadeTime.act] : 0.f);
+            if (wasJustLoaded || !doFade || !wasOn)
+                fade.snap(onStage.act ? 1.f : 0.f);
+            if (!doFade && wasOn)
+                stageLights = true;
+        }
+
+        if (doFade) {
+            float mix = fade.amount;
+            lights[ON_LIGHT].setBrightness(mix);
+            lights[OFF_LIGHT].setBrightness(1.f - mix);
+        }
+        else if (stageLights) {
 			lights[ON_LIGHT].setBrightness(onStage.act ? 1.f : 0.f);
 			lights[OFF_LIGHT].setBrightness(onStage.act ? 0.f : 1.f);
 		}
 
         // Determine number of channels
         channels = 1;
-        if (inputs[ON_INPUT].isConnected())
+        haveOnIn = inputs[ON_INPUT].isConnected();
+        haveOffIn = inputs[OFF_INPUT].isConnected();
+        if (haveOnIn)
             channels = std::max(channels, inputs[ON_INPUT].getChannels());
-        if (inputs[OFF_INPUT].isConnected())
+        if (haveOffIn)
             channels = std::max(channels, inputs[OFF_INPUT].getChannels());
         outputs[VALUE_OUTPUT].setChannels(channels);
 
@@ -158,15 +196,37 @@ struct OnOffSwitchModule : InfNoiseModule {
             // Handle output
             if (haveOutput)
             {
-                float knobValue = params[onStage.act ? ON_PARAM : OFF_PARAM].getValue();
-                float valueTrim = params[onStage.act ? ON_TRIM_PARAM : OFF_TRIM_PARAM].getValue();
-                int valueInputIdx = onStage.act ? ON_INPUT : OFF_INPUT;
-                for (int c = 0; c < channels; c++) {
-                    float voltage = knobValue;
-                    if (inputs[valueInputIdx].isConnected())
-						voltage += valueTrim * inputs[valueInputIdx].getPolyVoltage(c);
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
-                    outputs[VALUE_OUTPUT].setVoltage(voltage, c);
+                if (!doFade) {
+                    float knobValue = params[onStage.act ? ON_PARAM : OFF_PARAM].getValue();
+                    float valueTrim = params[onStage.act ? ON_TRIM_PARAM : OFF_TRIM_PARAM].getValue();
+                    int valueInputIdx = onStage.act ? ON_INPUT : OFF_INPUT;
+                    bool haveIn = onStage.act ? haveOnIn : haveOffIn;
+                    for (int c = 0; c < channels; c++) {
+                        float voltage = knobValue;
+                        if (haveIn)
+                            voltage += valueTrim * inputs[valueInputIdx].getPolyVoltage(c);
+                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        outputs[VALUE_OUTPUT].setVoltage(voltage, c);
+                    }
+                }
+                else {
+                    fade.setTarget(onStage.act ? 1.f : 0.f);
+                    float mix = fade.next(procSampleTime);
+                    float mixOff = 1.f - mix;
+                    float onKnob = params[ON_PARAM].getValue();
+                    float offKnob = params[OFF_PARAM].getValue();
+                    float onTrim = params[ON_TRIM_PARAM].getValue();
+                    float offTrim = params[OFF_TRIM_PARAM].getValue();
+                    for (int c = 0; c < channels; c++) {
+                        float onV = onKnob;
+                        if (haveOnIn)
+                            onV += onTrim * inputs[ON_INPUT].getPolyVoltage(c);
+                        float offV = offKnob;
+                        if (haveOffIn)
+                            offV += offTrim * inputs[OFF_INPUT].getPolyVoltage(c);
+                        float voltage = clipToVoltRange(mixOff * offV + mix * onV, outClipRange.act);
+                        outputs[VALUE_OUTPUT].setVoltage(voltage, c);
+                    }
                 }
             }
         }
@@ -223,8 +283,11 @@ struct OnOffSwitchModuleWidget : InfNoiseModuleWidget {
         OnOffSwitchModule* module = dynamic_cast<OnOffSwitchModule*>(this->module);
         assert(module);
 
-        //menu->addChild(new MenuSeparator);
-        
+        menu->addChild(new MenuSeparator);
+        menu->addChild(createIndexPtrSubmenuItem("Fade time", getFixedSlewTimesNames(false),
+            &module->fadeTime.req));
+        menu->addChild(createBoolPtrMenuItem("S-curve fade", "", &module->fadeSCurve.req));
+
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);
     }

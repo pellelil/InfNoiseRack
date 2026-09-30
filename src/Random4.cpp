@@ -37,7 +37,13 @@ struct Random4Module : InfNoiseModule {
         MIN_MAX_LIGHT,
         DIST_RANGE_LIGHT,
         FIXED_CHANNEL_LIGHT,
+        ENUMS(SLEW_TIME_LIGHT, 3),
         LIGHTS_LEN
+    };
+
+    enum rndSlewShape {
+        rss_linear, rss_sCurve, rss_exp, rss_log,
+        rss_len
     };
 
     enum distRangeType { dr_pct60, dr_pct65, dr_pct70, dr_pct75, dr_pct80, dr_pct85, dr_pct90, dr_pct95, dr_pct100, dr_len };
@@ -69,15 +75,85 @@ struct Random4Module : InfNoiseModule {
     float chaosFactor = 1.f; // Current phase-step factor (new each cycle)
     float phaseBrght = 0.f; // Brightness for freq-light based on trigPhase
     float heldValue[4][PORT_MAX_CHANNELS] = { { 0.f } };
+    actReqValue<fixedSlewTimes> slewTime = actReqValue<fixedSlewTimes>(fst_default);
+    actReqValue<rndSlewShape> slewShape = actReqValue<rndSlewShape>(rss_linear);
+    float slewTimeSecs = 0.f;
+    float slewTimeSecsCh[PORT_MAX_CHANNELS] = {};
+    bool useAdaptiveSlewTime = false;
+    bool adaptivePerChannel = false;
+    int trigTrackCount = 0;
+    infNoiseSlew slew[4][PORT_MAX_CHANNELS];
+    infNoiseEventTracker trigEvents[PORT_MAX_CHANNELS];
+    infNoisePeriodTracker periodTracker[PORT_MAX_CHANNELS];
 
-    void setRndOutput(int port, int c, float voltage) {
-        heldValue[port][c] = voltage;
-        outputs[RND1_OUTPUT + port].setVoltage(voltage, c);
+    static std::vector<std::string> getSlewShapeNames() {
+        return { "Linear (default)", "S-curve", "Exponential", "Logarithmic" };
+    }
+
+    void applySlewTimesAll() {
+        for (int i = 0; i < 4; i++) {
+            for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
+                slew[i][c].setTimes(slewTimeSecs, slewTimeSecs);
+                slew[i][c].setMode(sm_constantTime);
+            }
+        }
+    }
+
+    void applySlewTimesForChannel(int c, float t) {
+        for (int i = 0; i < 4; i++)
+            slew[i][c].setTimes(t, t);
+    }
+
+    void snapSlewsToHeld() {
+        for (int i = 0; i < 4; i++) {
+            for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+                slew[i][c].snap(heldValue[i][c]);
+        }
+    }
+
+    void resetSlewTrackers() {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
+            trigEvents[c].reset();
+            periodTracker[c].reset();
+            slewTimeSecsCh[c] = periodTracker[c].get();
+        }
+    }
+
+    void applySlewShapes() {
+        float shape = 0.f;
+        infNoiseLinearMode linearMode = lm_linear;
+        switch (slewShape.act) {
+            case rss_linear:
+                shape = 0.f;
+                linearMode = lm_linear;
+                break;
+            case rss_sCurve:
+                shape = 0.f;
+                linearMode = lm_sCurve;
+                break;
+            case rss_exp:
+                shape = -1.f;
+                linearMode = lm_linear;
+                break;
+            case rss_log:
+                shape = 1.f;
+                linearMode = lm_linear;
+                break;
+            default:
+                break;
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
+                slew[i][c].setShapes(shape, shape);
+                slew[i][c].setLinearMode(linearMode);
+            }
+        }
     }
 
     void applyLoadedOutputs() {
         if (firstIdx < 0)
             return;
+        snapSlewsToHeld();
         for (int i = firstIdx; i <= lastIdx; i++) {
             if (!outputs[RND1_OUTPUT + i].isConnected())
                 continue;
@@ -95,7 +171,8 @@ struct Random4Module : InfNoiseModule {
         configParam<infNoiseLfoFreqQnt>(TRIG_FREQ_PARAM, -8.f, 10.f, 1.f, "Trigger-LFO frequency", " Hz", 2, 1);
         configLight(FREQ_LIGHT, "LFO phase");
         configLight(FIXED_CHANNEL_LIGHT, "Fixed polyphony if lit");
-        
+        configLight(SLEW_TIME_LIGHT, "Slew time: " + getFixedSlewTimesName(fst_default));
+
         configParam(RANGE_PARAM, 0.f, 10.f, 10.f, "Range (0V to 10V)", " v", 0, 1);
         configParam(MIN_CNTR_MAX_PARAM, -10.f, 10.f, 0.f, "Center (-10V to 10V)", " v", 0, 1);
         configParam(DIST_PARAM, -1.0f, 1.0f, 0.0f, "Distribution", "");
@@ -121,8 +198,15 @@ struct Random4Module : InfNoiseModule {
 		haveGateDetect = false;
 		haveGateHighLow = false;
 		haveTrigDetect = true;
-		haveTrigHighLow = false;
+        haveTrigHighLow = false;
         autoProcQuality.setBoth(true);
+        ensureNormExpLogLuts();
+        for (int i = 0; i < 4; i++) {
+            for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
+                slew[i][c].setMode(sm_constantTime);
+                slewTimeSecsCh[c] = 0.1f;
+            }
+        }
 	}
 
     void onReset(const ResetEvent& e) override {
@@ -141,15 +225,27 @@ struct Random4Module : InfNoiseModule {
         polyphony.setBoth(poly_auto);
         distRange.setBoth(distRangeType::dr_pct100);
         distRangeFactor = dstRngFactors[(int)dr_pct100];
+        slewTime.setBoth(fst_default);
+        slewShape.setBoth(rss_linear);
+        useAdaptiveSlewTime = false;
+        adaptivePerChannel = false;
+        trigTrackCount = 0;
+        slewTimeSecs = 0.f;
+        resetSlewTrackers();
 
         for (int c = 0; c < PORT_MAX_CHANNELS; c++)
             trigger[c].reset();
         for (int i = 0; i < 4 * 16; i++)
             prevSign[i] = (randomNorm() < 0.5f) ? -1.f : 1.f;
         for (int i = 0; i < 4; i++) {
-            for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
                 heldValue[i][c] = 0.f;
+                slew[i][c].reset();
+                slew[i][c].setMode(sm_constantTime);
+            }
         }
+        applySlewTimesAll();
+        applySlewShapes();
     }
 
     void dataFromJson(json_t* rootJ) override {
@@ -161,6 +257,8 @@ struct Random4Module : InfNoiseModule {
         distRange.setBoth((distRangeType)getJsonInt(rootJ, "distRange", (int)distRangeType::dr_pct100, (int)dr_len - 1));
         polyphony.setBoth((polyphonyMode)getJsonInt(rootJ, "polyphony", (int)polyphonyMode::poly_auto));
         lfoRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "lfoRateChaos", (int)rc_default));
+        slewTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "slewTime", (int)fst_default));
+        slewShape.setBoth((rndSlewShape)getJsonInt(rootJ, "slewShape", (int)rss_linear, (int)rss_len - 1));
         getJsonFloatArray(rootJ, "held", &heldValue[0][0], 4 * PORT_MAX_CHANNELS, 0.f);
         getJsonFloatArray(rootJ, "prevSign", prevSign, 4 * PORT_MAX_CHANNELS, -1.f);
         trigPhase = getJsonFloat(rootJ, "trigPhase", 0.f);
@@ -179,6 +277,8 @@ struct Random4Module : InfNoiseModule {
         json_object_set_new(rootJ, "distRange", json_integer((int)distRange.req));
         json_object_set_new(rootJ, "polyphony", json_integer((int)polyphony.req));
         json_object_set_new(rootJ, "lfoRateChaos", json_integer((int)lfoRateChaos.req));
+        json_object_set_new(rootJ, "slewTime", json_integer((int)slewTime.req));
+        json_object_set_new(rootJ, "slewShape", json_integer((int)slewShape.req));
         setJsonFloatArray(rootJ, "held", &heldValue[0][0], 4 * PORT_MAX_CHANNELS);
         setJsonFloatArray(rootJ, "prevSign", prevSign, 4 * PORT_MAX_CHANNELS);
         json_object_set_new(rootJ, "trigPhase", json_real(trigPhase));
@@ -232,10 +332,10 @@ struct Random4Module : InfNoiseModule {
                 : 1.f - (0.1f * (int)distRange.act);
             lights[DIST_RANGE_LIGHT].setBrightness(brightness);
             distRangeFactor = dstRngFactors[(int)distRange.act];
-    
         }
 
         // Check for outputs in use
+        bool wasTrig = haveTrigInput;
         haveTrigInput = inputs[TRIG_INPUT].isConnected();
         polyphony.updateActual();
         if (polyphony.act == poly_auto) {
@@ -293,6 +393,49 @@ struct Random4Module : InfNoiseModule {
         lfoRateChaos.updateActual();
         chaosAmount = rateChaosValues[lfoRateChaos.act];
 
+        bool slewTimeChanged = slewTime.needsUpdate() || wasJustLoaded;
+        if (slewTime.needsUpdate())
+            slewTime.updateActual();
+        if (slewTimeChanged) {
+            useAdaptiveSlewTime = slewTime.act == fst_adaptive;
+            if (useAdaptiveSlewTime) {
+                resetSlewTrackers();
+                slewTimeSecs = periodTracker[0].get();
+            }
+            else {
+                slewTimeSecs = fixedSlewTimesValues[(int)slewTime.act];
+            }
+            applySlewTimesAll();
+            if (slewTime.act == fst_0)
+                snapSlewsToHeld();
+            setFixedSlewTimesLight(this, SLEW_TIME_LIGHT, slewTime.act);
+            if ((int)lightInfos.size() > SLEW_TIME_LIGHT && lightInfos[SLEW_TIME_LIGHT])
+                lightInfos[SLEW_TIME_LIGHT]->name = "Slew time: " + getFixedSlewTimesName(slewTime.act);
+        }
+        useAdaptiveSlewTime = slewTime.act == fst_adaptive;
+
+        if (slewShape.needsUpdate() || wasJustLoaded) {
+            if (slewShape.needsUpdate())
+                slewShape.updateActual();
+            applySlewShapes();
+        }
+
+        bool wasAdaptivePerChannel = adaptivePerChannel;
+        adaptivePerChannel = useAdaptiveSlewTime && haveTrigInput
+            && inputs[TRIG_INPUT].getChannels() > 1;
+        trigTrackCount = 0;
+        if (useAdaptiveSlewTime && haveTrigInput)
+            trigTrackCount = adaptivePerChannel
+                ? std::min(std::max(inputs[TRIG_INPUT].getChannels(), 1), channels)
+                : 1;
+        if (wasTrig != haveTrigInput || wasAdaptivePerChannel != adaptivePerChannel) {
+            resetSlewTrackers();
+            if (useAdaptiveSlewTime) {
+                slewTimeSecs = periodTracker[0].get();
+                applySlewTimesAll();
+            }
+        }
+
         // Set Auto process-quality
         if (autoProcQuality.act) {
             if (haveOutputs) {
@@ -346,6 +489,14 @@ struct Random4Module : InfNoiseModule {
 
             float thrLow = trueDetectValues[trigDetLow.act];
             float thrHigh = trueDetectValues[trigDetHigh.act];
+            if (useAdaptiveSlewTime && haveTrigInput) {
+                if (adaptivePerChannel) {
+                    for (int c = 0; c < trigTrackCount; c++)
+                        trigEvents[c].process(procSampleTime);
+                }
+                else
+                    trigEvents[0].process(procSampleTime);
+            }
             for (int c = 0; c < channels; c++) {
                 float trig = haveTrigInput
                     ? inputs[TRIG_INPUT].getPolyVoltage(c)
@@ -357,9 +508,45 @@ struct Random4Module : InfNoiseModule {
                                 distMode.act == dm_MinMax, forcedPolarity.act, prevSign[i*16 + c]);
                             voltage = quantizeToMode(voltage, outQuantize.act);
                             voltage = clipToVoltRange(voltage, outClipRange.act);
-                            setRndOutput(i, c, voltage);
+                            heldValue[i][c] = voltage;
                         }
                     }
+                    if (useAdaptiveSlewTime) {
+                        if (!haveTrigInput) {
+                            float stepHz = clockFreq * chaosFactor;
+                            if (stepHz > 0.f) {
+                                periodTracker[0].snapTo((1.f - trigPhase) / stepHz);
+                                slewTimeSecs = periodTracker[0].get();
+                                applySlewTimesAll();
+                            }
+                        }
+                        else if (adaptivePerChannel) {
+                            if (c < trigTrackCount && trigEvents[c].onEvent()) {
+                                periodTracker[c].blendToward(trigEvents[c].period);
+                                slewTimeSecsCh[c] = rack::math::clamp(periodTracker[c].get(), 0.00001f, 10.f);
+                                applySlewTimesForChannel(c, slewTimeSecsCh[c]);
+                            }
+                        }
+                        else if (c == 0) {
+                            if (trigEvents[0].onEvent()) {
+                                periodTracker[0].blendToward(trigEvents[0].period);
+                                slewTimeSecs = rack::math::clamp(periodTracker[0].get(), 0.00001f, 10.f);
+                                applySlewTimesAll();
+                            }
+                        }
+                    }
+                }
+            }
+
+            bool doSlew = slewTime.act != fst_0;
+            for (int i = firstIdx; i <= lastIdx; i++) {
+                if (!outputs[RND1_OUTPUT + i].isConnected())
+                    continue;
+                for (int c = 0; c < channels; c++) {
+                    float voltage = heldValue[i][c];
+                    if (doSlew)
+                        voltage = slew[i][c].next(voltage, procSampleTime);
+                    outputs[RND1_OUTPUT + i].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
                 }
             }
         }
@@ -377,6 +564,7 @@ struct Random4ModuleWidget : InfNoiseModuleWidget {
         const float lgtOfs = 10.021f;
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, trigRow), module, Random4Module::TRIG_INPUT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(cntrClm - lgtOfs, trigRow - lgtOfs), module, Random4Module::FIXED_CHANNEL_LIGHT));
+        addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(cntrClm + 10.f, trigRow - 10.f), module, Random4Module::SLEW_TIME_LIGHT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 79.838f), module, Random4Module::TRIG_FREQ_PARAM));
         addChild(createLightCentered<SmallLight<GreenRedLight>>(Vec(5.770f, 65.836f), module, Random4Module::FREQ_LIGHT));
 
@@ -426,6 +614,10 @@ struct Random4ModuleWidget : InfNoiseModuleWidget {
 
         menu->addChild(createIndexPtrSubmenuItem("LFO rate chaos", getRateChaosNames(),
             &module->lfoRateChaos.req));
+        menu->addChild(createIndexPtrSubmenuItem("Slew time", getFixedSlewTimesNames(true),
+            &module->slewTime.req));
+        menu->addChild(createIndexPtrSubmenuItem("Slew shape", Random4Module::getSlewShapeNames(),
+            &module->slewShape.req));
 
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);

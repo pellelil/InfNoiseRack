@@ -232,13 +232,14 @@ The sections above covered features that are common to all Infinite-Noise module
 + [Cross-fade 4x1](CrossFade.md#cross-fade-4x1): 8HP cross-fade 4 separate signals by per-section and master knob/CV. A/B toggle, trigger mode, flipped outputs.
 + [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1): 2HP cross-fade/switch up to 4 inputs into 1 output. Knob/CV, trigger order, 2/3/4 ports.
 + [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4): 2HP cross-fade/switch 1 input into up to 4 outputs. Knob/CV, trigger order, 2/3/4 ports.
-+ [Bernoulli Switch](Switch.md#bernoulli-switch): 2HP Bernoulli switch with A/B-> (2 in, 1 out) and ->A/B (1 in, 2 out). Probability, clock in or internal LFO, Rate Chaos.
-+ [ON/OFF Switch](Switch.md#onoff-switch): 2HP switch between the ON- or OFF-signal via button, gate, or trigger. Knob/CV per state.
++ [Bernoulli Switch](Switch.md#bernoulli-switch): 2HP Bernoulli switch with A/B-> (2 in, 1 out) and ->A/B (1 in, 2 out). Probability, clock in or internal LFO, Rate Chaos, fade.
++ [ON/OFF Switch](Switch.md#onoff-switch): 2HP switch between the ON- or OFF-signal via button, gate, or trigger. Knob/CV per state, fade.
 + [Combine](Switch.md#combine): 2HP combine (switch) 2 inputs: Upper/Lower, A greater than B, or Rise/Fall. Knob/CV param, gate out.
 
 ## Random
-+ [Random-4](Random.md#random-4): 2HP generates 4 random (polyphonic) values within specified range with center/edge or min/max distribution at each trigger or internal LFO. Rate Chaos.
++ [Random-4](Random.md#random-4): 2HP generates 4 random (polyphonic) values within specified range with center/edge or min/max distribution at each trigger or internal LFO. Rate Chaos, slew.
 + [Random Curve](Random.md#random-curve): 4HP generates 6 shaped random curves within specified range with center/edge or min/max distribution. Internal LFO, Rate Chaos, quantize.
++ [Chaos](Random.md#chaos): 2HP adds random chaos to an input (or outputs chaos). Range, distribution, slew, Rate Chaos.
 + [Arm 3 XY](Arm3XY.md#arm-3-xy): 8HP length and rotation of 3 arms (basically 3 polar vectors) generate a semi-random X/Y curve, plus XY mix. Individual Rate Chaos can be applied to length and/or rotational velocity of each arm.
 
 ## Envelope

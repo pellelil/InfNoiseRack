@@ -65,13 +65,17 @@ struct ManMute8Module : InfNoiseModule {
     int lastIdx = -1;
     int muteChannels = 1;
     int channels[8] = { 1 };
+    actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
+    actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
+    infNoiseUnitFade fade[8];
+    bool doFade = false;
 
     void applyLoadedOutputs() {
         if (!outputsInUse)
             return;
         float normVolt[PORT_MAX_CHANNELS] = { 0.f };
         for (int i = firstIdx; i <= lastIdx; i++) {
-            if (inputs[CV1_INPUT].isConnected())
+            if (inputs[CV1_INPUT + i].isConnected())
                 inputs[CV1_INPUT + i].readVoltages(normVolt);
 
             if (outputs[CV1_OUTPUT + i].isConnected()) {
@@ -123,11 +127,18 @@ struct ManMute8Module : InfNoiseModule {
         
         btAll.reset();
         allMode.setBoth(abm_Toggle);
+        fadeTime.setBoth(fst_0);
+        fadeSCurve.setBoth(false);
+        doFade = false;
+        for (int i = 0; i < 8; i++)
+            fade[i].reset(0.f);
     }
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         allMode.setBoth((allButtonMode)getJsonInt(rootJ, "allMode", (int)abm_Toggle, (int)abm_len - 1));
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_10));
+        fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
         bool allPressed = params[MUTE_ALL_PARAM].getValue() > 0.5f;
         btAll.reset(allPressed
             ? infNoiseButtonTrigger::bt_pressed
@@ -136,6 +147,8 @@ struct ManMute8Module : InfNoiseModule {
 
     void dataToJson(json_t* rootJ) override {
         json_object_set_new(rootJ, "allMode", json_integer((int)allMode.req));
+        json_object_set_new(rootJ, "fadeTime", json_integer((int)fadeTime.req));
+        json_object_set_new(rootJ, "fadeSCurve", json_boolean(fadeSCurve.req));
     }
 
     void processParams(const ProcessArgs& args) {
@@ -172,6 +185,23 @@ struct ManMute8Module : InfNoiseModule {
                 for (int i = 0; i < 8; i++) {
                     params[MUTE_1_PARAM + i].setValue(0.f);
                 }
+            }
+        }
+
+        if (fadeSCurve.needsUpdate() || wasJustLoaded) {
+            fadeSCurve.updateActual();
+            for (int i = 0; i < 8; i++)
+                fade[i].setUseSCurve(fadeSCurve.act);
+        }
+        if (fadeTime.needsUpdate() || wasJustLoaded) {
+            bool wasOn = doFade;
+            fadeTime.updateActual();
+            doFade = fadeTime.act != fst_0;
+            float fadeSecs = doFade ? fixedSlewTimesValues[(int)fadeTime.act] : 0.f;
+            for (int i = 0; i < 8; i++) {
+                fade[i].setTime(fadeSecs);
+                if (wasJustLoaded || !doFade || !wasOn)
+                    fade[i].snap(params[MUTE_1_PARAM + i].getValue() > 0.5f ? 1.f : 0.f);
             }
         }
 
@@ -222,22 +252,39 @@ struct ManMute8Module : InfNoiseModule {
         if (doProcess && outputsInUse) {
             float normVolt[PORT_MAX_CHANNELS] = { 0.f };
             for (int i = firstIdx; i <= lastIdx; i++) {
-                if (inputs[CV1_INPUT].isConnected()) {
+                if (inputs[CV1_INPUT + i].isConnected())
                     inputs[CV1_INPUT + i].readVoltages(normVolt);
-                }
 
                 if (outputs[CV1_OUTPUT + i].isConnected()) {
                     float muteLevelKnob = params[MUTED_LEVEL_PARAM].getValue();
-                    for (int c = 0; c < channels[i]; c++) {
-						float cv = (params[MUTE_1_PARAM + i].getValue() > 0.5f)
-                            ? (inputs[MUTED_LEVEL_INPUT].isConnected())
-							    ? inputs[MUTED_LEVEL_INPUT].getVoltage(c) + muteLevelKnob
-							    : muteLevelKnob
-                            : normVolt[c];
-                        cv = quantizeToMode(cv, outQuantize.act);
-                        cv = clipToVoltRange(cv, outClipRange.act);
-						outputs[CV1_OUTPUT + i].setVoltage(cv, c);
-					}
+                    bool haveMuteCv = inputs[MUTED_LEVEL_INPUT].isConnected();
+                    bool isMuted = params[MUTE_1_PARAM + i].getValue() > 0.5f;
+                    if (!doFade) {
+                        for (int c = 0; c < channels[i]; c++) {
+                            float cv = isMuted
+                                ? (haveMuteCv)
+                                    ? inputs[MUTED_LEVEL_INPUT].getVoltage(c) + muteLevelKnob
+                                    : muteLevelKnob
+                                : normVolt[c];
+                            cv = quantizeToMode(cv, outQuantize.act);
+                            cv = clipToVoltRange(cv, outClipRange.act);
+                            outputs[CV1_OUTPUT + i].setVoltage(cv, c);
+                        }
+                    }
+                    else {
+                        fade[i].setTarget(isMuted ? 1.f : 0.f);
+                        float mix = fade[i].next(procSampleTime);
+                        float mixLive = 1.f - mix;
+                        for (int c = 0; c < channels[i]; c++) {
+                            float muteV = haveMuteCv
+                                ? inputs[MUTED_LEVEL_INPUT].getVoltage(c) + muteLevelKnob
+                                : muteLevelKnob;
+                            float cv = mixLive * normVolt[c] + mix * muteV;
+                            cv = quantizeToMode(cv, outQuantize.act);
+                            cv = clipToVoltRange(cv, outClipRange.act);
+                            outputs[CV1_OUTPUT + i].setVoltage(cv, c);
+                        }
+                    }
                 }
 			}
         }
@@ -312,6 +359,10 @@ struct ManMute8ModuleWidget : InfNoiseModuleWidget {
                     }));
             }
         ));
+
+        menu->addChild(createIndexPtrSubmenuItem("Fade time", getFixedSlewTimesNames(false),
+            &module->fadeTime.req));
+        menu->addChild(createBoolPtrMenuItem("S-curve fade", "", &module->fadeSCurve.req));
 
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);

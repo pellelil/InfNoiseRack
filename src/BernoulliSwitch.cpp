@@ -58,6 +58,12 @@ struct BernoulliSwitchModule : InfNoiseModule {
     float clockPhase = 0.f;
     float lastAOut[PORT_MAX_CHANNELS] = { 0.f };
     float lastBOut[PORT_MAX_CHANNELS] = { 0.f };
+    actReqValue<fixedSlewTimes> fadeTimeIn = actReqValue<fixedSlewTimes>(fst_0); // A/B ->
+    actReqValue<fixedSlewTimes> fadeTimeOut = actReqValue<fixedSlewTimes>(fst_0); // -> A/B
+    actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
+    infNoiseUnitFade fade[2];
+    bool doFadeIn = false;
+    bool doFadeOut = false;
 
 	BernoulliSwitchModule() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -114,6 +120,13 @@ struct BernoulliSwitchModule : InfNoiseModule {
         normBInVolt.setBoth(v_zero);
         nonSlctOutVolt.setBoth(v_zero);
         useLastNonSlctOut.setBoth(false);
+        fadeTimeIn.setBoth(fst_0);
+        fadeTimeOut.setBoth(fst_0);
+        fadeSCurve.setBoth(false);
+        doFadeIn = false;
+        doFadeOut = false;
+        fade[0].reset(0.f);
+        fade[1].reset(0.f);
         for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
             lastAOut[c] = 0.f;
             lastBOut[c] = 0.f;
@@ -129,6 +142,9 @@ struct BernoulliSwitchModule : InfNoiseModule {
         nonSlctOutVolt.setBoth((voltValue)getJsonInt(rootJ, "nonSlctOutVolt", (int)v_zero));
         useLastNonSlctOut.setBoth(getJsonBool(rootJ, "useLastNonSlctOut", false));
         clockRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "clockRateChaos", (int)rc_default));
+        fadeTimeIn.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTimeIn", (int)fst_0, (int)fst_10));
+        fadeTimeOut.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTimeOut", (int)fst_0, (int)fst_10));
+        fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
         getJsonFloatArray(rootJ, "lastAOut", lastAOut, PORT_MAX_CHANNELS, voltValues[normAInVolt.req]);
         getJsonFloatArray(rootJ, "lastBOut", lastBOut, PORT_MAX_CHANNELS, voltValues[normBInVolt.req]);
         getJsonBoolArray(rootJ, "bSelected", bSelected, 2, false);
@@ -145,6 +161,9 @@ struct BernoulliSwitchModule : InfNoiseModule {
         json_object_set_new(rootJ, "nonSlctOutVolt", json_integer((int)nonSlctOutVolt.req));
         json_object_set_new(rootJ, "useLastNonSlctOut", json_boolean(useLastNonSlctOut.req));
         json_object_set_new(rootJ, "clockRateChaos", json_integer((int)clockRateChaos.req));
+        json_object_set_new(rootJ, "fadeTimeIn", json_integer((int)fadeTimeIn.req));
+        json_object_set_new(rootJ, "fadeTimeOut", json_integer((int)fadeTimeOut.req));
+        json_object_set_new(rootJ, "fadeSCurve", json_boolean(fadeSCurve.req));
         setJsonFloatArray(rootJ, "lastAOut", lastAOut, PORT_MAX_CHANNELS);
         setJsonFloatArray(rootJ, "lastBOut", lastBOut, PORT_MAX_CHANNELS);
         setJsonBoolArray(rootJ, "bSelected", bSelected, 2);
@@ -181,6 +200,27 @@ struct BernoulliSwitchModule : InfNoiseModule {
         useLastNonSlctOut.updateActual();
         clockRateChaos.updateActual();
         chaosAmount = rateChaosValues[clockRateChaos.act];
+        if (fadeSCurve.needsUpdate() || wasJustLoaded) {
+            fadeSCurve.updateActual();
+            fade[0].setUseSCurve(fadeSCurve.act);
+            fade[1].setUseSCurve(fadeSCurve.act);
+        }
+        if (fadeTimeIn.needsUpdate() || wasJustLoaded) {
+            bool wasOn = doFadeIn;
+            fadeTimeIn.updateActual();
+            doFadeIn = fadeTimeIn.act != fst_0;
+            fade[0].setTime(doFadeIn ? fixedSlewTimesValues[(int)fadeTimeIn.act] : 0.f);
+            if (wasJustLoaded || !doFadeIn || !wasOn)
+                fade[0].snap(bSelected[0] ? 1.f : 0.f);
+        }
+        if (fadeTimeOut.needsUpdate() || wasJustLoaded) {
+            bool wasOn = doFadeOut;
+            fadeTimeOut.updateActual();
+            doFadeOut = fadeTimeOut.act != fst_0;
+            fade[1].setTime(doFadeOut ? fixedSlewTimesValues[(int)fadeTimeOut.act] : 0.f);
+            if (wasJustLoaded || !doFadeOut || !wasOn)
+                fade[1].snap(bSelected[1] ? 1.f : 0.f);
+        }
         if (normAInVolt.needsUpdate()) {
             normAInVolt.updateActual();
             if (inputInfos.size() > (unsigned)A_INPUT && inputInfos[A_INPUT]) {
@@ -235,11 +275,25 @@ struct BernoulliSwitchModule : InfNoiseModule {
         outputs[A_OUTPUT].setChannels(channels[1]);
         outputs[B_OUTPUT].setChannels(channels[1]);
 
-        // Update/set lights
-        lights[A_IN_LIGHT].setBrightness(bSelected[0] ? 0.f : 1.f);
-        lights[B_IN_LIGHT].setBrightness(bSelected[0] ? 1.f : 0.f);
-        lights[A_OUT_LIGHT].setBrightness(bSelected[1] ? 0.f : 1.f);
-        lights[B_OUT_LIGHT].setBrightness(bSelected[1] ? 1.f : 0.f);
+        // Update/set lights (processParams only)
+        if (doFadeIn) {
+            float mix = fade[0].amount;
+            lights[A_IN_LIGHT].setBrightness(1.f - mix);
+            lights[B_IN_LIGHT].setBrightness(mix);
+        }
+        else {
+            lights[A_IN_LIGHT].setBrightness(bSelected[0] ? 0.f : 1.f);
+            lights[B_IN_LIGHT].setBrightness(bSelected[0] ? 1.f : 0.f);
+        }
+        if (doFadeOut) {
+            float mix = fade[1].amount;
+            lights[A_OUT_LIGHT].setBrightness(1.f - mix);
+            lights[B_OUT_LIGHT].setBrightness(mix);
+        }
+        else {
+            lights[A_OUT_LIGHT].setBrightness(bSelected[1] ? 0.f : 1.f);
+            lights[B_OUT_LIGHT].setBrightness(bSelected[1] ? 1.f : 0.f);
+        }
 
         if (wasJustLoaded) {
             propTrigger.reset();
@@ -292,53 +346,92 @@ struct BernoulliSwitchModule : InfNoiseModule {
                 bSelected[1] = (sectionMode.act == sm_Same)
                     ? bSelected[0]
                     : useB(propB, bSelected[1]);
+                if (doFadeIn)
+                    fade[0].setTarget(bSelected[0] ? 1.f : 0.f);
+                if (doFadeOut)
+                    fade[1].setTarget(bSelected[1] ? 1.f : 0.f);
             }
 
             if (haveOutputs) {
                 float voltage;
                 // "A/B ->" section
                 if (haveInOutputs) {
-                    int inpIdx = bSelected[0] ? B_INPUT : A_INPUT; // which input to use
-                    float normVoltage = bSelected[0]  // normalized input voltage   
-                        ? voltValues[normBInVolt.act] 
-                        : voltValues[normAInVolt.act];
-                    bool haveInput = inputs[inpIdx].isConnected();
-                    for (int c = 0; c < channels[0]; c++) {
-                        voltage = (haveInput)
-                            ? inputs[inpIdx].getPolyVoltage(c)
-                            : normVoltage; 
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
-                        outputs[AB_OUTPUT].setVoltage(voltage, c);
+                    if (!doFadeIn) {
+                        int inpIdx = bSelected[0] ? B_INPUT : A_INPUT;
+                        float normVoltage = bSelected[0]
+                            ? voltValues[normBInVolt.act]
+                            : voltValues[normAInVolt.act];
+                        bool haveInput = inputs[inpIdx].isConnected();
+                        for (int c = 0; c < channels[0]; c++) {
+                            voltage = (haveInput)
+                                ? inputs[inpIdx].getPolyVoltage(c)
+                                : normVoltage;
+                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            outputs[AB_OUTPUT].setVoltage(voltage, c);
+                        }
+                    }
+                    else {
+                        float mix = fade[0].next(procSampleTime);
+                        float mixA = 1.f - mix;
+                        bool haveA = inputs[A_INPUT].isConnected();
+                        bool haveB = inputs[B_INPUT].isConnected();
+                        float normA = voltValues[normAInVolt.act];
+                        float normB = voltValues[normBInVolt.act];
+                        for (int c = 0; c < channels[0]; c++) {
+                            float aV = haveA ? inputs[A_INPUT].getPolyVoltage(c) : normA;
+                            float bV = haveB ? inputs[B_INPUT].getPolyVoltage(c) : normB;
+                            voltage = clipToVoltRange(mixA * aV + mix * bV, outClipRange.act);
+                            outputs[AB_OUTPUT].setVoltage(voltage, c);
+                        }
                     }
                 }
 
                 // "-> A/B" section
                 if (haveOutOutputs) {
-                    float inpVoltage = clockVoltage;  // Fallback normalized voltage
+                    float inpVoltage = clockVoltage;
                     bool haveInput = inputs[AB_INPUT].isConnected();
-                    for (int c=0; c<channels[1]; c++) {
-                        if (haveInput)
-                            inpVoltage= inputs[AB_INPUT].getVoltage(c);
+                    if (!doFadeOut) {
+                        for (int c=0; c<channels[1]; c++) {
+                            if (haveInput)
+                                inpVoltage= inputs[AB_INPUT].getVoltage(c);
 
-                        // A-output (active when B is not selected)
-                        voltage = !bSelected[1]
-                            ? inpVoltage 
-                            : useLastNonSlctOut.act 
-                                ? lastAOut[c] 
-                                : voltValues[nonSlctOutVolt.act];
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
-                        outputs[A_OUTPUT].setVoltage(voltage, c);
-                        lastAOut[c] = voltage;
-                        
-                        // B-output (active when B is selected)
-                        voltage = bSelected[1] 
-                            ? inpVoltage 
-                            : useLastNonSlctOut.act 
-                                ? lastBOut[c] 
-                                : voltValues[nonSlctOutVolt.act];
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
-                        outputs[B_OUTPUT].setVoltage(voltage, c);
-                        lastBOut[c] = voltage;
+                            voltage = !bSelected[1]
+                                ? inpVoltage
+                                : useLastNonSlctOut.act
+                                    ? lastAOut[c]
+                                    : voltValues[nonSlctOutVolt.act];
+                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            outputs[A_OUTPUT].setVoltage(voltage, c);
+                            lastAOut[c] = voltage;
+
+                            voltage = bSelected[1]
+                                ? inpVoltage
+                                : useLastNonSlctOut.act
+                                    ? lastBOut[c]
+                                    : voltValues[nonSlctOutVolt.act];
+                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            outputs[B_OUTPUT].setVoltage(voltage, c);
+                            lastBOut[c] = voltage;
+                        }
+                    }
+                    else {
+                        float mix = fade[1].next(procSampleTime);
+                        float mixA = 1.f - mix;
+                        float fixedUnsel = voltValues[nonSlctOutVolt.act];
+                        for (int c=0; c<channels[1]; c++) {
+                            if (haveInput)
+                                inpVoltage = inputs[AB_INPUT].getVoltage(c);
+                            float unselA = useLastNonSlctOut.act ? lastAOut[c] : fixedUnsel;
+                            float unselB = useLastNonSlctOut.act ? lastBOut[c] : fixedUnsel;
+                            voltage = clipToVoltRange(mixA * inpVoltage + mix * unselA, outClipRange.act);
+                            outputs[A_OUTPUT].setVoltage(voltage, c);
+                            voltage = clipToVoltRange(mix * inpVoltage + mixA * unselB, outClipRange.act);
+                            outputs[B_OUTPUT].setVoltage(voltage, c);
+                            if (mix <= 1e-6f)
+                                lastAOut[c] = inpVoltage;
+                            else if (mix >= 0.999999f)
+                                lastBOut[c] = inpVoltage;
+                        }
                     }
                 }
             }
@@ -392,6 +485,12 @@ struct BernoulliSwitchModuleWidget : InfNoiseModuleWidget {
             { "Same selection for both sections (A/B -> and -> A/B)", "Independent selection per section" },
             &module->sectionMode.req
         ));
+
+        menu->addChild(createIndexPtrSubmenuItem("Fade time (A/B →)", getFixedSlewTimesNames(false),
+            &module->fadeTimeIn.req));
+        menu->addChild(createIndexPtrSubmenuItem("Fade time (→ A/B)", getFixedSlewTimesNames(false),
+            &module->fadeTimeOut.req));
+        menu->addChild(createBoolPtrMenuItem("S-curve fade", "", &module->fadeSCurve.req));
 
         menu->addChild(new MenuSeparator);
 

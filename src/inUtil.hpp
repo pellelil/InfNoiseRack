@@ -555,6 +555,88 @@ inline std::vector<std::string> getFixedSlewTimesNames(bool inclAdaptive) {
 
 
 //-----------------------------------------------------------------------------
+// Unit fade (0..1 mix coefficient; constant-time, optional S-curve)
+//-----------------------------------------------------------------------------
+/// @brief Constant-time ramp of a unit mix amount in [0, 1] (e.g. switch A↔B).
+/// timeSec 0 = snap. useSCurve uses smoothstep (ease in/out), not inMath::sCurve
+/// (inUtil cannot include inMath). Mid-target changes restart from the current amount.
+struct infNoiseUnitFade {
+	float amount = 0.f; // current mix 0..1
+	float target = 0.f;
+	float timeSec = 0.f; // 0 = snap
+	bool useSCurve = false;
+
+	inline void reset(float value = 0.f) {
+		snap(value);
+		timeSec = 0.f;
+		useSCurve = false;
+	}
+
+	inline void snap(float value) {
+		amount = target = rack::math::clamp(value, 0.f, 1.f);
+		rampFrom = rampTo = amount;
+		phasePos = 0.f;
+		rampActive = false;
+	}
+
+	inline void setTime(float seconds) {
+		timeSec = (seconds > 0.f) ? seconds : 0.f;
+		if (timeSec <= 0.f && rampActive)
+			snap(target);
+	}
+
+	inline void setUseSCurve(bool enabled) {
+		useSCurve = enabled;
+	}
+
+	/// @brief Set mix target in [0, 1]. Restarts the ramp from the current amount when the target changes.
+	inline void setTarget(float value) {
+		value = rack::math::clamp(value, 0.f, 1.f);
+		if (std::fabs(value - target) < 1e-6f)
+			return;
+		target = value;
+		if (timeSec <= 0.f) {
+			snap(target);
+			return;
+		}
+		rampFrom = amount;
+		rampTo = target;
+		phasePos = 0.f;
+		rampActive = true;
+	}
+
+	/// @brief Advance toward target. Returns the current amount.
+	inline float next(float sampleTime) {
+		if (!rampActive || sampleTime <= 0.f)
+			return amount;
+		if (timeSec <= 0.f) {
+			snap(target);
+			return amount;
+		}
+		phasePos += sampleTime / timeSec;
+		if (phasePos >= 1.f) {
+			amount = rampTo;
+			target = rampTo;
+			rampActive = false;
+			phasePos = 0.f;
+			return amount;
+		}
+		float t = phasePos;
+		if (useSCurve)
+			t = t * t * (3.f - 2.f * t); // smoothstep S-curve
+		amount = rampFrom + (rampTo - rampFrom) * t;
+		return amount;
+	}
+
+private:
+	float rampFrom = 0.f;
+	float rampTo = 0.f;
+	float phasePos = 0.f;
+	bool rampActive = false;
+};
+
+
+//-----------------------------------------------------------------------------
 // Period helpers (trigger interval measurement + adaptive period tracking)
 //-----------------------------------------------------------------------------
 /// @brief Measures period (seconds) between successive events (e.g. triggers). 

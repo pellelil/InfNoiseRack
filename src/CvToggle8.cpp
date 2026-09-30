@@ -3,6 +3,7 @@
 
 #include "plugin.hpp"
 #include "inComponents.hpp"
+#include "inUtil.hpp"
 
 struct CvToggle8Module : InfNoiseModule {
     enum ParamId {
@@ -82,6 +83,10 @@ struct CvToggle8Module : InfNoiseModule {
     bool virtualGate[8] = { false };
     enum attenuateMode { am_both, am_onlyOn, am_onlyOff, am_len };
     actReqValue<attenuateMode> attMode = actReqValue<attenuateMode>(am_both);
+    actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
+    actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
+    infNoiseUnitFade fade[8];
+    bool doFade = false;
     
     CvToggle8Module() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -131,9 +136,13 @@ struct CvToggle8Module : InfNoiseModule {
         InfNoiseModule::onReset(e);
         
         attMode.setBoth(am_both);
+        fadeTime.setBoth(fst_0);
+        fadeSCurve.setBoth(false);
+        doFade = false;
         for (int i = 0; i < 8; i++) {
 			virtualGate[i] = false;
             toggleTrigger[i].reset();
+            fade[i].reset(0.f);
 		}
     }
 
@@ -142,6 +151,8 @@ struct CvToggle8Module : InfNoiseModule {
         
         attMode.setBoth((attenuateMode)getJsonInt(rootJ, "attMode", (int)attenuateMode::am_both, (int)am_len - 1));
         getJsonBoolArray(rootJ, "virtualGate", virtualGate, 8, false);
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_10));
+        fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
         for (int i = 0; i < 8; i++)
             toggleTrigger[i].reset();
     }
@@ -149,54 +160,13 @@ struct CvToggle8Module : InfNoiseModule {
     void dataToJson(json_t* rootJ) override {
         json_object_set_new(rootJ, "attMode", json_integer((int)attMode.req));
         setJsonBoolArray(rootJ, "virtualGate", virtualGate, 8);
-    }
-
-    void updateLaneOutputs(int i) {
-        if (!outputs[CV1_OUTPUT + i].isConnected())
-            return;
-
-        lights[ON_OFF1_LIGHT + i * 2].setBrightness(virtualGate[i] ? 1.f : 0.f);
-        lights[ON_OFF1_LIGHT + i * 2 + 1].setBrightness(virtualGate[i] ? 0.f : 1.f);
-
-        float att = (inputs[ATTENUVERT_INPUT].isConnected())
-            ? inputs[ATTENUVERT_INPUT].getPolyVoltage(1) / 5.f
-            : 1.f;
-        float attOn = (attMode.act == am_onlyOff) ? 1.f : att;
-        float attOff = (attMode.act == am_onlyOn) ? 1.f : att;
-
-        float normOn[PORT_MAX_CHANNELS] = { 0 };
-        float normOff[PORT_MAX_CHANNELS] = { 0 };
-        for (int c = 0; c < maxChannels; c++) {
-            normOn[c] = params[ON_PARAM].getValue() * attOn;
-            normOff[c] = params[OFF_PARAM].getValue() * attOff;
-        }
-
-        for (int c = 0; c < outChannels[i]; c++) {
-            if (c > 0 && inputs[ATTENUVERT_INPUT].isConnected()) {
-                att = inputs[ATTENUVERT_INPUT].getPolyVoltage(c) / 5.f;
-                attOn = (attMode.act == am_onlyOff) ? 1.f : att;
-                attOff = (attMode.act == am_onlyOn) ? 1.f : att;
-            }
-
-            if (inputs[ON1_INPUT + i].isConnected())
-                normOn[c] = inputs[ON1_INPUT + i].getPolyVoltage(c) * attOn;
-            if (inputs[OFF1_INPUT + i].isConnected())
-                normOff[c] = inputs[OFF1_INPUT + i].getPolyVoltage(c) * attOff;
-
-            float voltage = virtualGate[i] ? normOn[c] : normOff[c];
-            voltage = quantizeToMode(voltage, outQuantize.act);
-            voltage = clipToVoltRange(voltage, outClipRange.act);
-            outputs[CV1_OUTPUT + i].setVoltage(voltage, c);
-        }
+        json_object_set_new(rootJ, "fadeTime", json_integer((int)fadeTime.req));
+        json_object_set_new(rootJ, "fadeSCurve", json_boolean(fadeSCurve.req));
     }
 
     void applyLoadedOutputs() {
         for (int i = 0; i < 8; i++)
             toggleTrigger[i].reset();
-        if (firstIdx < 0)
-            return;
-        for (int i = firstIdx; i <= lastIdx; i++)
-            updateLaneOutputs(i);
     }
 
     void processParams(const ProcessArgs& args) {
@@ -204,6 +174,23 @@ struct CvToggle8Module : InfNoiseModule {
         //--------------------
 
         attMode.updateActual();
+
+        if (fadeSCurve.needsUpdate() || wasJustLoaded) {
+            fadeSCurve.updateActual();
+            for (int i = 0; i < 8; i++)
+                fade[i].setUseSCurve(fadeSCurve.act);
+        }
+        if (fadeTime.needsUpdate() || wasJustLoaded) {
+            bool wasOn = doFade;
+            fadeTime.updateActual();
+            doFade = fadeTime.act != fst_0;
+            float fadeSecs = doFade ? fixedSlewTimesValues[(int)fadeTime.act] : 0.f;
+            for (int i = 0; i < 8; i++) {
+                fade[i].setTime(fadeSecs);
+                if (wasJustLoaded || !doFade || !wasOn)
+                    fade[i].snap(virtualGate[i] ? 1.f : 0.f);
+            }
+        }
 
         outputsInUse = false;
         firstIdx = -1;
@@ -260,12 +247,24 @@ struct CvToggle8Module : InfNoiseModule {
             ((cycle256 & processQualityPatterns[procQuality.act]) == processQualityPatterns[procQuality.act]));
 
         if (doProcess && outputsInUse) {
+            float att = (inputs[ATTENUVERT_INPUT].isConnected())
+                ? inputs[ATTENUVERT_INPUT].getPolyVoltage(1) / 5.f
+                : 1.f;
+            float attOn = (attMode.act == am_onlyOff) ? 1.f : att;
+            float attOff = (attMode.act == am_onlyOn) ? 1.f : att;
+
+            float normOn[PORT_MAX_CHANNELS] = { 0 };
+            float normOff[PORT_MAX_CHANNELS] = { 0 };
+            for (int c = 0; c < maxChannels; c++) {
+                normOn[c] = params[ON_PARAM].getValue() * attOn;
+                normOff[c] = params[OFF_PARAM].getValue() * attOff;
+            }
+
+            float gateInput = (params[MANUAL_PARAM].getValue() > 0.5f) ? 10.f : 0.f;
             for (int i = firstIdx; i <= lastIdx; i++) {
-                float gateInput = 0.f;
                 if (inputs[GATE_TRIG1_INPUT + i].isConnected())
                     gateInput = inputs[GATE_TRIG1_INPUT + i].getVoltage();
 
-                // update virtual gate, based on gate/trigger input and bate/trig-button
                 if (params[GATE_TRIG1_PARAM + i].getValue() < 0.5f) { // Latched = trigger
                     if (toggleTrigger[i].process(gateInput,
                         trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]))
@@ -275,8 +274,47 @@ struct CvToggle8Module : InfNoiseModule {
                     virtualGate[i] = (gateInput >= trueDetectValues[gateDetHigh.act]);
                 }
 
-                updateLaneOutputs(i);
-			}
+                bool haveOn = inputs[ON1_INPUT + i].isConnected();
+                bool haveOff = inputs[OFF1_INPUT + i].isConnected();
+                if (haveOn || haveOff) {
+                    att = (inputs[ATTENUVERT_INPUT].isConnected())
+                        ? inputs[ATTENUVERT_INPUT].getPolyVoltage(1) / 5.f
+                        : 1.f;
+                    attOn = (attMode.act == am_onlyOff) ? 1.f : att;
+                    attOff = (attMode.act == am_onlyOn) ? 1.f : att;
+                    for (int c = 0; c < outChannels[i]; c++) {
+                        if (c > 0 && inputs[ATTENUVERT_INPUT].isConnected()) {
+                            att = inputs[ATTENUVERT_INPUT].getPolyVoltage(c) / 5.f;
+                            attOn = (attMode.act == am_onlyOff) ? 1.f : att;
+                            attOff = (attMode.act == am_onlyOn) ? 1.f : att;
+                        }
+                        if (haveOn)
+                            normOn[c] = inputs[ON1_INPUT + i].getPolyVoltage(c) * attOn;
+                        if (haveOff)
+                            normOff[c] = inputs[OFF1_INPUT + i].getPolyVoltage(c) * attOff;
+                    }
+                }
+
+                if (!outputs[CV1_OUTPUT + i].isConnected())
+                    continue;
+
+                float mix = virtualGate[i] ? 1.f : 0.f;
+                if (doFade) {
+                    fade[i].setTarget(mix);
+                    mix = fade[i].next(procSampleTime);
+                }
+                lights[ON_OFF1_LIGHT + i * 2].setBrightness(mix);
+                lights[ON_OFF1_LIGHT + i * 2 + 1].setBrightness(1.f - mix);
+
+                for (int c = 0; c < outChannels[i]; c++) {
+                    float voltage = doFade
+                        ? mix * normOn[c] + (1.f - mix) * normOff[c]
+                        : virtualGate[i] ? normOn[c] : normOff[c];
+                    voltage = quantizeToMode(voltage, outQuantize.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    outputs[CV1_OUTPUT + i].setVoltage(voltage, c);
+                }
+            }
         }
 
         cycle256++;
@@ -352,7 +390,10 @@ struct CvToggle8ModuleWidget : InfNoiseModuleWidget {
         menu->addChild(createIndexPtrSubmenuItem("Attenuate mode",
             { "Both", "Only ON-levels", "Only OFF-levels" },
             &module->attMode.req));
-        
+        menu->addChild(createIndexPtrSubmenuItem("Fade time", getFixedSlewTimesNames(false),
+            &module->fadeTime.req));
+        menu->addChild(createBoolPtrMenuItem("S-curve fade", "", &module->fadeSCurve.req));
+
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);
     }

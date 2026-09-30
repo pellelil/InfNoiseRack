@@ -107,15 +107,19 @@ The module supports **averaging** and **unity** mix modes and per-section **inve
 
 ## Manuel Mute 8
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
-![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Internal--Fade-Yes-green.svg?style=flat-square)<br>
 The Manual-Mute 8 is a 6HP module designed for muting up to eight separate signals, each with its own CV input, mute button, and output. Each CV input is normalized to the previous one, allowing a single input into multiple sections if needed. You can mute individual sections by pressing their dedicated mute button, or you can mute all eight sections simultaneously using the "All" button at the top. By default, both the individual mute buttons and the "All" button function as momentary switches, but they each have a latch button that allows them to toggle instead of momentarily holding the mute state. When a section is unmuted, the output simply passes through the corresponding input signal. However, when a section is muted, it outputs the voltage set by the "Mute Value" knob, which defaults to 0V. Additionally, there is a "Mute Value" CV input, allowing an external signal to define the mute-output value dynamically. If both a CV input and the Mute Value knob are used, the knob value acts as an offset, and the final mute-output will be a sum of the two values.
+
+Via the context menu you can set a **Fade time** (0 / 1-2-5 series up to 10 s). Default is **0**, which is the instant mute. A non-zero time cross-fades between the live input and the mute level over that duration. **S-curve fade** (off by default) eases the mix.
 
 ![Screenshot of Manual-Mute](module/ManMute8.png)
 
 **TIP**: If you need to mute signals based on an external CV input (trigger or gate), consider using the **CV Toggle** module, which can function as a CV-controlled mute (see module description further down). Alternatively, the **Mute-2** module provides both manual and CV-controlled muting for two signals, allowing individual or collective muting through button presses or CV inputs (see below).
 
 ## Mute 2
-![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Internal--Fade-Yes-green.svg?style=flat-square)<br>
 While the Manual-Mute 8 module is entirely knob-operated, the Mute-2 module (2HP) offers both manual and CV-controlled muting across two independent sections. Each section features a latchable mute button and a CV input for external control. Adjacent to the mute CV input, a mode selection button toggles between gate mode (green) and trigger mode (red). By default, in gate mode, the section will mute when a high gate signal is received. However, via the context menu, you can invert this behavior, making the section mute when receiving a low gate instead. In trigger mode, each incoming trigger pulse toggles the mute state on or off. Each section also has a small red LED next to the output port, which illuminates when that section is muted. 
 
 In the top section of the module, a global mute button and CV input allow you to mute both sections simultaneously. This is useful when working with stereo signals, ensuring that both the left and right channels are muted at the same time. If no input signal is connected to the B-section, it will automatically normalize to the A-section’s input. This is useful when routing the same signal to two different destinations, while still allowing independent muting. Unlike the ManMute8, the Mute-2 module does not allow setting a custom mute-output value—muted outputs default to 0V, but this can be adjusted via the context menu.
@@ -124,11 +128,14 @@ In the top section of the module, a global mute button and CV input allow you to
 
 When the mute CV input is set to trigger mode, the module internally tracks the current mute state. If a section has been toggled to the mute state, you can reset it back to unmuted by disconnecting and reconnecting the trigger input or by initializing the module. If the "Both" section has a trigger input connected, you may also need to disconnect/reconnect that cable as well.
 
+Via the context menu you can set a **Fade time** (0 / 1-2-5 series up to 10 s). Default is **0**, which is the instant mute. A non-zero time cross-fades between the live input and the mute voltage over that duration. **S-curve fade** (off by default) eases the mix. While fading, the red mute lights follow the mix instead of jumping instantly.
+
 If multiple mute buttons or CV signals are used, they will be logically OR’ed together. This means that whether a mute button is pressed manually or a mute signal is sent via CV, the section will mute. Similarly, if either the individual A/B mute control or the global "Both" mute control is activated, the section will mute. Since the "Both" section and the individual A/B sections operate independently, it's recommended to mute either at the global level or per section—not both at the same time, as this may cause confusion. If uncertain, refer to the small red LED next to the output port to check the mute state.
 
 ## CV-Toggle 8
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
-![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Internal--Fade-Yes-green.svg?style=flat-square)<br>
 Although the CV Toggle 8 module primarily functions as an 8-section switch, it shares similarities with the Manual-CV Mk.2 module, making it a useful addition to the manual control section. Each section is basically a switch which toggle between "ON" and "OFF" states, with ON/OFF signals derived from either CV inputs or the default ON/OFF values set using the knobs at the top.
 
 Unlike Manual-CV modules, which rely on push buttons and knobs, CvToggle8 operates entirely via CV inputs. All inputs are normalized to the previous section, except for section 1 (in the top), which derives its default ON/OFF values from the knobs at the top. Similarly, section 1’s ON/OFF trigger input is normalized to the manual "All" button in the top section, while the remaining inputs are normalized to the previous section. If no ON/OFF gate/trigger inputs are connected, all sections respond to the "All" button.
@@ -136,6 +143,8 @@ Unlike Manual-CV modules, which rely on push buttons and knobs, CvToggle8 operat
 Since the inputs normalize from top to bottom, you can have some sections use the default knob values while others rely on external ON/OFF signals. For example, if the top four sections have no ON/OFF cables connected, they will use the default ON/OFF knob values, while the bottom four sections will take values from any connected ON/OFF signals.
 
 ![Screenshot of CV Toggle](module/CvToggle8.png)
+
+Via the context menu you can set a **Fade time** (0 / 1-2-5 series up to 10 s). Default is **0**, which is the instant ON/OFF switch. A non-zero time cross-fades between the live ON and OFF values over that duration. **S-curve fade** (off by default) eases the mix. The ON/OFF indicator lights stay binary when fade time is 0; while fading they blend with the mix.
 
 Each of the eight ON/OFF inputs (leftmost column) can be configured to respond to gates or triggers. A small button next to the input toggles between gate mode (green) and trigger mode (red). *This can be set for all sections simultaneously via the context menu.* In trigger mode, each trigger pulse toggles between ON and OFF states. In gate mode, the ON signal is output only while the gate is high (1V or more); otherwise, the OFF signal is output.
 

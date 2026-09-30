@@ -3,6 +3,7 @@
 
 #include "plugin.hpp"
 #include "inComponents.hpp"
+#include "inUtil.hpp"
 
 struct Mute2Module : InfNoiseModule {
     enum ParamId {
@@ -47,6 +48,10 @@ struct Mute2Module : InfNoiseModule {
     dsp::SchmittTrigger muteTrigger[2] = { dsp::SchmittTrigger(), dsp::SchmittTrigger() };
     enum gateMuteModeType { gmm_highGate, gmm_lowGate, gmm_len };
     actReqValue<gateMuteModeType> gateMuteMode = actReqValue<gateMuteModeType>(gmm_highGate);
+    actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
+    actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
+    infNoiseUnitFade fade[2];
+    bool doFade = false;
 
 	Mute2Module() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -94,12 +99,15 @@ struct Mute2Module : InfNoiseModule {
         
         muteVoltage.setBoth(v_zero);
         gateMuteMode.setBoth(gmm_highGate);
-        
+        fadeTime.setBoth(fst_0);
+        fadeSCurve.setBoth(false);
+        doFade = false;
         bothMuted = false;
         bothTrigger.reset();
         for (int i = 0; i < 2; i++) {
 			triggerMuted[i] = false;
             muteTrigger[i].reset();
+            fade[i].reset(0.f);
 		}
     }
 
@@ -110,6 +118,8 @@ struct Mute2Module : InfNoiseModule {
         gateMuteMode.setBoth((gateMuteModeType)getJsonInt(rootJ, "gateMuteMode", (int)gmm_highGate, (int)gmm_len - 1));
         bothMuted = getJsonBool(rootJ, "bothMuted", false);
         getJsonBoolArray(rootJ, "triggerMuted", triggerMuted, 2, false);
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_10));
+        fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
     }
 
     void dataToJson(json_t* rootJ) override {
@@ -117,6 +127,8 @@ struct Mute2Module : InfNoiseModule {
         json_object_set_new(rootJ, "gateMuteMode", json_integer((int)gateMuteMode.req));
         json_object_set_new(rootJ, "bothMuted", json_boolean(bothMuted));
         setJsonBoolArray(rootJ, "triggerMuted", triggerMuted, 2);
+        json_object_set_new(rootJ, "fadeTime", json_integer((int)fadeTime.req));
+        json_object_set_new(rootJ, "fadeSCurve", json_boolean(fadeSCurve.req));
     }
 
     void processParams(const ProcessArgs& args) {
@@ -125,6 +137,25 @@ struct Mute2Module : InfNoiseModule {
 
         gateMuteMode.updateActual();
         muteVoltage.updateActual();
+
+        if (fadeSCurve.needsUpdate() || wasJustLoaded) {
+            fadeSCurve.updateActual();
+            fade[0].setUseSCurve(fadeSCurve.act);
+            fade[1].setUseSCurve(fadeSCurve.act);
+        }
+        if (fadeTime.needsUpdate() || wasJustLoaded) {
+            bool wasOn = doFade;
+            fadeTime.updateActual();
+            doFade = fadeTime.act != fst_0;
+            float fadeSecs = doFade ? fixedSlewTimesValues[(int)fadeTime.act] : 0.f;
+            for (int i = 0; i < 2; i++) {
+                fade[i].setTime(fadeSecs);
+                if (wasJustLoaded || !doFade || !wasOn) {
+                    bool muted = bothMuted || params[A_MUTE_PARAM + i].getValue() > 0.5f || triggerMuted[i];
+                    fade[i].snap(muted ? 1.f : 0.f);
+                }
+            }
+        }
 
         // Check if trigger-input is not connected, or in Gate-mode
         if (!inputs[BOTH_MUTE_INPUT].isConnected() || 
@@ -199,23 +230,35 @@ struct Mute2Module : InfNoiseModule {
                         }
                     }
 
-                    // Update muted-lights
-                    lights[A_MUTED_LIGHT + i].setBrightness(isMuted ? 1.f : 0.f);
-
-                    // Output A/B-section
-                    int inPortIdx = (i == 0) 
-                        ? A_INPUT 
-                        : inputs[B_INPUT].isConnected() 
+                    int inPortIdx = (i == 0)
+                        ? A_INPUT
+                        : inputs[B_INPUT].isConnected()
                             ? B_INPUT
                             : A_INPUT;
-                    for (int c = 0; c < channels[i]; c++) {
-    		            float voltage = (isMuted)
-                            ? voltValues[muteVoltage.act]
-                            : inputs[inPortIdx].isConnected()
-								? inputs[inPortIdx].getVoltage(c)
-								: 0.f;
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
-                        outputs[A_OUTPUT + i].setVoltage(voltage, c);
+                    float muteV = voltValues[muteVoltage.act];
+                    bool haveIn = inputs[inPortIdx].isConnected();
+                    if (!doFade) {
+                        lights[A_MUTED_LIGHT + i].setBrightness(isMuted ? 1.f : 0.f);
+                        for (int c = 0; c < channels[i]; c++) {
+                            float voltage = isMuted
+                                ? muteV
+                                : haveIn
+                                    ? inputs[inPortIdx].getVoltage(c)
+                                    : 0.f;
+                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            outputs[A_OUTPUT + i].setVoltage(voltage, c);
+                        }
+                    }
+                    else {
+                        fade[i].setTarget(isMuted ? 1.f : 0.f);
+                        float mix = fade[i].next(procSampleTime);
+                        lights[A_MUTED_LIGHT + i].setBrightness(mix);
+                        float mixLive = 1.f - mix;
+                        for (int c = 0; c < channels[i]; c++) {
+                            float liveV = haveIn ? inputs[inPortIdx].getVoltage(c) : 0.f;
+                            float voltage = clipToVoltRange(mixLive * liveV + mix * muteV, outClipRange.act);
+                            outputs[A_OUTPUT + i].setVoltage(voltage, c);
+                        }
                     }
                 }
 			}
@@ -294,7 +337,10 @@ struct Mute2ModuleWidget : InfNoiseModuleWidget {
         std::vector<std::string> voltNames = getVoltValuesNames();
         menu->addChild(createIndexPtrSubmenuItem("Mute voltage", voltNames,
             &module->muteVoltage.req));
-        
+        menu->addChild(createIndexPtrSubmenuItem("Fade time", getFixedSlewTimesNames(false),
+            &module->fadeTime.req));
+        menu->addChild(createBoolPtrMenuItem("S-curve fade", "", &module->fadeSCurve.req));
+
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);
     }

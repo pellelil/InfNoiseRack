@@ -40,9 +40,15 @@ struct ChaosModule : InfNoiseModule {
 		css_len
 	};
 
+	enum chaosSlewTarget {
+		cst_chaos, cst_inputChaos,
+		cst_len
+	};
+
 	actReqValue<rateChaos> lfoRateChaos = actReqValue<rateChaos>(rc_default);
 	actReqValue<fixedSlewTimes> slewTime = actReqValue<fixedSlewTimes>(fst_default);
 	actReqValue<chaosSlewShape> slewShape = actReqValue<chaosSlewShape>(css_linear);
+	actReqValue<chaosSlewTarget> slewTarget = actReqValue<chaosSlewTarget>(cst_chaos);
 	bool maxLinkedToMin = false;
 	bool distExpMode = false;
 	float slewTimeSecs = 1.f;
@@ -66,10 +72,18 @@ struct ChaosModule : InfNoiseModule {
 	float chaosAmount = 0.f; // Chaos rate set via context-menu
 	float chaosFactor = 1.f; // Current rate-chaos factor (new each cycle)
 	float chaosKnob = 0.f; // Cached rate-chaos amount (0-1)
+	float distKnob = 0.f; // Cached distribution (-1..1)
+	float distAnchor = 0.f; // Distribution center within Min..Max
+	float distSpanAbove = 0.f; // distAnchor → rngMax
+	float distSpanBelow = 0.f; // distAnchor → rngMin
 	float chaosValue = 0.f; // Current chaos value (applied to all channels)
 
 	static std::vector<std::string> getSlewShapeNames() {
 		return { "Linear (default)", "S-curve", "Exponential", "Logarithmic" };
+	}
+
+	static std::vector<std::string> getSlewTargetNames() {
+		return { "Chaos", "Input + chaos" };
 	}
 
 	ChaosModule() {
@@ -111,6 +125,7 @@ struct ChaosModule : InfNoiseModule {
 		lfoRateChaos.setBoth(rc_default);
 		slewTime.setBoth(fst_default);
 		slewShape.setBoth(css_linear);
+		slewTarget.setBoth(cst_chaos);
 		maxLinkedToMin = false;
 		distExpMode = false;
 		for(int i=0; i<PORT_MAX_CHANNELS; i++) {
@@ -136,18 +151,21 @@ struct ChaosModule : InfNoiseModule {
 		lfoRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "lfoRateChaos", (int)rc_default));
 		slewTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "slewTime", (int)fst_default));
 		slewShape.setBoth((chaosSlewShape)getJsonInt(rootJ, "slewShape", (int)css_linear, (int)css_len - 1));
+		slewTarget.setBoth((chaosSlewTarget)getJsonInt(rootJ, "slewTarget", (int)cst_chaos, (int)cst_len - 1));
 	}
 
 	void dataToJson(json_t* rootJ) override {
 		json_object_set_new(rootJ, "lfoRateChaos", json_integer((int)lfoRateChaos.req));
 		json_object_set_new(rootJ, "slewTime", json_integer((int)slewTime.req));
 		json_object_set_new(rootJ, "slewShape", json_integer((int)slewShape.req));
+		json_object_set_new(rootJ, "slewTarget", json_integer((int)slewTarget.req));
 	}
 
 	void processParams(const ProcessArgs& args) {
 		preProcessParams(args);
 
 		lfoRateChaos.updateActual();
+		slewTarget.updateActual();
 		chaosAmount = rateChaosValues[lfoRateChaos.act];
 		chaosKnob = params[CHAOS_PARAM].getValue();
 		
@@ -196,12 +214,12 @@ struct ChaosModule : InfNoiseModule {
 		}
 
 		maxLinkedToMin = params[LINK_PARAM].getValue() > 0.5f;
+		if (maxLinkedToMin) {
+			params[MAX_PARAM].setValue(-params[MIN_PARAM].getValue());
+		}
+
 		rngMin = std::min(params[MIN_PARAM].getValue(), params[MAX_PARAM].getValue());
 		rngMax = std::max(params[MIN_PARAM].getValue(), params[MAX_PARAM].getValue());
-		if (maxLinkedToMin) {
-			rngMax = -rngMin;
-			params[MAX_PARAM].setValue(rngMax);
-		}
 		rngSpan = (rngMax - rngMin);
 		rngSpan_2 = rngSpan / 2.f;
 		rngCntr = rngMin + rngSpan_2;
@@ -209,6 +227,10 @@ struct ChaosModule : InfNoiseModule {
 		distExpMode = params[DIST_MODE_PARAM].getValue() > 0.5f;
 		if (distExpMode)
 			params[DIST_PARAM].setValue(0.f);
+		distKnob = params[DIST_PARAM].getValue();
+		distAnchor = rngCntr + distKnob * rngSpan_2;
+		distSpanAbove = rngSpan_2 * (1.f - distKnob);
+		distSpanBelow = rngSpan_2 * (1.f + distKnob);
 
 		inConn = inputs[IN_INPUT].isConnected();
 		channels = inConn ? std::max(inputs[IN_INPUT].getChannels(), 1) : 1;
@@ -236,6 +258,32 @@ struct ChaosModule : InfNoiseModule {
 		}
 
 		postProcessParams(args);
+	}
+
+	float calcChaosValue() {
+		float chaos = chaosKnob;
+		if (inputs[CHAOS_CV_INPUT].isConnected()) {
+			float cv = inputs[CHAOS_CV_INPUT].getVoltage();
+			chaos = rack::math::clamp(chaosKnob + cv * 0.1f, 0.f, 1.f);
+		}
+
+		if (distExpMode) {
+			if (chaos <= 0.f)
+				return 0.f; // no pitch offset
+			float u1 = randomNorm();
+			float u2 = randomNorm();
+			float x = u1 * (1.f + chaos) + u2 * (1.f - chaos) - 1.f; // [-1, 1], mean 0
+			return chaos * x * 3.321928f; // log2(10): ±3.32 V at Chaos 1 (×10 / ÷10 at V/oct)
+		}
+
+		if (chaos <= 0.f || rngSpan <= 0.f)
+			return distAnchor; // no random draw: sit on the distribution center
+
+		float mag = std::pow(randomNorm(), 1.f / chaos); // 0 at the anchor, 1 at a rail
+		float pAbove = distSpanAbove / rngSpan;
+		float pUp = chaos * pAbove + (1.f - chaos) * (1.f - pAbove); // chaos 1 follows the span; lower chaos prefers the short side
+		float distSpan = (randomNorm() < pUp) ? distSpanAbove : -distSpanBelow;
+		return distAnchor + distSpan * mag;
 	}
 
 	void process(const ProcessArgs& args) override {
@@ -267,7 +315,7 @@ struct ChaosModule : InfNoiseModule {
 
 			// Generate new chaos value and calculate adaptive slew time (if applicable)
 			if (calcChaos) {
-				chaosValue = rngMin + rngSpan * randomNorm();  // Placeholder ... need to calc actual chaos value
+				chaosValue = calcChaosValue();
 				if (useAdaptiveSlewTime) {
 					if (useLFO) {
 						float stepHz = lfoFreq * chaosFactor;
@@ -285,15 +333,23 @@ struct ChaosModule : InfNoiseModule {
 
 			// Process chaos value and output
 			for(int i=0; i<channels; i++) {
+				float slewChaos = chaosValue;
 				float input = inConn ? inputs[IN_INPUT].getVoltage(i) : 0.f;
-				float output = input + chaosValue;
+				float output = input + slewChaos;
 
 				if (calcChaos && useAdaptiveSlewTime)
 					slew[i].setTimes(slewTimeSecs, slewTimeSecs);
-				if (slewTimeSecs > 0.f)
-					output = slew[i].next(output, procSampleTime);
 
-				outputs[OUT_OUTPUT].setVoltage(output, i);
+				if (slewTimeSecs > 0.f) {
+					if (slewTarget.act == cst_chaos) {
+						slewChaos = slew[i].next(slewChaos, procSampleTime);
+						output = input + slewChaos;
+					} else {
+						output = slew[i].next(input + slewChaos, procSampleTime);
+					}
+				} 
+
+				outputs[OUT_OUTPUT].setVoltage(clipToVoltRange(output, outClipRange.act), i);				
 			}
 		}
 
@@ -326,8 +382,8 @@ struct ChaosModuleWidget : InfNoiseModuleWidget {
 		addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(5.66f, 243.08f), module, ChaosModule::DIST_MODE_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 257.19f), module, ChaosModule::DIST_PARAM));
 
-		addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 298.30f), module, ChaosModule::IN_INPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrClm, 333.77f), module, ChaosModule::OUT_OUTPUT));
+		addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 298.30f), module, ChaosModule::IN_INPUT));
+		addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 333.77f), module, ChaosModule::OUT_OUTPUT));
 
 		InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
 		linkMaxOverlayGroup = overlayManager.addGroup("Max linked to min (mirrored)");
@@ -364,6 +420,8 @@ struct ChaosModuleWidget : InfNoiseModuleWidget {
 			&module->slewTime.req));
 		menu->addChild(createIndexPtrSubmenuItem("Slew shape", ChaosModule::getSlewShapeNames(),
 			&module->slewShape.req));
+		menu->addChild(createIndexPtrSubmenuItem("Slew target", ChaosModule::getSlewTargetNames(),
+			&module->slewTarget.req));
 
 		appendInfNoiseMenuItems(menu);
 	}

@@ -1,18 +1,26 @@
 # 2.0.5 (In development)
 - In all of the Tweak-modules the Scale-range/Offset-mode lights were replaced by multi-stage/color push buttons (see **Updated Modules** below). This means Scale-range/Offset-mode can be changed directly from the panel, whereas these had to be changed using the context-menu in previous versions (old context menu items were removed). *When loading a patch made with a previous version, the old context-menu selections are automatically "converted" into stages for the new buttons*.
 - Added new knob scaling to the time knobs utilized in ADR-/ADSDR-Envelope. Loading a patch saved in a previous version, the knobs will automatic rescale on load to ensure the knobs keep the same time as prevoius (please see **Breaking changes** below). Added context-menu Time scale (0.1× / 1× / 10×) with indicator lights on the time knobs. The 0.1x scaling makes is more easy to dial in times in the 0-1 second range, whereas the 10x scaling allows you to dial in times up to 100 seconds. *The scaling will default to 1x, hence by default the knobs allows you to set times in the 0 to 10 seconds range as in prevoius versions.*
-- Implemented more resilient patch loading (handling of out-of-range enum values).
+- Added internal (fixed time) cross fade to several switch and mute modules (see **Updated modules** below). By default these modules will still perform an instant switch/mute, however using the context menu you are now able select between different fixed time cross fades - in the range from 0.0001 to 10 seconds. Likewise using the context menu you can select either a Linear (default) or S-Curve cross fade (starts slow -> fast in the middle -> slow at the end).
+- Implemented more resilient patch loading (handling of out-of-range enum values, due to potential bugs or corrupt patch files).
 
 ## Braking changes
-- As mentioned above, the time knobs on the the ADR-ADSDR-envelope will automatic adjust to the new knob scaling when loading an old patch. However I suspect if you use external modules to set knob positions (such as PatchMaster by MindMeld) that you would have to tweak those time settings to get the same time-settings.
+- As mentioned above, the time knobs on the the ADR-ADSDR-envelope will automatic adjust to the new knob scaling when loading an old patch. However I suspect if you use external modules to set knob positions (such as PatchMaster by MindMeld) that you would have to tweak those knob settings to get the same time-settings.
 
 ## New modules
 - **[Slew 2](doc/Slew.md#slew-2)**: 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snap (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape
 - **[Slew 4](doc/Slew.md#slew-4)**: 2HP quad polyphoinc constant rate/time slew with knobs based rise/fall times/shape settings. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
+- **[Chaos](Random.md#chaos)**: 2HP adds random chaos to an input (or outputs chaos). Range, distribution, slew, Rate Chaos.
 
 ## Updated modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Changed scaling of the  time-knobs. Added context-menu Time scale (0.1× / 1× / 10×). 
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Changed scaling of time-knobs. Added context-menu Time scale (0.1× / 1× / 10×).
+- **[Random-4](doc/Random.md#random-4)**: Added fixed/adaptive time slew between generated random values (set via context menu).
+- **[Bernoulli Switch](doc/Switch.md#bernoulli-switch)**: Added independent fixed-time A/B fades (context menu, default 0 / instant) and optional S-curve fade.
+- **[ON/OFF Switch](doc/Switch.md#onoff-switch)**: Added fixed-time fade between ON and OFF (context menu, default 0 / instant) and optional S-curve fade.
+- **[Mute-2](doc/ManCV.md#mute-2)**: Added fixed-time fade between live and mute (context menu, default 0 / instant) and optional S-curve fade.
+- **[Manuel Mute 8](doc/ManCV.md#manuel-mute-8)**: Added fixed-time fade between live and mute (context menu, default 0 / instant) and optional S-curve fade.
+- **[CV-Toggle 8](doc/ManCV.md#cv-toggle-8)**: Added fixed-time fade between ON and OFF (context menu, default 0 / instant) and optional S-curve fade.
 - **[Tweak-2 Mk I](doc/Tweak.md#tweak-2-mk-i)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
 - **[Tweak-2 Mk II](doc/Tweak.md#tweak-2-mk-ii)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons. Previous version had a single scale-range/offset-mode used for both sections (A and B). Now both sections have their own/individual buttons, hence they can be configured individually.
 - **[Tweak-4 Mk I](doc/Tweak.md#tweak-4-mk-i)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
@@ -23,6 +31,8 @@
 ## Fixed modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Fixed trigger outputs (were high for 2 ms - high for both high and low phases).
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Fixed trigger outputs (were high for 2 ms - high for both high and low phases).
+- **[Manuel Mute 8](doc/ManCV.md#manuel-mute-8)**: Fixed issues with inputs in sections 2-8 not being read.
+- **[CV-Toggle 8](doc/ManCV.md#cv-toggle-8)**: Fixed issues with normalized inputs in sections 2-8.
 
 
 # 2.0.4

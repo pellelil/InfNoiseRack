@@ -636,7 +636,7 @@
     {
       "slug": "BernoulliSwitch",
       "name": "Bernoulli Switch",
-      "description": "2HP Bernoulli switch with A/B-> (2 in, 1 out) and ->A/B (1 in, 2 out). Probability, clock in or internal LFO, Rate Chaos.",
+      "description": "2HP Bernoulli switch with A/B-> (2 in, 1 out) and ->A/B (1 in, 2 out). Probability, clock in or internal LFO, Rate Chaos, fade.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Switch.md#bernoulli-switch",
       "tags":  [
         "Polyphonic",
@@ -647,7 +647,7 @@
     {
       "slug": "OnOffSwitch",
       "name": "ON/OFF Switch",
-      "description": "2HP switch between the ON- or OFF-signal via button, gate, or trigger. Knob/CV per state.",
+      "description": "2HP switch between the ON- or OFF-signal via button, gate, or trigger. Knob/CV per state, fade.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Switch.md#onoff-switch",
       "tags":  [
         "Controller",
@@ -668,7 +668,7 @@
     {
       "slug": "Random4",
       "name": "Random-4",
-      "description": "2HP generates 4 random (polyphonic) values within specified range with center/edge or min/max distribution at each trigger or internal LFO. Rate Chaos.",
+      "description": "2HP generates 4 random (polyphonic) values within specified range with center/edge or min/max distribution at each trigger or internal LFO. Rate Chaos, slew.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Random.md#random-4",
       "tags":  [
         "Polyphonic",
