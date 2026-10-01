@@ -312,16 +312,20 @@ struct Tweak8Module : InfNoiseModule {
                     normOfsIn = inputs[A_OFFSET_INPUT + i].getVoltage() * offsetTrim[i];
                 float offset = offsetKnob[i] + normOfsIn;
 
-                outputSum += (orderMode == scaleOffset)
+                // Scale/Offset CV can extend the loop for normalization, but only a signal input joins the mix
+                float section = (orderMode == scaleOffset)
                     ? input * scale + offset
                     : (input + offset) * scale;
-                outputCount++;
+                if (haveInput) {
+                    outputSum += section;
+                    outputCount++;
+                }
 
                 if (haveOutput) {
                     outputsMix = outputCount > 1;
                     float output = (outputCount > 0)
                         ? outputSum / outputCount
-                        : 0.f;
+                        : section;
                     output = quantizeToMode(output, outQuantize.act);
                     output = clipToVoltRange(output, outClipRange.act);
                     outputs[A_OUTPUT + i].setVoltage(output);

@@ -30,7 +30,7 @@ This compact 4HP module consists of 8 sections, each equipped with a momentary p
 
 ![Screenshot of Manual-Trigger](module/ManTrigger8.png)
 
-*To be perfectly honest, I don't use the **Manual Trigger 8** very often, simply because it can only generate trigger outputs—that's exactly what it's designed to do. By default, each trigger is a 10V pulse that remains high for 1 ms before returning to 0V, regardless of how long you hold the button. However, most modules that respond to triggers work just as well with a gate signal that remains high for longer than 1 ms. In most cases, the duration of the high signal is not important; what matters is **when** the signal goes high—that is, detecting its rising edge. Because of this, these modules work equally well with the outputs from the **Manual Gate 8** module (described below). In other words, the same Manual Gate 8 module can often be used to generate signals that function as either gates or triggers. There are, however, situations where you specifically need a short pulse, regardless of how long the button is held. In those cases, I would choose the **Manual Trigger 8** instead.*
+*To be perfectly honest, I don't use the **Manual Trigger 8** very often, simply because it can only generate trigger outputs—that's exactly what it's designed to do. By default, each trigger is a 10V pulse that remains high for 1 ms before returning to 0V, regardless of how long you hold the button. However, most modules that respond to triggers work just as well with a gate signal that remains high for longer than 1 ms. In most cases, the duration of the high signal is not important; what matters is **when** the signal goes high—that is, detecting its rising edge. Because of this, these modules work equally well with the outputs from the **Manual Gate 8** module (described below). In other words, the same Manual Gate 8 module can often be used to generate signals that function as both gates and triggers. There are, however, situations where you specifically need a short pulse, regardless of how long the button is held. In those cases, I would choose the **Manual Trigger 8** instead.*
 
 ## Manuel Gate 8
 ![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)<br>
@@ -64,7 +64,7 @@ Similar to the Mk.I, the Mk.II version is featuring 8 sections in a 8HP module. 
 
 The Mk.II features an Attenuate knob at the top. The knob allows attenuation from -1x to +1x (-100% to +100%), though it defaults to 1x, meaning the signal remains unaltered unless adjusted. A context menu setting allows you to specify whether the attenuation should affect only the On values, only the Off values, or both (default). 
 
-**TIP**: The CV knobs cover a full range of -10V to +10V, but if you require a more restricted range (e.g., 0V to 5V), you can process the output through a [Tweak modules](Tweak.md). By applying a 0.25x scale and a +2.5V offset, you can effectively remap the output to the 0V–5V range for finer control over modulation signals.
+**TIP**: The knobs cover a full range of -10V to +10V, but if you require a more restricted range (e.g., 0V to 5V), you can process the output through a [Tweak modules](Tweak.md). By applying a 0.25x scale and a +2.5V offset, you can effectively remap the output to the 0V–5V range for finer control over modulation signals.
 
 ## Manuel Mix 4 Mk I
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)

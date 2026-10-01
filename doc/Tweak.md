@@ -5,14 +5,14 @@ To keep the panel uncluttered, clipping and quantization settings are only acces
 
 The scale knobs allow for attenuverting between -1x and +1x by default, but this can be expanded using the **Scale-range** button to the left of the Scale label. Click the button to cycle through 1x, 2x, 5x, and 10x. The label on the physical panel always shows "-1x" to "+1x", but the button color reflects the active range:
 
-+ **1x** Black/dim (default)
-+ **2x** → Green
-+ **5x** → Yellow
-+ **10x** → Red
++ **1x**: Black/dim (default)
++ **2x**: Green
++ **5x**: Yellow
++ **10x**: Red
 
 In 1x mode, the scale knob adjusts from -1x (-100%) to +1x (+100%), while in 10x mode, it spans -10x (-1000%) to +10x (+1000%). If you plan to output signals beyond ±12V, **ensure that clipping is disabled** in the context menu, otherwise with the default settings the signal will be clipped to the range -12V to +12V.
 
-Most Tweak modules include a CV input for controlling the scale parameter. The CV input value is added to the manual scale setting, but the total scaling remains clamped within the selected Scale Range Mode. By default, the scaling is linear, but it can be adjusted via the context menu to Exp (green) or Log (red). This light is dimmed when using default linear scaling.
+Some Tweak modules include a CV input for controlling the scale parameter. This CV input value is added to the manual scale setting, but the total scaling remains clamped within the selected Scale Range Mode. By default, the scaling is linear, but it can be adjusted via the context menu to Exp (green) or Log (red). This light is dimmed when using default linear scaling.
 
 **TIP**: If you need to multiply two signals (e.g., mixing two LFO outputs), it's advisable to keep their amplitudes within -1V to +1V (bipolar) or 0V to 1V (unipolar) to ensure the product remains within the same range (or at least keep one of the signals within this range). The 5x and 10x modes of the Tweak modules are particularly useful for scaling signals: To amplify a bipolar signal (-1V to +1V) to -5V to +5V, using 5x mode, and to amplify a unipolar signal (0V to 1V) to 0V to 10V, using 10x mode.
 
@@ -114,7 +114,7 @@ Both in the Scale- and Offset-sections you find a "Link to A" button. When press
 # VCA modules
 I chose to describe the VCA modules in this section of the manual because they function similarly to the Tweak modules discussed earlier. The primary difference is that Tweak modules can attenuvert in the range from -10x to +10x, while the VCA modules are designed strictly for attenuation, ranging from 0% to 100%. Additionally, Tweak modules allow for offsetting signals by adding or subtracting a fixed value, whereas VCA modules do not support this functionality. Essentially, Tweak modules offer more flexibility, but if you only need voltage-controlled attenuation, the VCA modules are the more appropriate choice. 
 
-Since the **VCA** covers a range from **0× to 1×**, while the **Tweak** modules by default cover a range from **−1× to +1×**, they respond differently to CV input. For example, if you set the VCA knob to **0×**, you need to apply **+10 V** to reach a gain of **1×**. In contrast, for a Tweak module, **0×** is at the center position (between −1× and +1×). This means you only need a **+5 V** CV signal to reach **1×** gain. The "idea is" that **10 V corresponds to a full knob range sweep**.
+**Note**: Since the **VCA** covers a range from **0× to 1×**, while the **Tweak** modules by default cover a range from **−1× to +1×**, they respond differently to CV input. For example, if you set the VCA knob to **0×**, you need to apply **+10 V** to reach a gain of **1×**. In contrast, for a Tweak module, **0×** is at the center position (between −1× and +1×). This means you only need a **+5 V** CV signal to reach **1×** gain. The "idea is" that **10 V corresponds to a full knob range sweep**.
 
 By default, the amplification scaling (0% to 100%) is set to linear mode. However, using the context menu, you can switch to exponential (exp) or logarithmic (log) scaling. A small indicator light next to the "Amp." label provides a visual cue for the active scaling mode. In linear mode, the light remains dim. When exponential scaling is selected, the light turns green. For logarithmic scaling, the light turns red. This allows you to quickly identify the current scaling mode without needing to open the context menu.
 

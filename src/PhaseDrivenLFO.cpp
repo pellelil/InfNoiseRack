@@ -287,7 +287,7 @@ struct PhaseDrivenLFOModule : InfNoiseModule {
             float modValue = params[MODKNOB_PARAM].getValue();
             if (inputs[MOD_INPUT].isConnected()) {
                 modValue += params[MOD_TRIM_PARAM].getValue() *
-                    (inputs[MOD_INPUT].getNormalVoltage(0.f) / 10.f);
+                    (inputs[MOD_INPUT].getNormalVoltage(0.f) / 5.f);
                 modValue = clamp(modValue, -1.f, 1.f);
             }
 

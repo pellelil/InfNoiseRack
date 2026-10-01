@@ -5,12 +5,13 @@
 - Implemented more resilient patch loading (handling of out-of-range enum values, due to potential bugs or corrupt patch files).
 
 ## Braking changes
-- As mentioned above, the time knobs on the the ADR-ADSDR-envelope will automatic adjust to the new knob scaling when loading an old patch. However I suspect if you use external modules to set knob positions (such as PatchMaster by MindMeld) that you would have to tweak those knob settings to get the same time-settings.
+- As mentioned above, the time knobs on the the ADR-/ADSDR-envelope will automatic adjust to the new knob scaling when loading an old patch. However I suspect if you use external modules to set knob positions (such as PatchMaster by MindMeld) that you would have to tweak those knob settings to get the same time-settings.
+- MOD CV-input for LFO1 and Phase Driven LFO now have double the effect it had in previous versions (see **Fixed modules**).
 
 ## New modules
 - **[Slew 2](doc/Slew.md#slew-2)**: 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snap (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape
 - **[Slew 4](doc/Slew.md#slew-4)**: 2HP quad polyphoinc constant rate/time slew with knobs based rise/fall times/shape settings. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
-- **[Chaos](Random.md#chaos)**: 2HP adds random chaos to an input (or outputs chaos). Range, distribution, slew, Rate Chaos.
+- **[Chaos](doc/Random.md#chaos)**: 2HP adds random chaos to an input (or outputs chaos). Range, distribution, slew, Rate Chaos.
 
 ## Updated modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Changed scaling of the  time-knobs. Added context-menu Time scale (0.1× / 1× / 10×). 
@@ -33,6 +34,12 @@
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Fixed trigger outputs (were high for 2 ms - high for both high and low phases).
 - **[Manuel Mute 8](doc/ManCV.md#manuel-mute-8)**: Fixed issues with inputs in sections 2-8 not being read.
 - **[CV-Toggle 8](doc/ManCV.md#cv-toggle-8)**: Fixed issues with normalized inputs in sections 2-8.
+- **[LFO1](doc/LFO.md#lfo1)**: Fixed scaling for MOD CV-input (input had half the effect it should have).
+- **[Phase-Driven LFO](doc/LFO.md#phase-driven-lfo)**: Fixed scaling for MOD CV-input (input had half the effect it should have).
+- **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Fixed issue with mixing when input were not connected but scale/offset was.
+- **[Tweak-8](doc/Tweak.md#tweak-8)**: Fixed issue with mixing when input were not connected but scale/offset was.
+
+
 
 
 # 2.0.4
