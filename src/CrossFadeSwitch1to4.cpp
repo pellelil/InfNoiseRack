@@ -4,6 +4,7 @@
 #include "plugin.hpp"
 #include "inComponents.hpp"
 #include "inMath.hpp"
+#include "inUtil.hpp"
 
 struct CrossFadeSwitch1to4Module : InfNoiseModule {
     enum ParamId {
@@ -49,6 +50,12 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
     dsp::SchmittTrigger selectTrig;
     dsp::SchmittTrigger resetTrig;
     bool triggerMode = false; // processParams; widget overlays (trim unused in trigger, Reset unused in CV)
+    actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
+    actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
+    infNoiseUnitFade fade;
+    bool doFade = false;
+    int fadeFrom = 0;
+    int fadeTo = 0;
 
 	CrossFadeSwitch1to4Module() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -96,6 +103,11 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
         selectTrig.reset();
         resetTrig.reset();
         normCvInVolt.setBoth(v_zero);
+        fadeTime.setBoth(fst_0);
+        fadeSCurve.setBoth(false);
+        doFade = false;
+        fade.reset(1.f);
+        fadeFrom = fadeTo = 0;
     }
 
     void dataFromJson(json_t* rootJ) override {
@@ -104,12 +116,16 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
         trigOrder.setBoth((triggerOrderMode)getJsonInt(rootJ, "trigOrder", (int)tom_Next, (int)tom_len - 1));
         pingPongDir = (triggerDirection)getJsonInt(rootJ, "pingPongDir", (int)td_Down, (int)tdir_len - 1);
         normCvInVolt.setBoth((voltValue)getJsonInt(rootJ, "normCvInVolt", (int)v_zero));
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_len - 2));
+        fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
     }
 
     void dataToJson(json_t* rootJ) override {
         json_object_set_new(rootJ, "trigOrder", json_integer((int)trigOrder.req));
         json_object_set_new(rootJ, "pingPongDir", json_integer((int)pingPongDir));
         json_object_set_new(rootJ, "normCvInVolt", json_integer((int)normCvInVolt.req));
+        json_object_set_new(rootJ, "fadeTime", json_integer((int)fadeTime.req));
+        json_object_set_new(rootJ, "fadeSCurve", json_boolean(fadeSCurve.req));
     }
 
     void processParams(const ProcessArgs& args) {
@@ -156,8 +172,36 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
             resetTrig.reset();
         }
 
+        if (fadeSCurve.needsUpdate() || wasJustLoaded) {
+            fadeSCurve.updateActual();
+            fade.setUseSCurve(fadeSCurve.act);
+        }
+        if (fadeTime.needsUpdate() || wasJustLoaded) {
+            bool wasOn = doFade;
+            fadeTime.updateActual();
+            doFade = fadeTime.act != fst_0;
+            fade.setTime(doFade ? fixedSlewTimesValues[(int)fadeTime.act] : 0.f);
+            if (wasJustLoaded || !doFade || !wasOn)
+                fade.snap(1.f);
+        }
+        if (fadeFrom >= inputCount)
+            fadeFrom = inputCount - 1;
+        if (fadeTo >= inputCount)
+            fadeTo = inputCount - 1;
+
         //--------------------
         postProcessParams(args);
+    }
+
+    inline void retargetSwitchFade(int slct) {
+        if (slct == fadeTo)
+            return;
+        bool settled = fade.amount >= 1.f - 1e-6f;
+        if (settled)
+            fadeFrom = fadeTo;
+        fade.snap(settled ? 0.f : fade.amount);
+        fadeTo = slct;
+        fade.setTarget(1.f);
     }
 
     inline void getSelection(int &slctLw, int &slctHi, float &factLw, float &factHi) {
@@ -261,26 +305,66 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
             }
 
             // Cross-fade or switch input to outputs
-            for (int c = 0; c < channels; c++)
-            {
-                float inVoltage = inputs[CV_INPUT].isConnected()
-                    ? inputs[CV_INPUT].getPolyVoltage(c)
-                    : voltValues[normCvInVolt.act];
-
-                outputs[CV1_OUTPUT].setVoltage(0.f, c);
-                outputs[CV2_OUTPUT].setVoltage(0.f, c);
-                outputs[CV3_OUTPUT].setVoltage(0.f, c);
-                outputs[CV4_OUTPUT].setVoltage(0.f, c);
-
-                if (factLw > 0.f) {
-                    float voltage = inVoltage * factLw;
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
-                    outputs[CV1_OUTPUT + slctLw].setVoltage(voltage, c);
+            bool switchMode = params[SELECTMODE_PARAM].getValue() < 0.5f;
+            int lightLw = slctLw, lightHi = slctHi;
+            float lightFactLw = factLw, lightFactHi = factHi;
+            if (switchMode && doFade) {
+                retargetSwitchFade(slctLw);
+                float mixTo = fade.next(procSampleTime);
+                float mixFrom = 1.f - mixTo;
+                for (int c = 0; c < channels; c++)
+                {
+                    float inVoltage = inputs[CV_INPUT].isConnected()
+                        ? inputs[CV_INPUT].getPolyVoltage(c)
+                        : voltValues[normCvInVolt.act];
+                    outputs[CV1_OUTPUT].setVoltage(0.f, c);
+                    outputs[CV2_OUTPUT].setVoltage(0.f, c);
+                    outputs[CV3_OUTPUT].setVoltage(0.f, c);
+                    outputs[CV4_OUTPUT].setVoltage(0.f, c);
+                    if (fadeFrom == fadeTo) {
+                        float voltage = clipToVoltRange(inVoltage, outClipRange.act);
+                        outputs[CV1_OUTPUT + fadeTo].setVoltage(voltage, c);
+                    }
+                    else {
+                        if (mixFrom > 0.f) {
+                            float voltage = clipToVoltRange(inVoltage * mixFrom, outClipRange.act);
+                            outputs[CV1_OUTPUT + fadeFrom].setVoltage(voltage, c);
+                        }
+                        if (mixTo > 0.f) {
+                            float voltage = clipToVoltRange(inVoltage * mixTo, outClipRange.act);
+                            outputs[CV1_OUTPUT + fadeTo].setVoltage(voltage, c);
+                        }
+                    }
                 }
-                if (factHi > 0.f) {
-                    float voltage = inVoltage * factHi;
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
-                    outputs[CV1_OUTPUT + slctHi].setVoltage(voltage, c);
+                lightLw = fadeFrom;
+                lightHi = fadeTo;
+                lightFactLw = mixFrom;
+                lightFactHi = mixTo;
+            }
+            else {
+                fadeFrom = fadeTo = slctLw;
+                fade.snap(1.f);
+                for (int c = 0; c < channels; c++)
+                {
+                    float inVoltage = inputs[CV_INPUT].isConnected()
+                        ? inputs[CV_INPUT].getPolyVoltage(c)
+                        : voltValues[normCvInVolt.act];
+
+                    outputs[CV1_OUTPUT].setVoltage(0.f, c);
+                    outputs[CV2_OUTPUT].setVoltage(0.f, c);
+                    outputs[CV3_OUTPUT].setVoltage(0.f, c);
+                    outputs[CV4_OUTPUT].setVoltage(0.f, c);
+
+                    if (factLw > 0.f) {
+                        float voltage = inVoltage * factLw;
+                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        outputs[CV1_OUTPUT + slctLw].setVoltage(voltage, c);
+                    }
+                    if (factHi > 0.f) {
+                        float voltage = inVoltage * factHi;
+                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        outputs[CV1_OUTPUT + slctHi].setVoltage(voltage, c);
+                    }
                 }
             }
 
@@ -291,9 +375,9 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
                 lights[OUT3_LIGHT].setBrightness(0.f);
                 lights[OUT4_LIGHT].setBrightness(0.f);
 
-                lights[OUT1_LIGHT + slctLw].setBrightness(factLw);
-                if (slctLw != slctHi) {
-                    lights[OUT1_LIGHT + slctHi].setBrightness(factHi);
+                lights[OUT1_LIGHT + lightLw].setBrightness(lightFactLw);
+                if (lightLw != lightHi) {
+                    lights[OUT1_LIGHT + lightHi].setBrightness(lightFactHi);
                 }
             }
         }
@@ -375,6 +459,10 @@ struct CrossFadeSwitch1to4ModuleWidget : InfNoiseModuleWidget {
         std::vector<std::string> voltNames = getVoltValuesNames();
         menu->addChild(createIndexPtrSubmenuItem("CV normalized input", voltNames,
             &module->normCvInVolt.req));
+
+        menu->addChild(createIndexPtrSubmenuItem("Fade time", getFixedSlewTimesNames(false),
+            &module->fadeTime.req));
+        menu->addChild(createBoolPtrMenuItem("S-curve fade", "", &module->fadeSCurve.req));
         
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);

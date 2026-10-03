@@ -474,7 +474,7 @@ enum fixedSlewTimes {
 	fst_0_01, fst_0_02, fst_0_05,
 	fst_0_1, fst_0_2, fst_0_5,
 	fst_1, fst_2, fst_5, fst_10,
-	fst_adaptive,
+	fst_adaptive, // Time is set automatic (always last item before fst_len)
 	fst_len
 };
 const fixedSlewTimes fst_default = fst_0;  // Slew time = 0 (no slew)

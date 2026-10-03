@@ -1,8 +1,9 @@
 # 2.0.5 (In development)
 - In all of the Tweak-modules the Scale-range/Offset-mode lights were replaced by multi-stage/color push buttons (see **Updated Modules** below). This means Scale-range/Offset-mode can be changed directly from the panel, whereas these had to be changed using the context-menu in previous versions (old context menu items were removed). *When loading a patch made with a previous version, the old context-menu selections are automatically "converted" into stages for the new buttons*.
 - Added new knob scaling to the time knobs utilized in ADR-/ADSDR-Envelope. Loading a patch saved in a previous version, the knobs will automatic rescale on load to ensure the knobs keep the same time as prevoius (please see **Breaking changes** below). Added context-menu Time scale (0.1× / 1× / 10×) with indicator lights on the time knobs. The 0.1x scaling makes is more easy to dial in times in the 0-1 second range, whereas the 10x scaling allows you to dial in times up to 100 seconds. *The scaling will default to 1x, hence by default the knobs allows you to set times in the 0 to 10 seconds range as in prevoius versions.*
-- Added internal (fixed time) cross fade to several switch and mute modules (see **Updated modules** below). By default these modules will still perform an instant switch/mute, however using the context menu you are now able select between different fixed time cross fades - in the range from 0.0001 to 10 seconds. Likewise using the context menu you can select either a Linear (default) or S-Curve cross fade (starts slow -> fast in the middle -> slow at the end).
+- Added internal (fixed time) cross fade to several switch and mute modules (see **Updated modules** below). By default these modules will still perform an instant switch/mute, however using the context menu you are now able select between different fixed time cross fades - in the range from 0.0001 to 10 seconds. Likewise using the context menu you can select either a Linear (default) or S-Curve cross fade (starts slow -> fast in the middle -> slow at the end). *This build in cross-fade can achive results, an external tool cannot do (as it only affects the actual switch, hence not affect the signal before/after the switch).*
 - Implemented more resilient patch loading (handling of out-of-range enum values, due to potential bugs or corrupt patch files).
+- While testing the new modules, I sadly discovered a couple of simple/embarrassing bugs in a few other modules. So, I've decided to go through all of the modules, to test them all once again. *It's not half as fun as it might sound ... knowing it doesn't sound fun at all :-)* Anyway, while I can't fully test each and every permutation of how a module might be used, I'm at least happy to report that what I found was fixed, and there are no known bugs.
 
 ## Braking changes
 - As mentioned above, the time knobs on the the ADR-/ADSDR-envelope will automatic adjust to the new knob scaling when loading an old patch. However I suspect if you use external modules to set knob positions (such as PatchMaster by MindMeld) that you would have to tweak those knob settings to get the same time-settings.
@@ -18,8 +19,11 @@
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Changed scaling of time-knobs. Added context-menu Time scale (0.1× / 1× / 10×).
 - **[Random-4](doc/Random.md#random-4)**: Added fixed/adaptive time slew between generated random values (set via context menu).
 - **[Bernoulli Switch](doc/Switch.md#bernoulli-switch)**: Added independent fixed-time A/B fades (context menu, default 0 / instant) and optional S-curve fade.
+- **[Combine](doc/Switch.md#combine)**: Added per-channel fixed-time A/B fade (context menu, default 0 / instant) and optional S-curve fade. Gate output remains instant.
+- **[Cross-fade Switch 4to1](doc/Switch.md#cross-fade-switch-4to1)**: Added fixed-time fade in switch mode (context menu, default 0 / instant) and optional S-curve fade.
+- **[Cross-fade Switch 1to4](doc/Switch.md#cross-fade-switch-1to4)**: Added fixed-time fade in switch mode (context menu, default 0 / instant) and optional S-curve fade.
 - **[ON/OFF Switch](doc/Switch.md#onoff-switch)**: Added fixed-time fade between ON and OFF (context menu, default 0 / instant) and optional S-curve fade.
-- **[Mute-2](doc/ManCV.md#mute-2)**: Added fixed-time fade between live and mute (context menu, default 0 / instant) and optional S-curve fade.
+- **[Mute-2](doc/ManCV.md#mute-2)**: Added fixed-time fade between live and mute (context menu, default 0 / instant) and optional S-curve fade. Changed lights to tiny lights.
 - **[Manuel Mute 8](doc/ManCV.md#manuel-mute-8)**: Added fixed-time fade between live and mute (context menu, default 0 / instant) and optional S-curve fade.
 - **[CV-Toggle 8](doc/ManCV.md#cv-toggle-8)**: Added fixed-time fade between ON and OFF (context menu, default 0 / instant) and optional S-curve fade.
 - **[Tweak-2 Mk I](doc/Tweak.md#tweak-2-mk-i)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
@@ -36,8 +40,8 @@
 - **[CV-Toggle 8](doc/ManCV.md#cv-toggle-8)**: Fixed issues with normalized inputs in sections 2-8.
 - **[LFO1](doc/LFO.md#lfo1)**: Fixed scaling for MOD CV-input (input had half the effect it should have).
 - **[Phase-Driven LFO](doc/LFO.md#phase-driven-lfo)**: Fixed scaling for MOD CV-input (input had half the effect it should have).
-- **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Fixed issue with mixing when input were not connected but scale/offset was.
-- **[Tweak-8](doc/Tweak.md#tweak-8)**: Fixed issue with mixing when input were not connected but scale/offset was.
+- **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next setting when scale/offset CV-inputs were normalized.
+- **[Tweak-8](doc/Tweak.md#tweak-8)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next setting when scale/offset CV-inputs were normalized.
 
 
 

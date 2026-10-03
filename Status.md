@@ -76,11 +76,11 @@ Below is a list of all modules, grouped by category. A line containing only a da
 ### Switches
 + CxFade1x2: -
 + CxFade4x1: -
-+ CrossFadeSwitch1to4: -
-+ CrossFadeSwitch4to1: -
++ CrossFadeSwitch1to4: Added internal fixed time cross-fade in switch-mode **Needs testing**
++ CrossFadeSwitch4to1: Added internal fixed time cross-fade in switch-mode **Needs testing**
 + BernoulliSwitch: -
 + OnOffSwitch: -
-+ Combine: -
++ Combine: Added internal fixed time cross-fade in switch-mode **Needs testing**
 
 ### Random
 + Random4: -

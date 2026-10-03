@@ -262,15 +262,15 @@ struct Tweak4IIModule : InfNoiseModule {
                 }
 
                 if (inputs[A_SCALE_INPUT + i].isConnected())
-					normSclIn = inputs[A_SCALE_INPUT + i].getVoltage() * scaleTrim[i] / 5.f;
-                float scale = scaleKnob[i] + normSclIn;
+					normSclIn = inputs[A_SCALE_INPUT + i].getVoltage(); // raw CV; each section applies its own trim
+                float scale = scaleKnob[i] + normSclIn * scaleTrim[i] / 5.f;
                 scale = clamp(scale, -1.f, 1.f);
                 scale = applyScaleCurveSigned(scale, scaleMode.act);
                 scale *= attRngFactor;
 
                 if (inputs[A_OFFSET_INPUT + i].isConnected())
-                    normOfsIn = inputs[A_OFFSET_INPUT + i].getVoltage() * offsetTrim[i];
-                float offset = offsetKnob[i] + normOfsIn;
+                    normOfsIn = inputs[A_OFFSET_INPUT + i].getVoltage(); // raw CV; each section applies its own trim
+                float offset = offsetKnob[i] + normOfsIn * offsetTrim[i];
 
                 // Scale/Offset CV can extend the loop for normalization, but only a signal input joins the mix
                 float section = (orderMode == scaleOffset)

@@ -137,7 +137,7 @@ struct ManMute8Module : InfNoiseModule {
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
         allMode.setBoth((allButtonMode)getJsonInt(rootJ, "allMode", (int)abm_Toggle, (int)abm_len - 1));
-        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_10));
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_len - 2));
         fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
         bool allPressed = params[MUTE_ALL_PARAM].getValue() > 0.5f;
         btAll.reset(allPressed

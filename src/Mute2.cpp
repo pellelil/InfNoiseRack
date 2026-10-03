@@ -118,7 +118,7 @@ struct Mute2Module : InfNoiseModule {
         gateMuteMode.setBoth((gateMuteModeType)getJsonInt(rootJ, "gateMuteMode", (int)gmm_highGate, (int)gmm_len - 1));
         bothMuted = getJsonBool(rootJ, "bothMuted", false);
         getJsonBoolArray(rootJ, "triggerMuted", triggerMuted, 2, false);
-        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_10));
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_len - 2));
         fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
     }
 
@@ -297,7 +297,7 @@ struct Mute2ModuleWidget : InfNoiseModuleWidget {
 
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 168.953f), module, Mute2Module::A_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 204.027f), module, Mute2Module::A_OUTPUT));
-        addChild(createLightCentered<SmallLight<RedLight>>(Vec(lightClm, 188.762f), module, Mute2Module::A_MUTED_LIGHT));
+        addChild(createLightCentered<TinyLight<RedLight>>(Vec(lightClm, 188.762f), module, Mute2Module::A_MUTED_LIGHT));
 
         // B-Mute
         sectBtn[1] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 239.593f), module, Mute2Module::B_MUTE_PARAM);
@@ -309,7 +309,7 @@ struct Mute2ModuleWidget : InfNoiseModuleWidget {
 
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 297.620f), module, Mute2Module::B_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 332.694f), module, Mute2Module::B_OUTPUT));
-        addChild(createLightCentered<SmallLight<RedLight>>(Vec(lightClm, 317.429f), module, Mute2Module::B_MUTED_LIGHT));
+        addChild(createLightCentered<TinyLight<RedLight>>(Vec(lightClm, 317.429f), module, Mute2Module::B_MUTED_LIGHT));
     }
 
     void step() override {

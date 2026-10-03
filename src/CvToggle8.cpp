@@ -151,7 +151,7 @@ struct CvToggle8Module : InfNoiseModule {
         
         attMode.setBoth((attenuateMode)getJsonInt(rootJ, "attMode", (int)attenuateMode::am_both, (int)am_len - 1));
         getJsonBoolArray(rootJ, "virtualGate", virtualGate, 8, false);
-        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_10));
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_len - 2));
         fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
         for (int i = 0; i < 8; i++)
             toggleTrigger[i].reset();

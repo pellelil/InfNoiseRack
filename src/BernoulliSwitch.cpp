@@ -142,8 +142,8 @@ struct BernoulliSwitchModule : InfNoiseModule {
         nonSlctOutVolt.setBoth((voltValue)getJsonInt(rootJ, "nonSlctOutVolt", (int)v_zero));
         useLastNonSlctOut.setBoth(getJsonBool(rootJ, "useLastNonSlctOut", false));
         clockRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "clockRateChaos", (int)rc_default));
-        fadeTimeIn.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTimeIn", (int)fst_0, (int)fst_10));
-        fadeTimeOut.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTimeOut", (int)fst_0, (int)fst_10));
+        fadeTimeIn.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTimeIn", (int)fst_0, (int)fst_len - 2));
+        fadeTimeOut.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTimeOut", (int)fst_0, (int)fst_len - 2));
         fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
         getJsonFloatArray(rootJ, "lastAOut", lastAOut, PORT_MAX_CHANNELS, voltValues[normAInVolt.req]);
         getJsonFloatArray(rootJ, "lastBOut", lastBOut, PORT_MAX_CHANNELS, voltValues[normBInVolt.req]);

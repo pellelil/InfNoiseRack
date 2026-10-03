@@ -95,7 +95,7 @@ struct OnOffSwitchModule : InfNoiseModule {
         InfNoiseModule::dataFromJson(rootJ);
         
         onStage.setBoth(getJsonInt(rootJ, "onStage", 0) == 1);
-        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_10));
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_len - 2));
         fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
     }
 

@@ -58,6 +58,10 @@ struct CombineModule : InfNoiseModule {
     bool rangeUnused = false; // processParams; widget overlay (Range unused except U/L)
     enum highOnModeType { hom_A, hom_B, hom_len };
     actReqValue<highOnModeType> highOnMode = actReqValue<highOnModeType>(hom_A);
+    actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
+    actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
+    infNoiseUnitFade fade[PORT_MAX_CHANNELS];
+    bool doFade = false;
     
 	CombineModule() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -97,9 +101,13 @@ struct CombineModule : InfNoiseModule {
         InfNoiseModule::onReset(e);
         
         highOnMode.setBoth(hom_A);
+        fadeTime.setBoth(fst_0);
+        fadeSCurve.setBoth(false);
+        doFade = false;
         for (int i = 0; i < PORT_MAX_CHANNELS; i++) {
             rfPrevVoltage[i] = 0.f;
             rfUseFirst[i] = true;
+            fade[i].reset(1.f);
         }
 
         modeChanged = true;  // Force update of param-names
@@ -110,6 +118,8 @@ struct CombineModule : InfNoiseModule {
         highOnMode.setBoth((highOnModeType)getJsonInt(rootJ, "highOnMode", (int)hom_A, (int)hom_len - 1));
         getJsonFloatArray(rootJ, "rfPrevVoltage", rfPrevVoltage, PORT_MAX_CHANNELS, 0.f);
         getJsonBoolArray(rootJ, "rfUseFirst", rfUseFirst, PORT_MAX_CHANNELS, true);
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_len - 2));
+        fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
 
         modeChanged = true;  // Force update of param-names
     }
@@ -118,6 +128,8 @@ struct CombineModule : InfNoiseModule {
         json_object_set_new(rootJ, "highOnMode", json_integer((int)highOnMode.req));
         setJsonFloatArray(rootJ, "rfPrevVoltage", rfPrevVoltage, PORT_MAX_CHANNELS);
         setJsonBoolArray(rootJ, "rfUseFirst", rfUseFirst, PORT_MAX_CHANNELS);
+        json_object_set_new(rootJ, "fadeTime", json_integer((int)fadeTime.req));
+        json_object_set_new(rootJ, "fadeSCurve", json_boolean(fadeSCurve.req));
     }
 
 
@@ -230,6 +242,19 @@ struct CombineModule : InfNoiseModule {
             lights[GATE_MODE_LIGHT].setBrightness(highOnMode.req == hom_A ? 0.f : 1.f);
         }
 
+        if (fadeSCurve.needsUpdate() || wasJustLoaded) {
+            fadeSCurve.updateActual();
+            for (int i = 0; i < PORT_MAX_CHANNELS; i++)
+                fade[i].setUseSCurve(fadeSCurve.act);
+        }
+        if (fadeTime.needsUpdate() || wasJustLoaded) {
+            fadeTime.updateActual();
+            doFade = fadeTime.act != fst_0;
+            float fadeSecs = doFade ? fixedSlewTimesValues[(int)fadeTime.act] : 0.f;
+            for (int i = 0; i < PORT_MAX_CHANNELS; i++)
+                fade[i].setTime(fadeSecs);
+        }
+
         //--------------------
         postProcessParams(args);
     }
@@ -259,7 +284,15 @@ struct CombineModule : InfNoiseModule {
 
                 // A/B output
                 bool useA = useAInput(aVoltage, bVoltage, c);
-                voltage = useA ? aVoltage : bVoltage;
+                if (!doFade) {
+                    voltage = useA ? aVoltage : bVoltage;
+                    fade[c].snap(useA ? 1.f : 0.f);
+                }
+                else {
+                    fade[c].setTarget(useA ? 1.f : 0.f);
+                    float mix = fade[c].next(procSampleTime);
+                    voltage = mix * aVoltage + (1.f - mix) * bVoltage;
+                }
                 voltage = quantizeToMode(voltage, outQuantize.act);
                 outputs[AB_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
 
@@ -333,6 +366,9 @@ struct CombineModuleWidget : InfNoiseModuleWidget {
         menu->addChild(createIndexPtrSubmenuItem("High gate", {"On A selected (default)", "On B selected"},
 		 	&module->highOnMode.req
         ));
+        menu->addChild(createIndexPtrSubmenuItem("Fade time", getFixedSlewTimesNames(false),
+            &module->fadeTime.req));
+        menu->addChild(createBoolPtrMenuItem("S-curve fade", "", &module->fadeSCurve.req));
         
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);
