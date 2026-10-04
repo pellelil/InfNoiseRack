@@ -33,14 +33,16 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + ManGate8: -
 + ManCV8I: -
 + ManCV8II: -
-+ ManMix4I: -
-+ ManMix4II: -
-+ ManMix4st: -
 + Mute2: -
 + ManMute8: -
 + CvToggle8: -
 + CvToGt: -
 + CvToGtTr8: -
+
+### Mixer
++ ManMix4I: -
++ ManMix4II: -
++ ManMix4st: -
 
 ### Merge/Mult
 + Mult2x4: -
@@ -74,8 +76,8 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + PolyVCMP: -
 
 ### Switches
-+ CxFade1x2: -
-+ CxFade4x1: -
++ CxFade1x2: B1 normalizes to A1 (mono pan/balance). Trigger-mode fade (context menu) **Needs testing**
++ CxFade4x1: Trigger-mode fade (context menu, shared time, per-control ramps) **Needs testing**
 + CrossFadeSwitch1to4: Added internal fixed time cross-fade in switch-mode **Needs testing**
 + CrossFadeSwitch4to1: Added internal fixed time cross-fade in switch-mode **Needs testing**
 + BernoulliSwitch: -

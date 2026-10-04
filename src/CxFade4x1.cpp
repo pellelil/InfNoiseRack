@@ -69,6 +69,11 @@ struct CxFade4x1Module : InfNoiseModule {
     dsp::SchmittTrigger masterToggleTrig;
     dsp::SchmittTrigger sectionToggleTrig[4];
     bool triggerMode[5] = { false, false, false, false, false }; // processParams; widget overlays (trim unused in trigger)
+    actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
+    actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
+    infNoiseUnitFade fade[5];
+    bool doFade = false;
+    float lastSwitchKnob[5] = { 0.f, 0.f, 0.f, 0.f, 0.f }; // knob written by trigger; override drops ramp
 
     CxFade4x1Module() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -124,16 +129,27 @@ struct CxFade4x1Module : InfNoiseModule {
         masterToggleTrig.reset();
         for (int i = 0; i < 4; i++)
 			sectionToggleTrig[i].reset();
+        fadeTime.setBoth(fst_0);
+        fadeSCurve.setBoth(false);
+        doFade = false;
+        for (int i = 0; i < 5; i++) {
+            fade[i].reset(0.5f);
+            lastSwitchKnob[i] = 0.f;
+        }
     }
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
 
         fadeMode.setBoth((fadeKnobMode)getJsonInt(rootJ, "fadeMode", (int)fadeKnobMode::fm_linear, (int)fm_len - 1));
+        fadeTime.setBoth((fixedSlewTimes)getJsonInt(rootJ, "fadeTime", (int)fst_0, (int)fst_len - 2));
+        fadeSCurve.setBoth(getJsonBool(rootJ, "fadeSCurve", false));
     }
 
     void dataToJson(json_t* rootJ) override {
         json_object_set_new(rootJ, "fadeMode", json_integer((int)fadeMode.req));
+        json_object_set_new(rootJ, "fadeTime", json_integer((int)fadeTime.req));
+        json_object_set_new(rootJ, "fadeSCurve", json_boolean(fadeSCurve.req));
     }
 
     void processParams(const ProcessArgs& args)
@@ -144,6 +160,23 @@ struct CxFade4x1Module : InfNoiseModule {
         fadeMode.updateActual();
         for (int i = 0; i < 5; i++)
             triggerMode[i] = params[CROSSFADE_M_TRIG_PARAM + i].getValue() > 0.5f;
+
+        if (fadeSCurve.needsUpdate() || wasJustLoaded) {
+            fadeSCurve.updateActual();
+            for (int i = 0; i < 5; i++)
+                fade[i].setUseSCurve(fadeSCurve.act);
+        }
+        if (fadeTime.needsUpdate() || wasJustLoaded) {
+            bool wasOn = doFade;
+            fadeTime.updateActual();
+            doFade = fadeTime.act != fst_0;
+            float fadeSecs = doFade ? fixedSlewTimesValues[(int)fadeTime.act] : 0.f;
+            for (int i = 0; i < 5; i++) {
+                fade[i].setTime(fadeSecs);
+                if (wasJustLoaded || !doFade || !wasOn)
+                    fade[i].snap((params[CROSSFADE_M_PARAM + i].getValue() + 1.f) * 0.5f);
+            }
+        }
 
         haveOutput[0] = outputs[XFD_1_OUTPUT].isConnected() || outputs[FLP_1_OUTPUT].isConnected();
         haveOutput[1] = outputs[XFD_2_OUTPUT].isConnected() || outputs[FLP_2_OUTPUT].isConnected();
@@ -184,6 +217,23 @@ struct CxFade4x1Module : InfNoiseModule {
         postProcessParams(args);
     }
 
+    inline float fadedControl(int idx, float raw, bool switchNow, bool trigMode) {
+        float mixFromKnob = (raw + 1.f) * 0.5f;
+        if (switchNow && doFade && trigMode) {
+            lastSwitchKnob[idx] = params[CROSSFADE_M_PARAM + idx].getValue();
+            fade[idx].setTarget(mixFromKnob);
+        }
+        else {
+            bool ramping = std::fabs(fade[idx].amount - fade[idx].target) > 1e-6f;
+            bool knobOverride = std::fabs(params[CROSSFADE_M_PARAM + idx].getValue() - lastSwitchKnob[idx]) > 1e-4f;
+            if (!(trigMode && doFade && ramping && !knobOverride))
+                fade[idx].snap(mixFromKnob);
+        }
+        if (trigMode && doFade && std::fabs(fade[idx].amount - fade[idx].target) > 1e-6f)
+            return fade[idx].next(procSampleTime) * 2.f - 1.f;
+        return raw;
+    }
+
     void process(const ProcessArgs& args) override {
         bool doProcessParams = mustProcessParams ||
             ((cycle256 & patternProcessParams) == patternProcessParams);
@@ -196,6 +246,7 @@ struct CxFade4x1Module : InfNoiseModule {
         if (doProcess && haveAnyOutput) {
             // Calc master cross-fade
             float masterFade = params[CROSSFADE_M_PARAM].getValue();
+            bool masterSwitch = false;
             if (inputs[CROSSFADE_M_INPUT].isConnected()) {
                 if (params[CROSSFADE_M_TRIG_PARAM].getValue() < 0.5) { // CV-mode
                     masterFade += inputs[CROSSFADE_M_INPUT].getVoltage() / 5.f * params[CROSSFADE_M_TRIM_PARAM].getValue();
@@ -206,16 +257,20 @@ struct CxFade4x1Module : InfNoiseModule {
                         trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
                         masterFade = masterFade >= 0.f ? -1.f : 1.f;
                         params[CROSSFADE_M_PARAM].setValue(masterFade);
+                        masterSwitch = true;
 					}
 				}
             }
+            masterFade = fadedControl(0, masterFade, masterSwitch, params[CROSSFADE_M_TRIG_PARAM].getValue() > 0.5f);
 
             for (int i = 0; i < 4; i++) {
                 if (haveOutput[i]) {
                     // Calc section cross-fade
                     float crossFade = params[CROSSFADE_1_PARAM + i].getValue();
+                    bool sectionSwitch = false;
+                    bool sectionTrig = params[CROSSFADE_1_TRIG_PARAM + i].getValue() > 0.5f;
                     if (inputs[CROSSFADE_1_INPUT + i].isConnected()) {
-                        if (params[CROSSFADE_1_TRIG_PARAM + i].getValue() < 0.5) {  // CV-mode
+                        if (!sectionTrig) {  // CV-mode
                             crossFade += inputs[CROSSFADE_1_INPUT + i].getVoltage() / 5.f * params[CROSSFADE_1_TRIM_PARAM + i].getValue();
                             crossFade += masterFade;  // Add master-fade
                             crossFade = clamp(crossFade, -1.f, 1.f);
@@ -225,6 +280,7 @@ struct CxFade4x1Module : InfNoiseModule {
                                 trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
 								crossFade = crossFade >= 0.f ? -1.f : 1.f;
                                 params[CROSSFADE_1_PARAM + i].setValue(crossFade);
+                                sectionSwitch = true;
 							}
                         }
                     }
@@ -232,6 +288,11 @@ struct CxFade4x1Module : InfNoiseModule {
                         crossFade += masterFade;  // Add master-fade
                         crossFade = clamp(crossFade, -1.f, 1.f);
                     }
+                    // Trigger-mode sections fade the section control only (master is not added)
+                    if (inputs[CROSSFADE_1_INPUT + i].isConnected() && sectionTrig)
+                        crossFade = fadedControl(i + 1, crossFade, sectionSwitch, true);
+                    else
+                        fade[i + 1].snap((crossFade + 1.f) * 0.5f);
                     if (fadeMode.act == fm_exp) {
                         float sign = (crossFade < 0.f) ? -1.f : 1.f;
                         float flipped = 1.f - std::abs(crossFade);
@@ -357,6 +418,9 @@ struct CxFade4x1ModuleWidget : InfNoiseModuleWidget {
             { "Logarithmic", "Linear", "Exponential" },
             &module->fadeMode.req
         ));
+        menu->addChild(createIndexPtrSubmenuItem("Fade time", getFixedSlewTimesNames(false),
+            &module->fadeTime.req));
+        menu->addChild(createBoolPtrMenuItem("S-curve fade", "", &module->fadeSCurve.req));
 
         // Appends proc-qual. and clip-range menus
         appendInfNoiseMenuItems(menu);

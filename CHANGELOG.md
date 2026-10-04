@@ -4,10 +4,12 @@
 - Added internal (fixed time) cross fade to several switch and mute modules (see **Updated modules** below). By default these modules will still perform an instant switch/mute, however using the context menu you are now able select between different fixed time cross fades - in the range from 0.0001 to 10 seconds. Likewise using the context menu you can select either a Linear (default) or S-Curve cross fade (starts slow -> fast in the middle -> slow at the end). *This build in cross-fade can achive results, an external tool cannot do (as it only affects the actual switch, hence not affect the signal before/after the switch).*
 - Implemented more resilient patch loading (handling of out-of-range enum values, due to potential bugs or corrupt patch files).
 - While testing the new modules, I sadly discovered a couple of simple/embarrassing bugs in a few other modules. So, I've decided to go through all of the modules, to test them all once again. *It's not half as fun as it might sound ... knowing it doesn't sound fun at all :-)* Anyway, while I can't fully test each and every permutation of how a module might be used, I'm at least happy to report that what I found was fixed, and there are no known bugs.
+- Added separate Mixer section to the manual.
 
 ## Braking changes
 - As mentioned above, the time knobs on the the ADR-/ADSDR-envelope will automatic adjust to the new knob scaling when loading an old patch. However I suspect if you use external modules to set knob positions (such as PatchMaster by MindMeld) that you would have to tweak those knob settings to get the same time-settings.
 - MOD CV-input for LFO1 and Phase Driven LFO now have double the effect it had in previous versions (see **Fixed modules**).
+- In Cross-fade 1x2 if B1 was left un-patched it normalized to 0V, but now it will normalize to A1 (see **Updated modules**).
 
 ## New modules
 - **[Slew 2](doc/Slew.md#slew-2)**: 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snap (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape
@@ -31,6 +33,9 @@
 - **[Tweak-4 Mk I](doc/Tweak.md#tweak-4-mk-i)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
 - **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
 - **[Tweak-8](doc/Tweak.md#tweak-8)**: Replaced Scale-range/Offset-mode lights with Scale-range/Offset-mode buttons.
+- **[Delta-4](doc/Delta4.md#delta-4)**: Tooltip for "Toggle output mode" was blocking lights showing active mode (button is now below lights).
+- **[Cross-fade 1x2](doc/CrossFade.md#cross-fade-1x2)**: Added Cross-fade / Balance / Pan modes (Cf / Bl / Pn), so the module can be used as a stereo balance or panning module. Unpatched B1 now also normalizes to A1, so a mono signal into A1 can be balanced/panned across the stereo outputs (A2 still normalizes to B1, B2 still to A1). Added fixed-time fade on the trigger input in trigger/switch mode (context menu, default 0 / instant) and optional S-curve fade. Manual A/B-toggle remains instant.
+- **[Cross-fade 4x1](doc/CrossFade.md#cross-fade-4x1)**: Added fixed-time fade on the trigger input in trigger/switch mode (context menu, default 0 / instant) and optional S-curve fade, shared by master and all sections (each control ramps independently). Manual A/B-toggle remains instant.
 - **[CV to Gate](doc/CvToGt.md#cv-to-gate)**: Changed lights to tiny-lights.
 
 ## Fixed modules
@@ -136,9 +141,9 @@ As everything in this very-first release is new, it only consists of "New Module
 - [Manuel Gate 8](doc/ManCV.md#manuel-gate-8)
 - [Manuel CV 8 Mk I](doc/ManCV.md#manuel-cv-8-mk-i)
 - [Manuel CV 8 Mk II](doc/ManCV.md#manuel-cv-8-mk-ii)
-- [Manuel Mix 4 Mk I](doc/ManCV.md#manuel-mix-4-mk-i)
-- [Manuel Mix 4 Mk II](doc/ManCV.md#manuel-mix-4-mk-ii)
-- [Manuel Mix 4 Stereo](doc/ManCV.md#manuel-mix-4-stereo)
+- [Manuel Mix 4 Mk I](doc/Mixer.md#manuel-mix-4-mk-i)
+- [Manuel Mix 4 Mk II](doc/Mixer.md#manuel-mix-4-mk-ii)
+- [Manuel Mix 4 Stereo](doc/Mixer.md#manuel-mix-4-stereo)
 - [Mute 2](doc/ManCV.md#mute-2)
 - [Manuel Mute 8](doc/ManCV.md#manuel-mute-8)
 - [CV-Toggle 8](doc/ManCV.md#cv-toggle-8)

@@ -24,7 +24,7 @@ Tweak-2I offer CV-input for both Scale and offset. This input both support monop
 
 As seen in the previous screenshot, the Tweak modules come in multiple versions, each differing in the number of sections, whether scale and offset settings are applied individually per section or shared across multiple sections, and whether adjustments can be made using CV inputs or only through knobs. All modules allow for scaling (attenuverting/amplifying) and offsetting the input signal. By default, the **scale operation is performed before the offset operation**, but this **order can be changed** using the **Order** button to the left of the Offset label. When the button is unlit, the default "Scale → Offset" order is active. Click it to switch to "Offset → Scale" (blue), so offsetting occurs before scaling.
 
-Among the Tweak modules, Tweak-2I, and Tweak-4I are the only one that does not support mixing signals. The other modules, such as Tweak-2II, Tweak-4II and Tweak-8, allow for mixing. Tweak-2II has two sections labeled A and B, and if no cable is inserted into the A-output, the B-output will contain a normalized mix of both sections—effectively averaging their signals. 
+Among the Tweak modules, Tweak-2I, and Tweak-4I are the only one that does not support mixing signals. The other modules, such as Tweak-2II, Tweak-4II and Tweak-8, allow for mixing. Tweak-2II has two sections labeled A and B, and if no cable is inserted into the A-output, the B-output will contain a normalized mix of both sections—effectively averaging their signals. For dedicated mixers without scale/offset (Manual Mix 4 Mk I, Mk II, and Stereo), see the [Mixer modules](Mixer.md).
 
 ## How does the mix-operation work
 For a section to be included in the mix operation, it must have an input cable connected. If no input is present, any previously accumulated mix values will be cleared. The first active output (connected to both an input and output cable) will generate a mix of its own section along with all preceding sections that also have an input cable connected (but no outputs). However, if a section lacks an input or has an output connected, the accumulated mix is reset, starting "a new mix" at the next active section. The actual output level of the mix is determined by summing all included sections and dividing by the number of sections in the mix. Small green lights next to each output (except for the A-output) indicate when a port is outputting a mix of two or more inputs.
@@ -152,7 +152,7 @@ The **C input** is normalized to the **A input**, and the **D input** is normali
 ![Screenshot of VCA-4II](module/VCA4II.png)
 
 # Other amplification/mixer modules
-The previous sections covered the Tweak modules first, followed by the VCA modules. This section introduces additional modules that, while not part of either the Tweak or VCA families, are still designed for amplification purpose. Amoung the Controlers/Converter-part of the manual you'll also find a few dedicated [Manuel Mix modules](ManCV.md#manuel-mix-4-mk-i).
+The previous sections covered the Tweak modules first, followed by the VCA modules. This section introduces additional modules that, while not part of either the Tweak or VCA families, are still designed for amplification purpose. 
 
 ## Clamp 4
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)

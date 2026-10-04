@@ -187,14 +187,16 @@ The sections above covered features that are common to all Infinite-Noise module
 + [Manuel Gate 8](ManCV.md#manuel-gate-8): 4HP controller: 8 latchable gate buttons, All, and a polyphonic output.
 + [Manuel CV 8 Mk I](ManCV.md#manuel-cv-8-mk-i): 4HP controller: 8 CV knobs (-10V to +10V), mute, and a polyphonic output. Quantize.
 + [Manuel CV 8 Mk II](ManCV.md#manuel-cv-8-mk-ii): 8HP controller: 8 On/Off CV pairs with toggle buttons, All, attenuate, and a polyphonic output. Quantize.
-+ [Manuel Mix 4 Mk I](ManCV.md#manuel-mix-4-mk-i): 2HP mixer: 4 inputs, per-input knobs (0-200%), master, averaging or unity mix.
-+ [Manuel Mix 4 Mk II](ManCV.md#manuel-mix-4-mk-ii): 4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, averaging or unity.
-+ [Manuel Mix 4 Stereo](ManCV.md#manuel-mix-4-stereo): 4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, averaging or unity. Optional mono-to-stereo.
 + [Manuel Mute 8](ManCV.md#manuel-mute-8): 6HP 8-channel mute: per-section buttons and CV, All, latch, and a mute-value knob/CV.
 + [Mute 2](ManCV.md#mute-2): 2HP dual mute: per-section latchable button and gate/trigger CV, plus Both.
 + [CV-Toggle 8](ManCV.md#cv-toggle-8): 8HP 8-section On/Off switch: CV or knob values, gate/trigger per section, All, and attenuate.
 + [CV to Gate](CvToGt.md#cv-to-gate): 2HP fire a gate if CV is within a specified min/max range. Also above, below, inverted-range, and Diff.
 + [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8): 8HP 8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.
+
+## Mixers
++ [Manuel Mix 4 Mk I](Mixer.md#manuel-mix-4-mk-i): 2HP mixer: 4 inputs, per-input knobs (0-200%), master, averaging or unity mix.
++ [Manuel Mix 4 Mk II](Mixer.md#manuel-mix-4-mk-ii): 4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, averaging or unity.
++ [Manuel Mix 4 Stereo](Mixer.md#manuel-mix-4-stereo): 4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, averaging or unity. Optional mono-to-stereo.
 
 ## Merge/Mult
 + [Mult2x4](MergeMult.md#mult2x4): 2HP dual mult: two inputs with four copies each, or 1-to-8 if the lower input is unused.
@@ -228,8 +230,8 @@ The sections above covered features that are common to all Infinite-Noise module
 + [Poly-Scale](PolyTools.md#poly-scale): 4HP scale (attenuvert/amplify) individual or group of channels of a polyphonic signal. All scale, 8 knobs, 1x/2x/5x/10x.
 
 ## Cross-fade and Switch modules
-+ [Cross-fade 1x2](CrossFade.md#cross-fade-1x2): 2HP cross-fade a stereo signal, or two separate mono signals, by knob/CV. A/B toggle, trigger mode.
-+ [Cross-fade 4x1](CrossFade.md#cross-fade-4x1): 8HP cross-fade 4 separate signals by per-section and master knob/CV. A/B toggle, trigger mode, flipped outputs.
++ [Cross-fade 1x2](CrossFade.md#cross-fade-1x2): 2HP cross-fade a stereo signal, or two separate mono signals, by knob/CV. A/B toggle, trigger mode, panning, timed fade.
++ [Cross-fade 4x1](CrossFade.md#cross-fade-4x1): 8HP cross-fade 4 separate signals by per-section and master knob/CV. A/B toggle, trigger mode, flipped outputs, timed fade.
 + [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1): 2HP cross-fade/switch up to 4 inputs into 1 output. Knob/CV, trigger order, 2/3/4 ports.
 + [Cross-fade switch 1to4](Switch.md#cross-fade-switch-1to4): 2HP cross-fade/switch 1 input into up to 4 outputs. Knob/CV, trigger order, 2/3/4 ports.
 + [Bernoulli Switch](Switch.md#bernoulli-switch): 2HP Bernoulli switch with A/B-> (2 in, 1 out) and ->A/B (1 in, 2 out). Probability, clock in or internal LFO, Rate Chaos, fade.

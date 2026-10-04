@@ -253,38 +253,6 @@
       ]
     },
     {
-      "slug": "ManMix4I",
-      "name": "Manuel Mix 4 Mk I",
-      "description": "2HP mixer: 4 inputs, per-input knobs (0-200%), master, averaging or unity mix.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/ManCV.md#manuel-mix-4-mk-i",
-      "tags":  [
-        "Polyphonic",
-        "Mixer"
-      ]
-    },
-    {
-      "slug": "ManMix4II",
-      "name": "Manuel Mix 4 Mk II",
-      "description": "4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, averaging or unity.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/ManCV.md#manuel-mix-4-mk-ii",
-      "tags":  [
-        "Polyphonic",
-        "Mixer",
-        "VCA"
-      ]
-    },
-    {
-      "slug": "ManMix4st",
-      "name": "Manuel Mix 4 Stereo",
-      "description": "4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, averaging or unity. Optional mono-to-stereo.",
-      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/ManCV.md#manuel-mix-4-stereo",
-      "tags":  [
-        "Polyphonic",
-        "Mixer",
-        "VCA"
-      ]
-    },
-    {
       "slug": "Mute2",
       "name": "Mute 2",
       "description": "2HP dual mute: per-section latchable button and gate/trigger CV, plus Both.",
@@ -336,6 +304,38 @@
       "tags":  [
         "Polyphonic",
         "Utility"
+      ]
+    },
+    {
+      "slug": "ManMix4I",
+      "name": "Manuel Mix 4 Mk I",
+      "description": "2HP mixer: 4 inputs, per-input knobs (0-200%), master, averaging or unity mix.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#manuel-mix-4-mk-i",
+      "tags":  [
+        "Polyphonic",
+        "Mixer"
+      ]
+    },
+    {
+      "slug": "ManMix4II",
+      "name": "Manuel Mix 4 Mk II",
+      "description": "4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, averaging or unity.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#manuel-mix-4-mk-ii",
+      "tags":  [
+        "Polyphonic",
+        "Mixer",
+        "VCA"
+      ]
+    },
+    {
+      "slug": "ManMix4st",
+      "name": "Manuel Mix 4 Stereo",
+      "description": "4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, averaging or unity. Optional mono-to-stereo.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#manuel-mix-4-stereo",
+      "tags":  [
+        "Polyphonic",
+        "Mixer",
+        "VCA"
       ]
     },
     {
@@ -596,9 +596,10 @@
     {
       "slug": "CxFade1x2",
       "name": "Cross-fade 1x2",
-      "description": "2HP cross-fade a stereo signal, or two separate mono signals, by knob/CV. A/B toggle, trigger mode.",
+      "description": "2HP cross-fade a stereo signal, or two separate mono signals, by knob/CV. A/B toggle, trigger mode, panning, timed fade.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/CrossFade.md#cross-fade-1x2",
       "tags":  [
+        "Pan",
         "Polyphonic",
         "Utility"
       ]
@@ -606,7 +607,7 @@
     {
       "slug": "CxFade4x1",
       "name": "Cross-fade 4x1",
-      "description": "8HP cross-fade 4 separate signals by per-section and master knob/CV. A/B toggle, trigger mode, flipped outputs.",
+      "description": "8HP cross-fade 4 separate signals by per-section and master knob/CV. A/B toggle, trigger mode, flipped outputs, timed fade.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/CrossFade.md#cross-fade-4x1",
       "tags":  [
         "Polyphonic",

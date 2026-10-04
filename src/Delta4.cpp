@@ -289,11 +289,11 @@ struct Delta4ModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<CKSS>(Vec(switchCol, 111.057f), module, Delta4Module::REF_MODE_PARAM));
 
         // Reference mode (toggle and lights)
-        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(centerCol, 228.777f), module, Delta4Module::TOGGLE_OUTPUT_MODE_PARAM));
-        const float lightRow = 241.171f;
-        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(7.390f, lightRow), module, Delta4Module::OM_SIGN_LIGHT));
-        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(14.671f, lightRow), module, Delta4Module::OM_INV_LIGHT));
-        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(22.015f, lightRow), module, Delta4Module::OM_ABS_LIGHT));
+        addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(centerCol, 238.959f), module, Delta4Module::TOGGLE_OUTPUT_MODE_PARAM));
+        const float lightRow = 232.976f;
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(5.893f, lightRow), module, Delta4Module::OM_SIGN_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(15.f, lightRow), module, Delta4Module::OM_INV_LIGHT));
+        addChild(createLightCentered<TinyLight<GreenLight>>(Vec(23.340f, lightRow), module, Delta4Module::OM_ABS_LIGHT));
 
         // Channel inputs (A–D) and outputs (A–D)
         const float rowSpacing = 24.665f;
