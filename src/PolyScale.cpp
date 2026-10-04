@@ -178,11 +178,11 @@ struct PolyScaleModule : InfNoiseModule {
         bool usePriSecScale[8] = { false, false, false, false, false, false, false, false };
         for (int i = 0; i < 8; i++) {
             scales[i] = params[SCALE1_PARAM + i].getValue();
-            usePriSecScale[i] = scales[i] != 1.f;
+            usePriSecScale[i] = scales[i] * attRngFactor != 1.f;
             if (usePriSecScale[i])
                 havePriSecScale = true;
         }
-        haveAllScale = params[ALL_SCALE_PARAM].getValue() != 1.f || 
+        haveAllScale = params[ALL_SCALE_PARAM].getValue() * attRngFactor != 1.f || 
             (inputs[ALL_SCALE_INPUT].isConnected() && allTrim != 0.f);  
 
         // Check for multiple overlapping scales (every 64th processParams = every 16384 cycle @48kHz)
@@ -337,6 +337,7 @@ struct PolyScaleModuleWidget : InfNoiseModuleWidget {
         }
 
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(29.500f, 332.694f), module, PolyScaleModule::POLY_OUTPUT));
+        addChild(createLightCentered<TinyLight<RedLight>>(Vec(19.066f, 316.829f), module, PolyScaleModule::MULTIPLE_SCALE_LIGHT));
     }
 
     void appendContextMenu(Menu* menu) override {

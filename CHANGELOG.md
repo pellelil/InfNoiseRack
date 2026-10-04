@@ -47,6 +47,7 @@
 - **[Phase-Driven LFO](doc/LFO.md#phase-driven-lfo)**: Fixed scaling for MOD CV-input (input had half the effect it should have).
 - **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next setting when scale/offset CV-inputs were normalized.
 - **[Tweak-8](doc/Tweak.md#tweak-8)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next setting when scale/offset CV-inputs were normalized.
+- **[Poly-Scale](doc/PolyTools.md#poly-scale)**: The multiple-scale warning light was not added to panel (next to "Poly" output).
 
 
 
