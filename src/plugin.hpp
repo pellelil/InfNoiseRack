@@ -46,6 +46,8 @@ extern Model* modelManMute8;
 extern Model* modelManPush2;
 extern Model* modelManTrGtCv;
 extern Model* modelManTrigger8;
+extern Model* modelMatrixMix4x4Stereo;
+extern Model* modelMatrixMix5x5;
 extern Model* modelMerge2x4;
 extern Model* modelMergeMult4;
 extern Model* modelMult2x4;
@@ -78,6 +80,7 @@ extern Model* modelSlew4;
 extern Model* modelSLFO4ss;
 extern Model* modelSLFO4st;
 extern Model* modelSlopeDetector2;
+extern Model* modelStereoBalancePan;
 extern Model* modelTinyLCMP2;
 extern Model* modelTLFO;
 extern Model* modelTuringMachine;
@@ -116,7 +119,7 @@ struct InfNoiseModule : Module {
     bool wasJustReset = false;  // Set true in InfNoiseModule.onReset, cleared in postProcessParams
     bool wasJustLoaded = false;  // Set true in InfNoiseModule.dataFromJson, cleared in postProcessParams
     bool sampleRateChanged = true; // True at create and when sample rate changes; cleared in postProcessParams
-    const int currentJson = 4;  // Manually incremented for "breaking changes" to json-format
+    const int currentJson = 5;  // Manually incremented for "breaking changes" to json-format
     int jsonVersion = currentJson; // Used to detect if the module has been saved with a previous json-version of the plugin
     processQuality prevProcessQuality = pq_audioRate;  // Used to detect if process-quality has changed
     voltRange prevOutClipRange = vr_mp12;              // Used to detect if clipping-range has changed
@@ -141,8 +144,12 @@ struct InfNoiseModule : Module {
     actReqValue<voltValue> trigOutLow = actReqValue<voltValue>(v_TriggerLow); // Volt-output for trigger low
     actReqValue<trigLengthType> trigOnLength = actReqValue<trigLengthType>(tl_1ms); // On/high trigger length
     actReqValue<trigLengthType> trigOffLength = actReqValue<trigLengthType>(tl_1ms); // Off/low trigger length
+    actReqValue<trigDelayType> trigOutDelay = actReqValue<trigDelayType>(tdl_none); // Output trigger delay
+    actReqValue<trigDelayType> trigInDelay = actReqValue<trigDelayType>(tdl_none); // Input trigger delay
     int trigOnCycles = 44; // Engine samples for the on/high phase (from trigOnLength)
     int trigOffCycles = 44; // Engine samples for the off/low phase (from trigOffLength)
+    int trigOutDelayCycles = 0; // Engine samples for output trigger delay (from trigOutDelay)
+    int trigInDelayCycles = 0; // Engine samples for input trigger delay (from trigInDelay)
 
     // Features (decendants should set/overwrite these in their constructor)
     bool haveProcQuality = false;  // Adds menu to specify process-quality
@@ -210,6 +217,8 @@ struct InfNoiseModule : Module {
         trigOutLow.setBoth(v_TriggerLow);
         trigOnLength.setBoth(tl_1ms);
         trigOffLength.setBoth(tl_1ms);
+        trigOutDelay.setBoth(tdl_none);
+        trigInDelay.setBoth(tdl_none);
     }
 
     void onRandomize(const RandomizeEvent& e) override {
@@ -247,12 +256,14 @@ struct InfNoiseModule : Module {
         if (haveTrigDetect) {
             json_object_set_new(rootJ, "trigDetHigh", json_integer((int)trigDetHigh.req));
             json_object_set_new(rootJ, "trigDetLow", json_integer((int)trigDetLow.req));
+            json_object_set_new(rootJ, "trigInDelay", json_integer((int)trigInDelay.req));
         }
         if (haveTrigHighLow){
             json_object_set_new(rootJ, "trigOutHigh", json_integer((int)trigOutHigh.req));
             json_object_set_new(rootJ, "trigOutLow", json_integer((int)trigOutLow.req));
             json_object_set_new(rootJ, "trigOnLength", json_integer((int)trigOnLength.req));
             json_object_set_new(rootJ, "trigOffLength", json_integer((int)trigOffLength.req));
+            json_object_set_new(rootJ, "trigOutDelay", json_integer((int)trigOutDelay.req));
         }
 
         dataToJson(rootJ);
@@ -287,6 +298,8 @@ struct InfNoiseModule : Module {
         trigOutLow.setBoth((voltValue)getJsonInt(rootJ, "trigOutLow", (int)v_TriggerLow, (int)v_len - 1));
         trigOnLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigOnLength", (int)tl_1ms, (int)tl_len - 1));
         trigOffLength.setBoth((trigLengthType)getJsonInt(rootJ, "trigOffLength", (int)tl_1ms, (int)tl_len - 1));
+        trigOutDelay.setBoth((trigDelayType)getJsonInt(rootJ, "trigOutDelay", (int)tdl_none, (int)tdl_len - 1));
+        trigInDelay.setBoth((trigDelayType)getJsonInt(rootJ, "trigInDelay", (int)tdl_none, (int)tdl_len - 1));
     }
 
     /// @brief Decendants should call this in BEGINNING of their processParams method.
@@ -313,11 +326,18 @@ struct InfNoiseModule : Module {
         trigDetLow.updateActual();
         trigOutHigh.updateActual();
         trigOutLow.updateActual();
-        if (haveTrigHighLow && (sampleRateChanged || trigOnLength.needsUpdate() || trigOffLength.needsUpdate())) {
+        if (haveTrigDetect && trigInDelay.needsUpdate()) {
+            trigInDelay.updateActual();
+            trigInDelayCycles = trigDelayToCycles(trigInDelay.act);
+        }
+        if (haveTrigHighLow && (sampleRateChanged || trigOnLength.needsUpdate() || trigOffLength.needsUpdate()
+                || trigOutDelay.needsUpdate())) {
             trigOnLength.updateActual();
             trigOffLength.updateActual();
+            trigOutDelay.updateActual();
             trigOnCycles = trigLengthToCycles(trigOnLength.act, sampleRate);
             trigOffCycles = trigLengthToCycles(trigOffLength.act, sampleRate);
+            trigOutDelayCycles = trigDelayToCycles(trigOutDelay.act);
             onTrigLengthChanged();
         }
     }

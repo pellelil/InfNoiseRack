@@ -267,6 +267,8 @@ void init(Plugin *p) {
 	p->addModel(modelManPush2);
 	p->addModel(modelManTrGtCv);
 	p->addModel(modelManTrigger8);
+	p->addModel(modelMatrixMix4x4Stereo);
+	p->addModel(modelMatrixMix5x5);
 	p->addModel(modelMerge2x4);
 	p->addModel(modelMergeMult4);
 	p->addModel(modelMult2x4);
@@ -299,6 +301,7 @@ void init(Plugin *p) {
 	p->addModel(modelSLFO4ss);
 	p->addModel(modelSLFO4st);
 	p->addModel(modelSlopeDetector2);
+	p->addModel(modelStereoBalancePan);
 	p->addModel(modelTinyLCMP2);
 	p->addModel(modelTLFO);
 	p->addModel(modelTuringMachine);

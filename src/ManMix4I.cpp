@@ -11,6 +11,7 @@ struct ManMix4IModule : InfNoiseModule {
         MIX2_PARAM,
         MIX3_PARAM,
         MIX4_PARAM,
+        MIX_MODE_PARAM,
         PARAMS_LEN
     };
     enum InputsId {
@@ -31,13 +32,10 @@ struct ManMix4IModule : InfNoiseModule {
         INV2_LIGHT,
         INV3_LIGHT,
         INV4_LIGHT,
-        MIX_MODE_LIGHT,
         LIGHTS_LEN
     };
 
-    enum mixModeType { mm_averaging, mm_unity, mm_len };
     enum mixKnobInvert { mki_normal, mki_inverted, mki_len };
-    actReqValue<mixModeType> mixMode = actReqValue<mixModeType>(mm_averaging);
     actReqValue<mixKnobInvert> mixInv[4] = {
         actReqValue<mixKnobInvert>(mki_normal),
         actReqValue<mixKnobInvert>(mki_normal),
@@ -53,6 +51,7 @@ struct ManMix4IModule : InfNoiseModule {
     float knobValues[4] = { 1.f, 1.f, 1.f, 1.f };
     float knobSigns[4] = { 1.f, 1.f, 1.f, 1.f };
     float mixScale = 1.f;
+    bool unityMode = true;
 
 	ManMix4IModule() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -64,11 +63,11 @@ struct ManMix4IModule : InfNoiseModule {
         configParam(MIX2_PARAM, 0.f, 2.f, 1.f, "B-amplification (0% to 200%)", " %", 0, 100);
         configParam(MIX3_PARAM, 0.f, 2.f, 1.f, "C-amplification (0% to 200%)", " %", 0, 100);
         configParam(MIX4_PARAM, 0.f, 2.f, 1.f, "D-amplification (0% to 200%)", " %", 0, 100);
+        configSwitch(MIX_MODE_PARAM, 0.f, 1.f, 0.f, "Mix mode", { "Unity", "Averaging" });
 
         const std::string letters[]{ "A", "B", "C", "D" };
         for (int i = 0; i < 4; i++)
             configLight(INV1_LIGHT + i, letters[i] + "-amplification inverted (if lit)");
-        configLight(MIX_MODE_LIGHT, "Dim: Averaging mix (default), Red: Unity mix");
         
         configInput(CV1_INPUT, "A-CV");
         configInput(CV2_INPUT, "B-CV");
@@ -92,7 +91,6 @@ struct ManMix4IModule : InfNoiseModule {
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
-        mixMode.setBoth(mm_averaging);
         for (int i = 0; i < 4; i++) {
             mixInv[i].setBoth(mki_normal);
             knobSigns[i] = 1.f;
@@ -101,7 +99,11 @@ struct ManMix4IModule : InfNoiseModule {
 
     void dataFromJson(json_t* rootJ) override {
         InfNoiseModule::dataFromJson(rootJ);
-        mixMode.setBoth((mixModeType)getJsonInt(rootJ, "mixMode", (int)mm_averaging, (int)mm_len - 1));
+        if (jsonVersion < 5) {
+            // Legacy: 0 = averaging, 1 = unity
+            int oldMixMode = getJsonInt(rootJ, "mixMode", 0, 1);
+            params[MIX_MODE_PARAM].setValue(oldMixMode == 0 ? 1.f : 0.f);
+        }
         int mixInvTmp[4];
         getJsonIntArray(rootJ, "mixInv", mixInvTmp, 4, (int)mki_normal, (int)mki_len - 1);
         for (int i = 0; i < 4; i++)
@@ -109,7 +111,6 @@ struct ManMix4IModule : InfNoiseModule {
     }
 
     void dataToJson(json_t* rootJ) override {
-        json_object_set_new(rootJ, "mixMode", json_integer((int)mixMode.req));
         int mixInvTmp[4];
         for (int i = 0; i < 4; i++)
             mixInvTmp[i] = (int)mixInv[i].req;
@@ -148,11 +149,8 @@ struct ManMix4IModule : InfNoiseModule {
 		}
         outputs[MIX_OUTPUT].setChannels(channels);
 
-        if (mixMode.needsUpdate()) {
-            mixMode.updateActual();
-            lights[MIX_MODE_LIGHT].setBrightness(mixMode.act == mm_unity ? 1.f : 0.f);
-        }
-        mixScale = (mixMode.act == mm_averaging && inputsInUse > 0) 
+        unityMode = params[MIX_MODE_PARAM].getValue() < 0.5f;
+        mixScale = (!unityMode && inputsInUse > 0) 
             ? (1.f / (float)inputsInUse) 
             : 1.f;
 
@@ -213,7 +211,7 @@ struct ManMix4IModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 270.114f), module, ManMix4IModule::CV3_INPUT));
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 294.746f), module, ManMix4IModule::CV4_INPUT));
 
-        addChild(createLightCentered<TinyLight<RedLight>>(Vec(4.737f, 317.911f), module, ManMix4IModule::MIX_MODE_LIGHT));
+        addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_black, bc_blue>>(Vec(3.825f, 37.066f), module, ManMix4IModule::MIX_MODE_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrClm, 333.194f), module, ManMix4IModule::MIX_OUTPUT));
     }
 
@@ -223,10 +221,6 @@ struct ManMix4IModuleWidget : InfNoiseModuleWidget {
         assert(module);
 
         menu->addChild(new MenuSeparator);
-
-        menu->addChild(createIndexPtrSubmenuItem("Mix mode",
-            { "Averaging mix", "Unity mix" },
-            &module->mixMode.req));
 
         const std::string letters[]{ "A", "B", "C", "D" };
         for (int i = 0; i < 4; i++) {

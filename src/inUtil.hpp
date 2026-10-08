@@ -526,6 +526,28 @@ inline void setFixedSlewTimesLight(Module* module, int lightId, fixedSlewTimes t
 		module->lights[lightId + 2].setBrightness(fixedSlewTimesLightB[i]);
 }
 
+/// @brief RGB abs-level meter: 0–5V green (brightness 0–100%), 5–10V amber, >10V red.
+/// Hard color steps at 5V and 10V so the bands stay distinct on small RGB LEDs
+/// (a yellow→orange fade reads too close to both full green and clip red).
+/// lightId is Red, lightId+1 Green, lightId+2 Blue (`RedGreenBlueLight`).
+inline void setAbsLevelMeterLight(Module* module, int lightId, float v) {
+	float a = std::fabs(v);
+	float r = 0.f, g = 0.f, b = 0.f;
+	if (a <= 5.f) {
+		g = a / 5.f;
+	}
+	else if (a <= 10.f) {
+		r = 1.f;
+		g = 0.4f; // amber: enough red to leave green, enough green to leave clip red
+	}
+	else {
+		r = 1.f;
+	}
+	module->lights[lightId].setBrightness(r);
+	module->lights[lightId + 1].setBrightness(g);
+	module->lights[lightId + 2].setBrightness(b);
+}
+
 inline std::string getFixedSlewTimesName(fixedSlewTimes t) {
 	if (t == fst_0)
 		return "0 (default)";
@@ -1516,20 +1538,65 @@ inline int trigLengthToCycles(trigLengthType len, float sampleRate) {
 
 
 //-----------------------------------------------------------------------------
+// Trigger in/out delay (cycles only; shared enum)
+//-----------------------------------------------------------------------------
+enum trigDelayType {
+	tdl_none,
+	tdl_1cyc, tdl_2cyc, tdl_3cyc, tdl_4cyc, tdl_5cyc, tdl_6cyc, tdl_7cyc, tdl_8cyc,
+	tdl_9cyc, tdl_10cyc, tdl_11cyc, tdl_12cyc, tdl_13cyc, tdl_14cyc, tdl_15cyc, tdl_16cyc,
+	tdl_20cyc, tdl_24cyc, tdl_28cyc, tdl_32cyc,
+	tdl_len
+};
+const int trigDelayCycleCounts[] = {
+	0,
+	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+	20, 24, 28, 32
+};
+const std::string trigDelayNames[] = {
+	"None (default)",
+	"1 cycle", "2 cycles", "3 cycles", "4 cycles", "5 cycles", "6 cycles", "7 cycles", "8 cycles",
+	"9 cycles", "10 cycles", "11 cycles", "12 cycles", "13 cycles", "14 cycles", "15 cycles", "16 cycles",
+	"20 cycles", "24 cycles", "28 cycles", "32 cycles"
+};
+
+inline std::vector<std::string> getTrigDelayNames() {
+	std::vector<std::string> names;
+	for (int i = 0; i < (int)tdl_len; i++)
+		names.push_back(trigDelayNames[i]);
+	return names;
+}
+
+/// @brief Convert a trigger-delay setting to engine-sample count (0 = none).
+inline int trigDelayToCycles(trigDelayType delay) {
+	int idx = (int)delay;
+	if (idx < 0 || idx >= (int)tdl_len)
+		idx = (int)tdl_none;
+	return trigDelayCycleCounts[idx];
+}
+
+
+//-----------------------------------------------------------------------------
 // infNoiseOutTrigger
 //-----------------------------------------------------------------------------
 /// @brief Ensures that a trigger cannot fire before the previous trigger
 /// have finished, or was reset (by default ~1 ms high and 1 ms low).
-/// A trigger is not "finished" until the low stage has also finished.
+/// Optional pre-pulse delay, then high, then low. Not finished until low ends.
 struct infNoiseOutTrigger {
+	int delayCycles = 0; // Pre-pulse delay; 0 = none (default)
 	int highCycles = 44; // Cycles in high stage (~1 ms @ 44 kHz, at least 1 cycle)
 	int lowCycles = 44; // Cycles in low stage (~1 ms @ 44 kHz, at least 1 cycle)
-	int remaining = 0; // Remaining cycles of the trigger (high + low). <=0 when idle.
+	int remaining = 0; // Remaining cycles of delay + high + low. <=0 when idle.
 
 	/// @brief Set high/low engine-sample counts and reset remaining.
 	inline void setCycles(int high, int low) {
 		highCycles = high > 0 ? high : 1; 
 		lowCycles = low > 0 ? low : 1;
+		reset();
+	}
+
+	/// @brief Set pre-pulse delay in engine samples and reset remaining.
+	inline void setDelayCycles(int delay) {
+		delayCycles = delay > 0 ? delay : 0;
 		reset();
 	}
 
@@ -1540,12 +1607,11 @@ struct infNoiseOutTrigger {
 		if (remaining > 0 && !forced)
 			return false;
 
-		remaining = highCycles + lowCycles;
+		remaining = delayCycles + highCycles + lowCycles;
 		return true;
 	}
 
-	/// @brief Returns true if the trigger is currently active (high or low stage), false when idle.
-	/// @return true if the trigger is currently active (high or low stage).
+	/// @brief Returns true while delay, high, or low is in progress (false when idle).
 	inline bool running() {
 		return remaining > 0;
 	}
@@ -1568,14 +1634,24 @@ struct infNoiseOutTrigger {
 		return true;
 	}
 
-	/// @brief Returns true if the trigger is currently high (false when low or idle)
-	inline bool isHigh() {
-		return remaining > lowCycles;
+	/// @brief Returns true only in the delay stage (false during high, low, or idle)
+	inline bool isDelay() {
+		return remaining > highCycles + lowCycles;
 	}
 
-	/// @brief Returns 1 when the trigger is high, 0 otherwise (when low or idle)
+	/// @brief Returns true only in the high stage (false during delay, low, or idle)
+	inline bool isHigh() {
+		return remaining > lowCycles && remaining <= highCycles + lowCycles;
+	}
+
+	/// @brief Returns true only in the low stage (false during delay, high, or idle)
+	inline bool isLow() {
+		return remaining > 0 && remaining <= lowCycles;
+	}
+
+	/// @brief Returns 1 only in the high stage, 0 during delay, low, or idle
 	inline float getLight() {
-		return (remaining > lowCycles) ? 1.f : 0.f;
+		return isHigh() ? 1.f : 0.f;
 	}
 };
 

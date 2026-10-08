@@ -309,7 +309,7 @@
     {
       "slug": "ManMix4I",
       "name": "Manuel Mix 4 Mk I",
-      "description": "2HP mixer: 4 inputs, per-input knobs (0-200%), master, averaging or unity mix.",
+      "description": "2HP mixer: 4 inputs, per-input knobs (0-200%), master, unity or averaging mix.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#manuel-mix-4-mk-i",
       "tags":  [
         "Polyphonic",
@@ -319,7 +319,7 @@
     {
       "slug": "ManMix4II",
       "name": "Manuel Mix 4 Mk II",
-      "description": "4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, averaging or unity.",
+      "description": "4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, unity or averaging.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#manuel-mix-4-mk-ii",
       "tags":  [
         "Polyphonic",
@@ -330,12 +330,41 @@
     {
       "slug": "ManMix4st",
       "name": "Manuel Mix 4 Stereo",
-      "description": "4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, averaging or unity. Optional mono-to-stereo.",
+      "description": "4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, unity or averaging. Optional mono-to-stereo.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#manuel-mix-4-stereo",
       "tags":  [
         "Polyphonic",
         "Mixer",
         "VCA"
+      ]
+    },
+    {
+      "slug": "MatrixMix5x5",
+      "name": "Matrix Mix 5x5",
+      "description": "14HP mono 5x5 matrix mixer: per-row invert/gain, linked column sends, per-column unity or averaging mix, range 0–1x or ±1x, level CV/trim, Min/Max/Avg/Rng.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#matrix-mix-5x5",
+      "tags":  [
+        "Mixer"
+      ]
+    },
+    {
+      "slug": "MatrixMix4x4Stereo",
+      "name": "Matrix Mix 4x4 Stereo",
+      "description": "22HP stereo 4x4 matrix mixer: per-row L/R norm, balance/pan, gain, linked unipolar sends, per-column unity or averaging mix, L/R level lights, and Avg outputs.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#matrix-mix-4x4-stereo",
+      "tags":  [
+        "Mixer"
+      ]
+    },
+    {
+      "slug": "StereoBalancePan",
+      "name": "Stereo Balance/Pan",
+      "description": "2HP stereo balance/pan with post gain 0–200%, CV/trim, and L/R level lights. Polyphonic audio; Right input normalizes from Left.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/StereoBalancePan.md#stereo-balance-pan",
+      "tags":  [
+        "Pan",
+        "Polyphonic",
+        "Utility"
       ]
     },
     {

@@ -40,9 +40,12 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + CvToGtTr8: -
 
 ### Mixer
-+ ManMix4I: -
-+ ManMix4II: -
-+ ManMix4st: -
++ ManMix4I: Now defaults to unity mix **Needs testing**
++ ManMix4II: Now defaults to unity mix **Needs testing**
++ ManMix4st: Now defaults to unity mix **Needs testing**
++ MatrixMix5x5: New module **Needs testing**
++ MatrixMix4x4Stereo: New module **Needs testing**
++ StereoBalancePan: New module **Needs testing**
 
 ### Merge/Mult
 + Mult2x4: -
@@ -76,13 +79,13 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + PolyVCMP: -
 
 ### Switches
-+ CxFade1x2: B1 normalizes to A1 (mono pan/balance). Trigger-mode fade (context menu) **Needs testing**
-+ CxFade4x1: Trigger-mode fade (context menu, shared time, per-control ramps) **Needs testing**
-+ CrossFadeSwitch1to4: Added internal fixed time cross-fade in switch-mode **Needs testing**
-+ CrossFadeSwitch4to1: Added internal fixed time cross-fade in switch-mode **Needs testing**
++ CxFade1x2: -
++ CxFade4x1: -
++ CrossFadeSwitch1to4: -
++ CrossFadeSwitch4to1: -
 + BernoulliSwitch: -
 + OnOffSwitch: -
-+ Combine: Added internal fixed time cross-fade in switch-mode **Needs testing**
++ Combine: -
 
 ### Random
 + Random4: -

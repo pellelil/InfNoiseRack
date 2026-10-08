@@ -59,7 +59,7 @@ The Tweak-2 Mk I module is a compact 2HP utility with two inputs and two outputs
 ![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
-![Features](https://img.shields.io/badge/Mix-Yes-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Mix-Averaging-orange.svg?style=flat-square)<br>
 The Tweak-2 Mk II module is a 2HP utility featuring two independent sections, labeled "A" and "B", each with its own input and output. However, if no cable is connected to the "A" output, the "B" output will carry a **averaging mix** of both sections, effectively summing the A and B signals and dividing the result by two (mixing can be disabled in the context-menu). When processing polyphonic signals, the mix feature will adjust the B-output to match the higest number of channels found in the A/B inputs. *Some general info regarding the Tweak-modules are listed in the top.*
 
 Unlike Tweak-2I, Tweak-2II does not support CV modulation for scaling or offset. Instead, both sections have dedicated manual scale and offset knobs, allowing fine-tuned control over each signal. When no input is connected, the offset knobs can be used to generate fixed voltage outputs in the range of -10V to +10V. If no cable is inserted into the "B" input, it is normalized to the "A" input, meaning a single signal can be processed in two different ways simultaneously. For example, inserting a signal into "A", setting its scale knob to +100% (default), and setting the "B" scale knob to -1x, will result in the "A" output providing an unchanged copy of the input, while the "B" output produces an inverted version of the same signal.
@@ -87,7 +87,7 @@ Each section (A through D) is processed independently, meaning they will output 
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
-![Features](https://img.shields.io/badge/Mix-Yes-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Mix-Averaging-orange.svg?style=flat-square)<br>
 Compared to Mk I, Tweak-4 Mk II offers individual scaling/offset for each section, and it can be regarded as "half a Tweak-8". If works exactly like the Tweak-8, where the only difference is it only have 4 sections (A through D), whereas the the Tweak-8 have 8 sections (A through H). So see the description below for the Tweak-8. Unlike the Tweak Mk I, the Mk II **do support mixing**, hence it will work perfectly for mixing up to 4 signals (or mix 2x2 signales - e.g. 2 stereo signals). *Some general info regarding the Tweak-modules are listed in the top.*
 
 In both the Scale- and Offset parts of the panel you find a latchable "Link to A" button. When enabled the knobs for section B-D will be "grayed out" and they will automatically adjust to the changes made to the A-section. This way you can easily dial in the same Scale- and/or Offset- settings for all 4 sections.
@@ -102,7 +102,7 @@ In both the Scale- and Offset parts of the panel you find a latchable "Link to A
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)
 ![Features](https://img.shields.io/badge/Attenuvert-1x,2x,5x,10x-green.svg?style=flat-square)
-![Features](https://img.shields.io/badge/Mix-Yes-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Mix-Averaging-orange.svg?style=flat-square)<br>
 The Tweak-8 module is the largest of the Tweak-series, featuring eight fully independent sections, each with their own scale and offset knobs as well as CV inputs. Like the other Tweak modules, you can use each of the eight individual outputs, or simply take the final "H" output to get a fully mixed signal from all eight sections. *Some general info regarding the Tweak-modules are listed in the top.*
 
 If you frequently find yourself using multiple Tweak-2I modules or need submixing of multiple signals, the Tweak-8 is an ideal solution. For cases where you need to adjust the amplitude of the full mix at the "H" output, you can simply route it through a Tweak-2I module and use its scale knob to control the overall mix level. If you only need to mix six signals instead of eight, you can manually route the "F" output into the "G" input (cable from F-out to G-in), and then use the scale knob of section "G" to attenuate the mix. The "G" output will then carry the adjusted mix of six signals.

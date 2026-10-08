@@ -1,6 +1,8 @@
 # Manual operated modules / Controlers
 These modules are designed primarily as performance and control tools, allowing you to manually dial in CV values, fire triggers and gates, and interact dynamically with other modules. Many of them provide up to eight unique outputs, each of which can be activated individually using dedicated push buttons or simultaneously via an "All" button. Generally the smaller 2HP modules feature fewer buttons and outputs, but retain the same core functionality. Several of these modules also support polyphonic outputs.
 
+*Beside the modules mentioned below, the plugin also includes 3 knob operatated manual mixer modules (each with 4 inputs - 1 of these supports stereo signals), and 2 matrix mixers (a 5x5 for CV signals and a 4x4 for stereo signals). These are all described in the [Mixer manual](Mixer.md).*
+
 The design philosophy behind Infinite-Noise modules focuses on clarity and readability rather than decorative graphics. The interfaces are kept minimalistic, using a monochrome (black, white, and grayscale) color scheme to reduce visual clutter. However, the manual-operated modules belong to a family of performance and control modules, including Manual-CV, Manual-Trigger, and Manual-Gate, each with a color-coded label to distinguish their functionality. The CV (control voltage), TR (trigger), and GT (gate) sections of their names appear in specific colors, matching the on/off, trigger, and gate buttons for quick identification. Additionally, some modules feature small latch buttons beside the main push buttons, which determine whether the main button functions as a momentary switch or latching switch (when the latch button is illuminated, the latch mode is enabled).
 
 ## Manuel Trigger, Gate and CV

@@ -1,0 +1,19 @@
+
+# Stereo balance pan
+The purpose of the Stereo Balance/Pan module is to adjust the balance/pan of a stereo or mono signal within a stereo environment. At the top, you find the section for adjusting the Balance/Pan. Below that, you find a section for adjusting the Gain in the range 0x to 2x (0% to 200%), and at the bottom, you find the stereo inputs and outputs. If you only connect a mono signal to the Left input, the Right input is normalized to the Left input, as indicated by the arrowhead. Hence, it is easy to place a monophonic signal within a stereo environment. *The module is able to process **Polyphonic signals**. However, the B/P and Gain inputs are monophonic, so the same Balance/Pan and Gain settings are applied to all channels.*
+
+Next to the "B/P" label, you find a latching toggle button that switches between Balance and Pan modes (unpressed/black = Balance, pressed/green = Pan). In **Balance mode**, when the L/R knob is centered, both the Left and Right input signals are internally scaled to 100% (remain unchanged). However, as you turn the knob (e.g., toward the left), the Left signal remains at 100%, while the Right signal is gradually reduced, reaching 0% when the knob is turned fully counterclockwise. In **Pan mode**, the module instead tries to maintain a constant combined level. With the L/R knob centered, both inputs are internally scaled to 70.7% (`1/sqrt(2)`). As you turn the knob (e.g., toward the left), the Left signal gradually increases to 100%, while the Right signal simultaneously decreases to 0%.
+
+Below the B/P knob and its associated CV input and Trim knob, you find another knob, CV input, and Trim knob for adjusting the Gain (after Balance/Pan). This **Gain** covers a clamped range from 0x to 2x (0% to 200%), allowing you to increase the level of the input signal if needed. By default, the Gain knob is centered at 100%. An input CV range of 10V covers the full movement of the Gain knob. Hence, with the knob turned fully counterclockwise (0%), a +5V CV input would be equivalent to half a knob rotation (to 100% at the center), while a +10V CV input would be equivalent to a full knob rotation (to 200% fully clockwise).
+
+To the left and right of the Gain knob, you find two lights. These lights indicate the levels of the Left and Right outputs (after Gain has been applied). Their brightness and color can be used to determine the levels of the output signals and can therefore help you dial in the Gain to keep the signals within a desired range. The lights are based on the absolute level of the signal (hence, negative values are treated as positive when determining brightness/color):
+
++ 0V to 5V: The light remains **green**, but its brightness increases from 0% (at 0V) to 100% at 5V.
++ >5V to 10V: The light is **amber**.
++ >10V: The light turns **red** as soon as the signal goes above 10V.
+
+The colors have been chosen to make it easy to see when a signal goes beyond 5V (e.g., a bipolar signal) or beyond 10V (e.g., a unipolar signal). If you are processing bipolar signals and want the outputs to remain within a **bipolar range**, you should try to keep the level lights in the **green range**. As soon as you see amber, you know the signal has gone above ±5V. Likewise, if you are processing unipolar signals and want to keep the outputs within a **unipolar range**, as soon as you see red, you know the signal has gone above 10V. *Audio signals are typically bipolar (−5V to +5V), so you should aim to keep these lights green.*
+
+![Screenshot of Stereo Balance/Pan](module/StereoBalancePan.png)
+
+[Go back to modules overview](manual.md#modules)

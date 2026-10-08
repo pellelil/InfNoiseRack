@@ -166,7 +166,7 @@ The sections above covered features that are common to all Infinite-Noise module
 + [Simple LFO4-st](LFO.md#simple-lfo4-st): 4HP quad LFO: four independent knob-set rates, Square and Triangle per LFO, internal hard/soft sync, Rate Chaos, and uni/bipolar range.
 + [Tiny LFO](LFO.md#tiny-lfo): 2HP Tiny LFO with knob/CV rate, PWM, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
 + [LFO1](LFO.md#lfo1): 4HP LFO with knob/CV rate, PWM, MOD, external sync in/out, n-shot, Rate Chaos, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic). Square+MOD acts as a wavetable (Triangle <-> Square <-> Saw).
-+ [Phase-Driven LFO](LFO.md#phase-driven-lfo): 4HP dhase-driven LFO: incoming phase CV sets the waveform (no internal oscillator). PWM, MOD, wrap, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
++ [Phase-Driven LFO](LFO.md#phase-driven-lfo): 4HP phase-driven LFO: incoming phase CV sets the waveform (no internal oscillator). PWM, MOD, wrap, and uni/bipolar range. Outputs Saw, Square, Triangle and Sine (polyphonic).
 
 ## Tweak (attenuate/amplify, offset and mix)
 + [Tweak-2 Mk I](Tweak.md#tweak-2-mk-i): 2HP dual attenuverter: shared knob/CV scale (1x, 2x, 5x, 10x) and offset. Polyphonic, quantize, stereo-friendly. No mix.
@@ -194,9 +194,12 @@ The sections above covered features that are common to all Infinite-Noise module
 + [CV to Gate/Trigger 8](CvToGtTr8.md#cv-to-gatetrigger-8): 8HP 8 sections can fire a gate or trigger if CV is within a specified min/max range. E.g., you can input a single CV signal and have up to 8 gate/trigger outputs that can fire independently based on the value of the CV input.
 
 ## Mixers
-+ [Manuel Mix 4 Mk I](Mixer.md#manuel-mix-4-mk-i): 2HP mixer: 4 inputs, per-input knobs (0-200%), master, averaging or unity mix.
-+ [Manuel Mix 4 Mk II](Mixer.md#manuel-mix-4-mk-ii): 4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, averaging or unity.
-+ [Manuel Mix 4 Stereo](Mixer.md#manuel-mix-4-stereo): 4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, averaging or unity. Optional mono-to-stereo.
++ [Manuel Mix 4 Mk I](Mixer.md#manuel-mix-4-mk-i): 2HP mixer: 4 inputs, per-input knobs (0-200%), master, unity or averaging mix.
++ [Manuel Mix 4 Mk II](Mixer.md#manuel-mix-4-mk-ii): 4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, unity or averaging.
++ [Manuel Mix 4 Stereo](Mixer.md#manuel-mix-4-stereo): 4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, unity or averaging. Optional mono-to-stereo.
++ [Matrix Mix 5x5](Mixer.md#matrix-mix-5x5): 14HP mono 5x5 matrix mixer: per-row invert/gain, linked column sends, per-column unity or averaging mix, range 0–1x or ±1x, level CV/trim, Min/Max/Avg/Rng.
++ [Matrix Mix 4x4 Stereo](Mixer.md#matrix-mix-4x4-stereo): 22HP stereo 4x4 matrix mixer: per-row L/R norm, balance/pan, gain, linked unipolar sends, per-column unity or averaging mix, L/R level lights, and Avg.
++ [Stereo Balance/Pan](StereoBalancePan.md#stereo-balance-pan): 2HP stereo balance/pan with post gain 0–200%, CV/trim, and L/R level lights. Polyphonic audio; Right input normalizes from Left.
 
 ## Merge/Mult
 + [Mult2x4](MergeMult.md#mult2x4): 2HP dual mult: two inputs with four copies each, or 1-to-8 if the lower input is unused.

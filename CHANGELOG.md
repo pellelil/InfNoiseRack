@@ -1,10 +1,10 @@
 # 2.0.5 (In development)
-- In all of the Tweak-modules the Scale-range/Offset-mode lights were replaced by multi-stage/color push buttons (see **Updated Modules** below). This means Scale-range/Offset-mode can be changed directly from the panel, whereas these had to be changed using the context-menu in previous versions (old context menu items were removed). *When loading a patch made with a previous version, the old context-menu selections are automatically "converted" into stages for the new buttons*.
-- Added new knob scaling to the time knobs utilized in ADR-/ADSDR-Envelope. Loading a patch saved in a previous version, the knobs will automatic rescale on load to ensure the knobs keep the same time as prevoius (please see **Breaking changes** below). Added context-menu Time scale (0.1× / 1× / 10×) with indicator lights on the time knobs. The 0.1x scaling makes is more easy to dial in times in the 0-1 second range, whereas the 10x scaling allows you to dial in times up to 100 seconds. *The scaling will default to 1x, hence by default the knobs allows you to set times in the 0 to 10 seconds range as in prevoius versions.*
+- Added new knob-scaling to the time knobs utilized in ADR-/ADSDR-Envelope. Loading a patch saved in a previous version, the knobs will automatic rescale on load to ensure the knobs keep the same time as prevoius (please see **Breaking changes** below). Added context-menu Time scale (0.1× / 1× / 10×) with indicator lights on the time knobs. The 0.1x scaling makes is more easy to dial in times in the 0-1 second range, whereas the 10x scaling allows you to dial in times up to 100 seconds. *The scaling will default to 1x, hence by default the knobs allows you to set times in the 0 to 10 seconds range as in prevoius versions.*
 - Added internal (fixed time) cross fade to several switch and mute modules (see **Updated modules** below). By default these modules will still perform an instant switch/mute, however using the context menu you are now able select between different fixed time cross fades - in the range from 0.0001 to 10 seconds. Likewise using the context menu you can select either a Linear (default) or S-Curve cross fade (starts slow -> fast in the middle -> slow at the end). *This build in cross-fade can achive results, an external tool cannot do (as it only affects the actual switch, hence not affect the signal before/after the switch).*
-- Implemented more resilient patch loading (handling of out-of-range enum values, due to potential bugs or corrupt patch files).
-- While testing the new modules, I sadly discovered a couple of simple/embarrassing bugs in a few other modules. So, I've decided to go through all of the modules, to test them all once again. *It's not half as fun as it might sound ... knowing it doesn't sound fun at all :-)* Anyway, while I can't fully test each and every permutation of how a module might be used, I'm at least happy to report that what I found was fixed, and there are no known bugs.
+- In all of the Tweak-modules the Scale-range/Offset-mode lights were replaced by multi-stage/color push buttons (see **Updated Modules** below). This means Scale-range/Offset-mode can be changed directly from the panel, whereas these had to be changed using the context-menu in previous versions (old context menu items were removed). *When loading a patch made with a previous version, the old context-menu selections are automatically "converted" into stages for the new buttons*.
 - Added separate Mixer section to the manual.
+- In previous versions, Manuel Mix 4 Mk I, Manuel Mix 4 Mk II and Manuel Mix 4 Stereo defaulted to perform an Avering mix. These modules will now in stead default to perform a Unity mix. Likewise in previous you have to use the context menu to switch mix-mode. However now there is a small toggle button near the "Mix" label in the top to toggle between Unity- or Avering mix-mode. *Old patches will still load with the correct mix-mode.*
+- While testing some of the new modules, I sadly discovered a couple of simple/embarrassing bugs in a few other modules. So, I've decided to go through all of the modules, to test them all once again. *It was not half as fun as it might sound ... knowing it doesn't sound fun at all :-)* Anyway, while I can't fully test each and every combination of how a module might be used, I'm at least happy to report that what I found was fixed, and there are no known bugs.
 
 ## Braking changes
 - As mentioned above, the time knobs on the the ADR-/ADSDR-envelope will automatic adjust to the new knob scaling when loading an old patch. However I suspect if you use external modules to set knob positions (such as PatchMaster by MindMeld) that you would have to tweak those knob settings to get the same time-settings.
@@ -15,9 +15,12 @@
 - **[Slew 2](doc/Slew.md#slew-2)**: 4HP dual polyphonic constant rate/time slew with knobs and (polyphonic) CV/trim for rise and fall time and shape, Snap (gate/trigger), B-Catch (gate) output, shared Scale/Offset of the input, and envelope follower. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape
 - **[Slew 4](doc/Slew.md#slew-4)**: 2HP quad polyphoinc constant rate/time slew with knobs based rise/fall times/shape settings. Via context-menu the (center) linear shape, can be replaced by an S-Curve shape.
 - **[Chaos](doc/Random.md#chaos)**: 2HP adds random chaos to an input (or outputs chaos). Range, distribution, slew, Rate Chaos.
+- **[Stereo Balance/Pan](doc/StereoBalancePan.md#stereo-balance-pan)**: 2HP stereo balance/pan with post gain (0–200%), CV/trim, and L/R level lights. Polyphonic audio; mono B/P and Gain CV. Right input normalizes from Left.
+- **[Matrix Mix 5x5](doc/Mixer.md#matrix-mix-5x5)**: 14HP mono 5x5 matrix mixer with per-row invert/gain, column send links, per-column unity or averaging mix, 0-1x or +/-1x range, level CV/trim, and Min/Max/Avg/Rng.
+- **[Matrix Mix 4x4 Stereo](doc/Mixer.md#matrix-mix-4x4-stereo)**: 22HP stereo 4x4 matrix mixer with per-row L/R normalization, balance/pan, gain, linked unipolar sends, per-column unity or averaging mix, L/R level lights, and Avg outputs.
 
 ## Updated modules
-- **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Changed scaling of the  time-knobs. Added context-menu Time scale (0.1× / 1× / 10×). 
+- **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Changed scaling of the time-knobs. Added context-menu Time scale (0.1× / 1× / 10×). 
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Changed scaling of time-knobs. Added context-menu Time scale (0.1× / 1× / 10×).
 - **[Random-4](doc/Random.md#random-4)**: Added fixed/adaptive time slew between generated random values (set via context menu).
 - **[Bernoulli Switch](doc/Switch.md#bernoulli-switch)**: Added independent fixed-time A/B fades (context menu, default 0 / instant) and optional S-curve fade.
@@ -37,19 +40,20 @@
 - **[Cross-fade 1x2](doc/CrossFade.md#cross-fade-1x2)**: Added Cross-fade / Balance / Pan modes (Cf / Bl / Pn), so the module can be used as a stereo balance or panning module. Unpatched B1 now also normalizes to A1, so a mono signal into A1 can be balanced/panned across the stereo outputs (A2 still normalizes to B1, B2 still to A1). Added fixed-time fade on the trigger input in trigger/switch mode (context menu, default 0 / instant) and optional S-curve fade. Manual A/B-toggle remains instant.
 - **[Cross-fade 4x1](doc/CrossFade.md#cross-fade-4x1)**: Added fixed-time fade on the trigger input in trigger/switch mode (context menu, default 0 / instant) and optional S-curve fade, shared by master and all sections (each control ramps independently). Manual A/B-toggle remains instant.
 - **[CV to Gate](doc/CvToGt.md#cv-to-gate)**: Changed lights to tiny-lights.
+- **[Manuel Mix 4 Mk I](doc/Mixer.md#manuel-mix-4-mk-i)**: Now default to unity mix. New button can toggle between unity- and avering mix-mode.
+- **[Manuel Mix 4 Mk II](doc/Mixer.md#manuel-mix-4-mk-ii)**: Now default to unity mix. New button can toggle between unity- and avering mix-mode.
+- **[Manuel Mix 4 Stereo](doc/Mixer.md#manuel-mix-4-stereo)**: Now default to unity mix. New button can toggle between unity- and avering mix-mode.
 
 ## Fixed modules
 - **[ADR Envelope](doc/Envelope.md#adr-envelope)**: Fixed trigger outputs (were high for 2 ms - high for both high and low phases).
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Fixed trigger outputs (were high for 2 ms - high for both high and low phases).
 - **[Manuel Mute 8](doc/ManCV.md#manuel-mute-8)**: Fixed issues with inputs in sections 2-8 not being read.
 - **[CV-Toggle 8](doc/ManCV.md#cv-toggle-8)**: Fixed issues with normalized inputs in sections 2-8.
-- **[LFO1](doc/LFO.md#lfo1)**: Fixed scaling for MOD CV-input (input had half the effect it should have).
-- **[Phase-Driven LFO](doc/LFO.md#phase-driven-lfo)**: Fixed scaling for MOD CV-input (input had half the effect it should have).
+- **[LFO1](doc/LFO.md#lfo1)**: Fixed scaling of MOD CV-input (input had half the effect it should have).
+- **[Phase-Driven LFO](doc/LFO.md#phase-driven-lfo)**: Fixed scaling of MOD CV-input (input had half the effect it should have).
 - **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next setting when scale/offset CV-inputs were normalized.
 - **[Tweak-8](doc/Tweak.md#tweak-8)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next setting when scale/offset CV-inputs were normalized.
 - **[Poly-Scale](doc/PolyTools.md#poly-scale)**: The multiple-scale warning light was not added to panel (next to "Poly" output).
-
-
 
 
 # 2.0.4
@@ -59,7 +63,6 @@
 - Various changes/fixes to the documentation (e.g. added a few illustrations to the documentation of the Envelope modules).
 - In multiple modules, overlay(s) were added on top of controls (e.g. knobs/ports) when these are rendered "not in use" due to certain configurations set via switches (see **Updated modules** below).
 - In multiple modules, latchable/pressed buttons remained pressed when set to momentary (see **Fixed modules** below).
-
 
 ## New modules
 - **[ADSDR Envelope](doc/Envelope.md#adsdr-envelope)**: Attack-Decay-Sustain-Delay-Release Envelope with attack/decay/release time and shape, and levels for Attack, Sustain and Release. Times can be affected by Rate Chaos (set via context-menu).
@@ -103,6 +106,7 @@ Ensured all module descriptions in manifest are identical to module descriptions
 - **[Turing Machine](doc/TuringMachine.md#turing-machine)**: Min/Center/Max toggle-button appeared pressed (green) when adding module to rack. Min/Center/Max mode-lights changed to tiny-lights.
 - **[LFO1](doc/LFO.md#lfo1)**: Sync-output remained being monophonic even when the frequency-input was polyphonic.
 - **[Fold](doc/Fold.md#fold)**: Output port appeared to be monophonic ("red circle" was missing), but would output polyphonic signals.
+
 
 # 2.0.2 
 Fixed various warnings based on cppcheck report from VCV. Going forward I now have a local release-check script I can run, which monitors the various issues reported from VCV. So future releases should be less painful.
