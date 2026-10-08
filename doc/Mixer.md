@@ -94,8 +94,8 @@ To make it easier to dial in the Gain you want for each row and the mixed output
 The colors described below are based on the absolute value of the signal (hence, negative values are treated as positive):
 
 + 0V to 5V: The light remains **green**, but its brightness increases from 0% (at 0V) to 100% at 5V.
-+ >5V to 10V: The light is **amber**.
-+ >10V: The light turns **red** as soon as the signal goes above 10V.
++ \>5V to 10V: The light is **amber**.
++ \>10V: The light turns **red** as soon as the signal goes above 10V.
 
 The colors have been chosen to make it easy to see when a signal goes beyond 5V (e.g., a bipolar signal) or beyond 10V (e.g., a unipolar signal). If you are mixing bipolar inputs and want your mixed output to remain within a **bipolar range**, you should try to keep the level light in the **green range**. As soon as you see amber, you know the signal has gone above ±5V. Likewise, if you are mixing unipolar signals and want to keep the output within a **unipolar range**, as soon as you see red, you know the signal has gone above 10V. *These colors are not affected by selected clipping mode (by default the modules will clip at -12 and +12).*
 

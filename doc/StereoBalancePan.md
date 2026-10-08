@@ -9,8 +9,8 @@ Below the B/P knob and its associated CV input and Trim knob, you find another k
 To the left and right of the Gain knob, you find two lights. These lights indicate the levels of the Left and Right outputs (after Gain has been applied). Their brightness and color can be used to determine the levels of the output signals and can therefore help you dial in the Gain to keep the signals within a desired range. The lights are based on the absolute level of the signal (hence, negative values are treated as positive when determining brightness/color):
 
 + 0V to 5V: The light remains **green**, but its brightness increases from 0% (at 0V) to 100% at 5V.
-+ >5V to 10V: The light is **amber**.
-+ >10V: The light turns **red** as soon as the signal goes above 10V.
++ \>5V to 10V: The light is **amber**.
++ \>10V: The light turns **red** as soon as the signal goes above 10V.
 
 The colors have been chosen to make it easy to see when a signal goes beyond 5V (e.g., a bipolar signal) or beyond 10V (e.g., a unipolar signal). If you are processing bipolar signals and want the outputs to remain within a **bipolar range**, you should try to keep the level lights in the **green range**. As soon as you see amber, you know the signal has gone above ±5V. Likewise, if you are processing unipolar signals and want to keep the outputs within a **unipolar range**, as soon as you see red, you know the signal has gone above 10V. *Audio signals are typically bipolar (−5V to +5V), so you should aim to keep these lights green.*
 
