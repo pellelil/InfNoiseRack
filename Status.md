@@ -40,12 +40,12 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + CvToGtTr8: -
 
 ### Mixer
-+ ManMix4I: Now defaults to unity mix **Needs testing**
-+ ManMix4II: Now defaults to unity mix **Needs testing**
-+ ManMix4st: Now defaults to unity mix **Needs testing**
-+ MatrixMix5x5: New module **Needs testing**
-+ MatrixMix4x4Stereo: New module **Needs testing**
-+ StereoBalancePan: New module **Needs testing**
++ ManMix4I: -
++ ManMix4II: -
++ ManMix4st: -
++ MatrixMix5x5: -
++ MatrixMix4x4Stereo: -
++ StereoBalancePan: -
 
 ### Merge/Mult
 + Mult2x4: -
@@ -90,7 +90,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 ### Random
 + Random4: -
 + RandomCurve: -
-+ Chaos: New module **Needs testing**
++ Chaos: -
 + Arm3XY: -
 
 ### Envelope

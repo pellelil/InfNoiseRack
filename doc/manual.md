@@ -198,7 +198,7 @@ The sections above covered features that are common to all Infinite-Noise module
 + [Manuel Mix 4 Mk II](Mixer.md#manuel-mix-4-mk-ii): 4HP mixer: 4 inputs, per-input knob/CV (0-200%), individual outputs plus mix, unity or averaging.
 + [Manuel Mix 4 Stereo](Mixer.md#manuel-mix-4-stereo): 4HP stereo mixer: 4 stereo inputs, per-input knob/CV (0-200%), stereo mix, unity or averaging. Optional mono-to-stereo.
 + [Matrix Mix 5x5](Mixer.md#matrix-mix-5x5): 14HP mono 5x5 matrix mixer: per-row invert/gain, linked column sends, per-column unity or averaging mix, range 0–1x or ±1x, level CV/trim, Min/Max/Avg/Rng.
-+ [Matrix Mix 4x4 Stereo](Mixer.md#matrix-mix-4x4-stereo): 22HP stereo 4x4 matrix mixer: per-row L/R norm, balance/pan, gain, linked unipolar sends, per-column unity or averaging mix, L/R level lights, and Avg.
++ [Matrix Mix 4x4 Stereo](Mixer.md#matrix-mix-4x4-stereo): 22HP stereo 4x4 matrix mixer: per-row L/R norm, balance/pan, gain, linked unipolar sends, per-column unity or averaging mix, L/R level lights, and Avg outputs.
 + [Stereo Balance/Pan](StereoBalancePan.md#stereo-balance-pan): 2HP stereo balance/pan with post gain 0–200%, CV/trim, and L/R level lights. Polyphonic audio; Right input normalizes from Left.
 
 ## Merge/Mult
