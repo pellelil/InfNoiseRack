@@ -120,6 +120,8 @@ Next to the Distibution knob you find the **Distribution mode** toggle button. W
 
 ![Chaos settings](img/ChaosChaosSettings.png)
 
+![Distribution settings](img/ChaosDistSettings.png)
+
 **One big difference between**: The Infinite-Noise modules which have a build in rate chaos context menu, will only generate a new chaos factor whenever one (waveform) cycle ends and a new begins. If you use the Chaos module to generate a chaos value that you will input as a frequency-CV it "does not know" when a cycle ends and a new begins, unless that module have a sync-output. E.g. [LFO1](LFO.md#lfo1) have a sync output, and if you feed this output into the Trig input of the Chaos module, it will only generate a new/changed chaos value whenever LFO1 begins a new cycle.
 
 The Chaos value is added to the IN-input in each cycle. Hence when a new internal Chaos value is generated the output might "jump" due to the change of the internal Chaos value. However using the context menu you are able to select a fixed **slew-time**: 0 (default), then a 1-2-5 series from 0.0001 to 10 seconds (0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10), and "adaptive". The small light to the right of the "Freq" label shows the selected slew-time setting: **dim** when 0 is selected (no slew), gradually from **green** to **red** when 0.0001 to 10 is selected, and finally **blue** when adaptive is selected. By default this **slew is only applied to the generated Chaos value** (hence will not slew the input). However using the context menu you are able to change the slew target, so it will **instead slew the combined signal (input + Chaos value)**. 
