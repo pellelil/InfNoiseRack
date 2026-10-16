@@ -248,7 +248,7 @@ struct CvToggle8Module : InfNoiseModule {
 
         if (doProcess && outputsInUse) {
             float att = (inputs[ATTENUVERT_INPUT].isConnected())
-                ? inputs[ATTENUVERT_INPUT].getPolyVoltage(1) / 5.f
+                ? inputs[ATTENUVERT_INPUT].getPolyVoltage(0) / 5.f
                 : 1.f;
             float attOn = (attMode.act == am_onlyOff) ? 1.f : att;
             float attOff = (attMode.act == am_onlyOn) ? 1.f : att;
@@ -277,14 +277,10 @@ struct CvToggle8Module : InfNoiseModule {
                 bool haveOn = inputs[ON1_INPUT + i].isConnected();
                 bool haveOff = inputs[OFF1_INPUT + i].isConnected();
                 if (haveOn || haveOff) {
-                    att = (inputs[ATTENUVERT_INPUT].isConnected())
-                        ? inputs[ATTENUVERT_INPUT].getPolyVoltage(1) / 5.f
-                        : 1.f;
-                    attOn = (attMode.act == am_onlyOff) ? 1.f : att;
-                    attOff = (attMode.act == am_onlyOn) ? 1.f : att;
                     for (int c = 0; c < outChannels[i]; c++) {
-                        if (c > 0 && inputs[ATTENUVERT_INPUT].isConnected()) {
-                            att = inputs[ATTENUVERT_INPUT].getPolyVoltage(c) / 5.f;
+                        if (inputs[ATTENUVERT_INPUT].isConnected()) {
+                            int n = std::max(inputs[ATTENUVERT_INPUT].getChannels(), 1);
+                            att = inputs[ATTENUVERT_INPUT].getVoltage(std::min(c, n - 1)) / 5.f;
                             attOn = (attMode.act == am_onlyOff) ? 1.f : att;
                             attOff = (attMode.act == am_onlyOn) ? 1.f : att;
                         }
