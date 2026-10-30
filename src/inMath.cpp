@@ -8,7 +8,7 @@ Lut1D<256> fiveSineExpIsh(0.f, 1.f);  // 5-nested bSin convex curve: slow start,
 Lut1D<256> fiveSineLogIsh(0.f, 1.f);  // 5-nested bSin concave curve: fast start, slow end (same modules)
 Lut1D<256> normExp(0.f, 1.f);         // Normalized exp'ish ramp (convex): slow start, fast end
 Lut1D<256> normLog(0.f, 1.f);         // Normalized log'ish ramp (concave): fast start, slow end (inversed normExp)
-Lut1D<256> depthPow2Lut(1.f, 16.f); // Used by RateDephtReducer (2^1-16 bits)
+Lut1D<256> depthPow2Lut(1.f, 16.f);   // Used by RateDephtReducer (2^1-16 bits)
 
 static bool s_fiveSineExpLogLutsInitialized = false;
 static bool s_normExpLogLutsInitialized = false;

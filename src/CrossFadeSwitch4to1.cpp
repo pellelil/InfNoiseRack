@@ -52,8 +52,8 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
     };
     enum triggerDirection { td_Up, td_Down, tdir_len };
     triggerDirection pingPongDir = td_Down;
-    dsp::SchmittTrigger selectTrig;
-    dsp::SchmittTrigger resetTrig;
+    infNoiseInTrigger selectTrig;
+    infNoiseInTrigger resetTrig;
     bool triggerMode = false; // processParams; widget overlays (trim unused in trigger, Reset unused in CV)
     actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
     actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
@@ -99,6 +99,11 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        selectTrig.setDelayCycles(trigInDelayCycles);
+        resetTrig.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -273,7 +278,7 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
             // Handle reset-input
             bool wasReset = false;
             if (inputs[RESET_INPUT].isConnected() && params[CVMODE_PARAM].getValue() > 0.5f) {
-                wasReset = resetTrig.process(inputs[RESET_INPUT].getVoltage(), trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+                wasReset = resetTrig.process(inputs[RESET_INPUT].getVoltage(), trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles);
                 if (wasReset) {
                     pingPongDir = td_Down;
                     params[SELECT_PARAM].setValue(0.f);
@@ -283,7 +288,7 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
 
             // Handle trigger-input (when in trigger-mode)
             if (!wasReset && params[CVMODE_PARAM].getValue() > 0.5f && inputs[SELECT_INPUT].isConnected() &&
-                selectTrig.process(inputs[SELECT_INPUT].getVoltage(), trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                selectTrig.process(inputs[SELECT_INPUT].getVoltage(), trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                 switch (trigOrder.act) {
                     case tom_Next:
                         params[SELECT_PARAM].setValue(fmod(params[SELECT_PARAM].getValue() + 1.f / inputCount, 1.f));
@@ -393,9 +398,9 @@ struct CrossFadeSwitch4to1ModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(btnClm, 35.487f), module, CrossFadeSwitch4to1Module::SELECTMODE_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntClm, 47.843f), module, CrossFadeSwitch4to1Module::SELECT_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(cntClm, 70.656f), module, CrossFadeSwitch4to1Module::SELECT_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntClm, 93.825f), module, CrossFadeSwitch4to1Module::SELECT_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntClm, 93.825f), module, CrossFadeSwitch4to1Module::SELECT_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(btnClm, 108.785f), module, CrossFadeSwitch4to1Module::CVMODE_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntClm, 128.124f), module, CrossFadeSwitch4to1Module::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntClm, 128.124f), module, CrossFadeSwitch4to1Module::RESET_INPUT));
 
         InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
         trimOverlayGroup = overlayManager.addGroup("Trim ignored in trigger mode");

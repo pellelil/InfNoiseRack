@@ -222,7 +222,7 @@ struct PolyLCMPModuleWidget : InfNoiseModuleWidget {
         const float rowSpacing = 35.0736f; //29.228f;
         float row = 157.326f;
         for (int i = 0; i < 6; i++) {
-			addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrCol, row), module, PolyLCMPModule::AND_OUTPUT + i));
+			addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, row), module, PolyLCMPModule::AND_OUTPUT + i));
 			row += rowSpacing;
 		}
 

@@ -254,31 +254,31 @@ struct BitsToValueModuleWidget : InfNoiseModuleWidget {
         float row = 89.737f;
         const float rowSpacing = 35.4383f;
         for (int i = 0; i < 4; i++) {
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(lftInpClm, row), module, BitsToValueModule::BIT1_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(lftInpClm, row), module, BitsToValueModule::BIT1_INPUT + i));
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(lftKnobClm, row), module, BitsToValueModule::BIT_WGT1_PARAM + i));
 
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rgtKnobClm, row), module, BitsToValueModule::BIT_WGT5_PARAM + i));
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(rgtInpClm, row), module, BitsToValueModule::BIT5_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(rgtInpClm, row), module, BitsToValueModule::BIT5_INPUT + i));
             row += rowSpacing;
         }
 
         // Range controls
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(29.325f, 236.561f), module, BitsToValueModule::RANGE_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(59.325f, 236.561f), module, BitsToValueModule::RANGE_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(89.325f, 236.561f), module, BitsToValueModule::RANGE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(89.325f, 236.561f), module, BitsToValueModule::RANGE_INPUT));
 
         // Min/Center/Max controls
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(29.325f, 288.792f), module, BitsToValueModule::MINCNTRMAX_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(59.325f, 288.792f), module, BitsToValueModule::MINCNTRMAX_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(89.325f, 288.792f), module, BitsToValueModule::MINCNTRMAX_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(89.325f, 288.792f), module, BitsToValueModule::MINCNTRMAX_INPUT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(38.435f, 264.538f), module, BitsToValueModule::MIN_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(60.319f, 264.538f), module, BitsToValueModule::CNTR_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(82.713f, 264.538f), module, BitsToValueModule::MAX_LIGHT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(94.450f, 269.019f), module, BitsToValueModule::MINCNTRMAX_BTN_PARAM));
 
         // Outputs
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(lftKnobClm, 334.447f), module, BitsToValueModule::VALUE_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rgtKnobClm, 334.447f), module, BitsToValueModule::INV_VALUE_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(lftKnobClm, 334.447f), module, BitsToValueModule::VALUE_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rgtKnobClm, 334.447f), module, BitsToValueModule::INV_VALUE_OUTPUT));
     }
 
     void appendContextMenu(Menu* menu) override {

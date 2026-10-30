@@ -47,8 +47,8 @@ struct FlipFlopModule : InfNoiseModule {
     actReqValue<enDisGateModeType> enDisGateMode = actReqValue<enDisGateModeType>(enDisGateModeType::edgm_Disable);
     enum undefOprOutputType { uoo_unchanged, uoo_low_low, uoo_low_high, uoo_high_low, uoo_high_high, uoo_len };
     actReqValue<undefOprOutputType> undefOprOutput = actReqValue<undefOprOutputType>(undefOprOutputType::uoo_unchanged);
-    dsp::SchmittTrigger clockTrigger[PORT_MAX_CHANNELS];
-    dsp::SchmittTrigger disableTrigger;
+    infNoiseInTrigger clockTrigger[PORT_MAX_CHANNELS];
+    infNoiseInTrigger disableTrigger;
     infNoiseOutTrigger qChangedTrigger[PORT_MAX_CHANNELS];
     std::string tdName[2] = { "Toggle (gate)", "Data (gate)" };
 
@@ -98,9 +98,17 @@ struct FlipFlopModule : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
-    void onTrigLengthChanged() override {
-        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+    void onOutTrigTimeChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
             qChangedTrigger[c].setCycles(trigOnCycles, trigOffCycles);
+            qChangedTrigger[c].setDelayCycles(trigOutDelayCycles);
+        }
+    }
+
+    void onInTrigTimeChanged() override {
+        disableTrigger.setDelayCycles(trigInDelayCycles);
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            clockTrigger[c].setDelayCycles(trigInDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -242,7 +250,7 @@ struct FlipFlopModule : InfNoiseModule {
             if (inputs[ENDIS_INPUT].isConnected()) {
                 if (params[ENDIS_TRIG_GATE_PARAM].getValue() < 0.5f) { // Trigger-mode
                     if (disableTrigger.process(inputs[ENDIS_INPUT].getVoltage(),
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                         disabled = !disabled;
                     }
                 }
@@ -301,7 +309,7 @@ struct FlipFlopModule : InfNoiseModule {
                             ? inputs[CLOCK_INPUT].getPolyVoltage(c)
                             : tdInput; // Normalize to TD-input
                         if (clockTrigger[c].process(clockInput,
-                            trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                            trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                             if (tMode)
                             {
                                 if (tdInput >= trueDetectValues[gateDetHigh.act])
@@ -370,7 +378,7 @@ struct FlipFlopModuleWidget : InfNoiseModuleWidget {
         const float enDisLgtRow = 201.298f;
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(7.160f, enDisLgtRow), module, FlipFlopModule::ENABLED_LIGHT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(22.582f, enDisLgtRow), module, FlipFlopModule::DISABLED_LIGHT));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 222.253f), module, FlipFlopModule::ENDIS_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrClm, 222.253f), module, FlipFlopModule::ENDIS_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(btnClm, 234.304f), module, FlipFlopModule::ENDIS_TRIG_GATE_PARAM));
 

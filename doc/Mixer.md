@@ -65,10 +65,11 @@ Each of the **5 input rows** (1 to 5) are (almost) identical. From the left, you
 
 The reason I said that these 5 rows are "almost" identical is because of the 5th row. By default, all row inputs are normalized to 0V, and while the first 4 rows can only be normalized to 0V, a 3-way switch below the 5th input lets you set its normalization value. Besides 0V, it can also be normalized to +5V or +10V. If you enable the Invert button, those last two normalization values become −5V or −10V. So, if you need to mix in a fixed voltage value for some reason, you can easily do so using the 5th row without connecting an input signal.
 
-In the same manner, the **5 mix/output columns** (A to E) are identical. At the top of each column, just left of the column letter, a small **mix-mode button** sets Unity mix (unpressed/black, default) or Averaging mix (pressed/blue) for that column only. In each column (from the top), you then find the 5 knobs (one for each input row), where you can dial in how much of that input should be mixed into this particular column output. Between each knob in an output column, you find a Link button. By default, this **Link button** is dim (not enabled), but when pressed once, it turns green. When **green**, the knob below is linked to the knob above (and covered by an overlay). So, when the knob above is changed, the knob below is set to the same value. Pressing the Link button a second time turns it red. When **red**, the knob below is linked inversely to the knob above (also covered by an overlay). This reversed link makes it very easy to cross-fade between two adjacent row inputs.
-
+In the same manner, the **5 mix/output columns** (A to E) are identical. At the top of each column, just left of the column letter, a small **mix-mode button** sets Unity mix (unpressed/black, default) or Averaging mix (pressed/blue) for that column only. 
 + **Unity mix** (default): Each column sums the row inputs scaled by their send knobs (then the column Level/CV).
 + **Averaging mix**: The same sum is divided by the number of rows that currently contribute to that column. A row counts only if its input has a cable, its Gain is not 0, and that column's send is not 0 (in bipolar range, the center of the knob is 0). Unpatched row 5 (including +5V/+10V normalize) does not count.
+
+In each column (from the top), you then find the 5 knobs (one for each input row), where you can dial in how much of that input should be mixed into this particular column output. Between each knob in an output column, you find a Link button. By default, this **Link button** is dim (not enabled), but when pressed once, it turns green. When **green**, the knob below is linked to the knob above (and covered by an overlay). So, when the knob above is changed, the knob below is set to the same value. Pressing the Link button a second time turns it red. When **red**, the knob below is linked inversely to the knob above (also covered by an overlay). This reversed link makes it very easy to cross-fade between two adjacent row inputs.
 
 Below the 5 column knobs, you find a 2-way switch for setting the range of all 5 knobs in the same column. By default, all 5 knobs use the range 0x to 1x (0% to 100%). However, when toggled to the second range, −1x to 1x (−100% to 100%), you can attenuvert each row input. When you toggle the knob range, the knobs do not change their positions. However, since their range changes, so do the values dialed in by the knobs. Hence, it's a good idea to set the range switch to the range you want before you start setting the knob values. 
 
@@ -86,6 +87,8 @@ In the lower-left corner, you find a **cluster of 4 outputs (Min, Max, Avg, and 
 
 + **Min**: The lowest value among all connected inputs.
 + **Max**: The highest value among all connected inputs.
++ **NtZ**: The value "Nearest to Zero" among all connected inputs.
++ **FfZ**: The value "Furthest to Zero" among all connected inputs.
 + **Avg**: The average of all connected inputs.
 + **Rng**: The absolute "range" of the connected inputs (`Max - Min`).
 
@@ -98,6 +101,8 @@ The colors described below are based on the absolute value of the signal (hence,
 + \>10V: The light turns **red** as soon as the signal goes above 10V.
 
 The colors have been chosen to make it easy to see when a signal goes beyond 5V (e.g., a bipolar signal) or beyond 10V (e.g., a unipolar signal). If you are mixing bipolar inputs and want your mixed output to remain within a **bipolar range**, you should try to keep the level light in the **green range**. As soon as you see amber, you know the signal has gone above ±5V. Likewise, if you are mixing unipolar signals and want to keep the output within a **unipolar range**, as soon as you see red, you know the signal has gone above 10V. *These colors are not affected by selected clipping mode (by default the modules will clip at -12 and +12).*
+
+**TIP**: Pairing 4 of the column outputs with a [Cross-fade switch 4to1](Switch.md#cross-fade-switch-4to1) you can quikly (manually- or via CV) switch or cross-fade between these (up to) 4 differntly mixed outputs. *When in switch-mode the Cross-fade switch 4to1 have an internal cross-fade time which can be set via the context menu, hence when you switch between two inputs, it can do a fixed-time cross-fade between the two signals.*
 
 ## Matrix Mix 4x4 Stereo
 ![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
@@ -123,6 +128,8 @@ At the bottom of each of the 4 output columns, you find the Left/Right outputs, 
 
 ![Screenshot of Matrix Mix 4x4 Stereo](module/MatrixMix4x4Stereo.png)
 
-**TIP**: To change the overall level of a column mix you must adjust the (up to) 4 level knobs in relation to each other, to ensure the combined output level is within your desired range. This means if you have dialed in the desired mix of the (up to) 4 input signals in relation to each other, but would like the mix to be a little lauder, you would have to increase the level of all (up to) 4 level knobs. As an alternative you can route the stereo output to a [Stereo Balance/Pan](StereoBalancePan.md#stereo-balance-pan) module instead. This module both lets you change the balance/pan of a single column output and change the gain (0% to 200%). Both the balance/pan and the gain can be set using both knobs and CV input.
+**TIP**: To change the overall level of a column mix you must adjust the (up to) 4 level knobs in relation to each other, to ensure the combined output level is within your desired range. This means if you have dialed in the desired mix of the (up to) 4 input signals in relation to each other, but if you would like the mix to be a little lauder, you would have to increase the level of all (up to) 4 level knobs (while trying to maintain the same relation between them). As an alternative you can route the stereo output to a [Stereo Balance/Pan](StereoBalancePan.md#stereo-balance-pan) module instead. This module both lets you change the balance/pan of a single column output and change the gain (0% to 200%). Both the balance/pan and the gain can be set using both knobs and CV input. Alternatively you could pass all 8 outputs (4 mixes, each with separate left/right signals) into a [Tweak-8](Tweak.md#tweak-8), and use it change the scale of all signals (via knobs and/or CV).
+
+TIP: Using a [Cross-fade switch 4to1](https://Switch.md?utm_source=chatgpt.com#cross-fade-switch-4to1), you can quickly (manually or via CV) switch or cross-fade between these (up to) 4 differently mixed outputs. However, the Cross-fade switch 4to1 does not have dedicated stereo inputs/outputs (separate left/right pairs), but it does support switching/cross-fading polyphonic signals. Hence, you could use a couple of [Poly-Stereo](https://PolyTools.md?utm_source=chatgpt.com#poly-stereo) modules to encode/decode stereo signals (converting between separate left/right monophonic signals and polyphonic stereo signals). Each Poly-Stereo can encode/decode 2 separate stereo signals, so you would need 2 of them to handle all 4 outputs. *When in switch-mode the Cross-fade switch 4to1 have an internal cross-fade time which can be set via the context menu, hence when you switch between two inputs, it can do a fixed-time cross-fade between the two signals.*
 
 [Go back to modules overview](manual.md#modules)

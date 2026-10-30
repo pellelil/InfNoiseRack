@@ -77,7 +77,7 @@ The 3-way **Mode** switch lets you choose between three different operating mode
 * **Gate mode**: Similar to Value mode, but the input is interpreted as a gate signal. By default, input values ≥ 1V are treated as a high gate. When the output is updated, high gates are output as 10V and low gates as 0V. These thresholds and output levels can be adjusted in the context menu—for example, allowing you to invert gates by outputting high gates as 0V and low gates as 10V.
 * **Trigger mode**: Instead of storing signal values, the module detects whether any triggers occur during the sampling period (and count the number of detected triggers). When an update is requested (via the **Update** button or input), the module outputs a single trigger if any triggers were detected, or 0V if none were detected.
 
-Hovwever using the context menu you can set the module to count the number of input-triggers it shold detect (1-16). No matter what you set the trigger-count to (e.g. 4), it will only output a sigle trigger once the specified count have been achieved (or more). By default the internal count of input triggers is automatic cleared when the module recieves a reset- (no matter internal count), or an update-input while the specified count have not yet been accomplished. Hence if requested count have not yet been achieved, it will not clear the count. 
+However using the context menu you can set the module to count the number of input-triggers it shold detect (1-16). No matter what you set the trigger-count to (e.g. 4), it will only output a sigle trigger once the specified count have been achieved (or more). By default the internal count of input triggers is automatic cleared when the module recieves a reset- (no matter internal count), or an update-input while the specified count have not yet been accomplished. Hence if requested count have not yet been achieved, it will not clear the count. 
 
 You can customize this behavior in the context menu (Only on Reset):
 * **Only on Reset**: Trigger count is only cleared on Reset.
@@ -91,5 +91,102 @@ If the **Update** button is not pressed/latched, or you are not supplying a cont
 **TIP**: While in Gate mode the module can function as a Data Flip-Flop. Where you input the "data signal" into the sample-input, and press the sample button latched (so it samples all the time). You then input your trigger signal into the "Update" CV-input (in trigger mode). Whenever the the module receives an Update trigger it will update the output, and because we set the module Mode-switch to Gate-mode the sample Data-signal is output as a gate.
 
 **TIP**: While in Trigger mode the module can function as a clock-divider (though outputting a trigger). Used as such you'll latch both Sample- and Update-buttons to on, connect your clock-input to the IN-port and set trigger-count to the desired division (e.g. 3). In this configuration the OUT-port will generate a trigger-signal each time the module have observed 3 clock signals ("read as triggers"). 
+
+## Stack
+![Features](https://img.shields.io/badge/Polyphonic-Input--Output-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
+The Stack module is documented alongside the Sample-and-hold modules, as it basically represet a Sample-and-update module which is able to store up to 16 Pushed (sampled) polyphonic values, which it can later pop (retreive). The top section of the module shares a lot with the Sample and Update module, while some of the sections have different names. Below these 3 sections you find a knob to set the size of the stack (1-16). By default it will be set to the maximal size of 16, meaning 16 values (all able to be polyphonic) can be pushed to the stack before it's full. However it do keep track of how many values have been pushed (e.g. you can have a stack with room for up to 16 items, while it might only hold 4 items). The Size knob is how many of the newest stored items you can push, pop, and cycle. Turning it down does not delete the older items; they stay stored and are not shown until you turn the knob back up. Reset clears every stored item, including those hidden ones. *There can be many reasons why you might want a smaller stack size (e.g. it can be used as a rolling stack, where you only want to keep the last `n` pushed items). However unless you have a special reason for a lower stack size, I suggest just leave it at 16.*
+
+*Further down the Stack Bank Expander (StBk) module is described. Its **Retrieve** copies the entire into the active bank and leaves the Stack module unchanged. Its **Send** first clears all 16 slots in the Stack module, then copies only the slots that bank actually holds, even when that is fewer or more items than the Size knob. The knob is not changed. For example, a bank of 8 items sent while Size is 4 stores all 8, and only the newest 4 can be popped or cycled. Turning Size up to 8 then gives access to the older 4 as well. The Stack output stays at its last Pop or Reset value until the next Pop or Reset.*
+
+The 2-way switch below is used to set the mode of the stack: **FIFO** (First-In-First-Out) or **LIFO** (Last-In-First-Out). Changing this setting does not rearrange the items already stored. Push always adds the new item as the newest. The switch only chooses which end **Pop** takes from: in **FIFO** the oldest item is popped, and in **LIFO** the newest item is popped.
+
+At the bottom of the module you find the polyphonic input (which is sampled on Push), and output (which is updated on Pop and Reset). Quantize is set from the context menu and is off by default. Push stores the raw input. Quantize and clip are applied when a value is written to the Stack output. The Stack expander has its own Quantize menu for the Value output. *Saving and loading a patch, the full internal stack of the Stack module is saved/loaded along with the patch.*
+
+![Screenshot of Stack](module/Stack.png)
+
+In each of the 3 top sections you find a momentary button (for manual operation) and a trigger-input. Whenever the **Push-button** is pressed (or a Push-trigger is received) the input is sampled and pushed to the stack. Next to the "Push" label you find a small light, which will change it's color based on the status of the stack:
++ Fully green when the stack is empty.
++ Gradually transitioning to amper as the stack begins to fill (less "free space" in the stack).
++ Fully red when the stack is full (according to selected stack-size).
+
+Between the Push button and the tigger-input you find a small mode toggle-button. This button toggles the Push-mode which basically determines how the modules behaves when a **Push request is received while the stack is currently full** - based on the stack-size set by the Stack knob (1-16 slots in the stack):
++ **Dim/Ignore**: Push is ignored when the stack is full.
++ **Red/Oldest** (rolling): The oldest accessible element is dropped and the new sample is pushed as newest, so the accessible window stays at the stack size. Rolling does not change direction with LIFO/FIFO — those modes only affect which end **Pop** takes from.
+
+Likewise in the Pop section you also find a momentary button (for manual operation), a trigger-input, and a mode toggle-button between them. Whenever the **Pop-button** is pressed (or a Pop-trigger is received) an item is **popped from the stack** and the output is updated. Which item is popped, is based on the 2-way stack mode switch. When the 2-way switch is in **FIFO** mode the **first/oldest** element element is popped.  When in **LIFO** mode, the **last/newest** element added to the stack is popped. Next to the "Pop" label you find a small light, which will change it's color based on the status of the stack:
++ Fully green when the stack is full.
++ Gradually transitioning to amper as the stack begins to empty (fewer elements to pop).
++ Fully red when the stack is empty (nothing to pop).
+
+The mode toggle-button between the momentary button and the trigger-input determines what is going to occur when **Pop request is received while the stack is empty**:
++ **Dim/Zero**: Update output to 0V.
++ **Red/Hold**: Hold current value(s).
+
+In the reset setion you also find a momentary button (for manual operation), a trigger-input and a mode toggle-button between them. Whenever the **Reset-button** is pressed (or a Reset-trigger is received) the stack will be reset (emptied). The mode toggle-button between the momentary button and the trigger-input more or less works in the same manner as the Pop-modes:
++ **Dim/Zero**: Stack is cleared, and update output to 0V.
++ **Red/Hold**: Stack is cleared, but output will hold current value(s).
+
+*Initializing the module will always clear the stack, and update all outputs to 0V*
+
+Both the input- and output-ports at the bottom of the module supports **Polyphonic signals**. The polyphonic output will be determined primarily by the input, and secondary by the stack (when popping items). If a cable is connected to the input-port, the output port will always output as many channels as the input. However when no input-cable is connected the output channel-count will be based on the content of the stack. This allows you to connect an input cable, push one or more items to the stack. If you later disconnect this cable, and starts popping items, it will output as many channels as was pushed to the stack while the input was connected. You can, but **SHOULD NOT** push items with different channel counts, as modules downstream might not "behave nicely" when its input keeps changing channel count. If/when you insert a new cable with a different channel count than what you might have used previously, it's a **good idea to press the "Reset" button** to ensure the stack is empty.
+
+*If the items in the stack have a lower channel count (e.g. 4) than the currently connected input (e.g. 6) the last channels of the output (2) will simply be set to 0V. On the other hand if the items in the stack have a higher channel count than a connected input, the additional channels will be ignored (the module will then only output as many channels as the connected input).*
+
+While the input- and output ports are polyphonic the **Push-, Pop- and Reset-triggers are monophonic**, so each Push-, Pop- and Reset operation will always affect all (up to) 16 channels. E.g. with an 8-channel polyphonic input, all 8 channel-values will be pushed to/popped from the stack. Each of the (up to) 16 stack elements can hold 16 values (one for each channel). *Hence the internal stack have room for 256 values (16x16)*
+
+## Stack expander
+![Features](https://img.shields.io/badge/Expander--for-Stack-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Polyphonic-Output-orange.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Quantize-Yes-green.svg?style=flat-square)<br>
+The Stack expander will (when placed next to a Stack module) expand the Stack module with additional features. At the top you find 16 lights in a 4×4 grid. The newest item is the top-left light, and older items follow left to right, then top to bottom. If the stack size is 8, the top two rows are used and the lights past Size stay off. Filled slots are **green** and empty slots inside the Size are **red**. For example, with Size 8 and only 2 items pushed, 2 lights are green and the other 6 in those two rows are red.
+
+Below you find the **Cycle section** which enables you to loop through the items currently in the stack without popping (removing) them. At the top of this section you find the manual cycle button and its associated trigger-input. When the cycle button is pressed (or a cycle-trigger is received) the module steps to another item and copies it to the **Value** output. This enables you to push multiple values (e.g. 8 or 16 values forming a sequence of V/OCT notes) to the stack, and then while leaving this sequence in the stack, keep looping it multiple times. Via the context menu you can choose the direction of the cycle, which is indicated by the color of the light next to the "Cycle" label:
++ **Green/Next**: Walks from the oldest item toward the newest, then wraps.
++ **Red/Prev**: Walks the other way, from the newest item toward the oldest, then wraps.
++ **Yellow/Ping-pong**: Plays each end once, then reverses.
++ **Orange/Random**: A random item, which may be the current one.
++ **Blue/Random diff.**: A different random item. With only one item in the stack, it stays on that item.
+
+Between the cycle button and the cycle trigger-input you find a button to toggle the cycle-mode. Basically this button determins what the module will do then you perform the cycle action while the stack is empty:
++ **Dim/Zero**: Update output to 0V.
++ **Red/Hold**: Hold current value(s).
+
+Below the cycle-trigger you find the small **Reset button** and **Reset trigger**. When you press the small reset button (or input a reset-trigger), the module copies the **oldest** item in the stack to the Value output. If the stack is empty, the output follows the cycle-mode mentioned above, where the output will either be set to 0V or hold current value(s).
+
+The Value output is a **frozen copy** of that slot, including its channel count. That held element (up to 16 channel values) is saved and loaded with the patch. Quantize for Value is set from this expander's context menu and is off by default. The saved copy stays raw, and the selected mode is applied when Value is written, including when you change the mode. The blue light is not restored until the next Cycle or Cycle Reset, because the stack itself is matched to that slot only while the module is running. Push, Pop, Reset, shrinking Size, and Send do not change it. Within the 16 lights, the light for the slot last copied by Cycle or Cycle Reset is shown in **blue** instead of green, and only while that slot is inside the Size window. If it is popped, dropped by a rolling push, cleared by Reset, replaced by Send, or only hidden because Size was turned down, the light is no longer blue. If a hidden slot becomes accessible again before the next Cycle, the blue light can return. The Value port keeps the last copy. The next Cycle then starts over: Next and ping-pong begin at the oldest item, and Prev begins at the newest.
+
+At the bottom of the module you find 4 outputs, where the first 2 are trigger outputs, and the last are gate outputs:
++ **OvFlw** (overflow): Outputs a trigger when the stack is full (acording to the selected stack-size), and it have recieved a Push-request.
++ **UnFlw** (underlow): Outputs a trigger when the stack is empty, and it have recieved a Pop-request.
++ **Full**: Outputs a high gate when the stack is full (acording to the selected stack-size).
++ **Empty**: Outputs a high gate when the stack if empty.
+
+![Screenshot of Stack Expander](module/StackExpander.png)
+
+**TIP**: If you you feed the Empty gate into the Cycle- and Send inputs of the Stack bank expander (described below), when you pop the last element from the stack, a previously banked stack will be selected- and send from the Stack bank expander, and the Stack module will have received a new stack to pop from. Doing so, the Empty gate will typical only be high for a few cycles, as the stack is quickly repopulated once it is empty. If you need to, you can run the empty gate through one of the [Slew modules](Slew.md#slew-2) (with no rise-time, but a "longer" fall-time and perhaps an exponential fall shape), to have a signal that will be detected as a high gate for a longer time. *For an expander to work it must be placed left/right of the module it should expand. Hence in this configuration the Stack module needs to be plance between a Stack expander and a Stack bank expander (no matter which is on the left/right side of the Stack module).*
+
+## Stack bank expander
+![Features](https://img.shields.io/badge/Expander--for-Stack-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)<br>
+As the name implies, this module is bank-expander (StBk) for the Stack module. Internally it have 4 banks, where each of these banks can contain a full stack, with a stack-size of up to 16 (polyphonic) elements. Saving and loading a patch persists the content of all 4 banks, along with which bank is active. The Stack bank expander can be used to store- and switch between (banked) stacks, where each stack can be regarded as a sequence of CV-values (e.g. V/OCT notes). E.g. you can Push (up to 16) polyphonic elements into the the internal stack of the Stack module. Then you can retreive this entire stack, and store it into the active selected bank of the StBk. As the StBk have 4 banks, you are able to store 4 full stacks. Afterwards you can switch between these banks, and send the active bank back into the internal stack of the Stack module (e.g. to switch between previously "stored" sequence of notes). *Each Pop performed by the Stack module, will pop (remove) an item from its stack, however it will not affect the stored banks of the StBk. Hence the same/full stack can be send multiple times from the StBk to the Stack module.*
+
+The 4 momentary buttons at the top can be used to select the active bank (indicated by the lit light above each button). Switching bank in the StBk will have no effect on the Stack module itself, as it always have- and uses it's internal stack. **Switching bank using these 4 buttons will not send the selected bank to the stack module**.
+
+Below you find the cycle section, where you in the top have a a momentary button and trigger-input to trigger the cycle action. Between these two there is a small button which toggles the cycle mode:
+
++ **Green/Next**: Each cycle will switch to the next bank.
++ **Red/Prev**: Each cycle will switch to the previous bank.
++ **Yellow/Ping-pong**: First it will switch in one direction till the end is reached, then it will switch in the other directon.
++ **Orange/Random**: Each cycle will switch to a random bank (perhaps the same as the current).
++ **Blue/Random diff.**: Each cycle will switch to a different random bank (never the same as current).
+
+At the bottom of the cycle section there is a **3-way switch**. Down (the default) cycles banks 1 and 2, the middle position cycles banks 1–3, and up cycles banks 1–4. The four buttons at the top can still select any bank. This switch only affects the **Cycle button/trigger**. Whenever the cycle button is pressed or the cycle-trigger is activated, the module switches among the banks included by the switch. E.g. with the switch down, it switches between bank 1 and bank 2.
+
+By default a **Cycle will only select an active bank**, however it will not Send the newly selected bank to the Stack module. However using the context menu you can select that a cycle should **automatic send the newly selected bank to the Stack module**. When enabled, the small red light next to the Cycle label will illuminate. The reset button and its trigger-input will simply select bank 1 (basically it have the same effect as pressing the cycle button, until bank 1 is the active). Whether or not bank 1 will be automatic send to the Stack module depends on the previously menioned context menu.
+
+Below you find the Send and Retrieve sections (each with a momentary button and a trigger input). Select the desired bank using the 1-4 buttons in the top of the module, then **Retrieve** to copy the Stack module's accessible items into that bank (the Stack module is left unchanged), or **Send** to clear all 16 slots of the Stack module and then copy only the slots that bank actually holds. Send does not change the Size knob. Items beyond the current Size stay stored until the knob is raised or the stack is reset. Send does not change the Stack output; it stays at its last Pop or Reset value. Likewise if a Stack expander is also connected with the Stack, its Value output in the cycle-section will not change when you send a bank.
+
+![Screenshot of Stack bank expander](module/StackBankExpander.png)
 
 [Go back to modules overview](manual.md#modules)

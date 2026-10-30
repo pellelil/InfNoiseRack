@@ -59,7 +59,7 @@ struct ChaosModule : InfNoiseModule {
 	float rngCntr = 0.f;
 	float rngSpan = 0.f;
 	float rngSpan_2 = 0.f;
-	dsp::SchmittTrigger trigger;
+	infNoiseInTrigger trigger;
 	infNoiseEventTracker trigEvents;
 	infNoisePeriodTracker periodTracker;
 	bool inConn = false;
@@ -110,7 +110,7 @@ struct ChaosModule : InfNoiseModule {
 		configOutput(OUT_OUTPUT, "Output");
 		configBypass(IN_INPUT, OUT_OUTPUT);
 
-		haveProcQuality = false;
+		haveProcQuality = true;
 		haveAutoProcQuality = false;
 		haveOutQuantize = false;
 		haveOutClipRange = true;
@@ -118,6 +118,12 @@ struct ChaosModule : InfNoiseModule {
 		haveGateHighLow = false;
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
+
+		ensureNormExpLogLuts();
+	}
+
+	void onInTrigTimeChanged() override {
+		trigger.setDelayCycles(trigInDelayCycles);
 	}
 
 	void onReset(const ResetEvent& e) override {
@@ -308,7 +314,7 @@ struct ChaosModule : InfNoiseModule {
 			else {
 				trigEvents.process(procSampleTime);
 				if (trigger.process(inputs[TRIG_INPUT].getVoltage(0),
-					trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+					trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
 						calcChaos = true;
 				}
 			}
@@ -367,13 +373,13 @@ struct ChaosModuleWidget : InfNoiseModuleWidget {
 		initializeWidget(module, "res/Chaos");
 
 		const float cntrClm = 15.f;
-		addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 50.27f), module, ChaosModule::TRIG_INPUT));
+		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrClm, 50.27f), module, ChaosModule::TRIG_INPUT));
 		addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 79.72f), module, ChaosModule::FREQ_PARAM));
 		addChild(createLightCentered<SmallLight<GreenLight>>(Vec(6.91f, 65.42f), module, ChaosModule::FREQ_LIGHT));
 		addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(24.57f, 65.42f), module, ChaosModule::SLEW_TIME_LIGHT));
 
 		addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 115.95f), module, ChaosModule::CHAOS_PARAM));
-		addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 145.40f), module, ChaosModule::CHAOS_CV_INPUT));
+		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrClm, 145.40f), module, ChaosModule::CHAOS_CV_INPUT));
 
 		addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrClm, 180.20f), module, ChaosModule::MIN_PARAM));
 		addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(5.66f, 199.80f), module, ChaosModule::LINK_PARAM));

@@ -57,24 +57,7 @@ struct LFO1Module : InfNoiseModule {
     float waveOffset = -5.f;  // Offset of each LFO (based on range)
 
     int prevLfoChannels = -1; // -1 = not yet seen; used to init newly added poly channels
-    dsp::SchmittTrigger syncInTrigger[PORT_MAX_CHANNELS] = {
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger(),
-        dsp::SchmittTrigger()
-    };
+    infNoiseInTrigger syncInTrigger[PORT_MAX_CHANNELS];
     infNoiseOutTrigger syncOutTrigger[PORT_MAX_CHANNELS];
     actReqValue<bool> invWaveforms = actReqValue<bool>(false);
     actReqValue<bool> phaseLights = actReqValue<bool>(true);
@@ -150,9 +133,16 @@ struct LFO1Module : InfNoiseModule {
         ensureFiveSineExpLogLuts();
 	}
 
-    void onTrigLengthChanged() override {
-        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+    void onOutTrigTimeChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
             syncOutTrigger[c].setCycles(trigOnCycles, trigOffCycles);
+            syncOutTrigger[c].setDelayCycles(trigOutDelayCycles);
+        }
+    }
+
+    void onInTrigTimeChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            syncInTrigger[c].setDelayCycles(trigInDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -489,7 +479,7 @@ struct LFO1Module : InfNoiseModule {
                 //Handle syncIn, and set syncOut
                 bool syncIn = (inputs[SYNC_INPUT].isConnected())
                     ? syncInTrigger[c].process(inputs[SYNC_INPUT].getPolyVoltage(c),
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])
+                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)
                     : false;
                 bool syncOut = (syncIn && syncOutMode.act != som_onlyPhaseEnd);
                 if (syncIn && syncMode.act == sm_soft)
@@ -666,19 +656,19 @@ struct LFO1ModuleWidget : InfNoiseModuleWidget {
         // Range
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(30.705f, 114.938f), module, LFO1Module::RNGKNOB_PARAM));
         const float rngTrimRow = 134.591f;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftPortCol, rngTrimRow), module, LFO1Module::RNG_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftPortCol, rngTrimRow), module, LFO1Module::RNG_INPUT));
         addParam(createParamCentered<Trimpot>(Vec(trimCol, rngTrimRow), module, LFO1Module::RNG_TRIM_PARAM));
 
         // PWM
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(30.705f, 163.213f), module, LFO1Module::PWMKNOB_PARAM));
         const float pwmTrimRow = 182.866f;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftPortCol, pwmTrimRow), module, LFO1Module::PWM_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftPortCol, pwmTrimRow), module, LFO1Module::PWM_INPUT));
         addParam(createParamCentered<Trimpot>(Vec(trimCol, pwmTrimRow), module, LFO1Module::PWM_TRIM_PARAM));
 
         // MOD
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(30.705f, 211.590f), module, LFO1Module::MODKNOB_PARAM));
         const float modTrimRow = 231.243f;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftPortCol, modTrimRow), module, LFO1Module::MOD_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftPortCol, modTrimRow), module, LFO1Module::MOD_INPUT));
         addParam(createParamCentered<Trimpot>(Vec(trimCol, modTrimRow), module, LFO1Module::MOD_TRIM_PARAM));
 
         // Sync-input/output

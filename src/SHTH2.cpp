@@ -35,7 +35,7 @@ struct SHTH2Module : InfNoiseModule {
     int channels[2] = { 1, 1 }; // Number of channels for each section
     float noiseScale[2] = { 10.f, 10.f }; // Scale of noise (based on range)
     float noiseOffset[2] = { 5.f, -5.f };  // Offset of noise (based on range)
-    dsp::SchmittTrigger holdTrigger[2][PORT_MAX_CHANNELS];  // Per-channel when external hold is poly
+    infNoiseInTrigger holdTrigger[2][PORT_MAX_CHANNELS];  // Per-channel when external hold is poly
     enum holdModeType { hmt_SmpAndHld, hmt_TrckAndHld, hmt_HldAndTrck };
     actReqValue<holdModeType> holdMode[2] = {
         actReqValue<holdModeType>(hmt_SmpAndHld),
@@ -113,6 +113,13 @@ struct SHTH2Module : InfNoiseModule {
 		haveTrigHighLow = false;
         autoProcQuality.setBoth(true);
 	}
+
+    void onInTrigTimeChanged() override {
+        for (int i = 0; i < 2; i++) {
+            for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+                holdTrigger[i][c].setDelayCycles(trigInDelayCycles);
+        }
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -305,7 +312,7 @@ struct SHTH2Module : InfNoiseModule {
                             float holdInput = inputs[A_CLOCK_INPUT + i].getPolyVoltage(c);
                             bool updateThis = false;
                             if (hm == hmt_SmpAndHld) {
-                                updateThis = holdTrigger[i][c].process(holdInput, thrLow, thrHigh);
+                                updateThis = holdTrigger[i][c].process(holdInput, thrLow, thrHigh, procCycles);
                             }
                             else if (hm == hmt_TrckAndHld) {
                                 updateThis = holdInput >= thrHigh;

@@ -40,8 +40,8 @@ struct CxFade1x2Module : InfNoiseModule {
     enum crossFadeMode { cxm_crossFade, cxm_Balance, cxm_Pan, cxm_len };
     actReqValue<crossFadeMode> cxMode = actReqValue<crossFadeMode>(cxm_crossFade);
     int channels[2] = { 1, 1 };  // [0] = left, [1] = right
-    dsp::SchmittTrigger toggleTrig;
-    dsp::SchmittTrigger cxModePress;
+    infNoiseInTrigger toggleTrig;
+    dsp::SchmittTrigger cxModePress; // Button-only; no CV input
     bool triggerMode = false; // processParams; widget overlay (trim unused in trigger)
     actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
     actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
@@ -86,6 +86,10 @@ struct CxFade1x2Module : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        toggleTrig.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -159,7 +163,8 @@ struct CxFade1x2Module : InfNoiseModule {
 
         // process Toggle A/B
         if (!inputs[CROSSFADE_INPUT].isConnected()) {
-            if (toggleTrig.process(params[CROSSFADE_TOGGLE_PARAM].getValue())) {
+            if (toggleTrig.process(params[CROSSFADE_TOGGLE_PARAM].getValue(), 0.f, 1.f,
+                (int)patternProcessParams + 1)) { // processParams runs every 256 cycles
                 params[CROSSFADE_PARAM].setValue(params[CROSSFADE_PARAM].getValue() >= 0.f ? -1.f : 1.f);
             }
         }
@@ -228,7 +233,7 @@ struct CxFade1x2Module : InfNoiseModule {
                 }
     			else { // Trigger-mode
                     if (toggleTrig.process(inputs[CROSSFADE_INPUT].getVoltage(),
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                         crossFade = crossFade >= 0.f ? -1.f : 1.f;
                         params[CROSSFADE_PARAM].setValue(crossFade);
                         switchNow = true;
@@ -331,7 +336,7 @@ struct CxFade1x2ModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerCol, 48.343f), module, CxFade1x2Module::CROSSFADE_PARAM));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(25.556f, 37.309f), module, CxFade1x2Module::CROSSFADE_TOGGLE_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(centerCol, 76.352f), module, CxFade1x2Module::CROSSFADE_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 104.865f), module, CxFade1x2Module::CROSSFADE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerCol, 104.865f), module, CxFade1x2Module::CROSSFADE_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(25.556f, 92.900f), module, CxFade1x2Module::CROSSFADE_TRIG_PARAM));
 
         InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();

@@ -66,7 +66,7 @@ struct Random4Module : InfNoiseModule {
     float minValue = -5.f;
     float maxValue = 5.f;
     float dist = 0.f;
-    dsp::SchmittTrigger trigger[PORT_MAX_CHANNELS];
+    infNoiseInTrigger trigger[PORT_MAX_CHANNELS];
     actReqValue<rateChaos> lfoRateChaos = actReqValue<rateChaos>(rc_default);
     float trigPhaseStep = 0.f;
     float trigPhase = 0.f;
@@ -208,6 +208,11 @@ struct Random4Module : InfNoiseModule {
             }
         }
 	}
+
+    void onInTrigTimeChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+            trigger[c].setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -501,7 +506,7 @@ struct Random4Module : InfNoiseModule {
                 float trig = haveTrigInput
                     ? inputs[TRIG_INPUT].getPolyVoltage(c)
                     : lfoTrig;
-                if (trigger[c].process(trig, thrLow, thrHigh)) {
+                if (trigger[c].process(trig, thrLow, thrHigh, procCycles)) {
                     for (int i = firstIdx; i <= lastIdx; i++) {
                         if (outputs[RND1_OUTPUT + i].isConnected()) {
                             float voltage = randomMinMaxDist(minValue, maxValue, dist,

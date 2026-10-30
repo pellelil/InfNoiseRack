@@ -72,9 +72,11 @@ struct ManTrigger8Module : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
-    void onTrigLengthChanged() override {
-        for (int i = 0; i < 8; i++)
+    void onOutTrigTimeChanged() override {
+        for (int i = 0; i < 8; i++) {
             outputTrigger[i].setCycles(trigOnCycles, trigOffCycles);
+            outputTrigger[i].setDelayCycles(trigOutDelayCycles);
+        }
     }
 
     void onReset(const ResetEvent& e) override {
@@ -178,7 +180,7 @@ struct ManTrigger8ModuleWidget : InfNoiseModuleWidget {
         float row = 87.194f;
         for (int i = 0; i < 8; i++) {
             addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(butClm, row), module, ManTrigger8Module::TRIGGER1_PARAM + i));
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outClm, row), module, ManTrigger8Module::TRIGGER1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(outClm, row), module, ManTrigger8Module::TRIGGER1_OUTPUT + i));
 
             row += rowSpacing;
         }

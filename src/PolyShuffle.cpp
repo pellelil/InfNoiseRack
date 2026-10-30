@@ -60,9 +60,9 @@ struct PolyShuffleModule : InfNoiseModule {
     enum valueModeType { vm_value, vm_repeat, vm_len };
     actReqValue<valueModeType> valueMode = actReqValue<valueModeType>(vm_value);
     float valueKnob = 0.f;  // Value set by knob
-    dsp::SchmittTrigger modeTrigger = dsp::SchmittTrigger();
-    dsp::SchmittTrigger resetTrigger = dsp::SchmittTrigger();
-    dsp::SchmittTrigger triggerTrigger = dsp::SchmittTrigger();
+    dsp::SchmittTrigger modeTrigger = dsp::SchmittTrigger(); // Button-only; no CV input
+    infNoiseInTrigger resetTrigger;
+    infNoiseInTrigger triggerTrigger;
     bool orderModeNext = true;
     bool orderModeShuffle = false;
     // orderModePrev if neither orderModeNext nor orderModeShuffle is true
@@ -110,6 +110,11 @@ struct PolyShuffleModule : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        resetTrigger.setDelayCycles(trigInDelayCycles);
+        triggerTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     void channelOrderReset() {
         lastOutChannels = -1;
@@ -315,25 +320,15 @@ struct PolyShuffleModule : InfNoiseModule {
             }
 
             // Check for reset
-            float voltage = params[RESET_BTN_PARAM].getValue() > 0.5f 
-                ? 10.f 
-                : (inputs[RESET_INPUT].isConnected())
-                    ? inputs[RESET_INPUT].getVoltage()
-                    : 0.f;
-            if (resetTrigger.process(voltage,
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]))
+            float low = trueDetectValues[trigDetLow.act];
+            float high = trueDetectValues[trigDetHigh.act];
+            if (resetTrigger.processMomentary(params[RESET_BTN_PARAM], inputs[RESET_INPUT], low, high, procCycles))
             {
                 channelOrderReset();
             }
 
             // Check for trigger (do: next, shuffle, or prev)
-            voltage = params[TRIGGER_BTN_PARAM].getValue() > 0.5f 
-                ? 10.f 
-                : (inputs[TRIGGER_INPUT].isConnected())
-                    ? inputs[TRIGGER_INPUT].getVoltage()
-                    : 0.f;
-            if (triggerTrigger.process(voltage,
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]))
+            if (triggerTrigger.processMomentary(params[TRIGGER_BTN_PARAM], inputs[TRIGGER_INPUT], low, high, procCycles))
             {
                 if (orderModeNext)
                     channelOrderNext();
@@ -345,7 +340,7 @@ struct PolyShuffleModule : InfNoiseModule {
 
             if (haveOutput) { // Generate output                
                 for (int c = 0; c < outChannels; c++) {
-                    voltage = valueKnob; // fallback to value-mode (value-knob)
+                    float voltage = valueKnob; // fallback to value-mode (value-knob)
                     if (haveInput) {
                         int inChannel = channelOrder[c];
                         if (inChannel < inChannels)
@@ -398,13 +393,13 @@ struct PolyShuffleModuleWidget : InfNoiseModuleWidget {
 
         // Reset-input
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red, true>>(Vec(smallBtnCol, 203.796f), module, PolyShuffleModule::RESET_BTN_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 220.046f), module, PolyShuffleModule::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 220.046f), module, PolyShuffleModule::RESET_INPUT));
 
 
         // Order-mode/trigger
         addParam(createParamCentered<CKSSThree>(Vec(8.976f, 260.843f), module, PolyShuffleModule::ORDER_MODE_PARAM));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red, true>>(Vec(smallBtnCol, 281.935f), module, PolyShuffleModule::TRIGGER_BTN_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 297.632f), module, PolyShuffleModule::TRIGGER_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 297.632f), module, PolyShuffleModule::TRIGGER_INPUT));
         
 
         // Poly-output

@@ -110,8 +110,9 @@ To assist dialing in the same times/shapes you'll find **2 sets of link buttons*
 ![Random jagged envelope](img/RandomJaggedEnvelope.png)
 
 ## Envelope Phase Expander
-![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)
-![Features](https://img.shields.io/badge/Expander-Yes-green.svg?style=flat-square)<br>
+![Features](https://img.shields.io/badge/Expander--for-ADR--Envelope-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Expander--for-ADSDR--Envelope-green.svg?style=flat-square)
+![Features](https://img.shields.io/badge/Polyphonic-No-red.svg?style=flat-square)<br>
 The Envelope Phase Expander (**EPE**) can be used as an **expander for ADR Envelope or ADSDR Envelope** and outputs **gates** for the active envelope phase (Attack, Decay, Sustain, Delay, Release and Idle), plus envelope movement (Rise, Steady and Fall). *Since the ADR Envelope don't have a decay phase, the decay output will only output low-gate (default 0V) when used to expand and ADR Envelope.* The Idle jack can instead output **phase position** (0V to 10V) via the context menu.
 
 The **Expander-mode** will default to **Auto**  (changed via context menu), where it will automatic detect an ADR/ADSDR Envelope module to its left or right side. If there is both an Expander module to its left and right, **you must set a forced Left- or Right expander-mode**. In the top of the module below the "EPE" label you see two lights. These lights indicate the connection-state of the module.

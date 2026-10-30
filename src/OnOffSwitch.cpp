@@ -37,7 +37,7 @@ struct OnOffSwitchModule : InfNoiseModule {
     bool haveOutput = false;
     int channels = 0;
     actReqValue<bool> onStage = actReqValue<bool>(false);
-    dsp::SchmittTrigger onOffTrigger;
+    infNoiseInTrigger onOffTrigger;
     actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
     actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
     infNoiseUnitFade fade;
@@ -80,6 +80,10 @@ struct OnOffSwitchModule : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        onOffTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -182,7 +186,7 @@ struct OnOffSwitchModule : InfNoiseModule {
                     else // Trigger-Input
                     {
                         if (onOffTrigger.process(gateTrigInput,
-                            trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]))
+                            trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles))
                             onStage.setBoth(!onStage.req);
                     }
                 }
@@ -249,7 +253,7 @@ struct OnOffSwitchModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchClm, 63.689f), module, OnOffSwitchModule::ON_OFF_LATCH_PARAM));
 
         // ON/OFF-input and trigger/gate-switch
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 81.103f), module, OnOffSwitchModule::ON_OFF_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 81.103f), module, OnOffSwitchModule::ON_OFF_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(latchClm, 93.595f), module, OnOffSwitchModule::ON_OFF_TRIGGATE_PARAM));
 

@@ -99,6 +99,7 @@ struct PhaseDrivenLFOModule : InfNoiseModule {
 		haveGateHighLow = false;
 		haveTrigDetect = false;
 		haveTrigHighLow = false;
+		ensureFiveSineExpLogLuts();
 	}
 
     void onReset(const ResetEvent& e) override {
@@ -393,17 +394,17 @@ struct PhaseDrivenLFOModuleWidget : InfNoiseModuleWidget {
         // Range
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(leftPortCol, 123.636f), module, PhaseDrivenLFOModule::RNGKNOB_PARAM));
         addParam(createParamCentered<CKSS>(Vec(rightPortCol, 123.636f), module, PhaseDrivenLFOModule::RANGE_TOGGLE_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftPortCol, 147.759f), module, PhaseDrivenLFOModule::RNG_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftPortCol, 147.759f), module, PhaseDrivenLFOModule::RNG_INPUT));
         addParam(createParamCentered<Trimpot>(Vec(rightPortCol, 147.759f), module, PhaseDrivenLFOModule::RNG_TRIM_PARAM));
 
         // PWM
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerCol, 181.256f), module, PhaseDrivenLFOModule::PWMKNOB_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftPortCol, 201.343f), module, PhaseDrivenLFOModule::PWM_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftPortCol, 201.343f), module, PhaseDrivenLFOModule::PWM_INPUT));
         addParam(createParamCentered<Trimpot>(Vec(rightPortCol, 201.343f), module, PhaseDrivenLFOModule::PWM_TRIM_PARAM));
 
         // MOD
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerCol, 235.320f), module, PhaseDrivenLFOModule::MODKNOB_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftPortCol, 255.407f), module, PhaseDrivenLFOModule::MOD_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftPortCol, 255.407f), module, PhaseDrivenLFOModule::MOD_INPUT));
         addParam(createParamCentered<Trimpot>(Vec(rightPortCol, 255.407f), module, PhaseDrivenLFOModule::MOD_TRIM_PARAM));
 
         // Inverted waveforms - lights

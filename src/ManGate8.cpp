@@ -215,7 +215,7 @@ struct ManGate8ModuleWidget : InfNoiseModuleWidget {
             gateBtn[i] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(butClm, row), module, ManGate8Module::GATE1_PARAM + i);
             addParam(gateBtn[i]);
             addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(butClm + latchColOffset, row + latchRowOffset), module, ManGate8Module::GATE1_LATCH_PARAM + i));
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outClm, row), module, ManGate8Module::GATE1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(outClm, row), module, ManGate8Module::GATE1_OUTPUT + i));
 
             row += rowSpacing;
         }

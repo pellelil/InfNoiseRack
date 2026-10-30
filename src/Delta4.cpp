@@ -40,7 +40,7 @@ struct Delta4Module : InfNoiseModule {
 
     enum referenceModeType { rm_individual, rm_aOnly };
     referenceModeType referenceMode = rm_individual;
-    dsp::SchmittTrigger outModePress;
+    dsp::SchmittTrigger outModePress; // Button-only; no CV input
     enum outputModeType { om_signed, om_inverted, om_absolute, om_len };
     actReqValue<outputModeType> outputMode = actReqValue<outputModeType>(om_signed);
     float outModeSign = 1.f;
@@ -54,7 +54,7 @@ struct Delta4Module : InfNoiseModule {
     bool haveConnections = false;
     int firstIdx = -1;
     int lastIdx = -1;
-    dsp::SchmittTrigger resetTrigger;
+    infNoiseInTrigger resetTrigger;
     bool triggerMode = false;
     
 	Delta4Module() {
@@ -98,6 +98,10 @@ struct Delta4Module : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        resetTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -210,9 +214,9 @@ struct Delta4Module : InfNoiseModule {
                     ? inputs[RESET_INPUT].getVoltage() 
                     : 0.f;
 
-            bool resetActive = (triggerMode) 
-                ? resetTrigger.process(resetVoltage, 
-                    trueDetectValues[trigDetHigh.act], trueDetectValues[trigDetLow.act])
+            bool resetActive = (triggerMode)
+                ? resetTrigger.processMomentary(params[RESET_PUSH_PARAM], inputs[RESET_INPUT],
+                    trueDetectValues[trigDetHigh.act], trueDetectValues[trigDetLow.act], procCycles)
                 : resetPressed || resetVoltage >= trueDetectValues[gateDetHigh.act];
 
             // Must obtain reset values for all sections when in individual reference mode
@@ -280,7 +284,7 @@ struct Delta4ModuleWidget : InfNoiseModuleWidget {
         addParam(resetPushBtn);
 
         // Reset trigger/gate input and mode switch
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 78.600f), module, Delta4Module::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerCol, 78.600f), module, Delta4Module::RESET_INPUT));
 
         // Trigger/gate switch
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(trigGateBtnCol, 64.265f), module, Delta4Module::RESET_TRIGGATE_PARAM));

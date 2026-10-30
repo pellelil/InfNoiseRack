@@ -28,9 +28,11 @@ extern Model* modelCvToGt;
 extern Model* modelCvToGtTr8;
 extern Model* modelCxFade1x2;
 extern Model* modelCxFade4x1;
+extern Model* modelDelay3;
 extern Model* modelDelta4;
 extern Model* modelEnvelopePhaseExpander;
 extern Model* modelFlipFlop;
+extern Model* modelFlux4;
 extern Model* modelFold;
 extern Model* modelIncDecOffset;
 extern Model* modelLCMP2;
@@ -80,6 +82,9 @@ extern Model* modelSlew4;
 extern Model* modelSLFO4ss;
 extern Model* modelSLFO4st;
 extern Model* modelSlopeDetector2;
+extern Model* modelStack;
+extern Model* modelStackBankExpander;
+extern Model* modelStackExpander;
 extern Model* modelStereoBalancePan;
 extern Model* modelTinyLCMP2;
 extern Model* modelTLFO;
@@ -189,8 +194,12 @@ struct InfNoiseModule : Module {
         sampleRateChanged = true;
     }
 
-    virtual void onTrigLengthChanged() {
+    virtual void onOutTrigTimeChanged() {
         // Override in modules that output triggers (haveTrigHighLow)
+    }
+
+    virtual void onInTrigTimeChanged() {
+        // Override in modules that use infNoiseInTrigger (haveTrigDetect)
     }
 
     void onReset(const ResetEvent& e) override {
@@ -329,6 +338,7 @@ struct InfNoiseModule : Module {
         if (haveTrigDetect && trigInDelay.needsUpdate()) {
             trigInDelay.updateActual();
             trigInDelayCycles = trigDelayToCycles(trigInDelay.act);
+            onInTrigTimeChanged();
         }
         if (haveTrigHighLow && (sampleRateChanged || trigOnLength.needsUpdate() || trigOffLength.needsUpdate()
                 || trigOutDelay.needsUpdate())) {
@@ -338,7 +348,7 @@ struct InfNoiseModule : Module {
             trigOnCycles = trigLengthToCycles(trigOnLength.act, sampleRate);
             trigOffCycles = trigLengthToCycles(trigOffLength.act, sampleRate);
             trigOutDelayCycles = trigDelayToCycles(trigOutDelay.act);
-            onTrigLengthChanged();
+            onOutTrigTimeChanged();
         }
     }
 
@@ -842,6 +852,8 @@ struct InfNoiseModuleWidget : ModuleWidget {
                                 &module->trigDetHigh.req));
                             menu->addChild(createIndexPtrSubmenuItem("Trigger-low detect-level", lowDetectNames,
                                 &module->trigDetLow.req));
+                            menu->addChild(createIndexPtrSubmenuItem("Trigger input delay", getTrigDelayNames(),
+                                &module->trigInDelay.req));
                         }
                         if (module->haveTrigHighLow) {
                             menu->addChild(createIndexPtrSubmenuItem("Trigger-high output-level", voltNames,
@@ -852,6 +864,8 @@ struct InfNoiseModuleWidget : ModuleWidget {
                                 &module->trigOnLength.req));
                             menu->addChild(createIndexPtrSubmenuItem("Trigger-low length", getTrigLengthNames(),
                                 &module->trigOffLength.req));
+                            menu->addChild(createIndexPtrSubmenuItem("Trigger output delay", getTrigDelayNames(),
+                                &module->trigOutDelay.req));
                         }
                     }
                 ));

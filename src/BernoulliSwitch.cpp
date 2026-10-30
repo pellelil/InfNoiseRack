@@ -50,7 +50,7 @@ struct BernoulliSwitchModule : InfNoiseModule {
     enum sectionModeType { sm_Same, sm_Individual, sm_len };
     actReqValue<sectionModeType> sectionMode = actReqValue<sectionModeType>(sm_Same);  // Same selection for both sections or individual
     bool probModeSwitch = false;
-    dsp::SchmittTrigger propTrigger;
+    infNoiseInTrigger propTrigger;
     actReqValue<rateChaos> clockRateChaos = actReqValue<rateChaos>(rc_default);
     float chaosAmount = 0.f; // Cached rate-chaos amount (0-1)
     float chaosFactor = 1.f; // Clock phase-step factor (new each clock-cycle)
@@ -103,6 +103,10 @@ struct BernoulliSwitchModule : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        propTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -298,8 +302,9 @@ struct BernoulliSwitchModule : InfNoiseModule {
         if (wasJustLoaded) {
             propTrigger.reset();
             if (!inputs[CLOCK_INPUT].isConnected()) {
+                // Prime Schmitt level only. process() would store a delayed edge and flip the coin.
                 float v = clockPhase < 0.5f ? 10.f : 0.f;
-                propTrigger.process(v,
+                propTrigger.schmitt.process(v,
                     trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
             }
         }
@@ -331,7 +336,7 @@ struct BernoulliSwitchModule : InfNoiseModule {
                 }
             }
             bool flipCoin = propTrigger.process(clockVoltage,
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles);
 
             // Deside if A or B should be selected (both sections)
             if (flipCoin) {
@@ -453,11 +458,11 @@ struct BernoulliSwitchModuleWidget : InfNoiseModuleWidget {
             module, BernoulliSwitchModule::PROB_MODE_PARAM));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrCol, 47.843f), module, BernoulliSwitchModule::PROB_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(cntrCol, 70.656f), module, BernoulliSwitchModule::PROB_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 93.825f), module, BernoulliSwitchModule::PROB_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 93.825f), module, BernoulliSwitchModule::PROB_INPUT));
 
         // Clock
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(cntrCol, 124.679f), module, BernoulliSwitchModule::CLOCK_FREQ_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 150.477f), module, BernoulliSwitchModule::CLOCK_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 150.477f), module, BernoulliSwitchModule::CLOCK_INPUT));
 
         // A/B inputs
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(lightCol, 179.612f), module, BernoulliSwitchModule::A_IN_LIGHT));

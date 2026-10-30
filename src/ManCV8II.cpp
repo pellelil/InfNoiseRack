@@ -77,8 +77,11 @@ struct ManCV8IIModule : InfNoiseModule {
     actReqValue<polyphonyMode> polyOutput = actReqValue<polyphonyMode>(poly_8);
     int polyChannels = 8;
     infNoiseButtonTrigger btAll = infNoiseButtonTrigger();
-    dsp::TSchmittTrigger<float> allInputTrigger;
-    infNoiseButtonTrigger btVirtualAll = infNoiseButtonTrigger(); // "Virtual button" for all-trigger/gate
+    infNoiseInTrigger allInputTrigger;
+    infNoiseButtonTrigger btVirtualAll = infNoiseButtonTrigger(); // "Virtual button" for all-trigger
+    dsp::SchmittTrigger allGateSchmitt;
+    bool allGateHeld = false; // All button is held by the gate input
+    bool allInputGateMode = false; // previous sample was gate mode (unlatched)
 
     ManCV8IIModule() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -107,9 +110,13 @@ struct ManCV8IIModule : InfNoiseModule {
         haveOutClipRange = true;
         haveGateDetect = false;
 		haveGateHighLow = false;
-		haveTrigDetect = false;
+		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        allInputTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -119,6 +126,9 @@ struct ManCV8IIModule : InfNoiseModule {
         btAll.reset();
         allInputTrigger.reset();
         btVirtualAll.reset();
+        allGateSchmitt.reset();
+        allGateHeld = false;
+        allInputGateMode = false;
         allMode.setBoth(abm_Toggle);
         attMode.setBoth(am_both);
         polyOutput.setBoth(poly_8);
@@ -157,35 +167,48 @@ struct ManCV8IIModule : InfNoiseModule {
         attMode.updateActual();
         allMode.updateActual();
 
-        // Handle All-input (if in use)
+        // Handle All-input (if in use). process() calls this every sample while connected.
         if (inputs[ALL_INPUT].isConnected()) {
-            bool virtualAllButton = allInputTrigger.process(inputs[ALL_INPUT].getVoltage(0), 
-                trueDetectValues[td_triggerLow], trueDetectValues[td_triggerHigh]);
-            if (btVirtualAll.process(virtualAllButton))
-            {
-                bool useAsGate = params[ALL_BUTTON_LATCH_PARAM].getValue() < 0.5f;
-                if (btVirtualAll.isPressed()) {
-                    if (!useAsGate) { // Toggle when latched (trigger)
-                        float value = (params[ALL_BUTTON_PARAM].getValue() > 0.5f)
-                            ? 0.0f 
-                            : 1.0f;
-                        params[ALL_BUTTON_PARAM].setValue(value);
-					}
-                    else { // "Press"(non-latched) All-button (gate)
-                        params[ALL_BUTTON_PARAM].setValue(1.f);
-					}
-				}
-				else if (useAsGate) { // "Release" (non-latched) All-button (gate)
-                    params[ALL_BUTTON_PARAM].setValue(0.f);
+            float voltage = inputs[ALL_INPUT].getVoltage(0);
+            float lowTh = trueDetectValues[trigDetLow.act];
+            float highTh = trueDetectValues[trigDetHigh.act];
+            bool useAsGate = params[ALL_BUTTON_LATCH_PARAM].getValue() < 0.5f;
+            if (useAsGate) {
+                if (!allInputGateMode) {
+                    allInputGateMode = true;
+                    allInputTrigger.reset();
+                    btVirtualAll.reset();
+                }
+                // Gate follows the input level. Input-trigger delay does not apply.
+                allGateSchmitt.process(voltage, lowTh, highTh);
+                bool gateHigh = allGateSchmitt.isHigh();
+                if (gateHigh != allGateHeld) {
+                    allGateHeld = gateHigh;
+                    params[ALL_BUTTON_PARAM].setValue(gateHigh ? 1.f : 0.f);
+                }
+            }
+            else { // Latched: each trigger toggles All, after the input delay
+                if (allInputGateMode) {
+                    allInputGateMode = false;
+                    allGateSchmitt.reset();
+                    allGateHeld = false;
+                }
+                bool virtualAllButton = allInputTrigger.process(voltage, lowTh, highTh, 1);
+                if (btVirtualAll.process(virtualAllButton) && btVirtualAll.isPressed()) {
+                    float value = (params[ALL_BUTTON_PARAM].getValue() > 0.5f) ? 0.f : 1.f;
+                    params[ALL_BUTTON_PARAM].setValue(value);
                 }
             }
 		}
-        else if (btVirtualAll.isPressed()) {  // Cable disconnected while "virtual button pressed"
+        else if (allGateHeld || allInputGateMode || btVirtualAll.isPressed()) {
+            bool releaseGate = allGateHeld;
             allInputTrigger.reset();
             btVirtualAll.reset();
-            bool useAsGate = params[ALL_BUTTON_LATCH_PARAM].getValue() < 0.5f;
-            if (useAsGate)
-				params[ALL_BUTTON_PARAM].setValue(0.f); // "Release" (non-latched) All-button (gate)
+            allGateSchmitt.reset();
+            allGateHeld = false;
+            allInputGateMode = false;
+            if (releaseGate)
+                params[ALL_BUTTON_PARAM].setValue(0.f);
 		}
 
         // Handle All-button
@@ -301,7 +324,7 @@ struct ManCV8IIModuleWidget : InfNoiseModuleWidget {
         allBtn = createParamCentered<infNoiseSmallButton<bc_blue, true>>(Vec(onOffButnCol, allAttRow), module, ManCV8IIModule::ALL_BUTTON_PARAM);
         addParam(allBtn);
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchButnCol, 62.175f), module, ManCV8IIModule::ALL_BUTTON_LATCH_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(onKnobCol, allAttRow), module, ManCV8IIModule::ALL_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(onKnobCol, allAttRow), module, ManCV8IIModule::ALL_INPUT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(offKnobCol, allAttRow), module, ManCV8IIModule::ATTENUVERT_PARAM));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(outputCol, allAttRow), module, ManCV8IIModule::MAN_POLY_OUTPUT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(outputCol - lgtOfs, allAttRow - lgtOfs), module, ManCV8IIModule::POLY_HINT_LIGHT));
@@ -317,7 +340,7 @@ struct ManCV8IIModuleWidget : InfNoiseModuleWidget {
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(onKnobCol, row), module, ManCV8IIModule::ON_KNOB1_PARAM + i));
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(offKnobCol, row), module, ManCV8IIModule::OFF_KNOB1_PARAM + i));
 
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outputCol, row), module, ManCV8IIModule::MAN1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(outputCol, row), module, ManCV8IIModule::MAN1_OUTPUT + i));
 
             row += rowSpacing;
         }

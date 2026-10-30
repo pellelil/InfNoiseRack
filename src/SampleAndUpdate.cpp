@@ -51,9 +51,9 @@ struct SampleAndUpdateModule : InfNoiseModule {
     int channels = 1;
     int trigCount[PORT_MAX_CHANNELS] = { 0 };
     int minTriggerCount = 1;
-    dsp::SchmittTrigger sampleTrigger;
-    dsp::SchmittTrigger updateTrigger;
-    dsp::SchmittTrigger resetTrigger;
+    infNoiseInTrigger sampleTrigger;
+    infNoiseInTrigger updateTrigger;
+    infNoiseInTrigger resetTrigger;
     dsp::SchmittTrigger inCountTrigger[PORT_MAX_CHANNELS] = { 
         dsp::SchmittTrigger(), 
         dsp::SchmittTrigger(), 
@@ -108,9 +108,17 @@ struct SampleAndUpdateModule : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
-    void onTrigLengthChanged() override {
-        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+    void onOutTrigTimeChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
             outCountTrigger[c].setCycles(trigOnCycles, trigOffCycles);
+            outCountTrigger[c].setDelayCycles(trigOutDelayCycles);
+        }
+    }
+
+    void onInTrigTimeChanged() override {
+        sampleTrigger.setDelayCycles(trigInDelayCycles);
+        updateTrigger.setDelayCycles(trigInDelayCycles);
+        resetTrigger.setDelayCycles(trigInDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -225,19 +233,20 @@ struct SampleAndUpdateModule : InfNoiseModule {
         postProcessParams(args);
     }
 
-    inline bool doBtnInput(int btnIdx, int inpIdx, int modeIdx, dsp::SchmittTrigger& trigger) {
-        // Obtain voltage from button or input
+    inline bool doBtnInput(int btnIdx, int inpIdx, int modeIdx, infNoiseInTrigger& trigger) {
+        // Gate mode uses the level only. Trigger mode is button OR input.
+        bool triggerMode = params[modeIdx].getValue() < 0.5f;
+        if (triggerMode) {
+            return trigger.processMomentary(params[btnIdx], inputs[inpIdx],
+                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles);
+        }
+
         float voltage = params[btnIdx].getValue() > 0.5f
             ? 10.f
             : inputs[inpIdx].isConnected()
                 ? inputs[inpIdx].getVoltage()
                 : 0.f;
-
-        // Detect trigger/gate
-        bool triggerMode = params[modeIdx].getValue() < 0.5f;
-        return (triggerMode) 
-            ? trigger.process(voltage, trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])
-            : voltage >= trueDetectValues[gateDetHigh.act];
+        return voltage >= trueDetectValues[gateDetHigh.act];
     }
 
 
@@ -332,21 +341,21 @@ struct SampleAndUpdateModuleWidget : InfNoiseModuleWidget {
         addParam(sampleBtn);
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(modeBtnCol, 65.542f), module, SampleAndUpdateModule::SAMPLE_MODE_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 79.779f), module, SampleAndUpdateModule::SAMPLE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 79.779f), module, SampleAndUpdateModule::SAMPLE_INPUT));
 
         // Update
         updateBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 119.482f), module, SampleAndUpdateModule::UPDATE_PARAM);
         addParam(updateBtn);
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(modeBtnCol, 134.455f), module, SampleAndUpdateModule::UPDATE_MODE_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 149.092f), module, SampleAndUpdateModule::UPDATE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 149.092f), module, SampleAndUpdateModule::UPDATE_INPUT));
 
         // Reset
         resetBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 187.048f), module, SampleAndUpdateModule::RESET_PARAM);
         addParam(resetBtn);
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(modeBtnCol, 201.321f), module, SampleAndUpdateModule::RESET_MODE_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 215.958f), module, SampleAndUpdateModule::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 215.958f), module, SampleAndUpdateModule::RESET_INPUT));
 
         // Mode (Value, Gate, Trigger count)
         addParam(createParamCentered<CKSSThree>(Vec(10.101f, 257.450f), module, SampleAndUpdateModule::MODE_PARAM));

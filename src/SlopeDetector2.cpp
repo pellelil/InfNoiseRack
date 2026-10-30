@@ -169,9 +169,11 @@ struct SlopeDetector2Module : InfNoiseModule {
         ensureFiveSineExpLogLuts();
     }
 
-    void onTrigLengthChanged() override {
-        for (int i = 0; i < 6; i++)
+    void onOutTrigTimeChanged() override {
+        for (int i = 0; i < 6; i++) {
             outTrig[i].setCycles(trigOnCycles, trigOffCycles);
+            outTrig[i].setDelayCycles(trigOutDelayCycles);
+        }
     }
 
     void onReset(const ResetEvent& e) override {
@@ -446,20 +448,20 @@ struct SlopeDetector2ModuleWidget : InfNoiseModuleWidget {
         {
             float secOfs = i * 140.421f;
             float row = 87.679f + secOfs;
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, row), module, SlopeDetector2Module::CV1_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrClm, row), module, SlopeDetector2Module::CV1_INPUT + i));
 
             row = 122.753f + secOfs;
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrClm, row), module, SlopeDetector2Module::RISE1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(cntrClm, row), module, SlopeDetector2Module::RISE1_OUTPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
                 Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::RISE_MODE1_PARAM + i));
 
             row += outOfs;
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrClm, row), module, SlopeDetector2Module::STEADY1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(cntrClm, row), module, SlopeDetector2Module::STEADY1_OUTPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
                 Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::STEADY_MODE1_PARAM + i));
 
             row += outOfs;
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrClm, row), module, SlopeDetector2Module::FALL1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(cntrClm, row), module, SlopeDetector2Module::FALL1_OUTPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
                 Vec(cntrClm + typeClmOfs, row + typeRowOfs), module, SlopeDetector2Module::FALL_MODE1_PARAM + i));
         }

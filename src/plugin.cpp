@@ -116,7 +116,7 @@ void InfNoiseModuleWidget::applyPortPrefixes() {
 static std::string inSettingsFileName = asset::user("InfiniteNoise.json");
 static const int gSettingsCurrentJson = 1; // Manually incremented for breaking changes to InfiniteNoise.json
 static int gSettingsJsonVersion = gSettingsCurrentJson; // Loaded from file; defaults to 1 if missing
-static panelThemeType gPanelTheme = theme_Auto;
+static panelThemeType gPanelTheme = theme_Black; // first run only; a saved InfiniteNoise.json overrides this
 static bool gShowPortPrefix = true;
 static bool gShowLogoStatusLights = true;
 static panelMountMode gPanelMountMode = mount_Random;
@@ -249,9 +249,11 @@ void init(Plugin *p) {
 	p->addModel(modelCvToGtTr8);
 	p->addModel(modelCxFade1x2);
 	p->addModel(modelCxFade4x1);
+	p->addModel(modelDelay3);
 	p->addModel(modelDelta4);
 	p->addModel(modelEnvelopePhaseExpander);
 	p->addModel(modelFlipFlop);
+	p->addModel(modelFlux4);
 	p->addModel(modelFold);
 	p->addModel(modelIncDecOffset);
 	p->addModel(modelLCMP2);
@@ -301,6 +303,9 @@ void init(Plugin *p) {
 	p->addModel(modelSLFO4ss);
 	p->addModel(modelSLFO4st);
 	p->addModel(modelSlopeDetector2);
+	p->addModel(modelStack);
+	p->addModel(modelStackBankExpander);
+	p->addModel(modelStackExpander);
 	p->addModel(modelStereoBalancePan);
 	p->addModel(modelTinyLCMP2);
 	p->addModel(modelTLFO);

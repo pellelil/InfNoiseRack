@@ -2,6 +2,7 @@
 // Licensed under GNU GPLv3+
 
 #include "plugin.hpp"
+#include "inComponents.hpp"
 #include "inMath.hpp"
 #include "inUtil.hpp"
 
@@ -494,8 +495,8 @@ struct SLFO4stModuleWidget : InfNoiseModuleWidget {
             rangeToggleRow += freqKnobSpacing;
 
             // Waveform outputs
-			addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(wave1OutputCol, waveOutputRow), module, SLFO4stModule::WAVE1_1ST_OUTPUT + i));
-			addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(wave2OutputCol, waveOutputRow), module, SLFO4stModule::WAVE2_1ST_OUTPUT + i));
+			addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(wave1OutputCol, waveOutputRow), module, SLFO4stModule::WAVE1_1ST_OUTPUT + i));
+			addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(wave2OutputCol, waveOutputRow), module, SLFO4stModule::WAVE2_1ST_OUTPUT + i));
             addChild(createLightCentered<TinyLight<RedLight>>(Vec(29.578f, waveOutputRow + 10.421f), module, SLFO4stModule::INV1_LIGHT + i));
             waveOutputRow += waveOutputSpacing;
 

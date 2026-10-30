@@ -435,26 +435,26 @@ struct Arm3XYModuleWidget : InfNoiseModuleWidget {
             addParam(createParamCentered<RoundBlackKnob>(Vec(knobClm, row), module, Arm3XYModule::ROT1_PARAM + i));
             addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(modeLgtClm, row + modeLgtOffset), module, Arm3XYModule::ROT1_MODE_LIGHT + i));
             addParam(createParamCentered<Trimpot>(Vec(trimClm, row), module, Arm3XYModule::ROT_TRIM1_PARAM + i));
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputClm, row), module, Arm3XYModule::ROT1_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputClm, row), module, Arm3XYModule::ROT1_INPUT + i));
             row += rowSpacing;
 
             // Length
             addParam(createParamCentered<RoundBlackKnob>(Vec(knobClm, row), module, Arm3XYModule::LEN1_PARAM + i));
             addParam(createParamCentered<Trimpot>(Vec(trimClm, row), module, Arm3XYModule::LEN_TRIM1_PARAM + i));
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputClm, row), module, Arm3XYModule::LEN1_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputClm, row), module, Arm3XYModule::LEN1_INPUT + i));
             row += rowSpacing;
         }
 
         // Range knob, trim-pot and input
         addParam(createParamCentered<RoundBlackKnob>(Vec(knobClm, row), module, Arm3XYModule::RNG_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(trimClm, row), module, Arm3XYModule::RNG_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputClm, row), module, Arm3XYModule::RNG_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputClm, row), module, Arm3XYModule::RNG_INPUT));
         row += rowSpacing;
 
         // Min/Center/Max knob, trim-pot and input
         addParam(createParamCentered<RoundBlackKnob>(Vec(knobClm, row), module, Arm3XYModule::MIN_CNTR_MAX_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(trimClm, row), module, Arm3XYModule::MIN_CNTR_MAX_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputClm, row), module, Arm3XYModule::MIN_CNTR_MAX_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputClm, row), module, Arm3XYModule::MIN_CNTR_MAX_INPUT));
 
         // Min/Center/Max toggle-button
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(89.472f, 285.633f), module, Arm3XYModule::MIN_CNTR_MAX_BTN_PARAM));
@@ -467,9 +467,9 @@ struct Arm3XYModuleWidget : InfNoiseModuleWidget {
 
         // X/Y/XY outputs
         const float outputRow = 333.801f;
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(45.299f, outputRow), module, Arm3XYModule::X_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(73.701f, outputRow), module, Arm3XYModule::Y_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(100.848f, outputRow), module, Arm3XYModule::XY_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(45.299f, outputRow), module, Arm3XYModule::X_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(73.701f, outputRow), module, Arm3XYModule::Y_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(100.848f, outputRow), module, Arm3XYModule::XY_OUTPUT));
     }
 
     void appendContextMenu(Menu* menu) override {

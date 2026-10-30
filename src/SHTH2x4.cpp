@@ -47,7 +47,7 @@ struct SHTH2x4Module : InfNoiseModule {
     int channels[8] = { 1, 1, 1, 1, 1, 1, 1, 1 }; // Number of channels (A1, A2, A3, A4, B1, B2, B3, B4)
     float noiseScale[2] = { 10.f, 10.f }; // Scale of noise (based on range)
     float noiseOffset[2] = { 5.f, -5.f };  // Offset of noise (based on range)
-    dsp::SchmittTrigger holdTrigger[2];  // Trigger for each A/B sections
+    infNoiseInTrigger holdTrigger[2];  // Trigger for each A/B sections
     enum holdModeType { hmt_SmpAndHld, hmt_TrckAndHld, hmt_HldAndTrck };
     actReqValue<holdModeType> holdMode[2] = {
         actReqValue<holdModeType>(hmt_SmpAndHld),
@@ -133,6 +133,11 @@ struct SHTH2x4Module : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
         autoProcQuality.setBoth(true);
+    }
+
+    void onInTrigTimeChanged() override {
+        for (int i = 0; i < 2; i++)
+            holdTrigger[i].setDelayCycles(trigInDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -320,7 +325,7 @@ struct SHTH2x4Module : InfNoiseModule {
                                 : inputs[A_CLOCK_INPUT].getVoltage();
                         updateOutput = (holdMode[i].act == hmt_SmpAndHld)
                             ? holdTrigger[i].process(holdInput,
-                                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])
+                                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)
                             : (holdMode[i].act == hmt_TrckAndHld)
                                 ? holdInput >= trueDetectValues[trigDetHigh.act]
                                 : holdInput < trueDetectValues[trigDetHigh.act];
@@ -363,7 +368,7 @@ struct SHTH2x4ModuleWidget : InfNoiseModuleWidget {
 
             float holdCol = (i == 0) ? rightCol : leftCol;
             float holdRow = (i == 0) ? 154.427f : 224.574f;
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(holdCol, holdRow), module, SHTH2x4Module::A_CLOCK_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(holdCol, holdRow), module, SHTH2x4Module::A_CLOCK_INPUT + i));
 
             float row = (i == 0) ? 49.659f : 258.797f;
             const float rowSpacing = 24.632f;

@@ -45,7 +45,7 @@ struct Mult2x4Module : InfNoiseModule {
         configOutput(MULTA3_OUTPUT, "Mult-A3");
         configOutput(MULTA4_OUTPUT, "Mult-A4");
         
-        configInput(MULTB_INPUT, "Mult-B");
+        configInput(MULTB_INPUT, "Mult-B (normalized to Mult-A)");
         configOutput(MULTB1_OUTPUT, "Mult-B1");
         configOutput(MULTB2_OUTPUT, "Mult-B2");
         configOutput(MULTB3_OUTPUT, "Mult-B3");

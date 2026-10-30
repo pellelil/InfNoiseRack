@@ -43,9 +43,9 @@ struct Mute2Module : InfNoiseModule {
     int channels[2] = { 1, 1 };
     actReqValue<voltValue> muteVoltage = actReqValue<voltValue>(v_zero);
     bool bothMuted = false;
-    dsp::SchmittTrigger bothTrigger;
+    infNoiseInTrigger bothTrigger;
     bool triggerMuted[2] = { false, false };  // A/B-section muted or not
-    dsp::SchmittTrigger muteTrigger[2] = { dsp::SchmittTrigger(), dsp::SchmittTrigger() };
+    infNoiseInTrigger muteTrigger[2];
     enum gateMuteModeType { gmm_highGate, gmm_lowGate, gmm_len };
     actReqValue<gateMuteModeType> gateMuteMode = actReqValue<gateMuteModeType>(gmm_highGate);
     actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
@@ -93,6 +93,12 @@ struct Mute2Module : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        bothTrigger.setDelayCycles(trigInDelayCycles);
+        for (int i = 0; i < 2; i++)
+            muteTrigger[i].setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -206,7 +212,7 @@ struct Mute2Module : InfNoiseModule {
                 }
                 else { // Trigger
                     if (bothTrigger.process(inputs[BOTH_MUTE_INPUT].getVoltage(),
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]))
+                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles))
                         bothMuted = !bothMuted;
                     isBothMuted = isBothMuted || bothMuted;
                 }
@@ -224,7 +230,7 @@ struct Mute2Module : InfNoiseModule {
                             (gateMuteMode.act == gmm_lowGate && inputs[A_MUTE_INPUT + i].getVoltage() < trueDetectValues[gateDetHigh.act]);
                         else { // Trigger
                             if (muteTrigger[i].process(inputs[A_MUTE_INPUT + i].getVoltage(),
-                                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]))
+                                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles))
                                 triggerMuted[i] = !triggerMuted[i];
                             isMuted = isMuted || triggerMuted[i];
                         }
@@ -283,7 +289,7 @@ struct Mute2ModuleWidget : InfNoiseModuleWidget {
         bothBtn = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 50.741f), module, Mute2Module::BOTH_MUTE_PARAM);
         addParam(bothBtn);
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchCol, 61.912f), module, Mute2Module::BOTH_LATCH_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 73.695f), module, Mute2Module::BOTH_MUTE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 73.695f), module, Mute2Module::BOTH_MUTE_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(latchCol, 85.230f), module, Mute2Module::BOTH_GATE_TRIG_PARAM));
 
@@ -291,7 +297,7 @@ struct Mute2ModuleWidget : InfNoiseModuleWidget {
         sectBtn[0] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 110.926f), module, Mute2Module::A_MUTE_PARAM);
         addParam(sectBtn[0]);
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchCol, 122.096f), module, Mute2Module::A_LATCH_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 133.880f), module, Mute2Module::A_MUTE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 133.880f), module, Mute2Module::A_MUTE_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(latchCol, 145.414f), module, Mute2Module::A_GATE_TRIG_PARAM));
 
@@ -303,7 +309,7 @@ struct Mute2ModuleWidget : InfNoiseModuleWidget {
         sectBtn[1] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(cntrCol, 239.593f), module, Mute2Module::B_MUTE_PARAM);
         addParam(sectBtn[1]);
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchCol, 250.763f), module, Mute2Module::B_LATCH_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 262.547f), module, Mute2Module::B_MUTE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 262.547f), module, Mute2Module::B_MUTE_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(latchCol, 274.081f), module, Mute2Module::B_GATE_TRIG_PARAM));
 

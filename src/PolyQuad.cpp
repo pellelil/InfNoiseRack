@@ -183,18 +183,18 @@ struct PolyQuadModuleWidget : InfNoiseModuleWidget {
         initializeWidget(module, "res/PolyQuad");
 
         float cntrCol = 15.f;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 53.239f), module, PolyQuadModule::A_INPUT));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 77.871f), module, PolyQuadModule::B_INPUT));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 102.504f), module, PolyQuadModule::C_INPUT));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 127.136f), module, PolyQuadModule::D_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 53.239f), module, PolyQuadModule::A_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 77.871f), module, PolyQuadModule::B_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 102.504f), module, PolyQuadModule::C_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 127.136f), module, PolyQuadModule::D_INPUT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(4.615f, 151.181f), module, PolyQuadModule::FIXED_CHANNELS_LIGHT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 166.614f), module, PolyQuadModule::POLY_OUTPUT));
         
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 223.231f), module, PolyQuadModule::POLY_INPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrCol, 258.797f), module, PolyQuadModule::E_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrCol, 283.429f), module, PolyQuadModule::F_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrCol, 308.061f), module, PolyQuadModule::G_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(cntrCol, 332.694f), module, PolyQuadModule::H_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 258.797f), module, PolyQuadModule::E_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 283.429f), module, PolyQuadModule::F_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 308.061f), module, PolyQuadModule::G_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 332.694f), module, PolyQuadModule::H_OUTPUT));
     }
 
     void appendContextMenu(Menu* menu) override {

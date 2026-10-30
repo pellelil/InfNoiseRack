@@ -105,9 +105,9 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
     actReqValue<rateChaos> decayRateChaos = actReqValue<rateChaos>(rc_default);
     actReqValue<rateChaos> delayRateChaos = actReqValue<rateChaos>(rc_default);
     actReqValue<rateChaos> releaseRateChaos = actReqValue<rateChaos>(rc_default);
-    dsp::SchmittTrigger phaseTrig;
-    dsp::SchmittTrigger attTrig;
-    dsp::SchmittTrigger relTrig;
+    infNoiseInTrigger phaseTrig;
+    infNoiseInTrigger attTrig;
+    infNoiseInTrigger relTrig;
     infNoiseInEdgeDetector phaseGate = infNoiseInEdgeDetector(trueDetectValues[td_gateHigh]);
     static const int BOA = 0; // Begin Of Attack
     static const int EOA = 1; // End Of Attack (Begin Of Decay)
@@ -194,9 +194,17 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
         ensureNormExpLogLuts();
 	}
 
-    void onTrigLengthChanged() override {
-        for (int i = 0; i < 6; i++)
+    void onOutTrigTimeChanged() override {
+        for (int i = 0; i < 6; i++) {
             outTrig[i].setCycles(trigOnCycles, trigOffCycles);
+            outTrig[i].setDelayCycles(trigOutDelayCycles);
+        }
+    }
+
+    void onInTrigTimeChanged() override {
+        phaseTrig.setDelayCycles(trigInDelayCycles);
+        attTrig.setDelayCycles(trigInDelayCycles);
+        relTrig.setDelayCycles(trigInDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -461,18 +469,14 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
 
         if (doProcess) {
             // Handle direct A.trig
-            float attVolt = haveAttTrigInput ? inputs[A_TRIG_INPUT].getVoltage() : 0.f;
-            if (params[A_TRIG_BTN_PARAM].getValue() > 0.5f)
-                attVolt = 10.f;
-            bool attTriggered = attTrig.process(attVolt, 
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+            float low = trueDetectValues[trigDetLow.act];
+            float high = trueDetectValues[trigDetHigh.act];
+            bool attTriggered = attTrig.processMomentary(params[A_TRIG_BTN_PARAM], inputs[A_TRIG_INPUT],
+                low, high, procCycles);
 
             // Handle direct DR.trig
-            float relVolt = haveRelTrigInput ? inputs[DLR_TRIG_INPUT].getVoltage() : 0.f;
-            if (params[DR_TRIG_BTN_PARAM].getValue() > 0.5f)
-                relVolt = 10.f;
-            bool relTriggered = relTrig.process(relVolt, 
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+            bool relTriggered = relTrig.processMomentary(params[DR_TRIG_BTN_PARAM], inputs[DLR_TRIG_INPUT],
+                low, high, procCycles);
 
             // Handle Phase input
             // Dedicated A.trig / DR.trig take priority; Phase fills unpatched sides.
@@ -481,8 +485,7 @@ struct ADSDREnvelopeModule : InfNoiseEnvelopeModule {
                 bool phaseTrigToAttack = !phaseIsAttack;
                 float phaseVolt = inputs[PHASE_INPUT].getVoltage();
                 if (phaseTrigMode) { // Trigger-mode
-                    if (phaseTrig.process(phaseVolt, 
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                    if (phaseTrig.process(phaseVolt, low, high, procCycles)) {
                         if (phaseTrigToAttack) {
                             if (!haveAttTrigInput)
                                 attTriggered = true;
@@ -625,14 +628,14 @@ struct ADSDREnvelopeModuleWidget : InfNoiseModuleWidget {
         const float centerLeftClm = 30.f;
         const float centerRightClm = 60.f;
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerClm, 47.127f), module, ADSDREnvelopeModule::PHASE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerClm, 47.127f), module, ADSDREnvelopeModule::PHASE_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(60.924f, 47.127f), module, ADSDREnvelopeModule::PHASE_GATE_TRIG_PARAM));
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerLeftClm, 84.901f), module, ADSDREnvelopeModule::A_TRIG_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerLeftClm, 84.901f), module, ADSDREnvelopeModule::A_TRIG_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red, true>>(Vec(19.861f, 97.773f), module, ADSDREnvelopeModule::A_TRIG_BTN_PARAM));
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerRightClm, 84.901f), module, ADSDREnvelopeModule::DLR_TRIG_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerRightClm, 84.901f), module, ADSDREnvelopeModule::DLR_TRIG_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red, true>>(Vec(49.861f, 97.773f), module, ADSDREnvelopeModule::DR_TRIG_BTN_PARAM));
 
         addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(centerLeftClm, 65.332f), module, ADSDREnvelopeModule::ATTACK_LIGHT));  
@@ -690,15 +693,15 @@ struct ADSDREnvelopeModuleWidget : InfNoiseModuleWidget {
             ADSDREnvelopeModule::R_SHAPE_PARAM
         });
 
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(leftClm, 262.931f), module, ADSDREnvelopeModule::BOA_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(centerClm, 262.931f), module, ADSDREnvelopeModule::BOS_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 262.931f), module, ADSDREnvelopeModule::BOR_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(leftClm, 298.189f), module, ADSDREnvelopeModule::EOA_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(centerClm, 298.189f), module, ADSDREnvelopeModule::EOS_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 298.189f), module, ADSDREnvelopeModule::EOR_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 262.931f), module, ADSDREnvelopeModule::BOA_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(centerClm, 262.931f), module, ADSDREnvelopeModule::BOS_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 262.931f), module, ADSDREnvelopeModule::BOR_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 298.189f), module, ADSDREnvelopeModule::EOA_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(centerClm, 298.189f), module, ADSDREnvelopeModule::EOS_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 298.189f), module, ADSDREnvelopeModule::EOR_OUTPUT));
 
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(centerLeftClm, 333.447f), module, ADSDREnvelopeModule::ENVELOPE_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(centerRightClm, 333.447f), module, ADSDREnvelopeModule::INV_ENVELOPE_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(centerLeftClm, 333.447f), module, ADSDREnvelopeModule::ENVELOPE_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(centerRightClm, 333.447f), module, ADSDREnvelopeModule::INV_ENVELOPE_OUTPUT));
     }
 
     void step() override {

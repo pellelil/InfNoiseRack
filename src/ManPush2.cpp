@@ -53,7 +53,7 @@ struct ManPush2Module : InfNoiseModule {
         infNoiseInEdgeDetector(trueDetectValues[td_gateHigh]),
         infNoiseInEdgeDetector(trueDetectValues[td_gateHigh])
     };
-    dsp::SchmittTrigger pushTrigger[2] = { dsp::SchmittTrigger(), dsp::SchmittTrigger() };
+    infNoiseInTrigger pushTrigger[2] = { infNoiseInTrigger(), infNoiseInTrigger() };
     bool trigMode[2] = { false, false };
     bool pushHigh[2] = { false, false };
     bool btnPressed[2] = { false, false };
@@ -84,11 +84,18 @@ struct ManPush2Module : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
-    void onTrigLengthChanged() override {
+    void onOutTrigTimeChanged() override {
         for (int i = 0; i < 2; i++) {
             highTrigger[i].setCycles(trigOnCycles, trigOffCycles);
+            highTrigger[i].setDelayCycles(trigOutDelayCycles);
             lowTrigger[i].setCycles(trigOnCycles, trigOffCycles);
+            lowTrigger[i].setDelayCycles(trigOutDelayCycles);
         }
+    }
+
+    void onInTrigTimeChanged() override {
+        for (int i = 0; i < 2; i++)
+            pushTrigger[i].setDelayCycles(trigInDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -188,7 +195,7 @@ struct ManPush2Module : InfNoiseModule {
                     : rawInput;
                 if (trigMode[i]) {
                         if (pushTrigger[i].process(rawInput,
-                            trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                            trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                             pushHigh[i] = !pushHigh[i];
                         }
                         if (!btnPressed[i]) input = pushHigh[i] ? 10.f: 0.f;
@@ -259,7 +266,7 @@ struct ManPush2ModuleWidget : InfNoiseModuleWidget {
             pushBtn[i] = createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(centerClm, row), module, ManPush2Module::PUSH1_PARAM + i);
             addParam(pushBtn[i]);
             addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(latchClm, row + latchOffset), module, ManPush2Module::PUSH1_LATCH_PARAM + i));
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerClm, row + inputOffset), module, ManPush2Module::PUSH1_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerClm, row + inputOffset), module, ManPush2Module::PUSH1_INPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
                 Vec(latchClm, row + gateTrigOffset), module, ManPush2Module::PUSH1_GATE_TRIG_PARAM + i));
             addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(centerClm, row + gateOffset), module, ManPush2Module::GATE1_OUTPUT + i));

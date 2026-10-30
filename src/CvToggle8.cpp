@@ -79,7 +79,7 @@ struct CvToggle8Module : InfNoiseModule {
     int lastIdx = -1;
     int maxChannels = 16;
     int outChannels[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
-    dsp::TSchmittTrigger<float> toggleTrigger[8];
+    infNoiseInTrigger toggleTrigger[8];
     bool virtualGate[8] = { false };
     enum attenuateMode { am_both, am_onlyOn, am_onlyOff, am_len };
     actReqValue<attenuateMode> attMode = actReqValue<attenuateMode>(am_both);
@@ -131,6 +131,11 @@ struct CvToggle8Module : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        for (int i = 0; i < 8; i++)
+            toggleTrigger[i].setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -248,7 +253,7 @@ struct CvToggle8Module : InfNoiseModule {
 
         if (doProcess && outputsInUse) {
             float att = (inputs[ATTENUVERT_INPUT].isConnected())
-                ? inputs[ATTENUVERT_INPUT].getPolyVoltage(1) / 5.f
+                ? inputs[ATTENUVERT_INPUT].getPolyVoltage(0) / 5.f
                 : 1.f;
             float attOn = (attMode.act == am_onlyOff) ? 1.f : att;
             float attOff = (attMode.act == am_onlyOn) ? 1.f : att;
@@ -267,7 +272,7 @@ struct CvToggle8Module : InfNoiseModule {
 
                 if (params[GATE_TRIG1_PARAM + i].getValue() < 0.5f) { // Latched = trigger
                     if (toggleTrigger[i].process(gateInput,
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]))
+                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles))
                         virtualGate[i] = !virtualGate[i];
                 }
                 else {  // Unlatched = gate
@@ -278,7 +283,7 @@ struct CvToggle8Module : InfNoiseModule {
                 bool haveOff = inputs[OFF1_INPUT + i].isConnected();
                 if (haveOn || haveOff) {
                     att = (inputs[ATTENUVERT_INPUT].isConnected())
-                        ? inputs[ATTENUVERT_INPUT].getPolyVoltage(1) / 5.f
+                        ? inputs[ATTENUVERT_INPUT].getPolyVoltage(0) / 5.f
                         : 1.f;
                     attOn = (attMode.act == am_onlyOff) ? 1.f : att;
                     attOff = (attMode.act == am_onlyOn) ? 1.f : att;
@@ -347,7 +352,7 @@ struct CvToggle8ModuleWidget : InfNoiseModuleWidget {
         row = 87.179f;
         float lightRow = 97.601f;
         for (int i = 0; i < 8; i++) {
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(onOffClm, row), module, CvToggle8Module::GATE_TRIG1_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(onOffClm, row), module, CvToggle8Module::GATE_TRIG1_INPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
                 Vec(latchClm, row + latchOffset), module, CvToggle8Module::GATE_TRIG1_PARAM + i));
             addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(onClm, row), module, CvToggle8Module::ON1_INPUT + i));

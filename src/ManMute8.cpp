@@ -304,7 +304,7 @@ struct ManMute8ModuleWidget : InfNoiseModuleWidget {
         float col2 = 43.498f;
         float col3 = 72.229f;
         float allRow = 51.443f;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(col1, allRow), module, ManMute8Module::MUTED_LEVEL_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(col1, allRow), module, ManMute8Module::MUTED_LEVEL_INPUT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(col2, allRow), module, ManMute8Module::MUTED_LEVEL_PARAM));
         allBtn = createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(col3, allRow), module, ManMute8Module::MUTE_ALL_PARAM);
         addParam(allBtn);

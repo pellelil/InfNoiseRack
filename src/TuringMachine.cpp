@@ -111,12 +111,12 @@ struct TuringMachineModule : InfNoiseModule {
     uint32_t notInUseBits[32]; // Bits not in use pattern based on length (1-32, but 1 and 2 never used)
     int prevLength = -1; // ensure bit8 is updated when length is changed
     bool updateBit8Lights = true; // Ensure bit8 lights are updated when needed
-    dsp::SchmittTrigger lockTrigger;
-    dsp::SchmittTrigger minCntrMaxTrigger;
-    dsp::SchmittTrigger resetTrigger;
-    dsp::SchmittTrigger clockTrigger;
-    dsp::SchmittTrigger rotateTrigger;
-    dsp::SchmittTrigger pulseInTrigger[16] = {
+    infNoiseInTrigger lockTrigger;
+    dsp::SchmittTrigger minCntrMaxTrigger; // Button-only; no CV input
+    infNoiseInTrigger resetTrigger;
+    infNoiseInTrigger clockTrigger;
+    infNoiseInTrigger rotateTrigger;
+    dsp::SchmittTrigger pulseInTrigger[16] = { // Internal bit edge, not a trigger input
         dsp::SchmittTrigger(),
         dsp::SchmittTrigger(),
         dsp::SchmittTrigger(),
@@ -264,9 +264,18 @@ struct TuringMachineModule : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
-    void onTrigLengthChanged() override {
-        for (int i = 0; i < 16; i++)
+    void onOutTrigTimeChanged() override {
+        for (int i = 0; i < 16; i++) {
             pulseOutTrigger[i].setCycles(trigOnCycles, trigOffCycles);
+            pulseOutTrigger[i].setDelayCycles(trigOutDelayCycles);
+        }
+    }
+
+    void onInTrigTimeChanged() override {
+        lockTrigger.setDelayCycles(trigInDelayCycles);
+        resetTrigger.setDelayCycles(trigInDelayCycles);
+        clockTrigger.setDelayCycles(trigInDelayCycles);
+        rotateTrigger.setDelayCycles(trigInDelayCycles);
     }
 
     void resetBit32(float resetSwitchParam) { // 0=random, 1=all 1's, 2=all 0's
@@ -513,7 +522,7 @@ struct TuringMachineModule : InfNoiseModule {
                 }
 				else { // Lock-input is trigger
                     if (lockTrigger.process(lockInput,
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                         tmpLocked = !tmpLocked;
                     }
                 }
@@ -528,13 +537,8 @@ struct TuringMachineModule : InfNoiseModule {
             // Detect reset-input (if not locked for reset)
             bool reset = false;
             if (!locked.act || !lockPreventsReset.act) {
-                float resetInput = params[RESET_BTN_PARAM].getValue() > 0.5f
-                    ? 10.f
-                    : (inputs[RESET_INPUT].isConnected())
-                        ? inputs[RESET_INPUT].getVoltage()
-                        : 0.f;
-                if (resetTrigger.process(resetInput,
-                    trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                if (resetTrigger.processMomentary(params[RESET_BTN_PARAM], inputs[RESET_INPUT],
+                    trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                     reset = true;
                 }
             }
@@ -552,7 +556,7 @@ struct TuringMachineModule : InfNoiseModule {
                     ? inputs[CLOCK_INPUT].getVoltage() 
                     : 0.f;
             if (clockTrigger.process(clockInput,
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                 clock = true;
             }
 
@@ -564,7 +568,7 @@ struct TuringMachineModule : InfNoiseModule {
                     ? inputs[ROTATE_INPUT].getVoltage()
                     : clockInput;
             if (rotateTrigger.process(rotateInput,
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                 rotate = true;
             }
 
@@ -699,33 +703,33 @@ struct TuringMachineModuleWidget : InfNoiseModuleWidget {
         addParam(lockBtn);
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(27.484f, 75.420f), module, TuringMachineModule::LOCK_BTN_LATCH_PARAM));
         addParam(createParamCentered<CKSS>(Vec(39.361f, controlRow), module, TuringMachineModule::LOCK_SWITCH_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::LOCK_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::LOCK_INPUT));
         addChild(createLightCentered<SmallLight<RedLight>>(Vec(57.536f, 71.924f), module, TuringMachineModule::LOCK_LIGHT));
 
         controlRow += controlRowSpacing;
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobColumn, controlRow), module, TuringMachineModule::CHANGE_PROB_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(trimColumn, controlRow), module, TuringMachineModule::CHANGE_PROB_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::CHANGE_PROB_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::CHANGE_PROB_INPUT));
 
         controlRow += controlRowSpacing;
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobColumn, controlRow), module, TuringMachineModule::BIT_PROB_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(trimColumn, controlRow), module, TuringMachineModule::BIT_PROB_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::BIT_PROB_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::BIT_PROB_INPUT));
         
         controlRow += controlRowSpacing;
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobColumn, controlRow), module, TuringMachineModule::LENGTH_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(trimColumn, controlRow), module, TuringMachineModule::LENGTH_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::LENGTH_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::LENGTH_INPUT));
 
         controlRow += controlRowSpacing;
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobColumn, controlRow), module, TuringMachineModule::RANGE_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(trimColumn, controlRow), module, TuringMachineModule::RANGE_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::RANGE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::RANGE_INPUT));
 
         controlRow += controlRowSpacing;
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobColumn, controlRow), module, TuringMachineModule::MINCNTRMAX_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(trimColumn, controlRow), module, TuringMachineModule::MINCNTRMAX_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::MINCNTRMAX_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::MINCNTRMAX_INPUT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(27.484f, 243.237), module, TuringMachineModule::MIN_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(45.640f, 243.237), module, TuringMachineModule::CNTR_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(63.615f, 243.237), module, TuringMachineModule::MAX_LIGHT));
@@ -734,27 +738,27 @@ struct TuringMachineModuleWidget : InfNoiseModuleWidget {
 
         controlRow += controlRowSpacing;
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(26.458f, 287.759f), module, TuringMachineModule::RESET_BTN_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(knobColumn, controlRow), module, TuringMachineModule::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(knobColumn, controlRow), module, TuringMachineModule::RESET_INPUT));
         addParam(createParamCentered<CKSSThree>(Vec(38.359f, controlRow), module, TuringMachineModule::RESET_SWITCH_PARAM));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::FIXED_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::FIXED_OUTPUT));
 
         controlRow += controlRowSpacing;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(knobColumn, controlRow), module, TuringMachineModule::CLOCK_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(knobColumn, controlRow), module, TuringMachineModule::CLOCK_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(26.458f, 323.214f), module, TuringMachineModule::CLOCK_BTN_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(trimColumn, controlRow), module, TuringMachineModule::ROTATE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(trimColumn, controlRow), module, TuringMachineModule::ROTATE_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(56.245f, 323.214f), module, TuringMachineModule::ROTATE_BTN_PARAM));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::BINARY_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, controlRow), module, TuringMachineModule::BINARY_OUTPUT));
 
         controlRow = 87.009f;
         float trigGateClmOfs = -9.071f;
         float trigGateRowOfs = -14.021f;
         controlRow = 87.009f;
         for (int i = 0; i < 8; i++) {
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(bit1Column, controlRow), module, TuringMachineModule::BIT1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(bit1Column, controlRow), module, TuringMachineModule::BIT1_OUTPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
                 Vec(bit1Column + trigGateClmOfs, controlRow + trigGateRowOfs), module, TuringMachineModule::BIT1_TRIG_GATE_PARAM + i));
 
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(bit2Column, controlRow), module, TuringMachineModule::BIT12_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(bit2Column, controlRow), module, TuringMachineModule::BIT12_OUTPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
                 Vec(bit2Column + trigGateClmOfs, controlRow + trigGateRowOfs), module, TuringMachineModule::BIT12_TRIG_GATE_PARAM + i));
             

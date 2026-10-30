@@ -185,7 +185,7 @@ struct ManCV8IModuleWidget : InfNoiseModuleWidget {
         float knobRow = 87.179f;
         for (int i = 0; i < 8; i++) {
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobCol, knobRow), module, ManCV8IModule::MAN_KNOB1_PARAM + i));
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outCol, knobRow), module, ManCV8IModule::MAN1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(outCol, knobRow), module, ManCV8IModule::MAN1_OUTPUT + i));
             knobRow += knobSpacing;
         }
     }

@@ -1,9 +1,36 @@
+# 2.0.6 (in development)
+*To see the changelog for the version currently released in the VCV Library please scroll down to **[version 2.0.5](CHANGELOG.md#205)** below. What is written in this top section is curently in development, and only available via the **[Nightly release](https://github.com/pellelil/InfNoiseRack/releases/tag/Nightly)**.*
+
+- Input and output port-graphics now match the active panel theme, regardless if VCV is configured to use dark theme or not (before they were "wrong" if theme was forced to dark but VCV rack did not prefer dark or vice versa). The port-graphics is now light or dark together with the panel, whether the theme is set to Auto or forced to light or dark. Also **for new users the default theme will be Dark**, whereas it was previously Auto.
+- Modules that accept or generate triggers now have optional **Trigger input delay** and/or **Trigger output delay** items in the Trigger context menu (defaults to none). You can delay detection and/or generation of triggers by a number of cycles (1–16, 20, 24, 28, 32, 64, 128 or 256 cycles). This can be useful when you need two modules to detect the same trigger signal **at the same time**, or one **before** the other: each rack cable introduces a 1 cycle delay, so a short extra delay on an input or output can line events up — or deliberately stagger them. *This new feature is described here [Trigger delays](doc/manual.md#trigger-delays) along with an example of when you might need it.*
+- This new trigger-delay feature (as the name implies) only applies to triggers (not gates) and is naturally only available in Infinite-Noise modules. The new Delay 3 module (see **New modules**) does the same thing (delays a signal by a few cycles), but can also be used with gate signals and/or external modules (e.g. to delay signals sent to them or received from their outputs).
+- Various minor panel tweaks (e.g. updated a few tool-tips, removed/corrected a few wrong labels - e.g. the dark themed Slew 2 panel had a "GT/TR" label that should not be there).
+
+## New modules
+- **[Delay 3](Delay3.md#delay-3)**: 2HP 3-section polyphonic delay (1–16 cycles per section). B/C inputs normalize to the previous section's output (1-cycle hop, same as a cable), allowing for a 48 cycle delay of a single input in the A-section.
+- **[Stack](doc/Shth.md#stack)**: 2HP polyphonic stack. Push stores up to 16 polyphonic values, Pop takes the oldest (FIFO) or newest (LIFO), and Size chooses how many of the newest items are accessible without deleting the rest.
+- **[Stack Expander](doc/Shth.md#stack-expander)**: 2HP expander for Stack: Cycle the accessible stack-items to a Value output, with triger-overflow, underflow outputs, and gate-full, and empty outputs.
+- **[Stack Bank Expander](doc/Shth.md#stack-bank-expander)**: 2HP expander for Stack: Four banks (stacks). Cycle among them, send a bank into Stack, or retrieve a bank from Stack.
+- **[Flux 4](doc/Flux4.md#flux-4)**: 10HP quad morphing VCA: Pos, Range and Sweep shape four signals, with optional linked ranges and A+B, C+D, min, max, average and sum outputs.
+
+## Updated modules
+- **[Matrix Mix 5x5](doc/Mixer.md#matrix-mix-5x5)**: Added NtZ (Nearest to Zero) and FfZ (Farthest from Zero) outputs to the lower-left output cluster. Level lights hold peaks a bit longer so brief amber/red overloads are easier to notice.
+- **[Matrix Mix 4x4 Stereo](doc/Mixer.md#matrix-mix-4x4-stereo)**: Level lights hold peaks a bit longer so brief amber/red overloads are easier to notice.
+- **[Stereo Balance/Pan](doc/StereoBalancePan.md#stereo-balance-pan)**: Level lights hold peaks a bit longer so brief amber/red overloads are easier to notice.
+- **ADR Envelope**, **ADSDR Envelope**, **Auto-Scale 4**, **Bernoulli Switch**, **Chaos**, **Cross-fade 1x2**, **Cross-fade 4x1**, **Cross-fade switch 1to4**, **Cross-fade switch 4to1**, **CV to Gate/Trigger 8**, **CV-Toggle 8**, **Delta-4**, **Flip-Flop**, **Increment/Decrement Offset**, **LFO1**, **Manuel CV 8 Mk II**, **Manuel Push 2**, **Manuel Trigger 8**, **Manuel Trigger, Gate and CV**, **Mute 2**, **ON/OFF Switch**, **Poly-Shuffle**, **Poly-Value Compare**, **Random-4**, **Random Curve**, **S&H/T&H-2**, **S&H/T&H-2x4**, **Sample and Update**, **Slew 2**, **Slope Detector 2**, **Turing Machine**, **Value Comparator-1**, **Wave Shaper 2**: Enables input- and/or output-triggers with new optional delay (set via context-menu).
+
+## Fixed modules
+- **[Chaos](doc/Random.md#chaos)**: Did not implement Process Quality selection via context menu. Failed to ensure the LUT it used were initialized, which would affect exp/log slew-shapes.
+- **[Phase-Driven LFO](doc/LFO.md#phase-driven-lfo)**: Failed to ensure the LUT used by modulation was initialized, so exp/log MOD shapes were not applied.
+- **[Envelope Phase Expander](doc/Envelope.md#envelope-phase-expander)**: Did not implement Process Quality selection via context menu.
+- **[CV-Toggle 8](doc/ManCV.md#cv-toggle-8)**: Attenuvert input was reading wrong channel input.
+
 # 2.0.5
 - Added new knob-scaling to the time knobs utilized in ADR-/ADSDR-Envelope. Loading a patch saved in a previous version, the knobs will automatic rescale on load to ensure the knobs keep the same time as prevoius (please see **Breaking changes** below). Added context-menu Time scale (0.1× / 1× / 10×) with indicator lights on the time knobs. The 0.1x scaling makes is more easy to dial in times in the 0-1 second range, whereas the 10x scaling allows you to dial in times up to 100 seconds. *The scaling will default to 1x, hence by default the knobs allows you to set times in the 0 to 10 seconds range as in prevoius versions.*
 - Added internal (fixed time) cross fade to several switch and mute modules (see **Updated modules** below). By default these modules will still perform an instant switch/mute, however using the context menu you are now able select between different fixed time cross fades - in the range from 0.0001 to 10 seconds. Likewise using the context menu you can select either a Linear (default) or S-Curve cross fade (starts slow -> fast in the middle -> slow at the end). *This build in cross-fade can achive results, an external tool cannot do (as it only affects the actual switch, hence not affect the signal before/after the switch).*
 - In all of the Tweak-modules the Scale-range/Offset-mode lights were replaced by multi-stage/color push buttons (see **Updated Modules** below). This means Scale-range/Offset-mode can be changed directly from the panel, whereas these had to be changed using the context-menu in previous versions (old context menu items were removed). *When loading a patch made with a previous version, the old context-menu selections are automatically "converted" into stages for the new buttons*.
 - Added separate Mixer section to the manual.
-- In previous versions, Manuel Mix 4 Mk I, Manuel Mix 4 Mk II and Manuel Mix 4 Stereo defaulted to perform an Avering mix. These modules will now in stead default to perform a Unity mix. Likewise in previous you had to use the context menu to switch mix-mode. However now there is a small toggle button near the "Mix" label in the top to toggle between Unity- or Avering mix-mode. *Old patches will still load with the correct mix-mode.*
+- In previous versions, Manuel Mix 4 Mk I, Manuel Mix 4 Mk II and Manuel Mix 4 Stereo defaulted to perform an Avering mix. These modules will now in stead default to perform a Unity mix. Likewise in previous versions you had to use the context menu to switch mix-mode. However now there is a small toggle button near the "Mix" label in the top to toggle between Unity- or Avering mix-mode. *Old patches will still load with the correct mix-mode.*
 - While testing some of the new modules, I sadly discovered a couple of simple/embarrassing bugs in a few other modules. So, I've decided to go through all of the modules, to test them all once again. *It was not half as fun as it might sound ... knowing it doesn't sound like fun at all :-)* Anyway, while I can't fully test each and every combination of how a module might be used, I'm at least happy to report that what I found was fixed, and there are no known bugs.
 
 ## Braking changes
@@ -51,8 +78,8 @@
 - **[CV-Toggle 8](doc/ManCV.md#cv-toggle-8)**: Fixed issues with normalized inputs in sections 2-8.
 - **[LFO1](doc/LFO.md#lfo1)**: Fixed scaling of MOD CV-input (input had half the effect it should have).
 - **[Phase-Driven LFO](doc/LFO.md#phase-driven-lfo)**: Fixed scaling of MOD CV-input (input had half the effect it should have).
-- **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next setting when scale/offset CV-inputs were normalized.
-- **[Tweak-8](doc/Tweak.md#tweak-8)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next setting when scale/offset CV-inputs were normalized.
+- **[Tweak-4 Mk II](doc/Tweak.md#tweak-4-mk-ii)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next section when scale/offset CV-inputs were normalized.
+- **[Tweak-8](doc/Tweak.md#tweak-8)**: Fixed issues with mixing when input were not connected but scale/offset was, and trim-knob setting were "carried" to the next section when scale/offset CV-inputs were normalized.
 - **[Poly-Scale](doc/PolyTools.md#poly-scale)**: The multiple-scale warning light was not added to panel (next to "Poly" output).
 
 

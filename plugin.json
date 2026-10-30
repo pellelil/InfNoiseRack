@@ -1,7 +1,7 @@
 {
     "slug": "InfiniteNoise",
     "name": "Infinite-Noise",
-    "version": "2.0.5",
+    "version": "2.0.6",
     "license": "GPL-3.0-or-later",
     "brand": "Infinite-Noise",
     "author": "Pelle Liljendal",
@@ -158,6 +158,19 @@
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Tweak.md#vca-4-mk-ii",
       "tags":  [
         "Attenuator",
+        "Polyphonic",
+        "Quad",
+        "VCA"
+      ]
+    },
+    {
+      "slug": "Flux4",
+      "name": "Flux 4",
+      "description": "10HP quad morphing VCA: Pos, Range and Sweep shape four signals, with optional linked ranges and A+B, C+D, min, max, average and sum outputs.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Flux4.md#flux-4",
+      "tags":  [
+        "Attenuator",
+        "Mixer",
         "Polyphonic",
         "Quad",
         "VCA"
@@ -341,7 +354,7 @@
     {
       "slug": "MatrixMix5x5",
       "name": "Matrix Mix 5x5",
-      "description": "14HP mono 5x5 matrix mixer: per-row invert/gain, linked column sends, per-column unity or averaging mix, range 0–1x or ±1x, level CV/trim, Min/Max/Avg/Rng.",
+      "description": "14HP mono 5x5 matrix mixer: per-row invert/gain, linked column sends, per-column unity or averaging mix, range 0–1x or ±1x, level CV/trim, Min/Max/NtZ/FfZ/Avg/Rng.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Mixer.md#matrix-mix-5x5",
       "tags":  [
         "Mixer"
@@ -502,6 +515,41 @@
       "description": "2HP sample-and-update: Sample, Update, and Reset via button/CV. Can also count triggers and fire one when the desired count is reached.",
       "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Shth.md#sample-and-update",
       "tags":  [
+        "Polyphonic",
+        "Utility",
+        "Sample and hold"
+      ]
+    },
+    {
+      "slug": "Stack",
+      "name": "Stack",
+      "description": "2HP polyphonic stack: push up to 16 values, pop FIFO or LIFO, and set how many of the newest items are accessible.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Shth.md#stack",
+      "tags":  [
+        "Polyphonic",
+        "Utility",
+        "Sample and hold"
+      ]
+    },
+    {
+      "slug": "StackExpander",
+      "name": "Stack Expander",
+      "description": "2HP expander for Stack: Cycle the accessible stack-items to a Value output, with triger-overflow, underflow outputs, and gate-full, and empty outputs.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Shth.md#stack-expander",
+      "tags":  [
+        "Expander",
+        "Polyphonic",
+        "Utility",
+        "Sample and hold"
+      ]
+    },
+    {
+      "slug": "StackBankExpander",
+      "name": "Stack Bank Expander",
+      "description": "2HP expander for Stack: Four banks (stacks). Cycle among them, send a bank into Stack, or retrieve a bank from Stack.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Shth.md#stack-bank-expander",
+      "tags":  [
+        "Expander",
         "Polyphonic",
         "Utility",
         "Sample and hold"
@@ -788,6 +836,17 @@
       "tags":  [
         "Slew limiter",
         "Quad",
+        "Polyphonic",
+        "Utility"
+      ]
+    },
+    {
+      "slug": "Delay3",
+      "name": "Delay 3",
+      "description": "2HP 3-section polyphonic delay (1–16 cycles per section). B/C inputs normalize to the previous section's output (1-cycle hop, same as a cable), allowing for a 48 cycle delay of a single input in the A-section.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/Delay3.md#delay-3",
+      "tags":  [
+        "Delay",
         "Polyphonic",
         "Utility"
       ]

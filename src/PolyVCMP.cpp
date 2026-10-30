@@ -33,7 +33,7 @@ struct PolyVCMPModule : InfNoiseModule {
     };
 
     bool haveOutputs = false;
-    dsp::SchmittTrigger resetTrigger = dsp::SchmittTrigger();
+    infNoiseInTrigger resetTrigger;
     float minVal[PORT_MAX_CHANNELS] = { 0.f };
     float maxVal[PORT_MAX_CHANNELS] = { 0.f };
     float ntzVal[PORT_MAX_CHANNELS] = { 0.f };
@@ -100,9 +100,13 @@ struct PolyVCMPModule : InfNoiseModule {
         haveOutClipRange = true;  
 		haveGateDetect = false;
 		haveGateHighLow = false;
-		haveTrigDetect = false;
+		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        resetTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     // Resets all counters [0-15] when all is true, otherwise just [0], and sets justResetCounters
     void resetCounters(bool all) {
@@ -230,7 +234,7 @@ struct PolyVCMPModule : InfNoiseModule {
             bool doReset = params[RESET_MODE_PARAM].getValue() < 0.5f;
             if (!doReset && inputs[RESET_INPUT].isConnected())
                 doReset = resetTrigger.process(inputs[RESET_INPUT].getVoltage(),
-                    trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+                    trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles);
             if (doReset)
             {
                 resetCounters(polyOutputMode);  // Sets justResetCounters
@@ -305,7 +309,7 @@ struct PolyVCMPModuleWidget : InfNoiseModuleWidget {
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(cntrCol, 51.326f), module, PolyVCMPModule::POLY_INPUT));
 
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(Vec(4.765f, 74.884f), module, PolyVCMPModule::RESET_MODE_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrCol, 86.897f), module, PolyVCMPModule::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrCol, 86.897f), module, PolyVCMPModule::RESET_INPUT));
 
         addParam(createParamCentered<CKSS>(Vec(8.558f, 122.079f), module, PolyVCMPModule::OUTPUT_MODE_PARAM));
 

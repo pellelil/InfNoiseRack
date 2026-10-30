@@ -239,7 +239,7 @@ struct PolyOffsetModuleWidget : InfNoiseModuleWidget {
 
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(clm2, 89.330f), module, PolyOffsetModule::INC_OFFSET_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(clm2, 112.858f), module, PolyOffsetModule::INC_OFFSET_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(clm2, 136.735f), module, PolyOffsetModule::INC_OFFSET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(clm2, 136.735f), module, PolyOffsetModule::INC_OFFSET_INPUT));
 
         float row = 173.279f;
         float rowSpacing = 38.879f;

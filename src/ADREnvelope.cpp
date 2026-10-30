@@ -83,9 +83,9 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
     actReqValue<rateChaos> delayRateChaos = actReqValue<rateChaos>(rc_default);
     actReqValue<rateChaos> attackRateChaos = actReqValue<rateChaos>(rc_default);
     actReqValue<rateChaos> releaseRateChaos = actReqValue<rateChaos>(rc_default);
-    dsp::SchmittTrigger phaseTrig;
-    dsp::SchmittTrigger attTrig;
-    dsp::SchmittTrigger relTrig;
+    infNoiseInTrigger phaseTrig;
+    infNoiseInTrigger attTrig;
+    infNoiseInTrigger relTrig;
     infNoiseInEdgeDetector phaseGate = infNoiseInEdgeDetector(trueDetectValues[td_gateHigh]);
     static const int BOA = 0;
     static const int EOA = 1;
@@ -157,9 +157,17 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
         ensureNormExpLogLuts();
 	}
 
-    void onTrigLengthChanged() override {
-        for (int i = 0; i < 4; i++)
+    void onOutTrigTimeChanged() override {
+        for (int i = 0; i < 4; i++) {
             outTrig[i].setCycles(trigOnCycles, trigOffCycles);
+            outTrig[i].setDelayCycles(trigOutDelayCycles);
+        }
+    }
+
+    void onInTrigTimeChanged() override {
+        phaseTrig.setDelayCycles(trigInDelayCycles);
+        attTrig.setDelayCycles(trigInDelayCycles);
+        relTrig.setDelayCycles(trigInDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -361,18 +369,14 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
 
         if (doProcess) {
             // Handle direct A.trig
-            float attVolt = haveAttTrigInput ? inputs[A_TRIG_INPUT].getVoltage() : 0.f;
-            if (params[A_TRIG_BTN_PARAM].getValue() > 0.5f)
-                attVolt = 10.f;
-            bool attTriggered = attTrig.process(attVolt, 
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+            float low = trueDetectValues[trigDetLow.act];
+            float high = trueDetectValues[trigDetHigh.act];
+            bool attTriggered = attTrig.processMomentary(params[A_TRIG_BTN_PARAM], inputs[A_TRIG_INPUT],
+                low, high, procCycles);
 
             // Handle direct DR.trig
-            float relVolt = haveRelTrigInput ? inputs[DR_TRIG_INPUT].getVoltage() : 0.f;
-            if (params[DR_TRIG_BTN_PARAM].getValue() > 0.5f)
-                relVolt = 10.f;
-            bool relTriggered = relTrig.process(relVolt, 
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+            bool relTriggered = relTrig.processMomentary(params[DR_TRIG_BTN_PARAM], inputs[DR_TRIG_INPUT],
+                low, high, procCycles);
 
             // Handle Phase input
             // Dedicated A.trig / DR.trig take priority; Phase fills unpatched sides.
@@ -381,8 +385,7 @@ struct ADREnvelopeModule : InfNoiseEnvelopeModule {
                 bool phaseTrigToAttack = !phaseIsAttack;
                 float phaseVolt = inputs[PHASE_INPUT].getVoltage();
                 if (phaseTrigMode) { // Trigger-mode
-                    if (phaseTrig.process(phaseVolt, 
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                    if (phaseTrig.process(phaseVolt, low, high, procCycles)) {
                         if (phaseTrigToAttack) {
                             if (!haveAttTrigInput)
                                 attTriggered = true;
@@ -507,14 +510,14 @@ struct ADREnvelopeModuleWidget : InfNoiseModuleWidget {
         const float centerClm = 30.f;
         const float rightClm = 45.f;
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerClm, 47.127f), module, ADREnvelopeModule::PHASE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerClm, 47.127f), module, ADREnvelopeModule::PHASE_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
             Vec(45.924f, 47.127f), module, ADREnvelopeModule::PHASE_GATE_TRIG_PARAM));
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftClm, 84.901f), module, ADREnvelopeModule::A_TRIG_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 84.901f), module, ADREnvelopeModule::A_TRIG_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red, true>>(Vec(4.861f, 97.773f), module, ADREnvelopeModule::A_TRIG_BTN_PARAM));
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(rightClm, 84.901f), module, ADREnvelopeModule::DR_TRIG_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 84.901f), module, ADREnvelopeModule::DR_TRIG_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_red, true>>(Vec(34.861f, 97.773f), module, ADREnvelopeModule::DR_TRIG_BTN_PARAM));
 
         addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(4.764f, 70.636f), module, ADREnvelopeModule::ATTACK_LIGHT));  
@@ -555,13 +558,13 @@ struct ADREnvelopeModuleWidget : InfNoiseModuleWidget {
             ADREnvelopeModule::R_SHAPE_PARAM
         });
 
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(leftClm, 262.931f), module, ADREnvelopeModule::BOA_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 262.931f), module, ADREnvelopeModule::BOR_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(leftClm, 298.189f), module, ADREnvelopeModule::EOA_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 298.189f), module, ADREnvelopeModule::EOR_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 262.931f), module, ADREnvelopeModule::BOA_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 262.931f), module, ADREnvelopeModule::BOR_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 298.189f), module, ADREnvelopeModule::EOA_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 298.189f), module, ADREnvelopeModule::EOR_OUTPUT));
 
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(leftClm, 333.447f), module, ADREnvelopeModule::ENVELOPE_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 333.447f), module, ADREnvelopeModule::INV_ENVELOPE_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 333.447f), module, ADREnvelopeModule::ENVELOPE_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 333.447f), module, ADREnvelopeModule::INV_ENVELOPE_OUTPUT));
     }
 
     void step() override {

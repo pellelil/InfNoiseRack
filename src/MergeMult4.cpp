@@ -56,7 +56,7 @@ struct MergeMult4Module : InfNoiseModule {
         configOutput(MERGE_OUTPUT, "Merge (sum or mix)");
         configLight(MODE_LIGHT, "Negative: Unlit=Signed, Green=Zero, Yellow=Abs-in, Red=Abs-out");
 
-        configInput(MULT_INPUT, "Mult");
+        configInput(MULT_INPUT, "Mult (normalized to merge-output)");
         configOutput(MULT1_OUTPUT, "Mult-1");
         configOutput(MULT2_OUTPUT, "Mult-2");
         configOutput(MULT3_OUTPUT, "Mult-3");

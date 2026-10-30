@@ -1544,19 +1544,19 @@ enum trigDelayType {
 	tdl_none,
 	tdl_1cyc, tdl_2cyc, tdl_3cyc, tdl_4cyc, tdl_5cyc, tdl_6cyc, tdl_7cyc, tdl_8cyc,
 	tdl_9cyc, tdl_10cyc, tdl_11cyc, tdl_12cyc, tdl_13cyc, tdl_14cyc, tdl_15cyc, tdl_16cyc,
-	tdl_20cyc, tdl_24cyc, tdl_28cyc, tdl_32cyc,
+	tdl_20cyc, tdl_24cyc, tdl_28cyc, tdl_32cyc, tdl_64cyc, tdl_128cyc, tdl_256cyc,
 	tdl_len
 };
 const int trigDelayCycleCounts[] = {
 	0,
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-	20, 24, 28, 32
+	20, 24, 28, 32, 12000, 24000, 48000
 };
 const std::string trigDelayNames[] = {
 	"None (default)",
 	"1 cycle", "2 cycles", "3 cycles", "4 cycles", "5 cycles", "6 cycles", "7 cycles", "8 cycles",
 	"9 cycles", "10 cycles", "11 cycles", "12 cycles", "13 cycles", "14 cycles", "15 cycles", "16 cycles",
-	"20 cycles", "24 cycles", "28 cycles", "32 cycles"
+	"20 cycles", "24 cycles", "28 cycles", "32 cycles", "64 cycles", "128 cycles", "256 cycles"
 };
 
 inline std::vector<std::string> getTrigDelayNames() {
@@ -1582,10 +1582,31 @@ inline int trigDelayToCycles(trigDelayType delay) {
 /// have finished, or was reset (by default ~1 ms high and 1 ms low).
 /// Optional pre-pulse delay, then high, then low. Not finished until low ends.
 struct infNoiseOutTrigger {
+	enum stageType {
+		ots_idle,
+		ots_delay,
+		ots_high,
+		ots_low
+	};
+
 	int delayCycles = 0; // Pre-pulse delay; 0 = none (default)
 	int highCycles = 44; // Cycles in high stage (~1 ms @ 44 kHz, at least 1 cycle)
 	int lowCycles = 44; // Cycles in low stage (~1 ms @ 44 kHz, at least 1 cycle)
-	int remaining = 0; // Remaining cycles of delay + high + low. <=0 when idle.
+	stageType stage = ots_idle;
+	int remaining = 0; // Engine samples left in the current stage (0 when idle)
+
+	/// @brief Enter a stage and set remaining to that stage's full length.
+	inline void enterStage(stageType next) {
+		stage = next;
+		if (next == ots_delay)
+			remaining = delayCycles;
+		else if (next == ots_high)
+			remaining = highCycles;
+		else if (next == ots_low)
+			remaining = lowCycles;
+		else
+			remaining = 0;
+	}
 
 	/// @brief Set high/low engine-sample counts and reset remaining.
 	inline void setCycles(int high, int low) {
@@ -1600,58 +1621,126 @@ struct infNoiseOutTrigger {
 		reset();
 	}
 
-	/// @brief Should be called AFTER process is called, it process returns true.
+	/// @brief Should be called AFTER process is called, if process returns false.
 	/// @param forced If true, the trigger will fire even if it is already active.
 	/// @return true if able to (re)fire the trigger, otherwise false.
 	bool trigger(bool forced = false) {
-		if (remaining > 0 && !forced)
+		if (stage != ots_idle && !forced)
 			return false;
 
-		remaining = delayCycles + highCycles + lowCycles;
+		enterStage(delayCycles > 0 ? ots_delay : ots_high);
 		return true;
 	}
 
 	/// @brief Returns true while delay, high, or low is in progress (false when idle).
 	inline bool running() {
-		return remaining > 0;
+		return stage != ots_idle;
 	}
 
-	/// @brief Clears remaining so the next trigger() can fire immediately.
+	/// @brief Returns to idle so the next trigger() can fire immediately.
 	inline void reset() {
+		stage = ots_idle;
 		remaining = 0;
 	}
 
 	/// @brief Advance the trigger by engine-sample stride (typically procCycles).
+	/// At most one stage per call. A stage shorter than cycles still occupies this call.
 	/// @param cycles Engine samples since last process call.
 	/// @return true if the trigger was still running at the start of this call.
 	inline bool process(int cycles) {
-		if (remaining <= 0)
+		if (stage == ots_idle)
 			return false;
 
-		remaining -= cycles;
-		if (remaining < 0)
-			remaining = 0;
+		if (remaining > cycles) {
+			remaining -= cycles;
+			return true;
+		}
+
+		if (stage == ots_delay)
+			enterStage(ots_high);
+		else if (stage == ots_high)
+			enterStage(ots_low);
+		else
+			enterStage(ots_idle);
 		return true;
 	}
 
 	/// @brief Returns true only in the delay stage (false during high, low, or idle)
 	inline bool isDelay() {
-		return remaining > highCycles + lowCycles;
+		return stage == ots_delay;
 	}
 
 	/// @brief Returns true only in the high stage (false during delay, low, or idle)
 	inline bool isHigh() {
-		return remaining > lowCycles && remaining <= highCycles + lowCycles;
-	}
-
-	/// @brief Returns true only in the low stage (false during delay, high, or idle)
-	inline bool isLow() {
-		return remaining > 0 && remaining <= lowCycles;
+		return stage == ots_high;
 	}
 
 	/// @brief Returns 1 only in the high stage, 0 during delay, low, or idle
 	inline float getLight() {
 		return isHigh() ? 1.f : 0.f;
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+// infNoiseInTrigger
+//-----------------------------------------------------------------------------
+/// @brief Schmitt trigger with an optional pre-edge delay.
+/// delayCycles == 0 returns the Schmitt result immediately.
+/// delayCycles > 0 stores a rising edge and returns true only after the delay.
+struct infNoiseInTrigger {
+	enum stageType {
+		its_idle,
+		its_delay
+	};
+
+	dsp::SchmittTrigger schmitt;
+	int delayCycles = 0; // Pre-edge delay; 0 = none (default)
+	stageType stage = its_idle;
+	int remaining = 0; // Engine samples left in the delay stage (0 when idle)
+
+	/// @brief Set pre-edge delay in engine samples and reset.
+	inline void setDelayCycles(int delay) {
+		delayCycles = delay > 0 ? delay : 0;
+		reset();
+	}
+
+	/// @brief Clears Schmitt state and any stored/delayed trigger.
+	inline void reset() {
+		schmitt.reset();
+		stage = its_idle;
+		remaining = 0;
+	}
+
+	/// @brief Same three Schmitt args, plus engine-sample stride (default 1).
+	/// @return true on an accepted trigger (immediate, or when a stored delay elapses).
+	bool process(float in, float lowThreshold, float highThreshold, int cycles = 1) {
+		bool edge = schmitt.process(in, lowThreshold, highThreshold);
+		if (delayCycles <= 0)
+			return edge;
+
+		if (stage == its_delay) {
+			if (remaining > cycles) {
+				remaining -= cycles;
+				return false;
+			}
+			stage = its_idle;
+			remaining = 0;
+			return true;
+		}
+
+		if (edge) {
+			stage = its_delay;
+			remaining = delayCycles;
+		}
+		return false;
+	}
+
+	/// @brief Momentary button ORs with CV input, then process().
+	bool processMomentary(Param& button, Input& input, float lowThreshold, float highThreshold, int cycles = 1) {
+		float voltage = button.getValue() > 0.5f ? 10.f
+			: (input.isConnected() ? input.getVoltage() : 0.f);
+		return process(voltage, lowThreshold, highThreshold, cycles);
 	}
 };
 

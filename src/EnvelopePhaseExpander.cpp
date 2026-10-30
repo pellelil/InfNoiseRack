@@ -68,7 +68,7 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 	envMotionType envMotion = em_steady;
 	float prevEnvelope = 0.f;
 	bool havePrevEnvelope = false;
-	int envMotionSteadyCount = 0;
+	int envMotionSteadyCount = 0; // Used to track steady state
 
 	EnvelopePhaseExpanderModule() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -89,7 +89,7 @@ struct EnvelopePhaseExpanderModule : InfNoiseModule {
 		configOutput(STDY_OUTPUT, "Steady gate (envelope unchanged)");
 		configOutput(FALL_OUTPUT, "Fall gate (envelope decreasing)");
 
-		haveProcQuality = false;
+		haveProcQuality = true;
 		haveAutoProcQuality = false;
 		haveOutQuantize = false;
 		haveOutClipRange = false;
@@ -328,18 +328,18 @@ struct EnvelopePhaseExpanderModuleWidget : InfNoiseModuleWidget {
 		addChild(createLightCentered<TinyLight<GreenRedLight>>(Vec(26.301f, 29.269f), module,
 			EnvelopePhaseExpanderModule::RIGHT_EXPAND_LIGHT));
 
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 53.235f), module, EnvelopePhaseExpanderModule::ATTACK_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 88.545f), module, EnvelopePhaseExpanderModule::DECAY_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 123.855f), module, EnvelopePhaseExpanderModule::SUSTAIN_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 159.165f), module, EnvelopePhaseExpanderModule::DELAY_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 194.475f), module, EnvelopePhaseExpanderModule::RELEASE_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 53.235f), module, EnvelopePhaseExpanderModule::ATTACK_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 88.545f), module, EnvelopePhaseExpanderModule::DECAY_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 123.855f), module, EnvelopePhaseExpanderModule::SUSTAIN_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 159.165f), module, EnvelopePhaseExpanderModule::DELAY_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 194.475f), module, EnvelopePhaseExpanderModule::RELEASE_OUTPUT));
 		addChild(createLightCentered<TinyLight<RedLight>>(Vec(5.164f, 213.083f), module,
 			EnvelopePhaseExpanderModule::IDLE_MODE_LIGHT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 229.785f), module, EnvelopePhaseExpanderModule::IDLE_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 229.785f), module, EnvelopePhaseExpanderModule::IDLE_OUTPUT));
 
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 265.095f), module, EnvelopePhaseExpanderModule::RISE_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 300.405f), module, EnvelopePhaseExpanderModule::STDY_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(clm, 335.715f), module, EnvelopePhaseExpanderModule::FALL_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 265.095f), module, EnvelopePhaseExpanderModule::RISE_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 300.405f), module, EnvelopePhaseExpanderModule::STDY_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(clm, 335.715f), module, EnvelopePhaseExpanderModule::FALL_OUTPUT));
 	}
 
 	void appendContextMenu(Menu* menu) override {

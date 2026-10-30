@@ -74,8 +74,9 @@ struct ManTrGtCvModule : InfNoiseModule {
         procQuality.setBoth(pq_balancedRate); // Ballanced rate (every 16th cycle)
 	}
 
-    void onTrigLengthChanged() override {
+    void onOutTrigTimeChanged() override {
         outputTrigger.setCycles(trigOnCycles, trigOffCycles);
+        outputTrigger.setDelayCycles(trigOutDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {

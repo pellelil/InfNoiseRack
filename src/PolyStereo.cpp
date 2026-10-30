@@ -171,21 +171,21 @@ struct PolyStereoModuleWidget : InfNoiseModuleWidget {
 
         const float leftClm = 15.f;
         const float rightClm = 45.f;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftClm, 62.431f), module, PolyStereoModule::L1_INPUT));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftClm, 97.504f), module, PolyStereoModule::R1_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 62.431f), module, PolyStereoModule::L1_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 97.504f), module, PolyStereoModule::R1_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(rightClm, 79.967f), module, PolyStereoModule::P1_OUTPUT));
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftClm, 132.577f), module, PolyStereoModule::L2_INPUT));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(leftClm, 167.651f), module, PolyStereoModule::R2_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 132.577f), module, PolyStereoModule::L2_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(leftClm, 167.651f), module, PolyStereoModule::R2_INPUT));
         addOutput(createOutputCentered<infNoiseThemedPolyPort>(Vec(rightClm, 150.114f), module, PolyStereoModule::P2_OUTPUT));
 
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(leftClm, 245.010f), module, PolyStereoModule::P3_INPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 227.473f), module, PolyStereoModule::L3_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 262.547f), module, PolyStereoModule::R3_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 227.473f), module, PolyStereoModule::L3_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 262.547f), module, PolyStereoModule::R3_OUTPUT));
 
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(leftClm, 315.157f), module, PolyStereoModule::P4_INPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 297.620f), module, PolyStereoModule::L4_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rightClm, 332.594f), module, PolyStereoModule::R4_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 297.620f), module, PolyStereoModule::L4_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rightClm, 332.594f), module, PolyStereoModule::R4_OUTPUT));
     }
 
     void appendContextMenu(Menu* menu) override {

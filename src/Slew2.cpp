@@ -95,7 +95,7 @@ struct Slew2Module : InfNoiseModule {
 	int followMode[sectCount] = { 0, 0 };
 	bool slewOutConn[sectCount] = { false, false };
 	infNoiseSlew slew[slewCount];
-	dsp::SchmittTrigger catchTrigger[sectCount][PORT_MAX_CHANNELS];
+	infNoiseInTrigger catchTrigger[sectCount][PORT_MAX_CHANNELS];
 	bool bCaught[PORT_MAX_CHANNELS] = {}; // B-Catch hysteresis latch per channel
 
 	Slew2Module() {
@@ -150,6 +150,13 @@ struct Slew2Module : InfNoiseModule {
 		haveTrigHighLow = false;
 
 		ensureNormExpLogLuts();
+	}
+
+	void onInTrigTimeChanged() override {
+		for (int i = 0; i < sectCount; i++) {
+			for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+				catchTrigger[i][c].setDelayCycles(trigInDelayCycles);
+		}
 	}
 
 	void resetCatchTriggers() {
@@ -440,7 +447,7 @@ struct Slew2Module : InfNoiseModule {
 						float snapVolt = inputs[SNAP_INPUT].getPolyVoltage(c);
 						if (trigMode) {
 							if (catchTrigger[i][c].process(snapVolt,
-								trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]))
+								trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles))
 								slew[idx].snap(inVolt);
 						}
 						else if (snapVolt >= trueDetectValues[gateDetHigh.act]) {

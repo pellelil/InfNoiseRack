@@ -157,8 +157,9 @@ struct RandomCurveModule : InfNoiseModule {
         ensureNormExpLogLuts();
 	}
 
-    void onTrigLengthChanged() override {
+    void onOutTrigTimeChanged() override {
         cycleTrigger.setCycles(trigOnCycles, trigOffCycles);
+        cycleTrigger.setDelayCycles(trigOutDelayCycles);
     }
 
     static bool resolveUserCurveUseLog(userCurveModeType mode, float deltaRnd) {
@@ -544,11 +545,11 @@ struct RandomCurveModuleWidget : InfNoiseModuleWidget {
             addParam(createParamCentered<Trimpot>(Vec(lftClm, row), module, RandomCurveModule::RATE_TRIM_PARAM + i));
             float knobOfs = (i == 0) ? 4.58f : 13.045f;
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rgtClm, row + knobOfs), module, RandomCurveModule::RATE_PARAM + i));
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(lftClm, row + inpOfs), module, RandomCurveModule::RATE_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(lftClm, row + inpOfs), module, RandomCurveModule::RATE_INPUT + i));
 
             row += rowSpacing;
         }
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rgtClm, 71.542f), module, RandomCurveModule::TRIG_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rgtClm, 71.542f), module, RandomCurveModule::TRIG_OUTPUT));
 
         // Misc other (freq-light, delay-toggle, Convex/Concave-mode)
         addChild(createLightCentered<SmallLight<GreenRedLight>>(Vec(31.373f, 30.733f), module, RandomCurveModule::FREQ_LIGHT));
@@ -579,17 +580,17 @@ struct RandomCurveModuleWidget : InfNoiseModuleWidget {
 
         // Shape outputs
         row = 262.591f;
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(lftClm, row), module, RandomCurveModule::LINEAR_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rgtClm, row), module, RandomCurveModule::STEP_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(lftClm, row), module, RandomCurveModule::LINEAR_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rgtClm, row), module, RandomCurveModule::STEP_OUTPUT));
         addChild(createLightCentered<TinyLight<RedLight>>(Vec(33.509f, 253.323f), module, RandomCurveModule::STEP_MODE_LIGHT));
 
         row = 297.664f;
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(lftClm, row), module, RandomCurveModule::CURVE_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rgtClm, row), module, RandomCurveModule::SPIKY_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(lftClm, row), module, RandomCurveModule::CURVE_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rgtClm, row), module, RandomCurveModule::SPIKY_OUTPUT));
 
         row = 332.738f;
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(lftClm, row), module, RandomCurveModule::USER1_OUTPUT));
-        addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rgtClm, row), module, RandomCurveModule::USER2_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(lftClm, row), module, RandomCurveModule::USER1_OUTPUT));
+        addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rgtClm, row), module, RandomCurveModule::USER2_OUTPUT));
         addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(4.774f, 323.470f), module, RandomCurveModule::USER1_MODE_LIGHT));
         addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(33.509f, 323.470f), module, RandomCurveModule::USER2_MODE_LIGHT));
     }

@@ -29,6 +29,8 @@ struct MatrixMix5x5Module : InfNoiseModule {
 		MAX_OUTPUT,
 		AVG_OUTPUT,
 		RNG_OUTPUT,
+		NTZ_OUTPUT,
+		FFZ_OUTPUT,
 		OUTPUTS_LEN
 	};
 	enum LightId {
@@ -75,6 +77,8 @@ struct MatrixMix5x5Module : InfNoiseModule {
 	bool maxOutConn = false;
 	bool avgOutConn = false;
 	bool rngOutConn = false;
+	bool ntzOutConn = false;
+	bool ffzOutConn = false;
 	bool haveOutputs = false;
 	bool invert[5] = {};
 	bool bipolar[5] = {};
@@ -141,6 +145,8 @@ struct MatrixMix5x5Module : InfNoiseModule {
 		configOutput(MAX_OUTPUT, "Max (connected rows after gain)");
 		configOutput(AVG_OUTPUT, "Average (connected rows after gain)");
 		configOutput(RNG_OUTPUT, "Range Max-Min (connected rows after gain)");
+		configOutput(NTZ_OUTPUT, "Nearest to Zero (connected rows after gain)");
+		configOutput(FFZ_OUTPUT, "Farthest from Zero (connected rows after gain)");
 
 		configBypass(IN_INPUT, MIX_OUTPUT);
 
@@ -247,10 +253,12 @@ struct MatrixMix5x5Module : InfNoiseModule {
 			mixOutConn[i] = outputs[MIX_OUTPUT + i].isConnected();
 			haveOutputs = haveOutputs || mixOutConn[i];
 			outputs[MIX_OUTPUT + i].setChannels(1);
-			setAbsLevelMeterLight(this, ROW_LEVEL_LIGHT + i * 3, maxAbsRow[i]);
-			setAbsLevelMeterLight(this, COL_LEVEL_LIGHT + i * 3, maxAbsCol[i]);
-			maxAbsRow[i] = 0.f;
-			maxAbsCol[i] = 0.f;
+			if ((proParCalls256 & 0x1F) == 0) {
+				setAbsLevelMeterLight(this, ROW_LEVEL_LIGHT + i * 3, maxAbsRow[i]);
+				setAbsLevelMeterLight(this, COL_LEVEL_LIGHT + i * 3, maxAbsCol[i]);
+				maxAbsRow[i] = 0.f;
+				maxAbsCol[i] = 0.f;
+			}
 			activeInputs[i] = inConn[i] && gain[i] != 0.f;
 		}
 		for (int c = 0; c < 5; c++) {
@@ -271,11 +279,15 @@ struct MatrixMix5x5Module : InfNoiseModule {
 		maxOutConn = outputs[MAX_OUTPUT].isConnected();
 		avgOutConn = outputs[AVG_OUTPUT].isConnected();
 		rngOutConn = outputs[RNG_OUTPUT].isConnected();
-		haveOutputs = haveOutputs || minOutConn || maxOutConn || avgOutConn || rngOutConn;
+		ntzOutConn = outputs[NTZ_OUTPUT].isConnected();
+		ffzOutConn = outputs[FFZ_OUTPUT].isConnected();
+		haveOutputs = haveOutputs || minOutConn || maxOutConn || avgOutConn || rngOutConn || ntzOutConn || ffzOutConn;
 		outputs[MIN_OUTPUT].setChannels(1);
 		outputs[MAX_OUTPUT].setChannels(1);
 		outputs[AVG_OUTPUT].setChannels(1);
 		outputs[RNG_OUTPUT].setChannels(1);
+		outputs[NTZ_OUTPUT].setChannels(1);
+		outputs[FFZ_OUTPUT].setChannels(1);
 
 		//--------------------
 		postProcessParams(args);
@@ -296,6 +308,8 @@ struct MatrixMix5x5Module : InfNoiseModule {
 			float sumCabled = 0.f;
 			float minC = 0.f;
 			float maxC = 0.f;
+			float ntzC = 0.f;
+			float ffzC = 0.f;
 			for (int r = 0; r < 5; r++) {
 				float v = 0.f;
 				if (inConn[r])
@@ -312,10 +326,17 @@ struct MatrixMix5x5Module : InfNoiseModule {
 					if (cabled == 0) {
 						minC = v;
 						maxC = v;
+						ntzC = v;
+						ffzC = v;
 					}
 					else {
 						minC = std::min(minC, v);
 						maxC = std::max(maxC, v);
+						float absV = std::fabs(v);
+						if (absV < std::fabs(ntzC))
+							ntzC = v;
+						if (absV > std::fabs(ffzC))
+							ffzC = v;
 					}
 					sumCabled += v;
 					cabled++;
@@ -327,12 +348,16 @@ struct MatrixMix5x5Module : InfNoiseModule {
 				outputs[MAX_OUTPUT].setVoltage(clipToVoltRange(maxC, outClipRange.act));
 				outputs[AVG_OUTPUT].setVoltage(clipToVoltRange(sumCabled / (float) cabled, outClipRange.act));
 				outputs[RNG_OUTPUT].setVoltage(clipToVoltRange(maxC - minC, outClipRange.act));
+				outputs[NTZ_OUTPUT].setVoltage(clipToVoltRange(ntzC, outClipRange.act));
+				outputs[FFZ_OUTPUT].setVoltage(clipToVoltRange(ffzC, outClipRange.act));
 			}
 			else {
 				outputs[MIN_OUTPUT].setVoltage(0.f);
 				outputs[MAX_OUTPUT].setVoltage(0.f);
 				outputs[AVG_OUTPUT].setVoltage(0.f);
 				outputs[RNG_OUTPUT].setVoltage(0.f);
+				outputs[NTZ_OUTPUT].setVoltage(0.f);
+				outputs[FFZ_OUTPUT].setVoltage(0.f);
 			}
 
 			float cv = 10.f; // CV in A-column normalized to +10V
@@ -381,7 +406,7 @@ struct MatrixMix5x5ModuleWidget : InfNoiseModuleWidget {
 		const float colLgtXOff = 9.098f;
 
 		for (int r = 0; r < 5; r++) {
-			addInput(createInputCentered<ThemedPJ301MPort>(Vec(inX, rowY[r]), module, MatrixMix5x5Module::IN_INPUT + r));
+			addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inX, rowY[r]), module, MatrixMix5x5Module::IN_INPUT + r));
 			addParam(createParamCentered<infNoiseLtSmallButton<bc_red>>(
 				Vec(invX, rowY[r] - 11.050f), module, MatrixMix5x5Module::INV_PARAM + r));
 			addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(
@@ -407,14 +432,16 @@ struct MatrixMix5x5ModuleWidget : InfNoiseModuleWidget {
 				Vec(colX[c] - colLgtXOff, 232.992f), module, MatrixMix5x5Module::COL_LEVEL_LIGHT + c * 3));
 			addParam(createParamCentered<RoundSmallBlackKnob>(Vec(colX[c], 248.158f), module, MatrixMix5x5Module::LEVEL_PARAM + c));
 			addParam(createParamCentered<Trimpot>(Vec(colX[c], 272.534f), module, MatrixMix5x5Module::TRIM_PARAM + c));
-			addInput(createInputCentered<ThemedPJ301MPort>(Vec(colX[c], 297.259f), module, MatrixMix5x5Module::LEVEL_CV_INPUT + c));
-			addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(colX[c], 332.194f), module, MatrixMix5x5Module::MIX_OUTPUT + c));
+			addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(colX[c], 297.259f), module, MatrixMix5x5Module::LEVEL_CV_INPUT + c));
+			addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(colX[c], 332.194f), module, MatrixMix5x5Module::MIX_OUTPUT + c));
 		}
 
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(15.078f, 297.259f), module, MatrixMix5x5Module::MIN_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(44.923f, 297.259f), module, MatrixMix5x5Module::MAX_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(15.078f, 332.194f), module, MatrixMix5x5Module::AVG_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(44.923f, 332.194f), module, MatrixMix5x5Module::RNG_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(15.078f, 262.324f), module, MatrixMix5x5Module::MIN_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(44.923f, 262.324f), module, MatrixMix5x5Module::MAX_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(15.078f, 297.259f), module, MatrixMix5x5Module::NTZ_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(44.923f, 297.259f), module, MatrixMix5x5Module::FFZ_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(15.078f, 332.194f), module, MatrixMix5x5Module::AVG_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(44.923f, 332.194f), module, MatrixMix5x5Module::RNG_OUTPUT));
 
 		InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
 		for (int c = 0; c < 5; c++) {
@@ -479,13 +506,13 @@ struct MatrixMix5x5ModuleWidget : InfNoiseModuleWidget {
 		assert(module);
 
 		menu->addChild(new MenuSeparator);
-		addSendPresetMenu(menu, module, "All matrix knobs", -1);
-		addSendPresetMenu(menu, module, "Diagonal knobs", -2);
-		addSendPresetMenu(menu, module, "Column A", 0);
-		addSendPresetMenu(menu, module, "Column B", 1);
-		addSendPresetMenu(menu, module, "Column C", 2);
-		addSendPresetMenu(menu, module, "Column D", 3);
-		addSendPresetMenu(menu, module, "Column E", 4);
+		addSendPresetMenu(menu, module, "Set all matrix knobs", -1);
+		addSendPresetMenu(menu, module, "Set diagonal knobs", -2);
+		addSendPresetMenu(menu, module, "Set column A knobs", 0);
+		addSendPresetMenu(menu, module, "Set column B knobs", 1);
+		addSendPresetMenu(menu, module, "Set column C knobs", 2);
+		addSendPresetMenu(menu, module, "Set column D knobs", 3);
+		addSendPresetMenu(menu, module, "Set column E knobs", 4);
 
 		menu->addChild(createIndexPtrSubmenuItem("Mix-mode buttons",
 			{ "Unlocked", "Locked" },

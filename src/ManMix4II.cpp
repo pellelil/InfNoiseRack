@@ -305,11 +305,11 @@ struct ManMix4IIModuleWidget : InfNoiseModuleWidget {
         const float normBtnRows[]{ 104.924f, 136.181f, 167.338f };
         const float signalRows[]{ 220.849f, 245.481f, 270.114f, 294.746f };
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(inpClm, masterRow), module, ManMix4IIModule::MASTER_MIX_CV_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inpClm, masterRow), module, ManMix4IIModule::MASTER_MIX_CV_INPUT));
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobClm, masterRow), module, ManMix4IIModule::MASTER_MIX_PARAM));
 
         for (int i = 0; i < 4; i++) {
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(inpClm, mixKnobRows[i]), module, ManMix4IIModule::MIX1_CV_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inpClm, mixKnobRows[i]), module, ManMix4IIModule::MIX1_CV_INPUT + i));
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(knobClm, mixKnobRows[i]), module, ManMix4IIModule::MIX1_PARAM + i));
             addChild(createLightCentered<TinyLight<RedLight>>(Vec(knobClm + lgtOfs, mixKnobRows[i] - lgtOfs), module, ManMix4IIModule::INV1_LIGHT + i));
         }

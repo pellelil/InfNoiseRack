@@ -178,8 +178,8 @@ struct XxxModuleWidget : InfNoiseModuleWidget {
         //float rowSpacing = 35.068f;
         //for (int i=0; i<9; i++)
         //{
-        //    addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, row), module, XxxModule::SOME_INPUT + i));
-        //    addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outputColumn, row), module, XxxModule::SOME_OUTPUT + i));
+        //    addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, row), module, XxxModule::SOME_INPUT + i));
+        //    addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(outputColumn, row), module, XxxModule::SOME_OUTPUT + i));
         //    row += rowSpacing;
         //}
         

@@ -108,9 +108,11 @@ struct CvToGtTr8Module : InfNoiseModule {
 		haveTrigHighLow = true;
 	}
 
-    void onTrigLengthChanged() override {
-        for (int i = 0; i < 8; i++)
+    void onOutTrigTimeChanged() override {
+        for (int i = 0; i < 8; i++) {
             outputTrigger[i].setCycles(trigOnCycles, trigOffCycles);
+            outputTrigger[i].setDelayCycles(trigOutDelayCycles);
+        }
     }
 
     void onReset(const ResetEvent& e) override {
@@ -310,7 +312,7 @@ struct CvToGtTr8ModuleWidget : InfNoiseModuleWidget {
         const float rowSpacing = 35.0735f;
         float row = 87.179f;
         for (int i = 0; i < 8; i++) {
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(inputColumn, row), module, CvToGtTr8Module::CV1_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inputColumn, row), module, CvToGtTr8Module::CV1_INPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(crossColumn, row + InclOffset), module, CvToGtTr8Module::CROSS1_PARAM + i));
 
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(minKnobColumn, row), module, CvToGtTr8Module::MIN1_PARAM + i));
@@ -319,7 +321,7 @@ struct CvToGtTr8ModuleWidget : InfNoiseModuleWidget {
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(maxKnobColumn, row), module, CvToGtTr8Module::MAX1_PARAM + i));
             addParam(createParamCentered<infNoiseLtSmallButton<bc_green>>(Vec(maxInclColumn, row + InclOffset), module, CvToGtTr8Module::MAX_INCL1_PARAM + i));
 
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(outputColumn, row), module, CvToGtTr8Module::CV1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(outputColumn, row), module, CvToGtTr8Module::CV1_OUTPUT + i));
             addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
                 Vec(gateTrigColumn, row + gateTrigOffset), module, CvToGtTr8Module::GATE_TRIGGER1_PARAM + i));
 

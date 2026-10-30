@@ -227,14 +227,17 @@ struct MatrixMix4x4StereoModule : InfNoiseModule {
 			haveOutputs = haveOutputs || mixLOutConn[i] || mixROutConn[i];
 			outputs[MIX_L_OUTPUT + i].setChannels(1);
 			outputs[MIX_R_OUTPUT + i].setChannels(1);
-			setAbsLevelMeterLight(this, ROW_L_LEVEL_LIGHT + i * 3, maxAbsRowL[i]);
-			setAbsLevelMeterLight(this, ROW_R_LEVEL_LIGHT + i * 3, maxAbsRowR[i]);
-			setAbsLevelMeterLight(this, COL_L_LEVEL_LIGHT + i * 3, maxAbsColL[i]);
-			setAbsLevelMeterLight(this, COL_R_LEVEL_LIGHT + i * 3, maxAbsColR[i]);
-			maxAbsRowL[i] = 0.f;
-			maxAbsRowR[i] = 0.f;
-			maxAbsColL[i] = 0.f;
-			maxAbsColR[i] = 0.f;
+			// Every 16th processParams (~85 ms @ 48 kHz) so peaks survive GUI FPS
+			if ((proParCalls256 & 0x1F) == 0) {
+				setAbsLevelMeterLight(this, ROW_L_LEVEL_LIGHT + i * 3, maxAbsRowL[i]);
+				setAbsLevelMeterLight(this, ROW_R_LEVEL_LIGHT + i * 3, maxAbsRowR[i]);
+				setAbsLevelMeterLight(this, COL_L_LEVEL_LIGHT + i * 3, maxAbsColL[i]);
+				setAbsLevelMeterLight(this, COL_R_LEVEL_LIGHT + i * 3, maxAbsColR[i]);
+				maxAbsRowL[i] = 0.f;
+				maxAbsRowR[i] = 0.f;
+				maxAbsColL[i] = 0.f;
+				maxAbsColR[i] = 0.f;
+			}
 			activeInputs[i] = (lInConn[i] || rInConn[i]) && gain[i] != 0.f;
 		}
 		for (int c = 0; c < 4; c++) {
@@ -357,8 +360,8 @@ struct MatrixMix4x4StereoModuleWidget : InfNoiseModuleWidget {
 		const float outY = 332.194f;
 
 		for (int r = 0; r < 4; r++) {
-			addInput(createInputCentered<ThemedPJ301MPort>(Vec(inX, inLY[r]), module, MatrixMix4x4StereoModule::L_INPUT + r));
-			addInput(createInputCentered<ThemedPJ301MPort>(Vec(inX, inRY[r]), module, MatrixMix4x4StereoModule::R_INPUT + r));
+			addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inX, inLY[r]), module, MatrixMix4x4StereoModule::L_INPUT + r));
+			addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(inX, inRY[r]), module, MatrixMix4x4StereoModule::R_INPUT + r));
 			addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_red, bc_green>>(
 				Vec(normX, normY[r]), module, MatrixMix4x4StereoModule::NORM_R_PARAM + r));
 			addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_black, bc_green>>(
@@ -386,12 +389,12 @@ struct MatrixMix4x4StereoModuleWidget : InfNoiseModuleWidget {
 				Vec(colLgtLX[c], colLgtY), module, MatrixMix4x4StereoModule::COL_L_LEVEL_LIGHT + c * 3));
 			addChild(createLightCentered<SmallLight<RedGreenBlueLight>>(
 				Vec(colLgtRX[c], colLgtY), module, MatrixMix4x4StereoModule::COL_R_LEVEL_LIGHT + c * 3));
-			addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(mixLX[c], outY), module, MatrixMix4x4StereoModule::MIX_L_OUTPUT + c));
-			addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(mixRX[c], outY), module, MatrixMix4x4StereoModule::MIX_R_OUTPUT + c));
+			addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(mixLX[c], outY), module, MatrixMix4x4StereoModule::MIX_L_OUTPUT + c));
+			addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(mixRX[c], outY), module, MatrixMix4x4StereoModule::MIX_R_OUTPUT + c));
 		}
 
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(16.744f, outY), module, MatrixMix4x4StereoModule::AVG_L_OUTPUT));
-		addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(46.902f, outY), module, MatrixMix4x4StereoModule::AVG_R_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(16.744f, outY), module, MatrixMix4x4StereoModule::AVG_L_OUTPUT));
+		addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(46.902f, outY), module, MatrixMix4x4StereoModule::AVG_R_OUTPUT));
 
 		InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
 		for (int c = 0; c < 4; c++) {
@@ -456,12 +459,12 @@ struct MatrixMix4x4StereoModuleWidget : InfNoiseModuleWidget {
 		assert(module);
 
 		menu->addChild(new MenuSeparator);
-		addSendPresetMenu(menu, module, "All matrix knobs", -1);
-		addSendPresetMenu(menu, module, "Diagonal knobs", -2);
-		addSendPresetMenu(menu, module, "Column A", 0);
-		addSendPresetMenu(menu, module, "Column B", 1);
-		addSendPresetMenu(menu, module, "Column C", 2);
-		addSendPresetMenu(menu, module, "Column D", 3);
+		addSendPresetMenu(menu, module, "Set all matrix knobs", -1);
+		addSendPresetMenu(menu, module, "Set diagonal knobs", -2);
+		addSendPresetMenu(menu, module, "Set column A knobs", 0);
+		addSendPresetMenu(menu, module, "Set column B knobs", 1);
+		addSendPresetMenu(menu, module, "Set column C knobs", 2);
+		addSendPresetMenu(menu, module, "Set column D knobs", 3);
 
 		menu->addChild(createIndexPtrSubmenuItem("Mix-mode buttons",
 			{ "Unlocked", "Locked" },

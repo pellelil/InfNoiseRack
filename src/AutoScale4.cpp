@@ -56,7 +56,7 @@ struct AutoScale4Module : InfNoiseModule {
     int firstIdx = -1;
     int lastIdx = -1;    
     int channels[4] = { 1, 1, 1, 1 };
-    dsp::TSchmittTrigger<float> resetTrigger;
+    infNoiseInTrigger resetTrigger;
     infNoiseDecayValue lightDecay[4] = {
         infNoiseDecayValue(2.f, 30.f),
         infNoiseDecayValue(2.f, 30.f),
@@ -105,6 +105,10 @@ struct AutoScale4Module : InfNoiseModule {
 		haveTrigDetect = true;
         haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        resetTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -215,13 +219,8 @@ struct AutoScale4Module : InfNoiseModule {
 
         if (doProcess) {
             // check for reset
-            float voltage = params[RESET_PARAM].getValue() > 0.5
-                ? 10.f
-                : (inputs[RESET_INPUT].isConnected())
-                    ? inputs[RESET_INPUT].getVoltage()
-                    : 0.f;
-            if (resetTrigger.process(voltage,
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+            if (resetTrigger.processMomentary(params[RESET_PARAM], inputs[RESET_INPUT],
+                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                 updateScaleOffset.setBoth(uso_enabled);
                 autoScaleSection[0].reset();
                 autoScaleSection[1].reset();
@@ -238,7 +237,7 @@ struct AutoScale4Module : InfNoiseModule {
                         if (inConn[i]) {
                             sectIdx = (sectSelection.act == ss_common) ? 4 : i;
                             for (int c = 0; c < channels[i]; c++) {
-                                voltage = inputs[A_INPUT + i].getVoltage(c);
+                                float voltage = inputs[A_INPUT + i].getVoltage(c);
                                 autoScaleSection[sectIdx].updateScaleOffset(voltage, minRange, maxRange);
                             }
                         }
@@ -254,7 +253,7 @@ struct AutoScale4Module : InfNoiseModule {
                     if (outputs[A_OUTPUT + i].isConnected()) {
                         sectIdx = (sectSelection.act == ss_common) ? 4 : i;
                         for (int c = 0; c < channels[i]; c++) {
-                            voltage = 0.f;
+                            float voltage = 0.f;
                             if (inputs[A_INPUT + i].isConnected()) {
                                 voltage = inputs[A_INPUT + i].getVoltage(c);
                                 if (voltage < minRange || voltage > maxRange)
@@ -306,7 +305,7 @@ struct AutoScale4ModuleWidget : InfNoiseModuleWidget {
         linkMaxOverlayGroup = overlayManager.addGroup("Max linked to min (mirrored)");
         linkMaxOverlayGroup->addTarget(InfNoiseOverlayTargetType::param, AutoScale4Module::MAX_PARAM);
 
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerClmn, 124.914f), module, AutoScale4Module::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerClmn, 124.914f), module, AutoScale4Module::RESET_INPUT));
         addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(
             Vec(4.015f, 113.244f), 
             module, AutoScale4Module::RESET_PARAM));

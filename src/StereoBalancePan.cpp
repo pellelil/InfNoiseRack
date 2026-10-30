@@ -121,10 +121,13 @@ struct StereoBalancePanModule : InfNoiseModule {
 		outputs[L_OUTPUT].setChannels(channels);
 		outputs[R_OUTPUT].setChannels(channels);
 
-		setAbsLevelMeterLight(this, L_LEVEL_LIGHT, maxAbsL);
-		setAbsLevelMeterLight(this, R_LEVEL_LIGHT, maxAbsR);
-		maxAbsL = 0.f;
-		maxAbsR = 0.f;
+		// Every 16th processParams (~85 ms @ 48 kHz) so peaks survive GUI FPS
+		if ((proParCalls256 & 0x1F) == 0) {
+			setAbsLevelMeterLight(this, L_LEVEL_LIGHT, maxAbsL);
+			setAbsLevelMeterLight(this, R_LEVEL_LIGHT, maxAbsR);
+			maxAbsL = 0.f;
+			maxAbsR = 0.f;
+		}
 
 		//--------------------
 		postProcessParams(args);
@@ -194,13 +197,13 @@ struct StereoBalancePanModuleWidget : InfNoiseModuleWidget {
 			Vec(4.289f, 38.762f), module, StereoBalancePanModule::BP_MODE_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerCol, 53.809f), module, StereoBalancePanModule::BP_PARAM));
 		addParam(createParamCentered<Trimpot>(Vec(centerCol, 78.185f), module, StereoBalancePanModule::BP_TRIM_PARAM));
-		addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 102.910f), module, StereoBalancePanModule::BP_INPUT));
+		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerCol, 102.910f), module, StereoBalancePanModule::BP_INPUT));
 
 		addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(4.235f, 130.533f), module, StereoBalancePanModule::L_LEVEL_LIGHT));
 		addChild(createLightCentered<TinyLight<RedGreenBlueLight>>(Vec(25.765f, 130.533f), module, StereoBalancePanModule::R_LEVEL_LIGHT));
 		addParam(createParamCentered<RoundSmallBlackKnob>(Vec(centerCol, 140.687f), module, StereoBalancePanModule::GAIN_PARAM));
 		addParam(createParamCentered<Trimpot>(Vec(centerCol, 165.062f), module, StereoBalancePanModule::GAIN_TRIM_PARAM));
-		addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 189.788f), module, StereoBalancePanModule::GAIN_INPUT));
+		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerCol, 189.788f), module, StereoBalancePanModule::GAIN_INPUT));
 
 		addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 226.973f), module, StereoBalancePanModule::L_INPUT));
 		addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 262.047f), module, StereoBalancePanModule::R_INPUT));

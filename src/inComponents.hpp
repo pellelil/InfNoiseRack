@@ -149,11 +149,42 @@ struct infNoiseSmallButtonSwitch : infNoiseButtonSwitch {
 // Ports
 //-----------------------------------------------------------------------------
 
+/// ThemedSvgPort that follows the Infinite-Noise panel theme (Auto / light / dark).
+/// Swaps the SVG only when effectivePanelIsDark() changes. Does not call
+/// ThemedSvgPort::step(), which always uses Rack's preferDarkPanels.
+struct infNoiseThemedSvgPort : app::ThemedSvgPort {
+    InfNoiseModuleWidget* infWidget = nullptr;
+    bool themeSynced = false;
+    bool appliedDark = false;
+
+    void step() override {
+        if (!infWidget)
+            infWidget = getAncestorOfType<InfNoiseModuleWidget>();
+        if (infWidget) {
+            bool dark = infWidget->effectivePanelIsDark();
+            if (!themeSynced || dark != appliedDark) {
+                SvgPort::setSvg(dark ? darkSvg : lightSvg);
+                appliedDark = dark;
+                themeSynced = true;
+            }
+        }
+        SvgPort::step();
+    }
+};
+
 /// @brief Themed port with a thin/red circle to indicate its for poly-signals.
-struct infNoiseThemedPolyPort : app::ThemedSvgPort {
+struct infNoiseThemedPolyPort : infNoiseThemedSvgPort {
     infNoiseThemedPolyPort() {
         setSvg(Svg::load(asset::plugin(pluginInstance, "res/components/PolyPort.svg")), 
             Svg::load(asset::plugin(pluginInstance, "res/components/PolyPortDark.svg")));
+    }
+};
+
+/// @brief Themed mono port. Same light/dark switching as infNoiseThemedPolyPort.
+struct infNoiseThemedMonoPort : infNoiseThemedSvgPort {
+    infNoiseThemedMonoPort() {
+        setSvg(Svg::load(asset::plugin(pluginInstance, "res/components/MonoPort.svg")),
+            Svg::load(asset::plugin(pluginInstance, "res/components/MonoPortDark.svg")));
     }
 };
 

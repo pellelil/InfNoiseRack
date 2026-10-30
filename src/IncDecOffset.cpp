@@ -35,9 +35,9 @@ struct IncDecOffsetModule : InfNoiseModule {
 
     int channels = 1;
     bool haveOutput = false;
-    dsp::TSchmittTrigger<float> incTrigger;
-    dsp::TSchmittTrigger<float> decTrigger;
-    dsp::TSchmittTrigger<float> resetTrigger;
+    infNoiseInTrigger incTrigger;
+    infNoiseInTrigger decTrigger;
+    infNoiseInTrigger resetTrigger;
     float chnlOffset[PORT_MAX_CHANNELS] = { 0.f };
     
 	IncDecOffsetModule() {
@@ -73,6 +73,12 @@ struct IncDecOffsetModule : InfNoiseModule {
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
 	}
+
+    void onInTrigTimeChanged() override {
+        incTrigger.setDelayCycles(trigInDelayCycles);
+        decTrigger.setDelayCycles(trigInDelayCycles);
+        resetTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -125,31 +131,15 @@ struct IncDecOffsetModule : InfNoiseModule {
 
         if (doProcess && haveOutput) {
             // Check for reset
-            float resetVolt = params[RESET_PARAM].getValue() > 0.5f
-                ? 10.f
-                : inputs[RESET_INPUT].isConnected()
-                    ? inputs[RESET_INPUT].getVoltage()
-                    : 0.f;
-            bool doReset = resetTrigger.process(resetVolt,
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+            float low = trueDetectValues[trigDetLow.act];
+            float high = trueDetectValues[trigDetHigh.act];
+            bool doReset = resetTrigger.processMomentary(params[RESET_PARAM], inputs[RESET_INPUT], low, high, procCycles);
 
             // Check for increment
-            float incVolt = params[INC_PARAM].getValue() > 0.5f
-                ? 10.f
-                : inputs[INC_INPUT].isConnected()
-                    ? inputs[INC_INPUT].getVoltage()
-                    : 0.f;
-            bool doInc = incTrigger.process(incVolt, 
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+            bool doInc = incTrigger.processMomentary(params[INC_PARAM], inputs[INC_INPUT], low, high, procCycles);
 
             // Check for decrement
-            float decVolt = params[DEC_PARAM].getValue() > 0.5f
-                ? 10.f
-                : inputs[DEC_INPUT].isConnected()
-                    ? inputs[DEC_INPUT].getVoltage()
-                    : 0.f;
-            bool doDec = decTrigger.process(decVolt,
-                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act]);
+            bool doDec = decTrigger.processMomentary(params[DEC_PARAM], inputs[DEC_INPUT], low, high, procCycles);
             
             if (doReset) {
                 resetChannelOffsets();
@@ -217,16 +207,16 @@ struct IncDecOffsetModuleWidget : InfNoiseModuleWidget {
 
         // Increment
         addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(centerCol, 129.576f), module, IncDecOffsetModule::INC_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 152.918f), module, IncDecOffsetModule::INC_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerCol, 152.918f), module, IncDecOffsetModule::INC_INPUT));
     
 
         // Decrement
         addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(centerCol, 186.389f), module, IncDecOffsetModule::DEC_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 209.831f), module, IncDecOffsetModule::DEC_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerCol, 209.831f), module, IncDecOffsetModule::DEC_INPUT));
 
         // Reset
         addParam(createParamCentered<infNoiseSmallButton<bc_red, true>>(Vec(centerCol, 242.525f), module, IncDecOffsetModule::RESET_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(centerCol, 266.501f), module, IncDecOffsetModule::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(centerCol, 266.501f), module, IncDecOffsetModule::RESET_INPUT));
 
         // CV input/output
         addInput(createInputCentered<infNoiseThemedPolyPort>(Vec(centerCol, 299.361f), module, IncDecOffsetModule::CV_INPUT));

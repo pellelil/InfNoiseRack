@@ -255,19 +255,19 @@ struct ValueToBitsModuleWidget : InfNoiseModuleWidget {
 
         // Value input
         const float ctrCol = 29.500f;
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(ctrCol, 52.883f), module, ValueToBitsModule::VALUE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(ctrCol, 52.883f), module, ValueToBitsModule::VALUE_INPUT));
 
         // Range controls
         const float lftClm = 15.500f;
         const float rgtClm = 45.500f;
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rgtClm, 90.099f), module, ValueToBitsModule::RANGE_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(lftClm, 77.553f), module, ValueToBitsModule::RANGE_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(lftClm, 104.482), module, ValueToBitsModule::RANGE_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(lftClm, 104.482), module, ValueToBitsModule::RANGE_INPUT));
 
         // Min/Center/Max controls
         addParam(createParamCentered<RoundSmallBlackKnob>(Vec(rgtClm, 145.137f), module, ValueToBitsModule::MINCNTRMAX_PARAM));
         addParam(createParamCentered<Trimpot>(Vec(lftClm, 132.091f), module, ValueToBitsModule::MINCNTRMAX_TRIM_PARAM));
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(lftClm, 159.021f), module, ValueToBitsModule::MINCNTRMAX_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(lftClm, 159.021f), module, ValueToBitsModule::MINCNTRMAX_INPUT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(30.880f, 120.393f), module, ValueToBitsModule::MIN_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(42.225f, 120.393f), module, ValueToBitsModule::CNTR_LIGHT));
         addChild(createLightCentered<TinyLight<GreenLight>>(Vec(54.538f, 120.393f), module, ValueToBitsModule::MAX_LIGHT));
@@ -277,8 +277,8 @@ struct ValueToBitsModuleWidget : InfNoiseModuleWidget {
         const float rowSpacing = 35.3386f;
         float row = 193.274f;
         for (int i = 0; i < 4; i++) {
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(lftClm, row), module, ValueToBitsModule::BIT1_OUTPUT + i));
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(rgtClm, row), module, ValueToBitsModule::BIT5_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(lftClm, row), module, ValueToBitsModule::BIT1_OUTPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(rgtClm, row), module, ValueToBitsModule::BIT5_OUTPUT + i));
 
 			row += rowSpacing;
         }

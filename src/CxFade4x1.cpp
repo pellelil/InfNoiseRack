@@ -66,8 +66,8 @@ struct CxFade4x1Module : InfNoiseModule {
     bool haveOutput[4] = { false, false, false, false };
     bool haveAnyOutput = false;
     int channels[4] = { 1, 1, 1, 1 };
-    dsp::SchmittTrigger masterToggleTrig;
-    dsp::SchmittTrigger sectionToggleTrig[4];
+    infNoiseInTrigger masterToggleTrig;
+    infNoiseInTrigger sectionToggleTrig[4];
     bool triggerMode[5] = { false, false, false, false, false }; // processParams; widget overlays (trim unused in trigger)
     actReqValue<fixedSlewTimes> fadeTime = actReqValue<fixedSlewTimes>(fst_0);
     actReqValue<bool> fadeSCurve = actReqValue<bool>(false);
@@ -120,6 +120,12 @@ struct CxFade4x1Module : InfNoiseModule {
 		haveGateHighLow = false;
 		haveTrigDetect = true;
 		haveTrigHighLow = false;
+    }
+
+    void onInTrigTimeChanged() override {
+        masterToggleTrig.setDelayCycles(trigInDelayCycles);
+        for (int i = 0; i < 4; i++)
+            sectionToggleTrig[i].setDelayCycles(trigInDelayCycles);
     }
 
     void onReset(const ResetEvent& e) override {
@@ -186,7 +192,8 @@ struct CxFade4x1Module : InfNoiseModule {
 
         // process Master-toggle A/B
         if (!inputs[CROSSFADE_M_INPUT].isConnected()) {
-            if (masterToggleTrig.process(params[CROSSFADE_M_TOGGLE_PARAM].getValue())) {
+            if (masterToggleTrig.process(params[CROSSFADE_M_TOGGLE_PARAM].getValue(), 0.f, 1.f,
+                (int)patternProcessParams + 1)) { // processParams runs every 256 cycles
                 params[CROSSFADE_M_PARAM].setValue(params[CROSSFADE_M_PARAM].getValue() >= 0.f ? -1.f : 1.f);
             }
         }
@@ -207,7 +214,8 @@ struct CxFade4x1Module : InfNoiseModule {
 
             // process Section-toggle A/B
             if (!inputs[CROSSFADE_1_INPUT + i].isConnected()) {
-                if (sectionToggleTrig[i].process(params[CROSSFADE_1_TOGGLE_PARAM + i].getValue())) {
+                if (sectionToggleTrig[i].process(params[CROSSFADE_1_TOGGLE_PARAM + i].getValue(), 0.f, 1.f,
+                    (int)patternProcessParams + 1)) { // processParams runs every 256 cycles
                     params[CROSSFADE_1_PARAM + i].setValue(params[CROSSFADE_1_PARAM + i].getValue() >= 0.f ? -1.f : 1.f);
                 }
             }
@@ -254,7 +262,7 @@ struct CxFade4x1Module : InfNoiseModule {
                 }
                 else {  // Trigger-mode
                     if (masterToggleTrig.process(inputs[CROSSFADE_M_INPUT].getVoltage(),
-                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                        trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                         masterFade = masterFade >= 0.f ? -1.f : 1.f;
                         params[CROSSFADE_M_PARAM].setValue(masterFade);
                         masterSwitch = true;
@@ -277,7 +285,7 @@ struct CxFade4x1Module : InfNoiseModule {
                         }
                         else { // Trigger-mode
                             if (sectionToggleTrig[i].process(inputs[CROSSFADE_1_INPUT + i].getVoltage(),
-                                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act])) {
+                                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
 								crossFade = crossFade >= 0.f ? -1.f : 1.f;
                                 params[CROSSFADE_1_PARAM + i].setValue(crossFade);
                                 sectionSwitch = true;
@@ -360,7 +368,7 @@ struct CxFade4x1ModuleWidget : InfNoiseModuleWidget {
             // Cross-fade knob, trim-pot and CV-input
             addParam(createParamCentered<RoundBlackKnob>(Vec(fadeKnobCol, fadeKnobRow), module, CxFade4x1Module::CROSSFADE_M_PARAM + i));
             addParam(createParamCentered<Trimpot>(Vec(trimKnobCol, fadeKnobRow), module, CxFade4x1Module::CROSSFADE_M_TRIM_PARAM + i));
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(fadeCvCol, fadeKnobRow), module, CxFade4x1Module::CROSSFADE_M_INPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(fadeCvCol, fadeKnobRow), module, CxFade4x1Module::CROSSFADE_M_INPUT + i));
 
             addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(
                 Vec(manToggleBtnCol, fadeKnobRow + toggleBtnOfs),

@@ -44,7 +44,7 @@ struct WaveShaper2Module : InfNoiseModule {
     autoScaleData scaleData[3] = { autoScaleData(), autoScaleData(), autoScaleData() }; // scaleData[2] used for common, 0 and 1 for A and B
     enum sectionSelectionType { ss_individual, ss_common, ss_len };
     actReqValue<sectionSelectionType> sectSelection = actReqValue<sectionSelectionType>(ss_individual);
-    dsp::TSchmittTrigger<float> resetTrigger;
+    infNoiseInTrigger resetTrigger;
     bool resetUnused = false; // processParams; widget overlay (Reset unused except Automatic range)
     static constexpr int maxChannels = PORT_MAX_CHANNELS;
     dsp::Upsampler<2, 8> upsampler[2][maxChannels];
@@ -125,11 +125,15 @@ struct WaveShaper2Module : InfNoiseModule {
         haveOutClipRange = true;  
 		haveGateDetect = false;
 		haveGateHighLow = false;
-        haveTrigDetect = false;
+        haveTrigDetect = true;
 		haveTrigHighLow = false;
 
         ensureFiveSineExpLogLuts();
 	}
+
+    void onInTrigTimeChanged() override {
+        resetTrigger.setDelayCycles(trigInDelayCycles);
+    }
 
     void onReset(const ResetEvent& e) override {
         InfNoiseModule::onReset(e);
@@ -242,7 +246,7 @@ struct WaveShaper2Module : InfNoiseModule {
                 ? inputs[RESET_INPUT].getVoltage()
                 : 0.f;
             if (resetTrigger.process(voltage,
-                trueDetectValues[td_triggerLow], trueDetectValues[td_triggerHigh])) {
+                trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
                 scaleData[0].reset(); // A-section
                 scaleData[1].reset(); // B-section
                 scaleData[2].reset(); // Common section
@@ -338,7 +342,7 @@ struct WaveShaper2ModuleWidget : InfNoiseModuleWidget {
         addParam(createParamCentered<CKSSThree>(Vec(switchClm, 184.740f), module, WaveShaper2Module::VAL_RANGE_PARAM));
 
         // Reset automatic value-range
-        addInput(createInputCentered<ThemedPJ301MPort>(Vec(cntrClm, 222.638f), module, WaveShaper2Module::RESET_INPUT));
+        addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(cntrClm, 222.638f), module, WaveShaper2Module::RESET_INPUT));
 
         InfNoiseDisableOverlayManager& overlayManager = getDisableOverlayManager();
         resetOverlayGroup = overlayManager.addGroup("Reset only in Automatic range");

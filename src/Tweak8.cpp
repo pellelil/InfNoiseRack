@@ -367,16 +367,16 @@ struct Tweak8ModuleWidget : InfNoiseModuleWidget {
             // Scale
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(col, 56.070f), module, Tweak8Module::A_SCALE_PARAM + i));
             addParam(createParamCentered<Trimpot>(Vec(col, 93.155f), module, Tweak8Module::A_SCALE_TRIM_PARAM + i));
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(col, 127.965f), module, Tweak8Module::A_SCALE_INPUT +i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(col, 127.965f), module, Tweak8Module::A_SCALE_INPUT +i));
 
             // Offset
             addParam(createParamCentered<RoundSmallBlackKnob>(Vec(col, 178.697f), module, Tweak8Module::A_OFFSET_PARAM + i));
             addParam(createParamCentered<Trimpot>(Vec(col, 215.804f), module, Tweak8Module::A_OFFSET_TRIM_PARAM + i));
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(col, 250.614f), module, Tweak8Module::A_OFFSET_INPUT +i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(col, 250.614f), module, Tweak8Module::A_OFFSET_INPUT +i));
 
             // Input/Output
-            addInput(createInputCentered<ThemedPJ301MPort>(Vec(col, 297.938f), module, Tweak8Module::A_INPUT + i));
-            addOutput(createOutputCentered<ThemedPJ301MPort>(Vec(col, 332.694f), module, Tweak8Module::A_OUTPUT + i));
+            addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(col, 297.938f), module, Tweak8Module::A_INPUT + i));
+            addOutput(createOutputCentered<infNoiseThemedMonoPort>(Vec(col, 332.694f), module, Tweak8Module::A_OUTPUT + i));
             if (i > 0) { // A-output does not have a mix-light (can't output a mix)
                 addChild(createLightCentered<TinyLight<GreenLight>>(Vec(col - 9.621f, 343.115f),
                     module, Tweak8Module::B_MIX_LIGHT + i - 1));

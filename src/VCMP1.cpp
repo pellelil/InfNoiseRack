@@ -97,9 +97,11 @@ struct VCMP1Module : InfNoiseModule {
         }
 	}
 
-    void onTrigLengthChanged() override {
-        for (int c = 0; c < PORT_MAX_CHANNELS; c++)
+    void onOutTrigTimeChanged() override {
+        for (int c = 0; c < PORT_MAX_CHANNELS; c++) {
             crossTrigger[c].setCycles(trigOnCycles, trigOffCycles);
+            crossTrigger[c].setDelayCycles(trigOutDelayCycles);
+        }
     }
 
     void onReset(const ResetEvent& e) override {
