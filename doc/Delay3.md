@@ -10,7 +10,7 @@ However, while the Infinite-Noise modules have this built-in delay feature for t
 
 In these cases, you might need a module like Delay 3. It's a very simple module with 3 identical sections, each featuring an input port, a knob to dial in the delay (1–16 cycles), and an output port. The input in section B is normalized to the output of section A, and the input in section C is normalized to the output of section B. This normalization includes an internal 1-cycle delay, so it behaves exactly the same way whether you use the internal normalization or connect the sections using a cable (e.g., from the output of section A to the input of section B).
 
-As each section can delay a signal by up to 16 cycles, you can achieve a total delay of 48 (3x16) cycles by connecting a signal to the input of section A, turning all 3 delay knobs up to 16, and connecting a single output cable to section C. All inputs and outputs support polyphonic signals, with all channels of a signal delayed by the same number of cycles as dialed in by the delay knob.
+As each section can delay a signal by up to 16 cycles, you can achieve a **total delay of 48 (3x16) cycles** by connecting a signal to the input of section A, turning all 3 delay knobs up to 16, and connecting a single output cable to section C. All inputs and outputs support **polyphonic signals**, with all channels of a signal delayed by the same number of cycles as dialed in by the delay knob.
 
 ![Screenshot of Delay 3](module/Delay3.png)
 
