@@ -549,24 +549,38 @@ struct Flux4ModuleWidget : InfNoiseModuleWidget {
 		assert(module);
 
 		menu->addChild(new MenuSeparator);
-		menu->addChild(createSubmenuItem("Setup up Pos/Range for", "",
+		menu->addChild(createSubmenuItem("Setup Pos/Range for", "",
 			[=](Menu* submenu) {
-				submenu->addChild(createMenuItem("4-section attenuator", "", [=]() {
+				submenu->addChild(createMenuItem("4-section attenuator (Sweep=level)", "", [=]() {
 					const float pos[4] = {10.f, 10.f, 10.f, 10.f};
 					setPosRange(module, pos, 10.f);
 				}));
-				submenu->addChild(createMenuItem("Mixer", "", [=]() {
+				submenu->addChild(createMenuItem("Mixer (Pos=level, Set Sweep=10)", "", [=]() {
 					const float pos[4] = {0.f, 0.f, 0.f, 0.f};
 					setPosRange(module, pos, 10.f);
 				}));
-				submenu->addChild(createMenuItem("Stereo cross-fade", "", [=]() {
+				submenu->addChild(createMenuItem("Stereo cross-fade (A/B=Left, C/D=Right)", "", [=]() {
 					const float pos[4] = {0.f, 10.f, 0.f, 10.f};
 					setPosRange(module, pos, 10.f);
 				}));
-				submenu->addChild(createMenuItem("4-way cross-fade", "", [=]() {
+				submenu->addChild(createMenuItem("4-way cross-fade (A-B-C-D)", "", [=]() {
 					const float third = 10.f / 3.f;
 					const float pos[4] = {0.f, third, third * 2.f, 10.f};
 					setPosRange(module, pos, third);
+				}));
+				submenu->addChild(createMenuItem("3-way cross-fade (A-B-C)", "", [=]() {
+					const float pos[4] = {0.f, 5.f, 10.f, 0.f};
+					setPosRange(module, pos, 5.f);
+					module->params[Flux4Module::RANGE_D_PARAM].setValue(0.f);
+					module->params[Flux4Module::RANGE_LINK_CD_PARAM].setValue(0.f); // keep D at 0
+				}));
+				submenu->addChild(createMenuItem("All muted (Pos/Range=0)", "", [=]() {
+					const float pos[4] = {0.f, 0.f, 0.f, 0.f};
+					setPosRange(module, pos, 0.f);
+				}));
+				submenu->addChild(createMenuItem("Initialized (Pos=2/4/6/8, Range=2)", "", [=]() {
+					const float pos[4] = {2.f, 4.f, 6.f, 8.f};
+					setPosRange(module, pos, 2.f);
 				}));
 			}
 		));
