@@ -84,10 +84,10 @@ struct Flux4Module : InfNoiseModule {
 	enum LightId {
 		ENUMS(PROCQUAL_LIGHT, 2),
 		ENUMS(CLIP_RANGE_LIGHT, 2),
-		Y_A_LIGHT,
-		Y_B_LIGHT,
-		Y_C_LIGHT,
-		Y_D_LIGHT,
+		ENUMS(Y_A_LIGHT, 2), // brightness tracks Y; green = using Y, red = Level input patched
+		ENUMS(Y_B_LIGHT, 2),
+		ENUMS(Y_C_LIGHT, 2),
+		ENUMS(Y_D_LIGHT, 2),
 		ENUMS(NORM_LIGHT, 2), // green = 5V, red = 10V, beside the A input
 		NORM_10_LIGHT, // upper light beside the 5/10 switch
 		NORM_5_LIGHT, // lower light beside the 5/10 switch
@@ -152,7 +152,7 @@ struct Flux4Module : InfNoiseModule {
 			configParam(LEVEL_A_PARAM + i, -1.f, 1.f, 1.f, col[i] + "-Level", "%", 0, 100);
 			configSwitch(SIG_MODE_A_PARAM + i, 0.f, 3.f, 0.f, col[i] + "-Input mode", sigModes);
 			configSwitch(LVL_MODE_A_PARAM + i, 0.f, 3.f, 0.f, col[i] + "-Level mode", sigModes);
-			configLight(Y_A_LIGHT + i, col[i] + "-Y");
+			configLight(Y_A_LIGHT + i * 2, col[i] + "-Y");
 			configBypass(SIG_A_INPUT + i, SIG_A_OUTPUT + i);
 		}
 
@@ -298,8 +298,11 @@ struct Flux4Module : InfNoiseModule {
 					yValue[i] = 5.f * (1.f - fabsf(sweepKnob - posKnob[i]) / rngKnob[i]);
 			}
 
-			// Set AY, BY, CY, DY lights (in the top of each column)
-			lights[Y_A_LIGHT + i].setBrightness(yValue[i] / 5.f);
+			// Set AY, BY, CY, DY lights (brightness tracks Y 0–5V; red if Level input is patched)
+			int yLight = Y_A_LIGHT + i * 2;
+			float yBright = yValue[i] / 5.f;
+			lights[yLight].setBrightness(levelConnected[i] ? 0.f : yBright);
+			lights[yLight + 1].setBrightness(levelConnected[i] ? yBright : 0.f);
 		}
 
 		// Cache (have) cumulative outputs (A+B, C+D, Min, Max, Average, Sum), and set channels
@@ -453,7 +456,7 @@ struct Flux4ModuleWidget : InfNoiseModuleWidget {
 		const float linkX[3] = {29.76f, 59.92f, 90.08f};
 
 		for (int i = 0; i < 4; i++) {
-			addChild(createLightCentered<SmallLight<GreenLight>>(Vec(col[i], 26.12f), module, Flux4Module::Y_A_LIGHT + i));
+			addChild(createLightCentered<SmallLight<GreenRedLight>>(Vec(col[i], 26.12f), module, Flux4Module::Y_A_LIGHT + i * 2));
 			addParam(createParamCentered<RoundSmallBlackKnob>(Vec(col[i], 49.78f), module, Flux4Module::POS_A_PARAM + i));
 			addParam(createParamCentered<Trimpot>(Vec(col[i], 74.16f), module, Flux4Module::POS_A_TRIM_PARAM + i));
 			addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(col[i], 98.88f), module, Flux4Module::POS_A_INPUT + i));

@@ -12,6 +12,7 @@
 - **[Stack Expander](doc/Shth.md#stack-expander)**: 2HP expander for Stack: Cycle the accessible stack-items to a Value output, with triger-overflow, underflow outputs, and gate-full, and empty outputs.
 - **[Stack Bank Expander](doc/Shth.md#stack-bank-expander)**: 2HP expander for Stack: Four banks (stacks). Cycle among them, send a bank into Stack, or retrieve a bank from Stack.
 - **[Flux 4](doc/Flux4.md#flux-4)**: 10HP quad morphing VCA: Pos, Range and Sweep shape four signals, with optional linked ranges and A+B, C+D, min, max, average and sum outputs.
+- **[ShiftReg](doc/ShiftReg.md#shiftreg)**: 4HP combined 8-stage or dual 4-stage polyphonic shift register. Shift/loop probability, internal clock, CV or gate outputs.
 
 ## Updated modules
 - **[Matrix Mix 5x5](doc/Mixer.md#matrix-mix-5x5)**: Added NtZ (Nearest to Zero) and FfZ (Farthest from Zero) outputs to the lower-left output cluster. Level lights hold peaks a bit longer so brief amber/red overloads are easier to notice.

@@ -289,6 +289,7 @@ The sections above covered features that are common to all Infinite-Noise module
 + [Delta-4](Delta4.md#delta-4): 2HP four sections measuring difference between current input and a captured reference. Signed, inverted, or absolute.
 + [Flip-Flop](FlipFlop.md#flip-flop): 2HP Polyphonic D-, T-, or SR-Flip-Flop. Outputs for Q, !Q, and change trigger.
 + [Slope Detector 2](SlopeDetector2.md#slope-detector-2): 2HP 2 sections of threshold slope detection (rise/steady/fall), latched phases, configurable Steady hold. Gate or trigger per output.
++ [ShiftReg](ShiftReg.md#shiftreg): 4HP dual 4-stage or combined 8-stage polyphonic shift register. Shift/loop probability, internal clock, CV or gate outputs.
 + [Patch](Patch.md#patch): 4HP mutable patch with 8 in/out pairs. Typically used as a pair to patch between them.
 + [Turing Machine](TuringMachine.md#turing-machine): 10HP Turing machine for random sequences of 3-32 steps. 16 gate/trigger (also poly) and 2 value outputs. Lock, quantize.
 + [Bits-to-Value](Bits.md#bits-to-value): 8HP converts 8 bits (individual gates and/or poly) into a CV value based on weights and range.

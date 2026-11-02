@@ -953,6 +953,17 @@
       ]
     },
     {
+      "slug": "ShiftReg",
+      "name": "ShiftReg",
+      "description": "4HP combined 8-stage or dual 4-stage polyphonic shift register. Shift/loop probability, internal clock, CV or gate outputs.",
+      "manualUrl": "https://github.com/pellelil/InfNoiseRack/blob/master/doc/ShiftReg.md#shiftreg",
+      "tags":  [
+        "Polyphonic",
+        "Random",
+        "Sequencer"
+      ]
+    },
+    {
       "slug": "Patch",
       "name": "Patch",
       "description": "4HP mutable patch with 8 in/out pairs. Typically used as a pair to patch between them.",

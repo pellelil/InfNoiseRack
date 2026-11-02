@@ -295,6 +295,7 @@ void init(Plugin *p) {
 	p->addModel(modelSampleAndUpdate);
 	p->addModel(modelSHTH2);
 	p->addModel(modelSHTH2x4);
+	p->addModel(modelShiftReg);
 	p->addModel(modelSign);
 	p->addModel(modelSign4I);
 	p->addModel(modelSign4II);

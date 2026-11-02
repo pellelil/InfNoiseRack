@@ -121,6 +121,7 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + Delta4: new input-trigger **Needs testing**
 + FlipFlop: new input-trigger **Needs testing**
 + SlopeDetector2: new input-trigger **Needs testing**
++ ShiftReg: New module **In Development**
 + Patch: -
 + TuringMachine: new input-trigger **Needs testing**
 + BitsToValue: -

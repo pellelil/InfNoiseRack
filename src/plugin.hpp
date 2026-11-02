@@ -74,6 +74,7 @@ extern Model* modelRingMod3;
 extern Model* modelSampleAndUpdate;
 extern Model* modelSHTH2;
 extern Model* modelSHTH2x4;
+extern Model* modelShiftReg;
 extern Model* modelSign;
 extern Model* modelSign4I;
 extern Model* modelSign4II;
