@@ -1481,20 +1481,25 @@ inline float quantizeToMode(float value, quantizeMode qMode) {
 	if (qMode == qm_off)
 		return value;
 
-	// Special case when near a whole number
+	// 1V and finer include every whole volt, so return that exact integer.
+	// Coarser steps have a half-step above 0.5V, so this test would match every voltage.
 	float wholeValue = std::roundf(value);
 	float absWholeDiff = std::abs(value - wholeValue);
-	if (absWholeDiff < quantizeModeHalfDiv[qMode]) 
-			return wholeValue;
+	if (quantizeModeDiv[qMode] <= 1.f && absWholeDiff < quantizeModeHalfDiv[qMode])
+		return wholeValue;
 
-	// Generic quantization
+	// Compare in step units. Subtracting voltages mis-compares an inexact step
+	// such as 10/3: 5V is the midpoint between 3.33V and 6.67V, but it looks a
+	// fraction closer to 6.67V and becomes a one-sample spike. A tie stays on
+	// the grid point closer to 0V.
 	float sign = value >= 0 ? 1.f : -1.f;
 	float absValue = std::abs(value);
-	float floorNote = std::floorf(absValue / quantizeModeDiv[qMode]) * quantizeModeDiv[qMode];
-	float diff = absValue - floorNote;
-	return (diff < quantizeModeHalfDiv[qMode])
-		? floorNote * sign
-		: (floorNote + quantizeModeDiv[qMode]) * sign;
+	float step = quantizeModeDiv[qMode];
+	float steps = absValue / step;
+	float lowerIdx = std::floorf(steps);
+	if (steps - lowerIdx > 0.5f)
+		lowerIdx += 1.f;
+	return lowerIdx * step * sign;
 }
 
 
