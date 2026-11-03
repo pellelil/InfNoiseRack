@@ -115,14 +115,14 @@ Below is a list of all modules, grouped by category. A line containing only a da
 + Sign4I: -
 + Sign4II: -
 + Fold: -
-+ WaveShaper2: new input-trigger **Needs testing**
++ WaveShaper2: -
 + RingMod3: -
-+ IncDecOffset: new input-trigger **Needs testing**
-+ Delta4: new input-trigger **Needs testing**
-+ FlipFlop: new input-trigger **Needs testing**
-+ SlopeDetector2: new input-trigger **Needs testing**
++ IncDecOffset: -
++ Delta4: -
++ FlipFlop: -
++ SlopeDetector2: -
 + ShiftReg: New module **In Development**
 + Patch: -
-+ TuringMachine: new input-trigger **Needs testing**
++ TuringMachine: -
 + BitsToValue: -
 + ValueToBits: -

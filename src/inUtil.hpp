@@ -1555,7 +1555,7 @@ enum trigDelayType {
 const int trigDelayCycleCounts[] = {
 	0,
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-	20, 24, 28, 32, 12000, 24000, 48000
+	20, 24, 28, 32, 64, 128, 256
 };
 const std::string trigDelayNames[] = {
 	"None (default)",

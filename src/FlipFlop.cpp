@@ -310,6 +310,8 @@ struct FlipFlopModule : InfNoiseModule {
                             : tdInput; // Normalize to TD-input
                         if (clockTrigger[c].process(clockInput,
                             trueDetectValues[trigDetLow.act], trueDetectValues[trigDetHigh.act], procCycles)) {
+                            if (!clockConnected)
+                                tdInput = 10.f; // edge was this same signal going high (survives input-trigger delay)
                             if (tMode)
                             {
                                 if (tdInput >= trueDetectValues[gateDetHigh.act])

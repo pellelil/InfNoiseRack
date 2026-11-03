@@ -266,22 +266,22 @@ struct StackBankExpanderModuleWidget : InfNoiseModuleWidget {
 			addParam(createParamCentered<infNoiseLtSmallButton<bc_green, true>>(Vec(bankX[i], 47.988f), module, StackBankExpanderModule::BANK_PARAM + i));
 		}
 
-		addChild(createLightCentered<TinyLight<RedLight>>(Vec(2.998f, 64.832f), module, StackBankExpanderModule::AUTO_SEND_LIGHT));
-		addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(15.075f, 80.935f), module, StackBankExpanderModule::CYCLE_PARAM));
+		addChild(createLightCentered<TinyLight<RedLight>>(Vec(2.998f, 63.693f), module, StackBankExpanderModule::AUTO_SEND_LIGHT));
+		addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(15.075f, 79.796f), module, StackBankExpanderModule::CYCLE_PARAM));
 		addParam(createParamCentered<infNoiseLtSmallButtonSwitch<bc_green, bc_red, bc_yellow, bc_orange, bc_blue>>(
-			Vec(25.397f, 93.551f), module, StackBankExpanderModule::CYCLE_MODE_PARAM));
-		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(15.079f, 106.531f), module, StackBankExpanderModule::CYCLE_INPUT));
+			Vec(25.397f, 92.412f), module, StackBankExpanderModule::CYCLE_MODE_PARAM));
+		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(15.079f, 105.392f), module, StackBankExpanderModule::CYCLE_INPUT));
 
-		addParam(createParamCentered<CKSSThree>(Vec(12.038f, 135.298f), module, StackBankExpanderModule::COUNT_PARAM));
+		addParam(createParamCentered<CKSSThree>(Vec(12.038f, 134.159f), module, StackBankExpanderModule::COUNT_PARAM));
 
-		addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(15.075f, 178.615f), module, StackBankExpanderModule::RESET_PARAM));
-		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(15.079f, 204.210f), module, StackBankExpanderModule::RESET_INPUT));
+		addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(15.075f, 176.336f), module, StackBankExpanderModule::RESET_PARAM));
+		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(15.079f, 201.932f), module, StackBankExpanderModule::RESET_INPUT));
 
-		addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(15.075f, 245.361f), module, StackBankExpanderModule::SEND_PARAM));
-		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(15.079f, 270.957f), module, StackBankExpanderModule::SEND_INPUT));
+		addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(15.075f, 241.943f), module, StackBankExpanderModule::SEND_PARAM));
+		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(15.079f, 267.539f), module, StackBankExpanderModule::SEND_INPUT));
 
-		addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(15.075f, 311.787f), module, StackBankExpanderModule::RETRIEVE_PARAM));
-		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(15.079f, 337.383f), module, StackBankExpanderModule::RETRIEVE_INPUT));
+		addParam(createParamCentered<infNoiseSmallButton<bc_green, true>>(Vec(15.075f, 307.230f), module, StackBankExpanderModule::RETRIEVE_PARAM));
+		addInput(createInputCentered<infNoiseThemedMonoPort>(Vec(15.079f, 332.826f), module, StackBankExpanderModule::RETRIEVE_INPUT));
 	}
 
 	void appendContextMenu(Menu* menu) override {

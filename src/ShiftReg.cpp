@@ -50,6 +50,11 @@ struct ShiftRegModule : InfNoiseModule {
 		slm_loopPriority, // green
 		slm_independent // red
 	};
+	enum noiseGateHighType { // unpatched Gate-mode: chance of storing 10V
+		ngh_5, ngh_10, ngh_15, ngh_20, ngh_25, ngh_30, ngh_35, ngh_40, ngh_45,
+		ngh_50, ngh_55, ngh_60, ngh_65, ngh_70, ngh_75, ngh_80, ngh_85, ngh_90,
+		ngh_95, ngh_len
+	};
 
 	float freqPitch = 1.f;
 	float phaseStep = 0.f; // internal LFO, used when A-clock is unpatched
@@ -73,6 +78,8 @@ struct ShiftRegModule : InfNoiseModule {
 	actReqValue<voltRange> noiseRange = actReqValue<voltRange>(vr_Bipolar);
 	float noiseScale = 10.f; // maps randomNorm 0..1 onto the menu noise range
 	float noiseOffset = -5.f;
+	actReqValue<noiseGateHighType> noiseGateHigh = actReqValue<noiseGateHighType>(ngh_50);
+	float noiseGateHighProb = 0.5f; // processParams; chance of storing 10V
 	actReqValue<rateChaos> lfoRateChaos = actReqValue<rateChaos>(rc_default);
 	float chaosAmount = 0.f;
 	float chaosFactor = 1.f;
@@ -138,6 +145,8 @@ struct ShiftRegModule : InfNoiseModule {
 		for (int i = 0; i < 2; i++)
 			clockTrigger[i].reset();
 		noiseRange.setBoth(vr_Bipolar);
+		noiseGateHigh.setBoth(ngh_50);
+		noiseGateHighProb = 0.5f;
 		lfoRateChaos.setBoth(rc_default);
 		chaosAmount = 0.f;
 		chaosFactor = 1.f;
@@ -151,6 +160,7 @@ struct ShiftRegModule : InfNoiseModule {
 		bool modeNow = params[MODE_PARAM].getValue() > 0.5f;
 		prevCombinedMode = getJsonBool(rootJ, "prevCombinedMode", modeNow); // missing key: load is not a mode change
 		noiseRange.setBoth((voltRange)getJsonInt(rootJ, "noiseRange", (int)vr_Bipolar, (int)vr_len - 1));
+		noiseGateHigh.setBoth((noiseGateHighType)getJsonInt(rootJ, "noiseGateHigh", (int)ngh_50, (int)ngh_len - 1));
 		lfoRateChaos.setBoth((rateChaos)getJsonInt(rootJ, "lfoRateChaos", (int)rc_default, (int)rc_len - 1));
 	}
 
@@ -160,6 +170,7 @@ struct ShiftRegModule : InfNoiseModule {
 		setJsonIntArray(rootJ, "firstSlot", firstSlot, 2);
 		json_object_set_new(rootJ, "prevCombinedMode", json_boolean(prevCombinedMode));
 		json_object_set_new(rootJ, "noiseRange", json_integer((int)noiseRange.req));
+		json_object_set_new(rootJ, "noiseGateHigh", json_integer((int)noiseGateHigh.req));
 		json_object_set_new(rootJ, "lfoRateChaos", json_integer((int)lfoRateChaos.req));
 	}
 
@@ -206,7 +217,7 @@ struct ShiftRegModule : InfNoiseModule {
 				for (int c = 0; c < chans; c++) {
 					regValue[slot][c] = dataCv
 						? (randomNorm() * noiseScale + noiseOffset)
-						: ((randomNorm() < 0.5f) ? 0.f : 10.f);
+						: ((randomNorm() < noiseGateHighProb) ? 10.f : 0.f);
 				}
 			}
 			if (!nextOrder) {
@@ -243,6 +254,8 @@ struct ShiftRegModule : InfNoiseModule {
 		noiseRange.updateActual();
 		noiseScale = voltRangeNormScale[noiseRange.act];
 		noiseOffset = voltRangeNormOffset[noiseRange.act];
+		noiseGateHigh.updateActual();
+		noiseGateHighProb = ((int)noiseGateHigh.act + 1) * 0.05f;
 		lfoRateChaos.updateActual();
 		chaosAmount = rateChaosValues[lfoRateChaos.act];
 
@@ -484,6 +497,15 @@ struct ShiftRegModuleWidget : InfNoiseModuleWidget {
 				module->noiseRange.req = (voltRange)(range + vrOffOffset);
 			}
 		));
+		std::vector<std::string> noiseGateHighNames;
+		for (int i = 0; i < (int)ShiftRegModule::ngh_len; i++) {
+			int pct = (i + 1) * 5;
+			noiseGateHighNames.push_back(pct == 50
+				? "50% (default)"
+				: string::f("%d%%", pct));
+		}
+		menu->addChild(createIndexPtrSubmenuItem("Noise high-gate chance", noiseGateHighNames,
+			&module->noiseGateHigh.req));
 		menu->addChild(createIndexPtrSubmenuItem("Rate chaos", getRateChaosNames(),
 			&module->lfoRateChaos.req));
 
