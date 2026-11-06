@@ -73,9 +73,10 @@ inline uint32_t getJsonUint32(json_t* rootJ, const char* key, const uint32_t def
 /// @param defaultValue Default value to return if key is not found.
 inline float getJsonFloat(json_t* rootJ, const char* key, const float defaultValue = 0.f) {
 	json_t* jsonObj = json_object_get(rootJ, key);
-	return (jsonObj)
-		? json_real_value(jsonObj)
-		: defaultValue;
+
+	if (!jsonObj || !json_is_number(jsonObj))
+		return defaultValue;
+	return (float)json_number_value(jsonObj);
 }
 
 /// @brief Get a std::string from a JSON object using the specified key.
@@ -253,8 +254,8 @@ inline void overlayJsonFloatArray(json_t* rootJ, const char* key, float* dst, si
 	size_t lim = arrSize < count ? arrSize : count;
 	for (size_t i = 0; i < lim; i++) {
 		json_t* elemJ = json_array_get(arrJ, i);
-		if (elemJ && json_is_real(elemJ))
-			dst[i] = (float)json_real_value(elemJ);
+		if (elemJ && json_is_number(elemJ))
+			dst[i] = (float)json_number_value(elemJ);
 	}
 }
 

@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "plugin.hpp"
+#include "../plugin.hpp"
 using namespace ::rack;
 
 //-----------------------------------------------------------------------------

@@ -5,12 +5,12 @@ RACK_DIR ?= ../..
 #RACK_DIR ?= C:/Data/Cpp/Rack-SDK
 
 # Specify extra directories to search for include files.
+FLAGS += -I./src/in
 FLAGS += -I./src/ctrl
 
-# Add .cpp and .c files to the build
-# This says "all cpp files are in the src folder. You can add more files
-# to that folder and they will get compiled and linked also.
+# Modules live in src/. Shared base (src/in/) is compiled here too.
 SOURCES += $(wildcard src/*.cpp)
+SOURCES += $(wildcard src/in/*.cpp)
 
 DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets

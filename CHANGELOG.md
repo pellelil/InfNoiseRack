@@ -6,6 +6,7 @@
 - This new trigger-delay feature (as the name implies) only applies to triggers (not gates) and is naturally only available in Infinite-Noise modules. The new Delay 3 module (see **New modules**) does the same thing (delays a signal by a few cycles), but can also be used with gate signals and/or external modules (e.g. to delay signals sent to them or received from their outputs).
 - Generally tweaked the quantize feature, and fixed issues with quantize settings greater the 1V.
 - Various minor panel tweaks (e.g. updated a few tool-tips, removed/corrected a few wrong labels - e.g. the dark themed Slew 2 panel had a "GT/TR" label that should not be there).
+- Improved handing of reading floats from json.
 
 ## New modules
 - **[Delay 3](doc/Delay3.md#delay-3)**: 2HP 3-section polyphonic delay (1–16 cycles per section). B/C inputs normalize to the previous section's output (1-cycle hop, same as a cable), allowing for a 48 cycle delay of a single input in the A-section.
