@@ -1,0 +1,24 @@
+# ON/OFF Switch
+![Features](features/Polyphonic-Input--Output-green.svg)
+![Features](features/Internal--Fade-Yes-green.svg)<br>
+The On/Off-Switch module is a simplified version of the [Manual CV 8 Mk. II and CV Toggle](ManCV8II.md), featuring a single switching section instead of multiple. At its core, it functions as a **2-to-1 switch**, selecting between an ON and OFF state based on either manual controlled values or external gate/trigger-input. At the top of the module, a large push-button manually toggles the module between the ON and OFF states, with a small green light indicating the active state. Adjacent to this button is a latching switch (red when enabled). Below these controls, a CV input is available to toggle the module’s state externally. By default, this input operates in gate mode (green), meaning a high gate signal switches the module to ON, and a low gate switches it to OFF. However, pressing the small button next to this input toggles it to trigger mode (red), where each received trigger alternates the module between ON and OFF. When the large manual button is actively pressed or latched ON, the module remains in the ON state regardless of gate/trigger-input. *Some general info regarding these modules are listed in [Common cross-fade switch features](commonSwitch.md).*
+
+Both the ON and OFF states have configurable output values, set using dedicated knobs that cover a range of -10V to +10V (default: 0V). Each section also supports CV input, allowing external signals to define the output values. When a CV signal is present, it is attenuverted by a corresponding trim knob and added to the manually set value, effectively allowing the knob to serve as an offset. *E.g. setting the offset to -5V or +5V enables conversion between bipolar and unipolar signals*. Also you could feed the same signal into both the ON- and the OFF- input, but then set the "offset-knobs" diffrently in each section, e.g. one adds an offset, while the other subtracts an offset (adds a negative offset) or simply output the signal without offset.
+
+Via the context menu you can set a **Fade time** (0 / 1-2-5 series up to 10 s). Default is **0**, which is the instant ON/OFF switch. A non-zero time cross-fades between the live ON and OFF values over that duration. **S-curve fade** (off by default) eases the mix. The ON/OFF indicator lights stay binary when fade time is 0; while fading they blend with the mix.
+
+![Screenshot of On/Off-Switch](module/OnOffSwitch.png)
+
+The module’s output contains as many channels as the ON/OFF-input with the highest number of channels. If neither ON nor OFF has a polyphonic input, the module outputs a monophonic (single-channel) signal. When one input (e.g., ON) is polyphonic, but the other (e.g., OFF) is monophonic or absent, the single OFF value is applied to all active channels in OFF mode. However, the ON/OFF gate/trigger input is always monophonic, affecting all output channels uniformly (if a polyphonic signal is supplied, only channel 1 is used).
+
+**TIP**: This module can serve many functions beyond simple switching. For example, if only the OFF input is connected while leaving the ON knob set to 0V, the module acts as a mute switch, outputting either the OFF signal or 0V when engaged. This functionality extends beyond audio signals—it can mute gate-/clock-, trigger-, or modulation-signals as well. Used in this way a high-gate will "mute the input". If you instead input your signal into the On input, a low-gate will output 0V (dialed-in by the Off knob), hence a low-gate will mute the input.
+
+**TIP**: Another useful application is gate inversion. Feeding a gate signal into the ON/OFF input while in gate mode, and setting the ON value to 0V and the OFF value to 10V, causes the module to output an inverted version of the input gate. A high gate input produces 0V (low gate) output, while a low gate input produces 10V (high gate) output. 
+
+**TIP**: By setting the CV input to **Trigger mode**, the **ON** knob to 10V, and the **OFF** knob to 0V, the module can be used to "convert triggers into gates". Each odd-numbered trigger will activate the ON stage and set the output to 10V, while each even-numbered trigger will activate the OFF stage and set the output back to 0V. *In this configuration the module will function as a Toggle Flip-Flop.*
+
+*The ON/OFF gate/trigger-input in the top of the module (to toggle between the ON- and OFF-stages) is monophonic-only, so the ON/OFF Switch will switch all channels of a polyphonic signal at the same time. Hence the ON/OFF Switch is not able to switch individual channels between their ON/OFF stages. However [Poly-Tweak Mk II](PolyTweakII.md) is able to do this using its "disable" section (described as a tip for the Poly-Tweak Mk II).*
+
+Other switch modules: [Bernoulli Switch](BernoulliSwitch.md), [Combine](Combine.md).
+
+[Go back to modules overview](plugin.md#modules)

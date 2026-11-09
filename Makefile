@@ -12,6 +12,7 @@ FLAGS += -I./src/ctrl
 SOURCES += $(wildcard src/*.cpp)
 SOURCES += $(wildcard src/in/*.cpp)
 
+DISTRIBUTABLES += manual
 DISTRIBUTABLES += res
 # DISTRIBUTABLES += presets
 # DISTRIBUTABLES += selections

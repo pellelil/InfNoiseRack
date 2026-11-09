@@ -1,0 +1,21 @@
+# Delay 3
+![Features](features/Polyphonic-Input--Output-green.svg)<br>
+In VCV Rack, **each cable more or less introduces a 1-cycle delay to the signal flow**. If you have 2 modules connected to each other, the 1st module might generate a new output in cycle `n`, but the 2nd module won't see this changed/updated output until cycle `n+1` (or later, if the signal passes through even more modules along the way). In most cases, this is not a problem *(we are talking about fractions of a millisecond)* ... but sometimes it can be.
+
+Consider a scenario where a single module generates a trigger output, which it sends to 2 different modules (module A and module B). Module A changes its output based on this trigger input, while module B (perhaps a S&H module) is supposed to sample the changed output from module A. However, in this scenario, it is likely that module B will instead sample the "old output" from module A (before its changed/updated output becomes available).
+
+For that same reason, both detected input triggers and generated output triggers of the Infinite-Noise modules can be delayed by a few cycles (0, 1–16, 20, 24, 28, 32, 64, 128, or 256 cycles). This can be used, for example, to make module B delay its trigger detection/reaction by a few cycles, ensuring that the new/updated output from module A is available when it is going to sample it.
+
+However, while the Infinite-Noise modules have this built-in delay feature for triggers, modules from other developers might not have this option. Likewise, the built-in delay feature in the Infinite-Noise modules only applies to input/output triggers, so it is not available for gates. Also, the delay setting is shared by all trigger inputs/outputs of a single module, meaning you cannot configure individual delays for each trigger input/output of that module.
+
+In these cases, you might need a module like Delay 3. It's a very simple module with 3 identical sections, each featuring an input port, a knob to dial in the delay (1–16 cycles), and an output port. The input in section B is normalized to the output of section A, and the input in section C is normalized to the output of section B. This normalization includes an internal 1-cycle delay, so it behaves exactly the same way whether you use the internal normalization or connect the sections using a cable (e.g., from the output of section A to the input of section B).
+
+As each section can delay a signal by up to 16 cycles, you can achieve a **total delay of 48 (3x16) cycles** by connecting a signal to the input of section A, turning all 3 delay knobs up to 16, and connecting a single output cable to section C. All inputs and outputs support **polyphonic signals**, with all channels of a signal delayed by the same number of cycles as dialed in by the delay knob.
+
+![Screenshot of Delay 3](module/Delay3.png)
+
+The Delay 3 module differs from the built-in trigger delay. The built-in trigger delay either delays the reaction to an input trigger or delays when an output trigger goes high. While this delay is elapsing, no additional input triggers will be detected, and no additional output triggers can be generated (or even queued). Instead, the Delay 3 module uses a small internal ring buffer, which stores the input signal for each cycle and outputs it after the specified delay. Hence, "nothing is lost" during the delay, **every input is "recorded", it will just output a few cycles later**. So, while the built-in trigger delay can be convenient to use, there might be cases where you would prefer to use Delay 3 instead.
+
+**TIP**: If/when you only need a 1 cycle delay, you can choose to use a [Mult2x4](Mult2x4.md) in stead of this module, as there will be a 1 cycle delay between the input signal, and the output signal(s) recieved by down stream modules. If you need to delay a trigger by more than a few cycles you can use an [ADR Envelope](ADREnvelope.md) - one of it's tips describe how it can be used to generate delayed triggers and - less precise - how it can "delay gates".
+
+[Go back to modules overview](plugin.md#modules)
