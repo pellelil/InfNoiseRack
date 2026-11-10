@@ -260,7 +260,7 @@ struct ManMix4IIModule : InfNoiseModule {
                 if (haveIndivOutput[i] && haveSignalIn[i]) {
                     for (int c = 0; c < channels[i]; c++) {
                         float voltage = inputs[CV1_INPUT + i].getPolyVoltage(c) * channelGain[i];
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                         outputs[OUT1_OUTPUT + i].setVoltage(voltage, c);
                     }
                 }
@@ -278,7 +278,7 @@ struct ManMix4IIModule : InfNoiseModule {
                                 voltage += inputs[CV1_INPUT + i].getPolyVoltage(c) * channelGain[i];
                         }
                         voltage = voltage * mixScale * masterGain;
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                         outputs[MIX_OUTPUT].setVoltage(voltage, c);
                     }
                 }

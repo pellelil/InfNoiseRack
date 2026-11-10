@@ -150,7 +150,7 @@ struct PatchModule : InfNoiseModule {
                         }
                         else { // Not muted
                             for (int c = 0; c < channels; c++) {
-                                outputs[PORT1_OUTPUT + i].setVoltage(clipToVoltRange(normVolt[c], outClipRange.act), c);
+                                outputs[PORT1_OUTPUT + i].setVoltage(clipToVoltRange(normVolt[c], outClipRange.act, outClipMode.act), c);
                             }
                         }
                     }

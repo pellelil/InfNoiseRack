@@ -355,7 +355,7 @@ struct ChaosModule : InfNoiseModule {
 					}
 				} 
 
-				outputs[OUT_OUTPUT].setVoltage(clipToVoltRange(output, outClipRange.act), i);				
+				outputs[OUT_OUTPUT].setVoltage(clipToVoltRange(output, outClipRange.act, outClipMode.act), i);				
 			}
 		}
 

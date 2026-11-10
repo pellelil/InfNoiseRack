@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/License-GPLv3+-blue.svg?style=flat-square)
 ![Language](https://img.shields.io/badge/Language-C++-yellow.svg?style=flat-square)
 
-![Input/output and mono-/polyphonic ports](manual/img/GitHub.png)
+![Infinite-Noise modules](manual/img/GitHub.png)
 
 Every time I've looked into the hardware euro-rack path I've end up with a rack potentially costing 3-8000€ depending how crazy I go (whether I want a "full rack" or simply "expand" my Behringer APR2600). So for now my poor-mans hardware solution is a Behringer -ARP2600, -Neutron, -Crave, Hydrasynth and Korg SQ-1/NTS-2 that I can patch between. But thankfully we have **VCV-Rack** as a software alternative to the physical hardware. While it was +30 years since I last did any C++ coding, I decided to make a few modules that I personally would like to have in my rack, and I hope others will enjoy them as well. *For those interested, some time ago I made a (Windows only) [Waveform/Wavetable-Generator](http://www.infinite-noise.com/WaveformGenerator.aspx) software, for generating single-cycle waveforms and wavetabels.*
 

@@ -131,7 +131,7 @@ struct Sign4IIModule : InfNoiseModule {
                             float voltage = haveInput
                                 ? fabs(inputs[A_INPUT + i].getVoltage(c))
                                 : 0.f;
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT + i].setVoltage(voltage, c);
                         }
                     } 
@@ -140,7 +140,7 @@ struct Sign4IIModule : InfNoiseModule {
                             float voltage = haveInput
                                 ? std::max(inputs[A_INPUT + i].getVoltage(c), 0.f)
                                 : 0.f;
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT + i].setVoltage(voltage, c);
                         }
                     }
@@ -149,7 +149,7 @@ struct Sign4IIModule : InfNoiseModule {
                             float voltage = haveInput
                                 ? std::min(inputs[A_INPUT + i].getVoltage(c), 0.f)
                                 : 0.f;
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT + i].setVoltage(voltage, c);
                         }
                     }

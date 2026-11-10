@@ -229,7 +229,7 @@ struct Slew4Module : InfNoiseModule {
                 for (int c = 0; c < channels[i]; c++) {
                     float voltage = inConn[i] ? inputs[A_INPUT + i].getVoltage(c) : 0.f;
                     int idx = baseIdx + c;
-                    voltage = clipToVoltRange(slew[idx].next(voltage, procSampleTime), outClipRange.act);
+                    voltage = clipToVoltRange(slew[idx].next(voltage, procSampleTime), outClipRange.act, outClipMode.act);
                     outputs[A_OUTPUT + i].setVoltage(voltage, c);
                 }
             }

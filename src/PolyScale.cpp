@@ -297,7 +297,7 @@ struct PolyScaleModule : InfNoiseModule {
                         ? inputs[POLY_INPUT].getPolyVoltage(c) * scale * attRngFactor
                         : 0.f;
                     voltage = quantizeToMode(voltage, outQuantize.act);
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                     outputs[POLY_OUTPUT].setVoltage(voltage, c);
                 }
             }

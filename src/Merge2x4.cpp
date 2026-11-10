@@ -172,7 +172,7 @@ struct Merge2x4Module : InfNoiseModule {
                         if (mixMode[i] && inPortCount[i] > 0)
                             mergeSum /= inPortCount[i];
                         mergeSum = quantizeToMode(mergeSum, outQuantize.act);
-                        mergeSum = clipToVoltRange(mergeSum, outClipRange.act);
+                        mergeSum = clipToVoltRange(mergeSum, outClipRange.act, outClipMode.act);
                         outputs[MERGEA_OUTPUT + i].setVoltage(mergeSum, c);
                     }
                 }

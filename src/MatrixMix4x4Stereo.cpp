@@ -295,9 +295,9 @@ struct MatrixMix4x4StereoModule : InfNoiseModule {
 			}
 
 			if (avgLOutConn)
-				outputs[AVG_L_OUTPUT].setVoltage(cabled > 0 ? clipToVoltRange(sumL / (float) cabled, outClipRange.act) : 0.f);
+				outputs[AVG_L_OUTPUT].setVoltage(cabled > 0 ? clipToVoltRange(sumL / (float) cabled, outClipRange.act, outClipMode.act) : 0.f);
 			if (avgROutConn)
-				outputs[AVG_R_OUTPUT].setVoltage(cabled > 0 ? clipToVoltRange(sumR / (float) cabled, outClipRange.act) : 0.f);
+				outputs[AVG_R_OUTPUT].setVoltage(cabled > 0 ? clipToVoltRange(sumR / (float) cabled, outClipRange.act, outClipMode.act) : 0.f);
 
 			for (int c = 0; c < 4; c++) {
 				if (!mixLOutConn[c] && !mixROutConn[c])
@@ -311,8 +311,8 @@ struct MatrixMix4x4StereoModule : InfNoiseModule {
 				}
 				mixL *= mixScale[c];
 				mixR *= mixScale[c];
-				mixL = clipToVoltRange(mixL, outClipRange.act);
-				mixR = clipToVoltRange(mixR, outClipRange.act);
+				mixL = clipToVoltRange(mixL, outClipRange.act, outClipMode.act);
+				mixR = clipToVoltRange(mixR, outClipRange.act, outClipMode.act);
 				if (mixLOutConn[c])
 					outputs[MIX_L_OUTPUT + c].setVoltage(mixL);
 				if (mixROutConn[c])

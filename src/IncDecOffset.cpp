@@ -175,7 +175,7 @@ struct IncDecOffsetModule : InfNoiseModule {
                         : 0.f;
                     voltage += chnlOffset[c];
                     voltage = quantizeToMode(voltage, outQuantize.act);
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                     outputs[CV_OUTPUT].setVoltage(voltage, c);
                 }
             } else { // no need to change offset, hence no need to read value
@@ -185,7 +185,7 @@ struct IncDecOffsetModule : InfNoiseModule {
                         : 0.f;
                     voltage += chnlOffset[c];
                     voltage = quantizeToMode(voltage, outQuantize.act);
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                     outputs[CV_OUTPUT].setVoltage(voltage, c);
                 }
             }

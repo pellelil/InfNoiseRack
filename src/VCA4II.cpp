@@ -237,7 +237,7 @@ struct VCA4IIModule : InfNoiseModule {
                         float voltage = (haveIn[inIdx]) 
                             ? inputs[A_INPUT + inIdx].getPolyVoltage(c)
                             : 0.f;
-                        voltage = clipToVoltRange(voltage * amp, outClipRange.act);
+                        voltage = clipToVoltRange(voltage * amp, outClipRange.act, outClipMode.act);
                         outputs[A_OUTPUT + i].setVoltage(voltage, c);
                     }
                 }

@@ -172,7 +172,7 @@ struct ManTrGtCvModule : InfNoiseModule {
                 for (int i = 0; i < 2; i++) {
                     float voltage = (params[CV1_PARAM + i].getValue());
                     voltage = quantizeToMode(voltage, outQuantize.act);
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                     for (int c = 0; c < polyphonyModeChannels[cvPoly.act]; c++) {
                         outputs[CV1_OUTPUT + i].setVoltage(voltage, c);
                     }

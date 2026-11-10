@@ -310,7 +310,7 @@ struct WaveShaper2Module : InfNoiseModule {
                             voltage = scaleData[sectIdx].getRawValue(normValue);
 
                         voltage = quantizeToMode(voltage, outQuantize.act);
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
 						outputs[A_OUTPUT + i].setVoltage(voltage, c);
                     }
                 }

@@ -209,7 +209,7 @@ struct SignModule : InfNoiseModule {
                             }
 
                             voltage = quantizeToMode(voltage, outQuantize.act);
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[CUT_NEGATIVE_OUTPUT + i].setVoltage(voltage, c);
                         }
                     }

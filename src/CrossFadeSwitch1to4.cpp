@@ -327,16 +327,16 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
                     outputs[CV3_OUTPUT].setVoltage(0.f, c);
                     outputs[CV4_OUTPUT].setVoltage(0.f, c);
                     if (fadeFrom == fadeTo) {
-                        float voltage = clipToVoltRange(inVoltage, outClipRange.act);
+                        float voltage = clipToVoltRange(inVoltage, outClipRange.act, outClipMode.act);
                         outputs[CV1_OUTPUT + fadeTo].setVoltage(voltage, c);
                     }
                     else {
                         if (mixFrom > 0.f) {
-                            float voltage = clipToVoltRange(inVoltage * mixFrom, outClipRange.act);
+                            float voltage = clipToVoltRange(inVoltage * mixFrom, outClipRange.act, outClipMode.act);
                             outputs[CV1_OUTPUT + fadeFrom].setVoltage(voltage, c);
                         }
                         if (mixTo > 0.f) {
-                            float voltage = clipToVoltRange(inVoltage * mixTo, outClipRange.act);
+                            float voltage = clipToVoltRange(inVoltage * mixTo, outClipRange.act, outClipMode.act);
                             outputs[CV1_OUTPUT + fadeTo].setVoltage(voltage, c);
                         }
                     }
@@ -362,12 +362,12 @@ struct CrossFadeSwitch1to4Module : InfNoiseModule {
 
                     if (factLw > 0.f) {
                         float voltage = inVoltage * factLw;
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                         outputs[CV1_OUTPUT + slctLw].setVoltage(voltage, c);
                     }
                     if (factHi > 0.f) {
                         float voltage = inVoltage * factHi;
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                         outputs[CV1_OUTPUT + slctHi].setVoltage(voltage, c);
                     }
                 }

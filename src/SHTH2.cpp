@@ -299,7 +299,7 @@ struct SHTH2Module : InfNoiseModule {
                                     ? inputs[A_INPUT + i].getVoltage(c)
                                     : rack::random::get<float>() * noiseScale[i] + noiseOffset[i];
                                 voltage = quantizeToMode(voltage, outQuantize.act);
-                                voltage = clipToVoltRange(voltage, outClipRange.act);
+                                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                                 setSectionOutput(i, c, voltage);
                             }
                         }
@@ -325,7 +325,7 @@ struct SHTH2Module : InfNoiseModule {
                                     ? inputs[A_INPUT + i].getVoltage(c)
                                     : rack::random::get<float>() * noiseScale[i] + noiseOffset[i];
                                 voltage = quantizeToMode(voltage, outQuantize.act);
-                                voltage = clipToVoltRange(voltage, outClipRange.act);
+                                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                                 setSectionOutput(i, c, voltage);
                             }
                         }

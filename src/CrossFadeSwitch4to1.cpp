@@ -342,7 +342,7 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
                     float toVoltage = inputs[CV1_INPUT + fadeTo].isConnected()
                         ? inputs[CV1_INPUT + fadeTo].getPolyVoltage(c)
                         : voltValues[normCvInVolt[fadeTo].act];
-                    float voltage = clipToVoltRange(fromVoltage * mixFrom + toVoltage * mixTo, outClipRange.act);
+                    float voltage = clipToVoltRange(fromVoltage * mixFrom + toVoltage * mixTo, outClipRange.act, outClipMode.act);
                     outputs[CV_OUTPUT].setVoltage(voltage, c);
                 }
                 lightLw = fadeFrom;
@@ -362,7 +362,7 @@ struct CrossFadeSwitch4to1Module : InfNoiseModule {
                         ? inputs[CV1_INPUT + slctHi].getPolyVoltage(c)
                         : voltValues[normCvInVolt[slctHi].act];
                     float voltage = lowVoltage * factLw + highVoltage * factHi;
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                     outputs[CV_OUTPUT].setVoltage(voltage, c);
                 }
             }

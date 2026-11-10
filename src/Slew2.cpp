@@ -456,7 +456,7 @@ struct Slew2Module : InfNoiseModule {
 					}
 
 					// Calculate/output slew voltage
-					float slewVolt = clipToVoltRange(slew[idx].next(inVolt, procSampleTime), outClipRange.act);
+					float slewVolt = clipToVoltRange(slew[idx].next(inVolt, procSampleTime), outClipRange.act, outClipMode.act);
 					if (slewOutConn[i])
 						outputs[A_SLEW_OUTPUT + i].setVoltage(slewVolt, c);
 

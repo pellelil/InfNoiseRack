@@ -87,7 +87,7 @@ struct ManMute8Module : InfNoiseModule {
                             : muteLevelKnob
                         : normVolt[c];
                     cv = quantizeToMode(cv, outQuantize.act);
-                    cv = clipToVoltRange(cv, outClipRange.act);
+                    cv = clipToVoltRange(cv, outClipRange.act, outClipMode.act);
                     outputs[CV1_OUTPUT + i].setVoltage(cv, c);
                 }
             }
@@ -267,7 +267,7 @@ struct ManMute8Module : InfNoiseModule {
                                     : muteLevelKnob
                                 : normVolt[c];
                             cv = quantizeToMode(cv, outQuantize.act);
-                            cv = clipToVoltRange(cv, outClipRange.act);
+                            cv = clipToVoltRange(cv, outClipRange.act, outClipMode.act);
                             outputs[CV1_OUTPUT + i].setVoltage(cv, c);
                         }
                     }
@@ -281,7 +281,7 @@ struct ManMute8Module : InfNoiseModule {
                                 : muteLevelKnob;
                             float cv = mixLive * normVolt[c] + mix * muteV;
                             cv = quantizeToMode(cv, outQuantize.act);
-                            cv = clipToVoltRange(cv, outClipRange.act);
+                            cv = clipToVoltRange(cv, outClipRange.act, outClipMode.act);
                             outputs[CV1_OUTPUT + i].setVoltage(cv, c);
                         }
                     }

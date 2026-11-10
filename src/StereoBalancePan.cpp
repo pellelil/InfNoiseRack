@@ -175,8 +175,8 @@ struct StereoBalancePanModule : InfNoiseModule {
 			for (int c = 0; c < channels; c++) {
 				float inL = lInConn ? inputs[L_INPUT].getPolyVoltage(c) : 0.f;
 				float inR = rInConn ? inputs[R_INPUT].getPolyVoltage(c) : inL;
-				float outL = clipToVoltRange(inL * lGain * gain, outClipRange.act);
-				float outR = clipToVoltRange(inR * rGain * gain, outClipRange.act);
+				float outL = clipToVoltRange(inL * lGain * gain, outClipRange.act, outClipMode.act);
+				float outR = clipToVoltRange(inR * rGain * gain, outClipRange.act, outClipMode.act);
  				outputs[L_OUTPUT].setVoltage(outL, c);
 				outputs[R_OUTPUT].setVoltage(outR, c);
 				maxAbsL = std::max(maxAbsL, std::fabs(outL));

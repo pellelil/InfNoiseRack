@@ -324,12 +324,12 @@ struct CxFade4x1Module : InfNoiseModule {
 
                         if (outputs[XFD_1_OUTPUT + i].isConnected()) {
                             float xFade = revCrossFade * a + crossFade * b;
-                            xFade = clipToVoltRange(xFade, outClipRange.act);
+                            xFade = clipToVoltRange(xFade, outClipRange.act, outClipMode.act);
                             outputs[XFD_1_OUTPUT + i].setVoltage(xFade, c);
                         }
                         if (outputs[FLP_1_OUTPUT + i].isConnected()) {
                             float flp = crossFade * a + revCrossFade * b;
-                            flp = clipToVoltRange(flp, outClipRange.act);
+                            flp = clipToVoltRange(flp, outClipRange.act, outClipMode.act);
                             outputs[FLP_1_OUTPUT + i].setVoltage(flp, c);
                         }
 					}

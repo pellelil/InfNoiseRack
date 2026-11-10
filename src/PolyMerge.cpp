@@ -169,14 +169,14 @@ struct PolyMergeModule : InfNoiseModule {
                     float voltage = (inputs[MONO1_INPUT + c].isConnected())
                         ? inputs[MONO1_INPUT + c].getVoltage()
                         : 0.0f;
-                    outputs[POLY_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[POLY_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                 }
             } else { // Poly mode: single loop over output channels using precomputed merge arrays
                 for (int c = 0; c < outputChannels; c++) {
                     float voltage = (mergeInputIndex[c] < 0)
                         ? 0.0f
                         : inputs[MONO1_INPUT + mergeInputIndex[c]].getVoltage(mergeChannelIndex[c]);
-                    outputs[POLY_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[POLY_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                 }
             }
         }   

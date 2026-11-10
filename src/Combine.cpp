@@ -294,7 +294,7 @@ struct CombineModule : InfNoiseModule {
                     voltage = mix * aVoltage + (1.f - mix) * bVoltage;
                 }
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                outputs[AB_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                outputs[AB_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                 // Gate output
                 voltage = (useA && highOnMode.req == hom_A) || (!useA && highOnMode.req == hom_B)

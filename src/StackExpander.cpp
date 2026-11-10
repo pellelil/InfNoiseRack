@@ -128,7 +128,7 @@ struct StackExpanderModule : InfNoiseModule {
 			float v = (c < cycleChannels) ? cycleValues[c] : 0.f;
 			v = quantizeToMode(v, outQuantize.act);
 			if (host)
-				v = clipToVoltRange(v, host->outClipRange.act);
+				v = clipToVoltRange(v, host->outClipRange.act, host->outClipMode.act);
 			outputs[VALUE_OUTPUT].setVoltage(v, c);
 		}
 		writtenQuantize = outQuantize.act;

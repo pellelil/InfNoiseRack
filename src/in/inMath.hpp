@@ -256,6 +256,12 @@ extern Lut1D<256> depthPow2Lut;
 /// @brief Ensures depthPow2Lut is filled. Call before first use. Idempotent.
 void ensureDepthPow2Lut();
 
+/// @brief Soft-clip knee shape on [0, 8]: 0 at the knee (slope 1), approaching 1. tanh, init only.
+extern Lut1D<256> softClipLut;
+
+/// @brief Ensures softClipLut is filled. Called from plugin init. Idempotent.
+void ensureSoftClipLut();
+
 //-----------------------------------------------------------------------------
 // Misc (continued)
 //-----------------------------------------------------------------------------

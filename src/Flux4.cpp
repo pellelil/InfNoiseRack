@@ -387,7 +387,7 @@ struct Flux4Module : InfNoiseModule {
 
 						// Set output									
 						outputAD[i][c] = applyInputMode(prevInput[c], sigMode[i]) * level;
-						outputs[SIG_A_OUTPUT + i].setVoltage(clipToVoltRange(outputAD[i][c], outClipRange.act), c);
+						outputs[SIG_A_OUTPUT + i].setVoltage(clipToVoltRange(outputAD[i][c], outClipRange.act, outClipMode.act), c);
 					}
 
 					// Special case for monophonic inputs (one channel "repeated" across all channels)
@@ -406,8 +406,8 @@ struct Flux4Module : InfNoiseModule {
 					float cdSum = (outputAD[2][c] + outputAD[3][c]);  // Used for C+D and sum/avg
 					if (haveABOutputs) 
 					{
-						outputs[AB_OUTPUT].setVoltage(clipToVoltRange(abSum * abMixScale, outClipRange.act), c);
-						outputs[CD_OUTPUT].setVoltage(clipToVoltRange(cdSum * cdMixScale, outClipRange.act), c);
+						outputs[AB_OUTPUT].setVoltage(clipToVoltRange(abSum * abMixScale, outClipRange.act, outClipMode.act), c);
+						outputs[CD_OUTPUT].setVoltage(clipToVoltRange(cdSum * cdMixScale, outClipRange.act, outClipMode.act), c);
 					}
 
 					if (haveMinMaxOutputs)
@@ -420,16 +420,16 @@ struct Flux4Module : InfNoiseModule {
 							if (outputAD[i][c] > max)
 								max = outputAD[i][c];
 						}
-						outputs[MIN_OUTPUT].setVoltage(clipToVoltRange(min, outClipRange.act), c);
-						outputs[MAX_OUTPUT].setVoltage(clipToVoltRange(max, outClipRange.act), c);
+						outputs[MIN_OUTPUT].setVoltage(clipToVoltRange(min, outClipRange.act, outClipMode.act), c);
+						outputs[MAX_OUTPUT].setVoltage(clipToVoltRange(max, outClipRange.act, outClipMode.act), c);
 					}
 
 					if (haveSumAvgOutputs)
 					{
 						float sum = (abSum + cdSum);
 						float avg = sum * 0.25f;  // avg = sum / 4
-						outputs[SUM_OUTPUT].setVoltage(clipToVoltRange(sum, outClipRange.act), c);
-						outputs[AVG_OUTPUT].setVoltage(clipToVoltRange(avg, outClipRange.act), c);
+						outputs[SUM_OUTPUT].setVoltage(clipToVoltRange(sum, outClipRange.act, outClipMode.act), c);
+						outputs[AVG_OUTPUT].setVoltage(clipToVoltRange(avg, outClipRange.act, outClipMode.act), c);
 					}
 				}
 			}

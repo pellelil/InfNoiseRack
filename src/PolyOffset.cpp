@@ -214,7 +214,7 @@ struct PolyOffsetModule : InfNoiseModule {
                 }
 
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[POLY_OUTPUT].setVoltage(voltage, c);
             }
         }

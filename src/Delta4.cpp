@@ -247,7 +247,7 @@ struct Delta4Module : InfNoiseModule {
                                 float delta = (inVoltage - refVal[refIdx]) * outModeSign;
                                 if (outModeAbs)
                                     delta = std::abs(delta);
-                                delta = clipToVoltRange(delta, outClipRange.act);
+                                delta = clipToVoltRange(delta, outClipRange.act, outClipMode.act);
                                 outputs[A_OUTPUT + i].setVoltage(delta, c);
                             }
                         }

@@ -6,6 +6,10 @@ This 4HP single-LFO module generates four waveforms (Square, Triangle, Saw, and 
 
 Like TLFO, as indicated by the arrow-heads, the frequency CV-input is normalized to the Sine waveform-output, however as the trim-knob defaults to 0% it will have no effect until you start dialing in a none-zero trim-value.
 
+By default, **PWM (Pulse Width Modulation)** affects the phase of all waveforms, but through the context menu, you can configure it to apply only to the Square waveform. This allows for more controlled modulation when using multiple waveform outputs simultaneously. The context menu also provides an option to limit the PWM range, which by default spans from 1% to 99%, but can be reduced to cover the range from 25% to 75% for finer control over modulation depth.
+
+![Different amount of PWM](img/PWMWaveforms.png)
+
 A key feature of this module is the **MOD** knob/input, which alters the waveform shape (wave-shaping). When turned counterclockwise, waveforms become "sharper/thinner" at their "peaks", while turning it clockwise makes them "rounder/fatter". Since this type of modulation does not work directly on the Square waveform, the Square waveform in stead transitions into a Triangle (counterclockwise) or a Saw wave (clockwise). Essentially, this allows the Square waveform to morph into different shapes, behaving like a **wavetable transition** between Triangle, Square, and Saw. *Combining the MOD and PWM controls—especially with CV modulation—can create a wide variety of waveform variations*.
 
 ![Modulation of waveform outputs](img/ModWaveforms.png)

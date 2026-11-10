@@ -49,17 +49,17 @@ struct PolyVCMPModule : InfNoiseModule {
     actReqValue<rsOutputModeType> rsOutputMode = actReqValue<rsOutputModeType>(rsOutputModeType::rs_Range);
 
     void writeOutputs(int c, int outIdx) {
-        outputs[MIN_VAL_OUTPUT].setVoltage(clipToVoltRange(minVal[outIdx], outClipRange.act), c);
-        outputs[MAX_VAL_OUTPUT].setVoltage(clipToVoltRange(maxVal[outIdx], outClipRange.act), c);
-        outputs[NTZ_OUTPUT].setVoltage(clipToVoltRange(ntzVal[outIdx], outClipRange.act), c);
-        outputs[FFZ_OUTPUT].setVoltage(clipToVoltRange(ffzVal[outIdx], outClipRange.act), c);
+        outputs[MIN_VAL_OUTPUT].setVoltage(clipToVoltRange(minVal[outIdx], outClipRange.act, outClipMode.act), c);
+        outputs[MAX_VAL_OUTPUT].setVoltage(clipToVoltRange(maxVal[outIdx], outClipRange.act, outClipMode.act), c);
+        outputs[NTZ_OUTPUT].setVoltage(clipToVoltRange(ntzVal[outIdx], outClipRange.act, outClipMode.act), c);
+        outputs[FFZ_OUTPUT].setVoltage(clipToVoltRange(ffzVal[outIdx], outClipRange.act, outClipMode.act), c);
         outputs[AVG_OUTPUT].setVoltage(clipToVoltRange((count[outIdx] > 0.f)
             ? (sumVal[outIdx] / count[outIdx])
-            : 0.f, outClipRange.act), c);
+            : 0.f, outClipRange.act, outClipMode.act), c);
         float rsValue = rsOutputMode.act == rsOutputModeType::rs_Range
             ? (maxVal[outIdx] - minVal[outIdx])
             : sumVal[outIdx];
-        outputs[RS_OUTPUT].setVoltage(clipToVoltRange(rsValue, outClipRange.act), c);
+        outputs[RS_OUTPUT].setVoltage(clipToVoltRange(rsValue, outClipRange.act, outClipMode.act), c);
     }
 
     void applyLoadedOutputs() {

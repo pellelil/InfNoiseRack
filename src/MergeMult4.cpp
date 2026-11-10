@@ -178,7 +178,7 @@ struct MergeMult4Module : InfNoiseModule {
                             : mergeSum[c] / mergeInputCount
                         : 0.f;
                     mulIn[c] = quantizeToMode(mulIn[c], outQuantize.act);
-                    mulIn[c] = clipToVoltRange(mulIn[c], outClipRange.act);
+                    mulIn[c] = clipToVoltRange(mulIn[c], outClipRange.act, outClipMode.act);
                 }
             }
 
@@ -197,7 +197,7 @@ struct MergeMult4Module : InfNoiseModule {
                     for (int c = 0; c < multChannels; c++) {
                         mulIn[c] = inputs[MULT_INPUT].getVoltage(c);
                         mulIn[c] = quantizeToMode(mulIn[c], outQuantize.act);
-                        mulIn[c] = clipToVoltRange(mulIn[c], outClipRange.act);
+                        mulIn[c] = clipToVoltRange(mulIn[c], outClipRange.act, outClipMode.act);
                     }
                 }
 

@@ -294,7 +294,7 @@ struct RingMod3Module : InfNoiseModule {
                     // AB-output
                     float abVolt = aVolt * bVolt;
                     abVolt = quantizeToMode(abVolt, outQuantize.act);
-                    abVolt = clipToVoltRange(abVolt, outClipRange.act);
+                    abVolt = clipToVoltRange(abVolt, outClipRange.act, outClipMode.act);
                     outputs[AB1_OUTPUT + i].setVoltage(abVolt, c);
                     normA[c] = abVolt; // Store AB-output for next section's normalized A-input
                 }

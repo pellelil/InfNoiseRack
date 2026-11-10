@@ -274,7 +274,7 @@ struct CxFade1x2Module : InfNoiseModule {
                 if (outputs[LEFT1_OUTPUT].isConnected()) {
                     for (int c = 0; c < channels[0]; c++) {
                         float out1 = revCrossFade * a1Input[c] + crossFade * b1Input[c];
-                        out1 = clipToVoltRange(out1, outClipRange.act);
+                        out1 = clipToVoltRange(out1, outClipRange.act, outClipMode.act);
                         outputs[LEFT1_OUTPUT].setVoltage(out1, c);
                     }
                 }
@@ -282,7 +282,7 @@ struct CxFade1x2Module : InfNoiseModule {
                 if (outputs[RIGHT2_OUTPUT].isConnected()) {
                     for (int c = 0; c < channels[1]; c++) {
                         float out2 = revCrossFade * a2Input[c] + crossFade * b2Input[c];
-                        out2 = clipToVoltRange(out2, outClipRange.act);
+                        out2 = clipToVoltRange(out2, outClipRange.act, outClipMode.act);
                         outputs[RIGHT2_OUTPUT].setVoltage(out2, c);
                     }
                 }
@@ -307,13 +307,13 @@ struct CxFade1x2Module : InfNoiseModule {
 
                 if (outputs[LEFT1_OUTPUT].isConnected()) {
                     for (int c = 0; c < channels[0]; c++) {
-                        float out1 = clipToVoltRange(aGain * a1Input[c], outClipRange.act);
+                        float out1 = clipToVoltRange(aGain * a1Input[c], outClipRange.act, outClipMode.act);
                         outputs[LEFT1_OUTPUT].setVoltage(out1, c);
                     }
                 }
                 if (outputs[RIGHT2_OUTPUT].isConnected()) {
                     for (int c = 0; c < channels[1]; c++) {
-                        float out2 = clipToVoltRange(bGain * a2Input[c], outClipRange.act);
+                        float out2 = clipToVoltRange(bGain * a2Input[c], outClipRange.act, outClipMode.act);
                         outputs[RIGHT2_OUTPUT].setVoltage(out2, c);
                     }
                 }

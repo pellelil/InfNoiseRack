@@ -172,7 +172,7 @@ struct Delay3Module : InfNoiseModule {
 							? 0.f
 							: (prevCh <= 1) ? lastOut[i - 1][0] : lastOut[i - 1][c];
 					buf[i][w][c] = inVolt;
-					float outVolt = clipToVoltRange(buf[i][r][c], outClipRange.act);
+					float outVolt = clipToVoltRange(buf[i][r][c], outClipRange.act, outClipMode.act);
 					outputs[A_OUTPUT + i].setVoltage(outVolt, c);
 					curOut[i][c] = outVolt;
 				}

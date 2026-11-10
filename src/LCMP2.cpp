@@ -193,11 +193,11 @@ struct LCMP2Module : InfNoiseModule {
             float falseInput[PORT_MAX_CHANNELS] = { 0.f };
             for (int c = 0; c < maxChannels; c++) {
                 trueInput[c] = inputs[TRUE_INPUT].isConnected() 
-                    ? clipToVoltRange(inputs[TRUE_INPUT].getPolyVoltage(c), outClipRange.act)
-                    : clipToVoltRange(voltValues[trueOutput.act], outClipRange.act);
+                    ? clipToVoltRange(inputs[TRUE_INPUT].getPolyVoltage(c), outClipRange.act, outClipMode.act)
+                    : clipToVoltRange(voltValues[trueOutput.act], outClipRange.act, outClipMode.act);
                 falseInput[c] = inputs[FALSE_INPUT].isConnected() 
-                    ? clipToVoltRange(inputs[FALSE_INPUT].getPolyVoltage(c), outClipRange.act)
-                    : clipToVoltRange(voltValues[falseOutput.act], outClipRange.act);
+                    ? clipToVoltRange(inputs[FALSE_INPUT].getPolyVoltage(c), outClipRange.act, outClipMode.act)
+                    : clipToVoltRange(voltValues[falseOutput.act], outClipRange.act, outClipMode.act);
             }
 
             bool abOr[PORT_MAX_CHANNELS] = { false };  // used as normalized input for C

@@ -152,7 +152,7 @@ struct ManCV8IModule : InfNoiseModule {
                     ? voltValues[muteLevel.act]
                     : params[MAN_KNOB1_PARAM + i].getValue();
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[MAN1_OUTPUT + i].setVoltage(voltage);
                 if (i < polyChannels)
                     outputs[MAN_POLY_OUTPUT].setVoltage(voltage, i);

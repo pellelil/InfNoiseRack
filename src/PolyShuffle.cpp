@@ -351,7 +351,7 @@ struct PolyShuffleModule : InfNoiseModule {
                         }
                     }
 
-                    outputs[POLY_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[POLY_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                 }
             }
         }

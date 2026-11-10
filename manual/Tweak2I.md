@@ -7,7 +7,7 @@ The Tweak-2 Mk I module is a compact 2HP utility with two inputs and two outputs
 
 ![Screenshot of Tweak-2I](module/Tweak2I.png)
 
-*As mentioned previously the Tweak2I can accept- and generated polyphonic (multi-channel) input/output. Also it's CV-input for both Scale and Offset also accept polyphonic-signals, allowing you to scale/offset each channel individual. If/when you only apply a monophonic CV-input for Scale and/or Offset, all channels will be scaled/offset by the same amount*.
+*The Tweak2I can accept- and generated polyphonic (multi-channel) input/output. Also its CV-input for both Scale and Offset also accept polyphonic-signals, allowing you to scale/offset each channel individual. If/when you only apply a monophonic CV-input for Scale and/or Offset, all channels will be scaled/offset by the same amount*.
 
 Other Tweak modules: [Tweak-2 Mk II](Tweak2II.md), [Tweak-4 Mk I](Tweak4I.md), [Tweak-4 Mk II](Tweak4II.md), [Tweak-8](Tweak8.md).
 

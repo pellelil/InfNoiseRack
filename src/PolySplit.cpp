@@ -176,7 +176,7 @@ struct PolySplitModule : InfNoiseModule {
                     float voltage = (c < channelCount)
                         ? inputs[POLY_INPUT].getVoltage(c)
                         : 0.0f;
-                    outputs[MONO1_OUTPUT + c].setVoltage(clipToVoltRange(voltage, outClipRange.act));
+                    outputs[MONO1_OUTPUT + c].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act));
                 }
             }
             else { // Poly mode: route logical channels to outputs; channels beyond input get 0V
@@ -185,7 +185,7 @@ struct PolySplitModule : InfNoiseModule {
                         ? inputs[POLY_INPUT].getVoltage(c)
                         : 0.0f;
                     outputs[MONO1_OUTPUT + polyOutOutputIndex[c]].setVoltage(
-                        clipToVoltRange(voltage, outClipRange.act), polyOutChannelIndex[c]);
+                        clipToVoltRange(voltage, outClipRange.act, outClipMode.act), polyOutChannelIndex[c]);
                 }
             }
         }

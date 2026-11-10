@@ -209,7 +209,7 @@ struct OnOffSwitchModule : InfNoiseModule {
                         float voltage = knobValue;
                         if (haveIn)
                             voltage += valueTrim * inputs[valueInputIdx].getPolyVoltage(c);
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                         outputs[VALUE_OUTPUT].setVoltage(voltage, c);
                     }
                 }
@@ -228,7 +228,7 @@ struct OnOffSwitchModule : InfNoiseModule {
                         float offV = offKnob;
                         if (haveOffIn)
                             offV += offTrim * inputs[OFF_INPUT].getPolyVoltage(c);
-                        float voltage = clipToVoltRange(mixOff * offV + mix * onV, outClipRange.act);
+                        float voltage = clipToVoltRange(mixOff * offV + mix * onV, outClipRange.act, outClipMode.act);
                         outputs[VALUE_OUTPUT].setVoltage(voltage, c);
                     }
                 }

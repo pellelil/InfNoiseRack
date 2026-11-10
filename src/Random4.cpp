@@ -512,7 +512,7 @@ struct Random4Module : InfNoiseModule {
                             float voltage = randomMinMaxDist(minValue, maxValue, dist,
                                 distMode.act == dm_MinMax, forcedPolarity.act, prevSign[i*16 + c]);
                             voltage = quantizeToMode(voltage, outQuantize.act);
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             heldValue[i][c] = voltage;
                         }
                     }
@@ -551,7 +551,7 @@ struct Random4Module : InfNoiseModule {
                     float voltage = heldValue[i][c];
                     if (doSlew)
                         voltage = slew[i][c].next(voltage, procSampleTime);
-                    outputs[RND1_OUTPUT + i].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[RND1_OUTPUT + i].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                 }
             }
         }

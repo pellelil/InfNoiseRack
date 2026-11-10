@@ -371,7 +371,7 @@ struct BernoulliSwitchModule : InfNoiseModule {
                             voltage = (haveInput)
                                 ? inputs[inpIdx].getPolyVoltage(c)
                                 : normVoltage;
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[AB_OUTPUT].setVoltage(voltage, c);
                         }
                     }
@@ -385,7 +385,7 @@ struct BernoulliSwitchModule : InfNoiseModule {
                         for (int c = 0; c < channels[0]; c++) {
                             float aV = haveA ? inputs[A_INPUT].getPolyVoltage(c) : normA;
                             float bV = haveB ? inputs[B_INPUT].getPolyVoltage(c) : normB;
-                            voltage = clipToVoltRange(mixA * aV + mix * bV, outClipRange.act);
+                            voltage = clipToVoltRange(mixA * aV + mix * bV, outClipRange.act, outClipMode.act);
                             outputs[AB_OUTPUT].setVoltage(voltage, c);
                         }
                     }
@@ -405,7 +405,7 @@ struct BernoulliSwitchModule : InfNoiseModule {
                                 : useLastNonSlctOut.act
                                     ? lastAOut[c]
                                     : voltValues[nonSlctOutVolt.act];
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT].setVoltage(voltage, c);
                             lastAOut[c] = voltage;
 
@@ -414,7 +414,7 @@ struct BernoulliSwitchModule : InfNoiseModule {
                                 : useLastNonSlctOut.act
                                     ? lastBOut[c]
                                     : voltValues[nonSlctOutVolt.act];
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[B_OUTPUT].setVoltage(voltage, c);
                             lastBOut[c] = voltage;
                         }
@@ -428,9 +428,9 @@ struct BernoulliSwitchModule : InfNoiseModule {
                                 inpVoltage = inputs[AB_INPUT].getVoltage(c);
                             float unselA = useLastNonSlctOut.act ? lastAOut[c] : fixedUnsel;
                             float unselB = useLastNonSlctOut.act ? lastBOut[c] : fixedUnsel;
-                            voltage = clipToVoltRange(mixA * inpVoltage + mix * unselA, outClipRange.act);
+                            voltage = clipToVoltRange(mixA * inpVoltage + mix * unselA, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT].setVoltage(voltage, c);
-                            voltage = clipToVoltRange(mix * inpVoltage + mixA * unselB, outClipRange.act);
+                            voltage = clipToVoltRange(mix * inpVoltage + mixA * unselB, outClipRange.act, outClipMode.act);
                             outputs[B_OUTPUT].setVoltage(voltage, c);
                             if (mix <= 1e-6f)
                                 lastAOut[c] = inpVoltage;

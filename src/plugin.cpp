@@ -2,11 +2,13 @@
 // Licensed under GNU GPLv3+
 
 #include "plugin.hpp"
+#include "inMath.hpp"
 
 Plugin *pluginInstance;
 
 void init(Plugin *p) {
 	pluginInstance = p;
+	ensureSoftClipLut(); // shared by every module that can soft-clip
 
 	// Add modules here
 	p->addModel(modelADREnvelope);

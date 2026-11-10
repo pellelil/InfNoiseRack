@@ -287,7 +287,7 @@ struct Tweak4IIModule : InfNoiseModule {
                         ? outputSum / outputCount
                         : section;
                     output = quantizeToMode(output, outQuantize.act);
-                    output = clipToVoltRange(output, outClipRange.act);
+                    output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                     outputs[A_OUTPUT + i].setVoltage(output);
                     outputSum = 0.f;
                     outputCount = 0;

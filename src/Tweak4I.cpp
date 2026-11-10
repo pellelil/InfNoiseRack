@@ -179,7 +179,7 @@ struct Tweak4IModule : InfNoiseModule {
                                 : (inputs[A_INPUT + i].getVoltage(c) + offset) * scale
                             : 0.f;
                         output = quantizeToMode(output, outQuantize.act);
-                        output = clipToVoltRange(output, outClipRange.act);
+                        output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                         outputs[A_OUTPUT + i].setVoltage(output, c);
                     }
                 }

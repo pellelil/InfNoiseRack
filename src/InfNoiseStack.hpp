@@ -227,7 +227,7 @@ struct InfNoiseStackModule : InfNoiseModule {
 		for (int c = 0; c < outChannels; c++) {
 			float v = (values && c < srcChannels) ? values[c] : 0.f;
 			v = quantizeToMode(v, outQuantize.act);
-			v = clipToVoltRange(v, outClipRange.act);
+			v = clipToVoltRange(v, outClipRange.act, outClipMode.act);
 			port.setVoltage(v, c);
 		}
 	}

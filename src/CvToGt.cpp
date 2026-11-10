@@ -238,8 +238,8 @@ struct CvToGtModule : InfNoiseModule {
                             maxDiff = std::fabs(maxDiff);
                             minDiff = std::fabs(minDiff);
                         }
-                        outputs[ABOVE_MAXDIFF_OUTPUT].setVoltage(clipToVoltRange(maxDiff, outClipRange.act), c);
-                        outputs[BELOW_MINDIF_OUTPUT].setVoltage(clipToVoltRange(minDiff, outClipRange.act), c);    
+                        outputs[ABOVE_MAXDIFF_OUTPUT].setVoltage(clipToVoltRange(maxDiff, outClipRange.act, outClipMode.act), c);
+                        outputs[BELOW_MINDIF_OUTPUT].setVoltage(clipToVoltRange(minDiff, outClipRange.act, outClipMode.act), c);    
                     }
                 }
             }

@@ -230,7 +230,7 @@ struct Tweak2IIModule : InfNoiseModule {
                             ? outputSum[c] / outputCount[c]
                             : 0.f;
                         output = quantizeToMode(output, outQuantize.act);
-                        output = clipToVoltRange(output, outClipRange.act);
+                        output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                         outputs[A_OUTPUT + i].setVoltage(output, c);
                     }
 

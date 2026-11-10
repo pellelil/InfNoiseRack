@@ -238,7 +238,7 @@ struct FoldModule : InfNoiseModule {
                         rangeCenter,
                         foldMode,
                         biasAsymGain);
-                    outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                 }   
             }
             else {
@@ -264,7 +264,7 @@ struct FoldModule : InfNoiseModule {
                         foldMode,
                         biasAsymGain);
                     voltage = decimator[c].process(outBuf);                        
-                    outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                 }
             }
         }

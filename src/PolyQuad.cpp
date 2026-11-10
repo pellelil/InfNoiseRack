@@ -144,7 +144,7 @@ struct PolyQuadModule : InfNoiseModule {
                     int chnl = 0;
                     for (int i=firstIn; i<=lastIn; i++) {
                         if (inputs[A_INPUT + i].isConnected()) {
-                            float voltage = clipToVoltRange(inputs[A_INPUT + i].getVoltage(), outClipRange.act);
+                            float voltage = clipToVoltRange(inputs[A_INPUT + i].getVoltage(), outClipRange.act, outClipMode.act);
                             outputs[POLY_OUTPUT].setVoltage(voltage, chnl);
                             chnl++;
                         }
@@ -152,7 +152,7 @@ struct PolyQuadModule : InfNoiseModule {
                 } else {
                     for (int i=0; i<outChannels; i++) {
                         float voltage = inputs[A_INPUT + i].isConnected()
-                            ? clipToVoltRange(inputs[A_INPUT + i].getVoltage(), outClipRange.act)
+                            ? clipToVoltRange(inputs[A_INPUT + i].getVoltage(), outClipRange.act, outClipMode.act)
                             : 0.f;
                         outputs[POLY_OUTPUT].setVoltage(voltage, i);
                     }
@@ -168,7 +168,7 @@ struct PolyQuadModule : InfNoiseModule {
                     float voltage = i < inChnl 
                         ? inputs[POLY_INPUT].getPolyVoltage(i) 
                         : 0.f;
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                     outputs[E_OUTPUT + i].setVoltage(voltage);
                 }
             }

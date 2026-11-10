@@ -1118,6 +1118,39 @@ const float voltRangeNormOffset[]{
 	0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f
 };
 
+// Soft-clip knees: linear until 10/12 of each rail measured from 0 V. Head is the remaining 1/6.
+// Unipolar low side is 0 (hard clamp). Indices match voltRange. Hard clip does not read these.
+const float softClipKneeMin[]{
+	-8000000.f * 10.f / 12.f,
+	-50.f * 10.f / 12.f, -20.f * 10.f / 12.f, -12.f * 10.f / 12.f, -10.f * 10.f / 12.f, -5.f * 10.f / 12.f, -2.5f * 10.f / 12.f, -2.f * 10.f / 12.f, -1.f * 10.f / 12.f, -0.5f * 10.f / 12.f,
+	0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f
+};
+const float softClipKneeMax[]{
+	8000000.f * 10.f / 12.f,
+	50.f * 10.f / 12.f, 20.f * 10.f / 12.f, 12.f * 10.f / 12.f, 10.f * 10.f / 12.f, 5.f * 10.f / 12.f, 2.5f * 10.f / 12.f, 2.f * 10.f / 12.f, 1.f * 10.f / 12.f, 0.5f * 10.f / 12.f,
+	50.f * 10.f / 12.f, 20.f * 10.f / 12.f, 12.f * 10.f / 12.f, 10.f * 10.f / 12.f, 5.f * 10.f / 12.f, 2.5f * 10.f / 12.f, 2.f * 10.f / 12.f, 1.f * 10.f / 12.f
+};
+const float softClipHeadMin[]{
+	8000000.f / 6.f,
+	50.f / 6.f, 20.f / 6.f, 12.f / 6.f, 10.f / 6.f, 5.f / 6.f, 2.5f / 6.f, 2.f / 6.f, 1.f / 6.f, 0.5f / 6.f,
+	0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f
+};
+const float softClipHeadMax[]{
+	8000000.f / 6.f,
+	50.f / 6.f, 20.f / 6.f, 12.f / 6.f, 10.f / 6.f, 5.f / 6.f, 2.5f / 6.f, 2.f / 6.f, 1.f / 6.f, 0.5f / 6.f,
+	50.f / 6.f, 20.f / 6.f, 12.f / 6.f, 10.f / 6.f, 5.f / 6.f, 2.5f / 6.f, 2.f / 6.f, 1.f / 6.f
+};
+const float softClipInvHeadMin[]{ // 0 where head is 0 (unipolar low side)
+	6.f / 8000000.f,
+	6.f / 50.f, 6.f / 20.f, 6.f / 12.f, 6.f / 10.f, 6.f / 5.f, 6.f / 2.5f, 6.f / 2.f, 6.f / 1.f, 6.f / 0.5f,
+	0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f
+};
+const float softClipInvHeadMax[]{
+	6.f / 8000000.f,
+	6.f / 50.f, 6.f / 20.f, 6.f / 12.f, 6.f / 10.f, 6.f / 5.f, 6.f / 2.5f, 6.f / 2.f, 6.f / 1.f, 6.f / 0.5f,
+	6.f / 50.f, 6.f / 20.f, 6.f / 12.f, 6.f / 10.f, 6.f / 5.f, 6.f / 2.5f, 6.f / 2.f, 6.f / 1.f
+};
+
 // Brightness for clipping-range light (indices match voltRange enum)
 const float clipRangeGreenBrightness[]{
 	// vr_off
@@ -1188,6 +1221,20 @@ inline std::string getClipRangeLightName(voltRange rangeIdx) {
 	return std::string("Clipping range: ") + getVoltRangeName(rangeIdx);
 }
 
+// Hard (default) or soft clipping. cm_hard is the fast path in clipToVoltRange.
+enum clipMode { cm_hard, cm_soft, cm_len };
+
+inline std::string getClipModeName(clipMode mode) {
+	return (mode == cm_soft) ? "Soft" : "Hard";
+}
+
+inline std::vector<std::string> getClipModeNames() {
+	std::vector<std::string> names;
+	for (int i = 0; i < (int)cm_len; i++)
+		names.push_back(getClipModeName((clipMode)i));
+	return names;
+}
+
 inline std::string getVoltRangeShortName(voltRange rangeIdx) {
 	if (rangeIdx == vr_mp_0_5)
 		return "-+0.5";
@@ -1224,12 +1271,37 @@ inline std::vector<std::string> getVoltRangesShortNames(bool inclOff) {
 	return names;
 }
 
-/// @brief Clip a value to a given voltRange (specified by index)
+/// @brief Soft-clip knee shape. t is 0 at the knee (returns 0, slope 1) and approaches 1. LUT filled in plugin init.
+float softClipShape(float t);
+
+/// @brief Clip a value to a given voltRange. Hard (default) and vr_off are a plain clamp.
+/// Soft is unchanged between the precomputed knees, then saturates toward the rails.
 /// @param value Value to clip
 /// @param rangeIdx voltRange index
+/// @param mode cm_hard (default) or cm_soft
 /// @return Clipped value
-inline float clipToVoltRange(float value, voltRange rangeIdx) {
-	return clamp(value, voltRangeMin[rangeIdx], voltRangeMax[rangeIdx]);
+inline float clipToVoltRange(float value, voltRange rangeIdx, clipMode mode = cm_hard) {
+	if (mode == cm_hard || rangeIdx == vr_off)
+		return clamp(value, voltRangeMin[rangeIdx], voltRangeMax[rangeIdx]);
+
+	float kneeMin = softClipKneeMin[rangeIdx];
+	float kneeMax = softClipKneeMax[rangeIdx];
+	if (value >= kneeMin && value <= kneeMax)
+		return value;
+
+	if (value > kneeMax) {
+		float t = (value - kneeMax) * softClipInvHeadMax[rangeIdx];
+		float shaped = kneeMax + softClipHeadMax[rangeIdx] * softClipShape(t);
+		return clamp(shaped, kneeMax, voltRangeMax[rangeIdx]);
+	}
+
+	float headMin = softClipHeadMin[rangeIdx];
+	if (headMin <= 0.f)
+		return voltRangeMin[rangeIdx];
+	
+	float t = (kneeMin - value) * softClipInvHeadMin[rangeIdx];
+	float shaped = kneeMin - headMin * softClipShape(t);
+	return clamp(shaped, voltRangeMin[rangeIdx], kneeMin);
 }
 
 /// @brief Convert a value from one voltRange to another

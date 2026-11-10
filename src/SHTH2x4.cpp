@@ -339,7 +339,7 @@ struct SHTH2x4Module : InfNoiseModule {
                                     ? inputs[A1_INPUT + k].getVoltage(c)
                                     : rack::random::get<float>() * noiseScale[i] + noiseOffset[i];
                                 voltage = quantizeToMode(voltage, outQuantize.act);
-                                voltage = clipToVoltRange(voltage, outClipRange.act);
+                                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                                 setPortOutput(k, c, voltage);
                             }
                         }

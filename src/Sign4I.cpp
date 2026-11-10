@@ -145,7 +145,7 @@ struct Sign4IModule : InfNoiseModule {
                             voltage = invGate
 								? voltValues[gateOutHigh.act]
 								: voltValues[gateOutLow.act];
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT + i].setVoltage(voltage, c);
                         }
                     } 
@@ -154,7 +154,7 @@ struct Sign4IModule : InfNoiseModule {
                             float voltage = haveInput
                                 ? inputs[A_INPUT + i].getVoltage(c) * -1.0f
                                 : 0.f;
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT + i].setVoltage(voltage, c);
                         }
                     }
@@ -164,7 +164,7 @@ struct Sign4IModule : InfNoiseModule {
                                 ? inputs[A_INPUT + i].getVoltage(c)
                                 : 0.f;
                             voltage = invertToVoltInvRange(voltage, inversionRange.act);
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT + i].setVoltage(voltage, c);
                         }
                     }

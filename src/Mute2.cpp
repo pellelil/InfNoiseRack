@@ -251,7 +251,7 @@ struct Mute2Module : InfNoiseModule {
                                 : haveIn
                                     ? inputs[inPortIdx].getVoltage(c)
                                     : 0.f;
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT + i].setVoltage(voltage, c);
                         }
                     }
@@ -262,7 +262,7 @@ struct Mute2Module : InfNoiseModule {
                         float mixLive = 1.f - mix;
                         for (int c = 0; c < channels[i]; c++) {
                             float liveV = haveIn ? inputs[inPortIdx].getVoltage(c) : 0.f;
-                            float voltage = clipToVoltRange(mixLive * liveV + mix * muteV, outClipRange.act);
+                            float voltage = clipToVoltRange(mixLive * liveV + mix * muteV, outClipRange.act, outClipMode.act);
                             outputs[A_OUTPUT + i].setVoltage(voltage, c);
                         }
                     }

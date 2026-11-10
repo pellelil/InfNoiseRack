@@ -141,7 +141,7 @@ struct VCA4IModule : InfNoiseModule {
                             amp = applyScaleCurveUnipolar(amp, scalingMode.act);
 
                             float voltage = inputs[A_INPUT + i].getVoltage(c) * amp;
-                            voltage = clipToVoltRange(voltage, outClipRange.act);
+                            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
 		                    outputs[A_OUTPUT + i].setVoltage(voltage, c);
 						}
 					}

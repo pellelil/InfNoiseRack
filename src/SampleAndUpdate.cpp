@@ -179,7 +179,7 @@ struct SampleAndUpdateModule : InfNoiseModule {
                     ? voltValues[gateOutHigh.act]
                     : voltValues[gateOutLow.act]
                 : samples[c];
-            outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+            outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
         }
     }
 
@@ -295,7 +295,7 @@ struct SampleAndUpdateModule : InfNoiseModule {
                     voltage = (outCountTrigger[c].isHigh())
                         ? voltValues[trigOutHigh.act]
                         : voltValues[trigOutLow.act];
-                    outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                 }
             } else { // m_value or m_gate
                 for (int c = 0; c < channels; c++) {
@@ -315,7 +315,7 @@ struct SampleAndUpdateModule : InfNoiseModule {
                                 ? voltValues[gateOutHigh.act]
                                 : voltValues[gateOutLow.act]
                             : samples[c];
-                        outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                        outputs[CV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                     }
                 }
             }

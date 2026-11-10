@@ -316,7 +316,7 @@ struct CvToggle8Module : InfNoiseModule {
                         ? mix * normOn[c] + (1.f - mix) * normOff[c]
                         : virtualGate[i] ? normOn[c] : normOff[c];
                     voltage = quantizeToMode(voltage, outQuantize.act);
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                     outputs[CV1_OUTPUT + i].setVoltage(voltage, c);
                 }
             }

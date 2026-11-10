@@ -405,13 +405,13 @@ struct Arm3XYModule : InfNoiseModule {
 
             // Scale and output X and Y
             x = centerValue + x * halfRange;
-            outputs[X_OUTPUT].setVoltage(clipToVoltRange(x, outClipRange.act));
+            outputs[X_OUTPUT].setVoltage(clipToVoltRange(x, outClipRange.act, outClipMode.act));
 
             y = centerValue + y * halfRange;
-            outputs[Y_OUTPUT].setVoltage(clipToVoltRange(y, outClipRange.act));
+            outputs[Y_OUTPUT].setVoltage(clipToVoltRange(y, outClipRange.act, outClipMode.act));
 
             // Output averaging mix of X and Y
-            outputs[XY_OUTPUT].setVoltage(clipToVoltRange((x + y) / 2.f, outClipRange.act));
+            outputs[XY_OUTPUT].setVoltage(clipToVoltRange((x + y) / 2.f, outClipRange.act, outClipMode.act));
         }
 
         cycle256++;

@@ -201,11 +201,11 @@ struct VCMP2IModule : InfNoiseModule {
             bool falseConnected = inputs[FALSE_INPUT].isConnected();
             for (int c = 0; c < maxChannels; c++) {
                 trueInput[c] = trueConnected
-                    ? clipToVoltRange(inputs[TRUE_INPUT].getPolyVoltage(c), outClipRange.act)
-                    : clipToVoltRange(voltValues[trueOutput.act], outClipRange.act);
+                    ? clipToVoltRange(inputs[TRUE_INPUT].getPolyVoltage(c), outClipRange.act, outClipMode.act)
+                    : clipToVoltRange(voltValues[trueOutput.act], outClipRange.act, outClipMode.act);
                 falseInput[c] = falseConnected
-                    ? clipToVoltRange(inputs[FALSE_INPUT].getPolyVoltage(c), outClipRange.act)
-                    : clipToVoltRange(voltValues[falseOutput.act], outClipRange.act);
+                    ? clipToVoltRange(inputs[FALSE_INPUT].getPolyVoltage(c), outClipRange.act, outClipMode.act)
+                    : clipToVoltRange(voltValues[falseOutput.act], outClipRange.act, outClipMode.act);
             }
 
             bool aConnected = inputs[A_INPUT].isConnected();

@@ -136,7 +136,7 @@ struct Mult2x4Module : InfNoiseModule {
                         if (haveInputs[i]) {
                             multIn[c] = inputs[MULTA_INPUT + i].getVoltage(c);
                             multIn[c] = quantizeToMode(multIn[c], outQuantize.act);
-                            multIn[c] = clipToVoltRange(multIn[c], outClipRange.act);
+                            multIn[c] = clipToVoltRange(multIn[c], outClipRange.act, outClipMode.act);
                         }
 
                         if (haveOutputs[i]) {

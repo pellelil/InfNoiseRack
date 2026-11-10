@@ -344,12 +344,12 @@ struct MatrixMix5x5Module : InfNoiseModule {
 			}
 
 			if (cabled > 0)	{
-				outputs[MIN_OUTPUT].setVoltage(clipToVoltRange(minC, outClipRange.act));
-				outputs[MAX_OUTPUT].setVoltage(clipToVoltRange(maxC, outClipRange.act));
-				outputs[AVG_OUTPUT].setVoltage(clipToVoltRange(sumCabled / (float) cabled, outClipRange.act));
-				outputs[RNG_OUTPUT].setVoltage(clipToVoltRange(maxC - minC, outClipRange.act));
-				outputs[NTZ_OUTPUT].setVoltage(clipToVoltRange(ntzC, outClipRange.act));
-				outputs[FFZ_OUTPUT].setVoltage(clipToVoltRange(ffzC, outClipRange.act));
+				outputs[MIN_OUTPUT].setVoltage(clipToVoltRange(minC, outClipRange.act, outClipMode.act));
+				outputs[MAX_OUTPUT].setVoltage(clipToVoltRange(maxC, outClipRange.act, outClipMode.act));
+				outputs[AVG_OUTPUT].setVoltage(clipToVoltRange(sumCabled / (float) cabled, outClipRange.act, outClipMode.act));
+				outputs[RNG_OUTPUT].setVoltage(clipToVoltRange(maxC - minC, outClipRange.act, outClipMode.act));
+				outputs[NTZ_OUTPUT].setVoltage(clipToVoltRange(ntzC, outClipRange.act, outClipMode.act));
+				outputs[FFZ_OUTPUT].setVoltage(clipToVoltRange(ffzC, outClipRange.act, outClipMode.act));
 			}
 			else {
 				outputs[MIN_OUTPUT].setVoltage(0.f);
@@ -374,7 +374,7 @@ struct MatrixMix5x5Module : InfNoiseModule {
 					mix += rowV[r] * send;
 				}
 				mix *= mixScale[c] * colGain;
-				mix = clipToVoltRange(mix, outClipRange.act);
+				mix = clipToVoltRange(mix, outClipRange.act, outClipMode.act);
 				outputs[MIX_OUTPUT + c].setVoltage(mix);
 				maxAbsCol[c] = std::max(maxAbsCol[c], std::fabs(mix));
 			}

@@ -230,11 +230,11 @@ struct VCMP1Module : InfNoiseModule {
                     : params[B_OFFSET_PARAM].getValue();
 
                 float trueInput = inputs[TRUE_INPUT].isConnected()
-                    ? clipToVoltRange(inputs[TRUE_INPUT].getPolyVoltage(c), outClipRange.act)
-                    : clipToVoltRange(voltValues[trueOutput.act], outClipRange.act);
+                    ? clipToVoltRange(inputs[TRUE_INPUT].getPolyVoltage(c), outClipRange.act, outClipMode.act)
+                    : clipToVoltRange(voltValues[trueOutput.act], outClipRange.act, outClipMode.act);
                 float falseInput = inputs[FALSE_INPUT].isConnected()
-                    ? clipToVoltRange(inputs[FALSE_INPUT].getPolyVoltage(c), outClipRange.act)
-                    : clipToVoltRange(voltValues[falseOutput.act], outClipRange.act);
+                    ? clipToVoltRange(inputs[FALSE_INPUT].getPolyVoltage(c), outClipRange.act, outClipMode.act)
+                    : clipToVoltRange(voltValues[falseOutput.act], outClipRange.act, outClipMode.act);
 
                 // == !=
                 bool inTol = std::abs(aInput - bInput) <= tol;
@@ -268,7 +268,7 @@ struct VCMP1Module : InfNoiseModule {
                 float clampVoltage = (tol > 0.f) 
                     ? clamp(aInput, bInput - tol, bInput + tol)
                     : bInput;
-                outputs[AB_CLAMP_OUTPUT].setVoltage(clipToVoltRange(clampVoltage, outClipRange.act), c);
+                outputs[AB_CLAMP_OUTPUT].setVoltage(clipToVoltRange(clampVoltage, outClipRange.act, outClipMode.act), c);
 
                 // A/B-crossing
                 if (outputs[AB_CROSS_OUTPUT].isConnected()) {

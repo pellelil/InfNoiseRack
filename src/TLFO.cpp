@@ -300,7 +300,7 @@ struct TLFOModule : InfNoiseModule {
                     invSign = invWaveforms[0].act ? -1.f : 1.f;
                     output = 1.f - calcPhase * 2.f;
                     output = ((output * invSign + 1.f) / 2.f) * waveScale + waveOffset;
-                    output = clipToVoltRange(output, outClipRange.act);
+                    output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                     outputs[LFO_SAW_OUTPUT].setVoltage(output, c);
                 }            // Output Square
 
@@ -310,7 +310,7 @@ struct TLFOModule : InfNoiseModule {
                         ? 1.f
                         : -1.f;
                     output = ((output * invSign + 1.f) / 2.f) * waveScale + waveOffset;
-                    output = clipToVoltRange(output, outClipRange.act);
+                    output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                     outputs[LFO_SQR_OUTPUT].setVoltage(output, c);
                 }
 
@@ -323,7 +323,7 @@ struct TLFOModule : InfNoiseModule {
                         ? 1.f - ((calcPhase - 0.25f) * 4.f)
                         : ((calcPhase - 0.75f) * 4.f) - 1.f;
                     output = ((output * invSign + 1.f) / 2.f) * waveScale + waveOffset;
-                    output = clipToVoltRange(output, outClipRange.act);
+                    output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                     outputs[LFO_TRI_OUTPUT].setVoltage(output, c);
                 }
 
@@ -332,7 +332,7 @@ struct TLFOModule : InfNoiseModule {
                     invSign = invWaveforms[3].act ? -1.f : 1.f;
                     output = bSin(calcPhase);
                     output = ((output * invSign + 1.f) / 2.f) * waveScale + waveOffset;
-                    output = clipToVoltRange(output, outClipRange.act);
+                    output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                     if (haveSinOutputs)
                         outputs[LFO_SIN_OUTPUT].setVoltage(output, c);
                     lastSinOutput = output; // Used for freq-trim if no freq-input is connected

@@ -384,7 +384,7 @@ struct ShiftRegModule : InfNoiseModule {
 						for (int c = 0; c < channels[0]; c++) {
 							float v = regValue[s][c];
 							float out = dataCv
-								? clipToVoltRange(quantizeToMode(v, outQuantize.act), outClipRange.act)
+								? clipToVoltRange(quantizeToMode(v, outQuantize.act), outClipRange.act, outClipMode.act)
 								: (v >= trueDetectValues[gateDetHigh.act]
 									? voltValues[gateOutHigh.act]
 									: voltValues[gateOutLow.act]);
@@ -399,7 +399,7 @@ struct ShiftRegModule : InfNoiseModule {
 						for (int c = 0; c < channels[0]; c++) {
 							float v = regValue[sa][c];
 							float out = dataCv
-								? clipToVoltRange(quantizeToMode(v, outQuantize.act), outClipRange.act)
+								? clipToVoltRange(quantizeToMode(v, outQuantize.act), outClipRange.act, outClipMode.act)
 								: (v >= trueDetectValues[gateDetHigh.act]
 									? voltValues[gateOutHigh.act]
 									: voltValues[gateOutLow.act]);
@@ -408,7 +408,7 @@ struct ShiftRegModule : InfNoiseModule {
 						for (int c = 0; c < channels[1]; c++) {
 							float v = regValue[sb][c];
 							float out = dataCv
-								? clipToVoltRange(quantizeToMode(v, outQuantize.act), outClipRange.act)
+								? clipToVoltRange(quantizeToMode(v, outQuantize.act), outClipRange.act, outClipMode.act)
 								: (v >= trueDetectValues[gateDetHigh.act]
 									? voltValues[gateOutHigh.act]
 									: voltValues[gateOutLow.act]);

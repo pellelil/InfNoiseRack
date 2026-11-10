@@ -305,7 +305,7 @@ struct PolyTweakIModule : InfNoiseModule {
 							}
                         }
 
-                        voltage = clipToVoltRange(voltage, outClipRange.act);
+                        voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
 						outputs[POLY_OUTPUT].setVoltage(voltage, outChnl++);
 					}
 				}   

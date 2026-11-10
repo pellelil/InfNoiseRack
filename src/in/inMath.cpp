@@ -9,10 +9,12 @@ Lut1D<256> fiveSineLogIsh(0.f, 1.f);  // 5-nested bSin concave curve: fast start
 Lut1D<256> normExp(0.f, 1.f);         // Normalized exp'ish ramp (convex): slow start, fast end
 Lut1D<256> normLog(0.f, 1.f);         // Normalized log'ish ramp (concave): fast start, slow end (inversed normExp)
 Lut1D<256> depthPow2Lut(1.f, 16.f);   // Used by RateDephtReducer (2^1-16 bits)
+Lut1D<256> softClipLut(0.f, 8.f);     // Soft-clip knee: tanh(t), t = 0 at the knee .. 8 (saturated)
 
 static bool s_fiveSineExpLogLutsInitialized = false;
 static bool s_normExpLogLutsInitialized = false;
 static bool s_depthPow2LutInitialized = false;
+static bool s_softClipLutInitialized = false;
 
 // Steepness for normExp / normLog; higher = more curved, still 0 at 0 and 1 at 1.
 static const float kNormExpLog = 4.f;
@@ -81,6 +83,26 @@ void ensureDepthPow2Lut() {
         depthPow2Lut.data[i] = std::pow(2.f, bits);
     }
     s_depthPow2LutInitialized = true;
+}
+
+/// @brief Ensures the soft-clip knee LUT is initialized. Idempotent.
+void ensureSoftClipLut() {
+    if (s_softClipLutInitialized)
+        return;
+
+    const int n = softClipLut.Size;
+    const float span = softClipLut.maxX - softClipLut.minX; // 0..8
+    for (int i = 0; i < n; i++) {
+        float t = softClipLut.minX + span * ((float)i / (n - 1));
+        softClipLut.data[i] = std::tanh(t);
+    }
+    softClipLut.data[0] = 0.f;
+    softClipLut.data[n - 1] = 1.f;
+    s_softClipLutInitialized = true;
+}
+
+float softClipShape(float t) {
+    return softClipLut.lookup(t);
 }
 
 //-----------------------------------------------------------------------------

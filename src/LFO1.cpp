@@ -571,7 +571,7 @@ struct LFO1Module : InfNoiseModule {
                                 ? 1.f
                                 : -1.f;
                             output = modNormSquare(output * invSign, modValue, pwmPhase) * waveScale + waveOffset;
-                            output = clipToVoltRange(output, outClipRange.act);
+                            output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                             outputs[LFO_SQR_OUTPUT].setVoltage(output, c);
                         }
 
@@ -583,21 +583,21 @@ struct LFO1Module : InfNoiseModule {
                                 ? 1.f - ((calcPhase - 0.25f) * 4.f)
                                 : ((calcPhase - 0.75f) * 4.f) - 1.f;
                             output = modNorm(output * invSign, modValue) * waveScale + waveOffset;
-                            output = clipToVoltRange(output, outClipRange.act);
+                            output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                             outputs[LFO_TRI_OUTPUT].setVoltage(output, c);
                         }
 
                         // Output Saw (down)
                         if (haveSawOutputs) {
                             output = modNorm((1.f - calcPhase * 2.f) * invSign, modValue) * waveScale + waveOffset;
-                            output = clipToVoltRange(output, outClipRange.act);
+                            output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                             outputs[LFO_SAW_OUTPUT].setVoltage(output, c);
                         }
 
                         // Output Sine
                         if (haveSinOutputs || freqModTrim != 0.f) {
                             output = modNorm(bSin(calcPhase) * invSign, modValue) * waveScale + waveOffset;
-                            output = clipToVoltRange(output, outClipRange.act);
+                            output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                             if (haveSinOutputs)
                                 outputs[LFO_SIN_OUTPUT].setVoltage(output, c);
                             lastSinOutput = output; // Used for freq-trim if no freq-input is connected

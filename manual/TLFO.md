@@ -8,7 +8,7 @@ This compact 2HP module is the smallest LFO in the plugin. It allows frequency a
 
 By default, **PWM (Pulse Width Modulation)** affects the phase of all waveforms, but through the context menu, you can configure it to apply only to the Square waveform. This allows for more controlled modulation when using multiple waveform outputs simultaneously. The context menu also provides an option to limit the PWM range, which by default spans from 1% to 99%, but can be reduced to cover the range from 25% to 75% for finer control over modulation depth.
 
-![Different amount of Rate Chaos](img/PWMWaveforms.png)
+![Different amount of PWM](img/PWMWaveforms.png)
 
 As indicated by the arrow-heads, the frequency CV-input is normalized to the Sine waveform-output, however as the frequency trim-knob defaults to 0% it will have no effect until you start dialing in a none-zero trim-value.
 

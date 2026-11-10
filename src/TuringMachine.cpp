@@ -633,7 +633,7 @@ struct TuringMachineModule : InfNoiseModule {
             float deltaVolt = (bit8 / 255.f) * rangeVolt;
             float voltage = minValue + deltaVolt;
             voltage = quantizeToMode(voltage, outQuantize.act);
-            voltage = clipToVoltRange(voltage, outClipRange.act);
+            voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
             outputs[BINARY_OUTPUT].setVoltage(voltage);
 
             // Set Inv output
@@ -647,7 +647,7 @@ struct TuringMachineModule : InfNoiseModule {
                 }
                 float voltage = minValue + fixedVolt * rangeVolt;
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[FIXED_OUTPUT].setVoltage(voltage);
             }
 

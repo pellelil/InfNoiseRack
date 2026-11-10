@@ -463,7 +463,7 @@ struct RandomCurveModule : InfNoiseModule {
                     }
                 }
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[LINEAR_OUTPUT].setVoltage(voltage);
             }
 
@@ -475,7 +475,7 @@ struct RandomCurveModule : InfNoiseModule {
                 if (doScale)
                     voltage = rescale(voltage, minValue[PREV_RND], maxValue[PREV_RND], minValue[NEXT_RND], maxValue[NEXT_RND]);
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[STEP_OUTPUT].setVoltage(voltage);
             }
 
@@ -485,7 +485,7 @@ struct RandomCurveModule : InfNoiseModule {
                 if (doScale)
                     voltage = rescale(voltage, minValue[PREV_RND], maxValue[PREV_RND], minValue[NEXT_RND], maxValue[NEXT_RND]);
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[CURVE_OUTPUT].setVoltage(voltage);
             }
 
@@ -495,7 +495,7 @@ struct RandomCurveModule : InfNoiseModule {
                 if (doScale)
                     voltage = rescale(voltage, minValue[PREV_RND], maxValue[PREV_RND], minValue[NEXT_RND], maxValue[NEXT_RND]);
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[SPIKY_OUTPUT].setVoltage(voltage);
             }
 
@@ -506,7 +506,7 @@ struct RandomCurveModule : InfNoiseModule {
                 if (doScale)
                     voltage = rescale(voltage, minValue[PREV_RND], maxValue[PREV_RND], minValue[NEXT_RND], maxValue[NEXT_RND]);
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[USER1_OUTPUT].setVoltage(voltage);
             }
 
@@ -517,7 +517,7 @@ struct RandomCurveModule : InfNoiseModule {
                 if (doScale)
                     voltage = rescale(voltage, minValue[PREV_RND], maxValue[PREV_RND], minValue[NEXT_RND], maxValue[NEXT_RND]);
                 voltage = quantizeToMode(voltage, outQuantize.act);
-                voltage = clipToVoltRange(voltage, outClipRange.act);
+                voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                 outputs[USER2_OUTPUT].setVoltage(voltage);
             }
 

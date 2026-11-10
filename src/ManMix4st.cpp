@@ -293,11 +293,11 @@ struct ManMix4stModule : InfNoiseModule {
                     }
 
                     leftVoltage = leftVoltage * mixScale * masterGain;
-                    leftVoltage = clipToVoltRange(leftVoltage, outClipRange.act);
+                    leftVoltage = clipToVoltRange(leftVoltage, outClipRange.act, outClipMode.act);
                     outputs[MIX_LEFT_OUTPUT].setVoltage(leftVoltage, c);
 
                     rightVoltage = rightVoltage * mixScale * masterGain;
-                    rightVoltage = clipToVoltRange(rightVoltage, outClipRange.act);
+                    rightVoltage = clipToVoltRange(rightVoltage, outClipRange.act, outClipMode.act);
                     outputs[MIX_RIGHT_OUTPUT].setVoltage(rightVoltage, c);
                 }
             }

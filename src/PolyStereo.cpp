@@ -122,26 +122,26 @@ struct PolyStereoModule : InfNoiseModule {
                 float voltage = inputs[L1_INPUT].isConnected()
                     ? inputs[L1_INPUT].getVoltage()
                     : 0.f;
-                outputs[P1_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), 0);
+                outputs[P1_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), 0);
                 if (inputs[R1_INPUT].isConnected()) // Normalized to Left-1
                     voltage = inputs[R1_INPUT].getVoltage();
-                outputs[P1_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), 1);
+                outputs[P1_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), 1);
             }
 
             if (haveSectionOutput[1]) { // Section-2: Left/Right-2 -> Poly-2
                 float voltage = inputs[L2_INPUT].isConnected()
                     ? inputs[L2_INPUT].getVoltage()
                     : 0.f;
-                outputs[P2_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), 0);
+                outputs[P2_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), 0);
                 if (inputs[R2_INPUT].isConnected()) // Normalized to Left-2
                     voltage = inputs[R2_INPUT].getVoltage();
-                outputs[P2_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), 1);
+                outputs[P2_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), 1);
             }
 
             if (haveSectionOutput[2]) { // Section-3: Poly-3 -> Left/Right-3
                 if (inputs[P3_INPUT].isConnected()) {
-                    outputs[L3_OUTPUT].setVoltage(clipToVoltRange(inputs[P3_INPUT].getPolyVoltage(0), outClipRange.act));
-                    outputs[R3_OUTPUT].setVoltage(clipToVoltRange(inputs[P3_INPUT].getPolyVoltage(1), outClipRange.act));
+                    outputs[L3_OUTPUT].setVoltage(clipToVoltRange(inputs[P3_INPUT].getPolyVoltage(0), outClipRange.act, outClipMode.act));
+                    outputs[R3_OUTPUT].setVoltage(clipToVoltRange(inputs[P3_INPUT].getPolyVoltage(1), outClipRange.act, outClipMode.act));
                 }
                 else {
                     outputs[L3_OUTPUT].setVoltage(0.f);
@@ -151,8 +151,8 @@ struct PolyStereoModule : InfNoiseModule {
 
             if (haveSectionOutput[3]) { // Section-4: Poly-4 -> Left/Right-4
                 if (inputs[P4_INPUT].isConnected()) {
-                    outputs[L4_OUTPUT].setVoltage(clipToVoltRange(inputs[P4_INPUT].getPolyVoltage(0), outClipRange.act));
-                    outputs[R4_OUTPUT].setVoltage(clipToVoltRange(inputs[P4_INPUT].getPolyVoltage(1), outClipRange.act));
+                    outputs[L4_OUTPUT].setVoltage(clipToVoltRange(inputs[P4_INPUT].getPolyVoltage(0), outClipRange.act, outClipMode.act));
+                    outputs[R4_OUTPUT].setVoltage(clipToVoltRange(inputs[P4_INPUT].getPolyVoltage(1), outClipRange.act, outClipMode.act));
                 }
                 else {
                     outputs[L4_OUTPUT].setVoltage(0.f);

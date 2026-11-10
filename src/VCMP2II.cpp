@@ -201,26 +201,26 @@ struct VCMP2IIModule : InfNoiseModule {
 
                     if (abOutputsConnected) {
                         float voltage = std::min(aInput, bInput);
-                        outputs[AB_MIN_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                        outputs[AB_MIN_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                         voltage = std::max(aInput, bInput);
-                        outputs[AB_MAX_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                        outputs[AB_MAX_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                         voltage = (std::fabs(aInput) < std::fabs(bInput))
                             ? aInput
                             : bInput;
-                        outputs[AB_NTZ_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                        outputs[AB_NTZ_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                         voltage = (std::fabs(aInput) > std::fabs(bInput))
                             ? aInput
                             : bInput;
-                        outputs[AB_FFZ_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                        outputs[AB_FFZ_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                         voltage = std::abs(aInput - bInput);
-                        outputs[AB_ABSDIFF_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                        outputs[AB_ABSDIFF_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                         voltage = (aInput + bInput) / 2.f;
-                        outputs[AB_AVG_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                        outputs[AB_AVG_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                     }
                 }
             }
@@ -246,27 +246,27 @@ struct VCMP2IIModule : InfNoiseModule {
                         cInt = std::abs(cInt);
                         cFrac = std::abs(cFrac);
                     }
-                    outputs[C_INT_OUTPUT].setVoltage(clipToVoltRange(cInt, outClipRange.act), c);
-                    outputs[C_FRAC_OUTPUT].setVoltage(clipToVoltRange(cFrac, outClipRange.act), c);
+                    outputs[C_INT_OUTPUT].setVoltage(clipToVoltRange(cInt, outClipRange.act, outClipMode.act), c);
+                    outputs[C_FRAC_OUTPUT].setVoltage(clipToVoltRange(cFrac, outClipRange.act, outClipMode.act), c);
 
                     float voltage = cInput + dInput;
-                    outputs[CD_PLUS_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[CD_PLUS_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                     voltage = cInput * dInput;
-                    outputs[CD_MUL_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[CD_MUL_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                     voltage = cInput - dInput;
-                    outputs[CD_MINUS_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[CD_MINUS_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                     voltage = dInput - cInput;
-                    outputs[DC_MINUS_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[DC_MINUS_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
 
                     voltage = (std::abs(dInput) >= kDivisorEpsilon)
                         ? cInput / dInput
                         : divByZeroMode.act == divByZeroModeType::dbzKeep
                             ? lastCdivD[c]
                             : 0.f;
-                    outputs[CD_DIV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[CD_DIV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                     lastCdivD[c] = voltage;
                     
                     voltage = (std::abs(cInput) >= kDivisorEpsilon)
@@ -274,7 +274,7 @@ struct VCMP2IIModule : InfNoiseModule {
                         : divByZeroMode.act == divByZeroModeType::dbzKeep
                             ? lastDdivC[c]
                             : 0.f;
-                    outputs[DC_DIV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act), c);
+                    outputs[DC_DIV_OUTPUT].setVoltage(clipToVoltRange(voltage, outClipRange.act, outClipMode.act), c);
                     lastDdivC[c] = voltage;
                 }
             }

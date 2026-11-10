@@ -404,7 +404,7 @@ struct SLFO4stModule : InfNoiseModule {
                         output = (lfoInvert[i].act)
                             ? (1.f - output) * waveScale[i] + waveOffset[i]
                             : output * waveScale[i] + waveOffset[i];
-                        output = clipToVoltRange(output, outClipRange.act);
+                        output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                         outputs[WAVE1_1ST_OUTPUT + i].setVoltage(output);
                     }
 
@@ -418,7 +418,7 @@ struct SLFO4stModule : InfNoiseModule {
                         output = (lfoInvert[i].act)
                             ? (1.f - output) * waveScale[i] + waveOffset[i]
                             : output * waveScale[i] + waveOffset[i];
-                        output = clipToVoltRange(output, outClipRange.act);
+                        output = clipToVoltRange(output, outClipRange.act, outClipMode.act);
                         outputs[WAVE2_1ST_OUTPUT + i].setVoltage(output);
                     }
 

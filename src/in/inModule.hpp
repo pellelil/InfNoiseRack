@@ -39,6 +39,7 @@ struct InfNoiseModule : Module {
     actReqValue<bool> autoProcQuality = actReqValue<bool>(false); // Process at each cycle
     actReqValue<processQuality> procQuality = actReqValue<processQuality>(pq_audioRate); // Process at each cycle
     actReqValue<voltRange> outClipRange = actReqValue<voltRange>(vr_mp12); // -12V to 12V
+    actReqValue<clipMode> outClipMode = actReqValue<clipMode>(cm_hard); // Hard clip (default)
     actReqValue<quantizeMode> outQuantize = actReqValue<quantizeMode>(qm_off); // Quantize off
     float procSampleTime = 1.f / 48000.f; // args.sampleTime multiplied by processQualityCycles[procQuality] (updated by preProcessParams/postProcessParams)
     int procCycles = 1; // processQualityCycles[procQuality.act] as int (updated with procSampleTime)
@@ -66,7 +67,7 @@ struct InfNoiseModule : Module {
     bool haveProcQuality = false;  // Adds menu to specify process-quality
     bool haveAutoProcQuality = false;  // Adds menu to specify auto process-quality
     bool haveOutQuantize = false;  // Adds menu to specify output quantize
-    bool haveOutClipRange = false;  // Adds menu to specify output clip-range
+    bool haveOutClipRange = false;  // Adds menu to specify output clip-range and clip-mode
     bool haveGateDetect = false;  // Adds menu to specify gate-detect input-level
     bool haveGateHighLow = false;  // Adds menu to specify gate-high/low output-levels
     bool haveTrigDetect = false;  // Adds menu to specify trigger-detect input-levels  
@@ -118,6 +119,7 @@ struct InfNoiseModule : Module {
         autoProcQuality.setBoth(haveAutoProcQuality);
         procQuality.setBoth(processQuality::pq_audioRate);
         outClipRange.setBoth(voltRange::vr_mp12);
+        outClipMode.setBoth(clipMode::cm_hard);
         outQuantize.setBoth(quantizeMode::qm_off);
 
         // Gate-detect and gate-high/low
@@ -155,8 +157,10 @@ struct InfNoiseModule : Module {
         }
         if (haveOutQuantize)
             json_object_set_new(rootJ, "outQuantize", json_integer((int)outQuantize.req));
-        if (haveOutClipRange)
+        if (haveOutClipRange) {
             json_object_set_new(rootJ, "outClipRange", json_integer((int)outClipRange.req));
+            json_object_set_new(rootJ, "outClipMode", json_integer((int)outClipMode.req));
+        }
 
         // Gate-detect and gate-high/low
         if (haveGateDetect) {
@@ -200,6 +204,7 @@ struct InfNoiseModule : Module {
     	autoProcQuality.setBoth(getJsonBool(rootJ, "autoProcQuality", haveAutoProcQuality));
         outQuantize.setBoth((quantizeMode)getJsonInt(rootJ, "outQuantize", (int)qm_off, (int)qm_len - 1));
         outClipRange.setBoth((voltRange)getJsonInt(rootJ, "outClipRange", (int)vr_mp12, (int)vr_len - 1));
+        outClipMode.setBoth((clipMode)getJsonInt(rootJ, "outClipMode", (int)cm_hard, (int)cm_len - 1));
         
         // Gate-detect and gate-high/low (sets default values if not found)
         gateDetHigh.setBoth((trueDetectValue)getJsonInt(rootJ, "gateDetHigh", (int)td_gateHigh, (int)td_len - 1));
@@ -227,6 +232,7 @@ struct InfNoiseModule : Module {
         autoProcQuality.updateActual();
         outQuantize.updateActual();
         outClipRange.updateActual();
+        outClipMode.updateActual();
         float sampleRate = args.sampleRate > 0.f ? args.sampleRate : 44100;  // fallback to 44.1 kHz
         procCycles = (int)processQualityCycles[procQuality.act];
         procSampleTime = processQualityCycles[procQuality.act] / sampleRate;
@@ -709,6 +715,9 @@ struct InfNoiseModuleWidget : ModuleWidget {
                 std::vector<std::string> clipRangeNames = getVoltRangesNames(true);
                 menu->addChild(createIndexPtrSubmenuItem("Clipping range", clipRangeNames,
                     &module->outClipRange.req));
+                std::vector<std::string> clipModeNames = getClipModeNames();
+                menu->addChild(createIndexPtrSubmenuItem("Clipping mode", clipModeNames,
+                    &module->outClipMode.req));
             }
             if (module->haveProcQuality) {
                 std::vector<std::string> procQualNames = getProcessQualityNames();

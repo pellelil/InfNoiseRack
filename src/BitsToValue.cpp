@@ -226,12 +226,12 @@ struct BitsToValueModule : InfNoiseModule {
 				chnlSum /= knobSum;
 
                 float rangeSum = rangeVolt * chnlSum;
-                outputs[VALUE_OUTPUT].setVoltage(clipToVoltRange(quantizeToMode(minValue + rangeSum, outQuantize.act), outClipRange.act));
-                outputs[INV_VALUE_OUTPUT].setVoltage(clipToVoltRange(quantizeToMode(maxValue - rangeSum, outQuantize.act), outClipRange.act));
+                outputs[VALUE_OUTPUT].setVoltage(clipToVoltRange(quantizeToMode(minValue + rangeSum, outQuantize.act), outClipRange.act, outClipMode.act));
+                outputs[INV_VALUE_OUTPUT].setVoltage(clipToVoltRange(quantizeToMode(maxValue - rangeSum, outQuantize.act), outClipRange.act, outClipMode.act));
             } 
             else {
-				outputs[VALUE_OUTPUT].setVoltage(clipToVoltRange(quantizeToMode(minValue, outQuantize.act), outClipRange.act));
-				outputs[INV_VALUE_OUTPUT].setVoltage(clipToVoltRange(quantizeToMode(maxValue, outQuantize.act), outClipRange.act));
+				outputs[VALUE_OUTPUT].setVoltage(clipToVoltRange(quantizeToMode(minValue, outQuantize.act), outClipRange.act, outClipMode.act));
+				outputs[INV_VALUE_OUTPUT].setVoltage(clipToVoltRange(quantizeToMode(maxValue, outQuantize.act), outClipRange.act, outClipMode.act));
 			}
         }
 

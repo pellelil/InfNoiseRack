@@ -178,7 +178,7 @@ struct ManMix4IModule : InfNoiseModule {
                     }
 
                     voltage = voltage * mixScale * params[MASTER_MIX_PARAM].getValue();
-                    voltage = clipToVoltRange(voltage, outClipRange.act);
+                    voltage = clipToVoltRange(voltage, outClipRange.act, outClipMode.act);
                     outputs[MIX_OUTPUT].setVoltage(voltage, c);
                 }
             }

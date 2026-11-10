@@ -195,7 +195,7 @@ struct Tweak2IModule : InfNoiseModule {
                         ? aInput * scale + offset
                         : (aInput + offset) * scale;
                     aOutput = quantizeToMode(aOutput, outQuantize.act);
-                    aOutput = clipToVoltRange(aOutput, outClipRange.act);
+                    aOutput = clipToVoltRange(aOutput, outClipRange.act, outClipMode.act);
                     outputs[A_OUTPUT].setVoltage(aOutput, c);
                 }
                 if (haveBOutput && c < bChannels) {
@@ -206,7 +206,7 @@ struct Tweak2IModule : InfNoiseModule {
                         ? bInput * scale + offset
                         : (bInput + offset) * scale;
                     bOutput = quantizeToMode(bOutput, outQuantize.act);
-                    bOutput = clipToVoltRange(bOutput, outClipRange.act);
+                    bOutput = clipToVoltRange(bOutput, outClipRange.act, outClipMode.act);
                     outputs[B_OUTPUT].setVoltage(bOutput, c);
                 }
             }
